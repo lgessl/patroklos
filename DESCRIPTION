@@ -1,0 +1,18 @@
+Package: lymphomaSurvivalPipeline
+Title: R tools for a pipeline to analyze lymphoma survival data based on RNAseq
+Version: 0.0.0.9000
+Authors@R: 
+    person("Lukas", "Gessl", , "lukas.gessl@icloud.com", role = c("aut", "cre"))
+Description: This package provides tools to train classifiers predicting 
+    progression-free survival for lymphoma patients. It makes integrating
+    new data sets, new classes of models and new features easy. It prepares
+    data (which is expected to have a certain format) for training models
+    and assesses each model, most importantly in terms of prevalence versus
+    precision.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
