@@ -1,7 +1,7 @@
 test_that("generate_predictor works", {
 
   expr_df <- matrix(1:12, nrow = 4)
-  pheno_df <- data.frame(
+  pheno_df <- tibble::tibble(
     continuous_var = c(1, 2, 3),
     discrete_var = c("A", "B", "A")
   )
@@ -25,7 +25,7 @@ test_that("generate_predictor works", {
 # Define test cases
 test_that("generate_response works", {
   # Create a sample pheno_tbl
-  pheno_tbl <- data.frame(
+  pheno_tbl <- tibble::tibble(
     pfs_yrs = c(1.5, 2.5, 3.0, 4.0),
     progression = c(0, 1, 0, 0),
     use_column = c("A", "B", "C", "D")
