@@ -20,6 +20,9 @@
 #'  Default is `"expr.csv"`.
 #' @param pheno_fname string. The name of the pheno data .csv inside `directory`.
 #'  Default is `"pheno.csv"`.
+#' @param pfs_leq numeric. Only necessary if model discretizes response (PFS). The value 
+#' of progression-free survival (PFS) above which samples are considered high-risk. 
+#' Default is 2.0.
 #' @details The pheno .csv files holds the samples as rows (with the unique sample names
 #'  in the very first column), the variables as columns. We need at least the columns
 #'  * progression (integer, 0 for censored, 1 for uncensored),
@@ -31,13 +34,15 @@
 #' must be identical and in the same order.
 #' @return A list with two elements, `x` and `y`. `x` is the predictor matrix, `y` is
 #' the respondent matrix with the samples as rows.
+#' @export
 prepare <- function(
     directory,
     model,
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL,
     expr_fname = "expr.csv",
-    pheno_fname = "pheno.csv"
+    pheno_fname = "pheno.csv",
+    pfs_leq = 2.0
 ){
     tbls <- read(
         directory = directory,
@@ -51,11 +56,9 @@ prepare <- function(
         include_from_continuous_pheno = include_from_continuous_pheno,
         include_from_discrete_pheno = include_from_discrete_pheno
     )
-    prepare_model <- switch(model,
-        "cox_lasso_zerosum" = prepare_cox_lasso_zerosum,
-        "lasso_zerosum" = prepare_cox_lasso)
-    y <- generate_respondent(
-        tbls[["pheno"]]
+    y <- generate_response(
+        tbls[["pheno"]],
+        model
     )
     prepare_qc(
         x = x,

@@ -10,7 +10,8 @@ prepare(
   include_from_continuous_pheno = NULL,
   include_from_discrete_pheno = NULL,
   expr_fname = "expr.csv",
-  pheno_fname = "pheno.csv"
+  pheno_fname = "pheno.csv",
+  pfs_leq = 2
 )
 }
 \arguments{
@@ -40,6 +41,10 @@ Default is \code{"expr.csv"}.}
 
 \item{pheno_fname}{string. The name of the pheno data .csv inside \code{directory}.
 Default is \code{"pheno.csv"}.}
+
+\item{pfs_leq}{numeric. Only necessary if model discretizes response (PFS). The value
+of progression-free survival (PFS) above which samples are considered high-risk.
+Default is 2.0.}
 }
 \value{
 A list with two elements, \code{x} and \code{y}. \code{x} is the predictor matrix, \code{y} is
