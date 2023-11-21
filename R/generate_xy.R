@@ -4,17 +4,20 @@ mapper <- list(
 )
 
 generate_predictor <- function(
-    expr_df,
-    pheno_df,
+    expr_mat,
+    pheno_tbl,
     include_from_continuous_pheno,
-    include_from_discrete_pheno
+    include_from_discrete_pheno,
+    gene_id_col = "gene_id"
 ){
-    x <- t(as.matrix(expr_df))
-    bind_continuous <- pheno_df[, include_from_continuous_pheno, drop = FALSE] |> 
+    x <- expr_mat
+    patient_ids <- rownames(expr_mat)
+    bind_continuous <- pheno_tbl[, include_from_continuous_pheno, drop = FALSE] |> 
         as.matrix()
-    bind_discrete <- pheno_df[, include_from_discrete_pheno, drop = FALSE] |>
+    bind_discrete <- pheno_tbl[, include_from_discrete_pheno, drop = FALSE] |>
         tibble_to_binary()
     x <- x |> cbind(bind_continuous, bind_discrete)
+    rownames(x) <- patient_ids
     return(x)
 }
 
@@ -22,7 +25,8 @@ generate_predictor <- function(
 generate_response <- function(
     pheno_tbl,
     model,
-    pfs_leq = 2.0
+    pfs_leq = 2.0,
+    patient_id_col = "patient_id"
 ){
     use <- mapper[[model]]
     y <- NULL
@@ -30,7 +34,7 @@ generate_response <- function(
         # remove patients consored before pfs_leq
         rm_bool <- (pheno_tbl[["pfs_yrs"]] <= pfs_leq) & (pheno_tbl[["progression"]] == 0)
         y <- pheno_tbl[["pfs_yrs"]] <= pfs_leq
-        names(y) <- rownames(pheno_tbl)
+        names(y) <- pheno_tbl[[patient_id_col]]
         y <- y[!rm_bool]
     } else {
         y <- pheno_tbl[, use]
