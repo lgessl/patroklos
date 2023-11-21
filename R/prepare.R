@@ -48,14 +48,17 @@ prepare <- function(
         gene_id_col = gene_id_col
     )
     x <- generate_predictor(
-        expr_df = tbls[["expr"]],
-        pheno_df = tbls[["pheno"]],
+        expr_mat = tbls[["expr"]],
+        pheno_tbl = tbls[["pheno"]],
         include_from_continuous_pheno = include_from_continuous_pheno,
-        include_from_discrete_pheno = include_from_discrete_pheno
+        include_from_discrete_pheno = include_from_discrete_pheno,
+        gene_id_col = gene_id_col
     )
     y <- generate_response(
         tbls[["pheno"]],
-        model
+        model,
+        pfs_leq = pfs_leq,
+        patient_id_col = patient_id_col
     )
     prepare_qc(
         x = x,
