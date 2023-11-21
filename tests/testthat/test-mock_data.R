@@ -11,6 +11,9 @@ test_that("mock_data_from_existing returns correct output", {
     save_suffix <- "mock"
     cleanup <- FALSE
 
+    print(directory)
+    print(list.dirs())
+
     # generate mock real data (if not there yet)
     if(!file.exists(file.path(directory, expr_fname)) ||
         !file.exists(file.path(directory, pheno_fname))){    
