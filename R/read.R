@@ -45,14 +45,14 @@ read <- function(
     # expression to matrix
     gene_names <- res[["expr"]][[gene_id_col]]
     expr_mat <- expr_tbl |>
-        dplyr::select(!all_of(gene_id_col)) |>
+        dplyr::select(!dplyr::all_of(gene_id_col)) |>
         as.matrix() |> 
         t()
     colnames(expr_mat) <- gene_names
 
     # pheno: move patient ids into first column
     pheno_tbl <- pheno_tbl |>
-        dplyr::relocate(all_of(patient_id_col))
+        dplyr::relocate(dplyr::all_of(patient_id_col))
 
     return(res)
 }
