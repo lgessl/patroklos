@@ -11,12 +11,14 @@ prepare(
   include_from_discrete_pheno = NULL,
   expr_fname = "expr.csv",
   pheno_fname = "pheno.csv",
+  patient_id_col = "patient_id",
+  gene_id_col = "gene_id",
   pfs_leq = 2
 )
 }
 \arguments{
-\item{directory}{string. The directory where both expression and
-pheno data files lie.}
+\item{directory}{string. The directory where both expression and pheno csv
+files lie.}
 
 \item{model}{string. For which model to prepare. One of
 \itemize{
@@ -42,28 +44,35 @@ Default is \code{"expr.csv"}.}
 \item{pheno_fname}{string. The name of the pheno data .csv inside \code{directory}.
 Default is \code{"pheno.csv"}.}
 
+\item{patient_id_col}{string. The name of the column in the pheno data file
+that holds the patient identifiers. Default is \code{"patient_id"}.}
+
+\item{gene_id_col}{string. The name of the column in the expression data file
+that holds the gene identifiers. Default is \code{"gene_id"}.}
+
 \item{pfs_leq}{numeric. Only necessary if model discretizes response (PFS). The value
 of progression-free survival (PFS) above which samples are considered high-risk.
 Default is 2.0.}
 }
 \value{
 A list with two elements, \code{x} and \code{y}. \code{x} is the predictor matrix, \code{y} is
-the respondent matrix with the samples as rows.
+the response matrix with the samples as rows.
 }
 \description{
 Read data from files, generate the predictor and
 respondent matirx and control quality.
 }
 \details{
-The pheno .csv files holds the samples as rows (with the unique sample names
-in the very first column), the variables as columns. We need at least the columns
+The pheno csv file holds the samples as rows (with the unique sample names
+in the column \code{patient_id}), the variables as columns. We need at least the columns
 \itemize{
 \item progression (integer, 0 for censored, 1 for uncensored),
 \item pfs_yrs (integer, the time in years to progression or censoring),
 \item \code{ìnclude_from_continuous_pheno},
-\item \code{include_from_discrete_pheno}.
-The expr .csv file holds the genes as rows (with the unique gene names in the very
-first column), the samples as columns. The sample names in pheno and expression files
+\item \code{include_from_discrete_pheno} and
+\item \code{patient_id_col}.
+The expr csv file holds the genes as rows (with the gene ids in a row called
+\code{gene_id_col}), the samples as columns. The sample names in pheno and expression files
 must be identical and in the same order.
 }
 }

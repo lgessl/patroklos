@@ -1,8 +1,7 @@
 #' @title Prepare data for model fitting and predicting
 #' @description Read data from files, generate the predictor and
 #' respondent matirx and control quality.
-#' @param directory string. The directory where both expression and 
-#'  pheno data files lie.
+#' @inherit read
 #' @param model string. For which model to prepare. One of
 #'  * `"cox_lasso_zerosum"` (Cox proportional hazards with LASSO reularization 
 #'  and zero-sum constraint)
@@ -20,20 +19,15 @@
 #'  Default is `"expr.csv"`.
 #' @param pheno_fname string. The name of the pheno data .csv inside `directory`.
 #'  Default is `"pheno.csv"`.
+#' @param patient_id_col string. The name of the column in the pheno data file
+#' that holds the patient identifiers. Default is `"patient_id"`.
+#' @param gene_id_col string. The name of the column in the expression data file
+#' that holds the gene identifiers. Default is `"gene_id"`.
 #' @param pfs_leq numeric. Only necessary if model discretizes response (PFS). The value 
 #' of progression-free survival (PFS) above which samples are considered high-risk. 
 #' Default is 2.0.
-#' @details The pheno .csv files holds the samples as rows (with the unique sample names
-#'  in the very first column), the variables as columns. We need at least the columns
-#'  * progression (integer, 0 for censored, 1 for uncensored),
-#'  * pfs_yrs (integer, the time in years to progression or censoring),
-#'  * `ìnclude_from_continuous_pheno`,
-#'  * `include_from_discrete_pheno`.
-#' The expr .csv file holds the genes as rows (with the unique gene names in the very
-#' first column), the samples as columns. The sample names in pheno and expression files
-#' must be identical and in the same order.
 #' @return A list with two elements, `x` and `y`. `x` is the predictor matrix, `y` is
-#' the respondent matrix with the samples as rows.
+#' the response matrix with the samples as rows.
 #' @export
 prepare <- function(
     directory,
@@ -42,13 +36,16 @@ prepare <- function(
     include_from_discrete_pheno = NULL,
     expr_fname = "expr.csv",
     pheno_fname = "pheno.csv",
+    patient_id_col = "patient_id",
+    gene_id_col = "gene_id",
     pfs_leq = 2.0
 ){
     tbls <- read(
         directory = directory,
-        model = model,
-        include_from_continuous_pheno = include_from_continuous_pheno,
-        include_from_discrete_pheno = include_from_discrete_pheno
+        expr_fname = expr_fname,
+        pheno_fname = pheno_fname,
+        patient_id_col = patient_id_col,
+        gene_id_col = gene_id_col
     )
     x <- generate_predictor(
         expr_df = tbls[["expr"]],
