@@ -28,6 +28,15 @@
 #' Default is 2.0.
 #' @return A list with two elements, `x` and `y`. `x` is the predictor matrix, `y` is
 #' the response matrix with the samples as rows.
+#' @details The pheno csv file holds the samples as rows, the variables as columns. 
+#' We need at least the columns
+#'  * progression (integer, 0 for censored, 1 for uncensored),
+#'  * pfs_yrs (integer, the time in years to progression or censoring),
+#'  * `ìnclude_from_continuous_pheno`,
+#'  * `include_from_discrete_pheno`, and
+#'  * `patient_id_col` with *unique* patient identifiers.
+#' The expr csv file holds the genes as rows (with *unique* gene ids in a row called 
+#' `gene_id_col`), the samples as columns.
 #' @export
 prepare <- function(
     directory,
@@ -40,7 +49,7 @@ prepare <- function(
     gene_id_col = "gene_id",
     pfs_leq = 2.0
 ){
-    tbls <- read(
+    data <- read(
         directory = directory,
         expr_fname = expr_fname,
         pheno_fname = pheno_fname,
@@ -48,8 +57,8 @@ prepare <- function(
         gene_id_col = gene_id_col
     )
     x <- generate_predictor(
-        expr_mat = tbls[["expr"]],
-        pheno_tbl = tbls[["pheno"]],
+        expr_mat = data[["expr"]],
+        pheno_tbl = data[["pheno"]],
         include_from_continuous_pheno = include_from_continuous_pheno,
         include_from_discrete_pheno = include_from_discrete_pheno,
         gene_id_col = gene_id_col
@@ -60,7 +69,11 @@ prepare <- function(
         pfs_leq = pfs_leq,
         patient_id_col = patient_id_col
     )
-    prepare_qc(
+    x_y <- ensure_available(
+        x = x,
+        y = y
+    )
+    qc_prepare(
         x = x,
         y = y
     )
