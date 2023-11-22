@@ -31,3 +31,8 @@ tibble_to_binary <- function(
     colnames(bin_matrix) <- bin_cnames
     return(bin_matrix)
 }
+
+
+elements_unique <- function(x){
+    return(length(unique(x)) == length(x))
+}
