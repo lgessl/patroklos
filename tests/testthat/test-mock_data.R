@@ -44,9 +44,8 @@ test_that("mock_data_from_existing returns correct output", {
     expect_identical(length(result), 2L)
     expect_identical(dim(expr_tbl), c(n_genes, n_samples+1L))
     expect_equal(dim(pheno_tbl)[1], n_samples)
-    expect_true(setequal(
-        colnames(expr_tbl)[2:ncol(expr_tbl)], 
-        pheno_tbl[[patient_id_col]]
+    expect_true(all(
+        colnames(expr_tbl)[2:ncol(expr_tbl)] == pheno_tbl[[patient_id_col]]
     ))
 
     # clean up

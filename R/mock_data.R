@@ -23,6 +23,7 @@
 #' @return A list with two tibbles, `expr` and `pheno`, the subset expression
 #' and pheno data. If `save` is `TRUE`, the subset data will be saved as csv
 #' files in the format desired by `read`.
+#' @export
 mock_data_from_existing <- function(
     directory,
     n_samples = 50,
@@ -59,6 +60,9 @@ mock_data_from_existing <- function(
         c(gene_id_col, patients_sub) # first column are gene names
         ]
     pheno_tbl <- pheno_tbl[pheno_tbl[[patient_id_col]] %in% patients_sub, ]
+    # sort by sample ids
+    expr_tbl <- expr_tbl[, order(colnames(expr_tbl))]
+    pheno_tbl <- pheno_tbl[order(pheno_tbl[[patient_id_col]]), ]
     # save
     if(save){
         expr_fname <- stringr::str_replace(
