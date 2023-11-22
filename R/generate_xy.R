@@ -12,12 +12,14 @@
 #' @param include_from_discrete_pheno vector of strings. The names of the discrete
 #' variables in `pheno_tbl` to be include in the predictor matrix. A discrete
 #' variable with n levels will be converted to n-1 dummy binary variables. Default is
+#' `NULL`, which means no discrete pheno variables will be included.
+#' @return A numeric matrix with patients as rows and variables as columns.
+#' @export
 generate_predictor <- function(
     expr_mat,
     pheno_tbl,
     include_from_continuous_pheno = NULL,
-    include_from_discrete_pheno = NULL,
-    gene_id_col = "gene_id"
+    include_from_discrete_pheno = NULL
 ){
     x <- expr_mat
     patient_ids <- rownames(expr_mat) # store for later
@@ -50,7 +52,21 @@ response_mapper <- list(
     "lasso_zerosum" = "pfs_leq"
 )
 
-# generate the response matrix or vector in a model-specific way
+#' @title Generate the response matrix in a model-specific way
+#' @description Generate the numeric response matrix from the pheno data for a
+#' certain model
+#' @param pheno_tbl tibble. The pheno data, with patients as rows and variables as
+#' columns.
+#' @param model string. The name of the model. One of `c("lasso-zerosum", "cox-lasso-zerosum")`.
+#' @param pfs_leq numeric. Categorize patients with progression-free survival (PFS) less than 
+#' or equal `pfs_leq` as high-risk. Only necessary if model discretizes response (PFS). 
+#' Default is 2.0.
+#' @param patient_id_col string. The name of the column in the pheno data file that holds 
+#' patient identifiers. Default is `"patient_id"`.
+#' @param pfs_col string. The name of the column in the pheno data file that holds the
+#' progression-free survival (PFS) data. Default is `"pfs_years"`.
+#' @return A numeric matrix with patients as rows and variables as columns.
+#' @export
 generate_response <- function(
     pheno_tbl,
     model,
