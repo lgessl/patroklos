@@ -33,16 +33,7 @@ Read expression data into a matrix and pheno data into a tibble.
 Both will hold patients as rows.
 }
 \details{
-The pheno csv file holds the samples as rows (with the unique sample names
-in the column \code{patient_id}), the variables as columns. We need at least the columns
-\itemize{
-\item progression (integer, 0 for censored, 1 for uncensored),
-\item pfs_yrs (integer, the time in years to progression or censoring),
-\item \code{ìnclude_from_continuous_pheno},
-\item \code{include_from_discrete_pheno} and
-\item \code{patient_id_col}.
-The expr csv file holds the genes as rows (with the gene ids in a row called
-\code{gene_id_col}), the samples as columns. The sample names in pheno and expression files
-must be identical and in the same order.
-}
+The pheno csv file holds the samples as rows (with \emph{unique} sample ids in a
+column called \verb{patient_id_col``), the variables as columns. The expr csv file holds  the genes as rows (with *unique* gene ids in a column called }gene_id_col`), the
+samples as columns.
 }

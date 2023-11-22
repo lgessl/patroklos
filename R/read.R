@@ -15,16 +15,11 @@
 #' `expr` holds the expression data, with patient ids as row names and gene ids as
 #' column names. I.e., we transpose the expression data. `pheno` holds the pheno data, 
 #' with the patient ids in the first column `patient_id_col`.
-#' @details The pheno csv file holds the samples as rows (with the unique sample names
-#'  in the column `patient_id`), the variables as columns. We need at least the columns
-#'  * progression (integer, 0 for censored, 1 for uncensored),
-#'  * pfs_yrs (integer, the time in years to progression or censoring),
-#'  * `ìnclude_from_continuous_pheno`,
-#'  * `include_from_discrete_pheno` and
-#'  * `patient_id_col`.
-#' The expr csv file holds the genes as rows (with the gene ids in a row called 
-#' `gene_id_col`), the samples as columns. The sample names in pheno and expression files
-#' must be identical and in the same order.
+#' @details The pheno csv file holds the samples as rows (with *unique* sample ids in a
+#' column called `patient_id_col``), the variables as columns. The expr csv file holds 
+#' the genes as rows (with *unique* gene ids in a column called `gene_id_col`), the 
+#' samples as columns.
+#' @export
 read <- function(
     directory,
     expr_fname,
@@ -34,16 +29,27 @@ read <- function(
 ){
     # read
     fnames <- c(expr_fname, pheno_fname)
-    res <- list("expr" = NULL, "pheno" = NULL)
+    tbls <- list("expr" = NULL, "pheno" = NULL)
     for (i in 1:length(fnames)){
         full_path <- file.path(directory, fnames[i])
-        res[[i]] <- readr::read_csv(full_path, show_col_types = FALSE)
+        tbls[[i]] <- readr::read_csv(full_path, show_col_types = FALSE)
     }
-    expr_tbl <- res[["expr"]]
-    pheno_tbl <- res[["pheno"]]
+    expr_tbl <- tbls[["expr_mat"]]
+    pheno_tbl <- tbls[["pheno"]]
+
+    # check if identifier columns are there
+    if(is.null(expr_tbl[[gene_id_col]])){
+        stop("There is no column named ", gene_id_col, " in ", expr_fname)
+    }
+    if(is.null(pheno_tbl[[patient_id_col]])){
+        stop("There is no column named ", patient_id_col, " in ", pheno_fname)
+    }
 
     # expression to matrix
-    gene_names <- res[["expr"]][[gene_id_col]]
+    gene_names <- tbls[["expr"]][[gene_id_col]]
+    if(!elements_unique(gene_names)){
+        stop("Column ", gene_id_col, " in ", expr_fname, " holds duplicate entries.")
+    }
     expr_mat <- expr_tbl |>
         dplyr::select(!dplyr::all_of(gene_id_col)) |>
         as.matrix() |> 
@@ -51,8 +57,16 @@ read <- function(
     colnames(expr_mat) <- gene_names
 
     # pheno: move patient ids into first column
+    patient_ids <- pheno_tbl[[patient_id_col]]
+    if(!elements_unique(patient_ids)){
+        stop("Column ", patient_id_col, " in ", pheno_fname, " holds duplicate entries.")
+    }
     pheno_tbl <- pheno_tbl |>
         dplyr::relocate(dplyr::all_of(patient_id_col))
 
+    res <- list(
+        "expr_mat" = expr_mat, 
+        "pheno_tbl" = pheno_tbl
+        )
     return(res)
 }
