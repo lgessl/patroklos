@@ -4,6 +4,7 @@ test_that("generate_predictor works", {
   rownames(expr_mat) <- stringr::str_c("patient_", 1:3)
   colnames(expr_mat) <- stringr::str_c("gene_", 1:4)
   pheno_df <- tibble::tibble(
+    patient_id = rownames(expr_mat),
     continuous_var = c(1, 2, 3), # +1 column
     discrete_var = c("A", "B", "A") # +1 column
   )
@@ -12,8 +13,9 @@ test_that("generate_predictor works", {
   
   # Test case 1: include both continuous and discrete pheno variables
   x <- generate_predictor(
-    expr_mat,
-    pheno_df,
+    expr_mat = expr_mat,
+    pheno_tbl = pheno_df,
+    patient_id_col = "patient_id",
     include_from_continuous_pheno,
     include_from_discrete_pheno
   )
@@ -28,8 +30,9 @@ test_that("generate_predictor works", {
 
   # Test case 2: include only continuous pheno variables
   x <- generate_predictor(
-    expr_mat,
-    pheno_df,
+    expr_mat = expr_mat,
+    pheno_tbl = pheno_df,
+    patient_id_col = "patient_id",
     include_from_continuous_pheno,
     NULL
   )
@@ -44,8 +47,9 @@ test_that("generate_predictor works", {
 
   # Test case 3: include only discrete pheno variables
   x <- generate_predictor(
-    expr_mat,
-    pheno_df,
+    expr_mat = expr_mat,
+    pheno_tbl = pheno_df,
+    patient_id_col = "patient_id",
     NULL,
     include_from_discrete_pheno
   )
@@ -60,8 +64,9 @@ test_that("generate_predictor works", {
 
   # Test case 4: include no pheno variables
   x <- generate_predictor(
-    expr_mat,
-    pheno_df,
+    expr_mat = expr_mat,
+    pheno_tbl = pheno_df,
+    patient_id_col = "patient_id",
     NULL,
     NULL
   )
@@ -85,9 +90,10 @@ test_that("generate_response works", {
   model <- "lasso_zerosum"
   pfs_leq <- 2.0
   y <- generate_response(pheno_tbl, model, pfs_leq, pfs_col = "pfs_yrs")
-  expect_identical(dim(y), c(3L, 1L))
-  expect_identical(rownames(y), c("2", "3", "4"))
-  expect_identical(colnames(y), "pfs_leq_2")
+  y_expected <- matrix(c(NA, 0, 0, 0), ncol = 1)
+  rownames(y_expected) <- pheno_tbl[["patient_id"]]
+  colnames(y_expected) <- "pfs_leq_2"
+  expect_equal(y, y_expected)
   expect_type(y, "double")
   
   # Test case 2: model == "cox_lasso_zerosum"

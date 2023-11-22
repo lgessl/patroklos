@@ -18,25 +18,33 @@
 generate_predictor <- function(
     expr_mat,
     pheno_tbl,
+    patient_id_col,
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL
 ){
     x <- expr_mat
     patient_ids <- rownames(expr_mat) # store for later
+    bind_continuous <- NULL
+    bind_discrete <- NULL
+
+    check_consistent_patient_ids(
+        stage = "before_generate_predictor", 
+        expr = expr_mat, 
+        pheno = pheno_tbl,
+        patient_id_col = patient_id_col
+    )
 
     # continuous pheno first
     if(!is.null(include_from_continuous_pheno)){
+        check_tbl_columns_exist(pheno_tbl, "pheno_tbl", include_from_continuous_pheno)
         bind_continuous <- pheno_tbl[, include_from_continuous_pheno, drop = FALSE] |> 
             as.matrix()
-    } else {
-        bind_continuous <- NULL
     }
     # discrete pheno second
     if(!is.null(include_from_discrete_pheno)){
+        check_tbl_columns_exist(pheno_tbl, "pheno_tbl", include_from_discrete_pheno)
         bind_discrete <- pheno_tbl[, include_from_discrete_pheno, drop = FALSE] |>
             tibble_to_binary()
-    } else {
-        bind_discrete <- NULL
     }
 
     # combine into numeric matrix, the predictor matrix    
@@ -78,18 +86,16 @@ generate_response <- function(
     y <- NULL
     if(length(use) == 1 && use == "pfs_leq"){ # lasso-zerosum
         # remove patients consored before pfs_leq
-        rm_bool <- (pheno_tbl[[pfs_col]] <= pfs_leq) & (pheno_tbl[["progression"]] == 0)
+        na_bool <- (pheno_tbl[[pfs_col]] <= pfs_leq) & (pheno_tbl[["progression"]] == 0)
         y <- pheno_tbl[[pfs_col]] <= pfs_leq
         y <- as.numeric(y)
         dim(y) <- c(length(y), 1)
         rownames(y) <- pheno_tbl[[patient_id_col]]
         colnames(y) <- stringr::str_c("pfs_leq_", round(pfs_leq, 1))
-        y <- y[!rm_bool, , drop = FALSE]
+        y[na_bool, ] <- NA
     } else { # cox-lasso-zerosum
         y <- pheno_tbl[, use] |> as.matrix()
         rownames(y) <- pheno_tbl[[patient_id_col]]
     }
     return(y)
 }
-
-

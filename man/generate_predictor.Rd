@@ -7,6 +7,7 @@
 generate_predictor(
   expr_mat,
   pheno_tbl,
+  patient_id_col,
   include_from_continuous_pheno = NULL,
   include_from_discrete_pheno = NULL
 )
