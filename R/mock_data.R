@@ -43,6 +43,7 @@ mock_data_from_existing <- function(
         file.path(directory, pheno_fname),
         show_col_types = FALSE
     )
+
     # randomly pick
     patients_sub <- sample(
         pheno_tbl[[patient_id_col]],
@@ -54,6 +55,7 @@ mock_data_from_existing <- function(
         size = n_genes,
         replace = FALSE
         )
+
     # subset
     expr_tbl <- expr_tbl[
         expr_tbl[[gene_id_col]] %in% genes_sub,
@@ -63,18 +65,20 @@ mock_data_from_existing <- function(
     # sort by sample ids
     expr_tbl <- expr_tbl[, order(colnames(expr_tbl))]
     pheno_tbl <- pheno_tbl[order(pheno_tbl[[patient_id_col]]), ]
+
     # save
+    # infer new file names 
+    expr_fname <- stringr::str_replace(
+        expr_fname, 
+        ".csv", 
+        stringr::str_c("_", save_suffix, ".csv")
+    )
+    pheno_fname <- stringr::str_replace(
+        pheno_fname, 
+        ".csv", 
+        stringr::str_c("_", save_suffix, ".csv")
+    )
     if(save){
-        expr_fname <- stringr::str_replace(
-            expr_fname, 
-            ".csv", 
-            stringr::str_c("_", save_suffix, ".csv")
-        )
-        pheno_fname <- stringr::str_replace(
-            pheno_fname, 
-            ".csv", 
-            stringr::str_c("_", save_suffix, ".csv")
-        )
         readr::write_csv(
             expr_tbl, 
             file.path(directory, expr_fname)
@@ -84,6 +88,10 @@ mock_data_from_existing <- function(
             file.path(directory, pheno_fname)
         )
     }
-    res <- list("expr" = expr_tbl, "pheno" = pheno_tbl)
+    res <- list(
+        "expr" = expr_tbl, 
+        "pheno" = pheno_tbl, 
+        "file_names" = c(expr_fname, pheno_fname)
+    )
     return(res)
 }
