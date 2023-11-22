@@ -1,43 +1,79 @@
-mapper <- list(
-    "cox_lasso_zerosum" = c("pfs_yrs", "progression"),
-    "lasso_zerosum" = "pfs_leq"
-)
-
+#' @title Generate the predictor matrix in a model-specific way
+#' @description Generate the numeric predictor matrix from the expression and
+#' (possibly) pheno data for a certain model
+#' @param expr_mat numeric matrix. The expression data, with patients as rows
+#' and genes as columns.
+#' @param pheno_tbl tibble. The pheno data, with patients as rows and variables as
+#' columns.
+#' @param include_from_continuous_pheno vector of strings. The names of the continuous 
+#' variables in `pheno_tbl to include in the predictor matrix. The values
+#' will be coerced to numeric. Default is `NULL`, which means no continuous pheno
+#' variables will be included.
+#' @param include_from_discrete_pheno vector of strings. The names of the discrete
+#' variables in `pheno_tbl` to be include in the predictor matrix. A discrete
+#' variable with n levels will be converted to n-1 dummy binary variables. Default is
 generate_predictor <- function(
     expr_mat,
     pheno_tbl,
-    include_from_continuous_pheno,
-    include_from_discrete_pheno,
+    include_from_continuous_pheno = NULL,
+    include_from_discrete_pheno = NULL,
     gene_id_col = "gene_id"
 ){
     x <- expr_mat
-    patient_ids <- rownames(expr_mat)
-    bind_continuous <- pheno_tbl[, include_from_continuous_pheno, drop = FALSE] |> 
-        as.matrix()
-    bind_discrete <- pheno_tbl[, include_from_discrete_pheno, drop = FALSE] |>
-        tibble_to_binary()
+    patient_ids <- rownames(expr_mat) # store for later
+
+    # continuous pheno first
+    if(!is.null(include_from_continuous_pheno)){
+        bind_continuous <- pheno_tbl[, include_from_continuous_pheno, drop = FALSE] |> 
+            as.matrix()
+    } else {
+        bind_continuous <- NULL
+    }
+    # discrete pheno second
+    if(!is.null(include_from_discrete_pheno)){
+        bind_discrete <- pheno_tbl[, include_from_discrete_pheno, drop = FALSE] |>
+            tibble_to_binary()
+    } else {
+        bind_discrete <- NULL
+    }
+
+    # combine into numeric matrix, the predictor matrix    
     x <- x |> cbind(bind_continuous, bind_discrete)
     rownames(x) <- patient_ids
+
     return(x)
 }
+
+
+response_mapper <- list(
+    "cox_lasso_zerosum" = c("pfs_yrs", "progression"),
+    "lasso_zerosum" = "pfs_leq"
+)
 
 # generate the response matrix or vector in a model-specific way
 generate_response <- function(
     pheno_tbl,
     model,
     pfs_leq = 2.0,
-    patient_id_col = "patient_id"
+    patient_id_col = "patient_id",
+    pfs_col = "pfs_years"
 ){
-    use <- mapper[[model]]
+    use <- response_mapper[[model]]
     y <- NULL
-    if(length(use) == 1 && use == "pfs_leq"){
+    if(length(use) == 1 && use == "pfs_leq"){ # lasso-zerosum
         # remove patients consored before pfs_leq
-        rm_bool <- (pheno_tbl[["pfs_yrs"]] <= pfs_leq) & (pheno_tbl[["progression"]] == 0)
-        y <- pheno_tbl[["pfs_yrs"]] <= pfs_leq
-        names(y) <- pheno_tbl[[patient_id_col]]
-        y <- y[!rm_bool]
-    } else {
-        y <- pheno_tbl[, use]
+        rm_bool <- (pheno_tbl[[pfs_col]] <= pfs_leq) & (pheno_tbl[["progression"]] == 0)
+        y <- pheno_tbl[[pfs_col]] <= pfs_leq
+        y <- as.numeric(y)
+        dim(y) <- c(length(y), 1)
+        rownames(y) <- pheno_tbl[[patient_id_col]]
+        colnames(y) <- stringr::str_c("pfs_leq_", round(pfs_leq, 1))
+        y <- y[!rm_bool, , drop = FALSE]
+    } else { # cox-lasso-zerosum
+        y <- pheno_tbl[, use] |> as.matrix()
+        rownames(y) <- pheno_tbl[[patient_id_col]]
     }
     return(y)
 }
+
+
