@@ -1,7 +1,8 @@
 test_that("generate_predictor works", {
 
-  expr_mat <- matrix(1:12, nrow = 3, ncol = 4)
+  expr_mat <- matrix(seq(1, 12, by = 1.), nrow = 3, ncol = 4)
   rownames(expr_mat) <- stringr::str_c("patient_", 1:3)
+  colnames(expr_mat) <- stringr::str_c("gene_", 1:4)
   pheno_df <- tibble::tibble(
     continuous_var = c(1, 2, 3), # +1 column
     discrete_var = c("A", "B", "A") # +1 column
@@ -9,21 +10,65 @@ test_that("generate_predictor works", {
   include_from_continuous_pheno <- "continuous_var"
   include_from_discrete_pheno <- "discrete_var"
   
+  # Test case 1: include both continuous and discrete pheno variables
   x <- generate_predictor(
     expr_mat,
     pheno_df,
     include_from_continuous_pheno,
     include_from_discrete_pheno
   )
-  
   expect_identical(dim(x), c(3L, 6L))
   expect_identical(
     colnames(x)[5:6], 
     c("continuous_var", "discrete_var_B")
   )
-  expect_identical(
-    rownames(x), rownames(expr_mat)
+  expect_identical(colnames(x)[1:4], colnames(expr_mat))
+  expect_identical(rownames(x), rownames(expr_mat))
+  expect_type(x, "double")
+
+  # Test case 2: include only continuous pheno variables
+  x <- generate_predictor(
+    expr_mat,
+    pheno_df,
+    include_from_continuous_pheno,
+    NULL
   )
+  expect_identical(dim(x), c(3L, 5L))
+  expect_identical(
+    colnames(x)[5], 
+    "continuous_var"
+  )
+  expect_identical(colnames(x)[1:4], colnames(expr_mat))
+  expect_identical(rownames(x), rownames(expr_mat))
+  expect_type(x, "double")
+
+  # Test case 3: include only discrete pheno variables
+  x <- generate_predictor(
+    expr_mat,
+    pheno_df,
+    NULL,
+    include_from_discrete_pheno
+  )
+  expect_identical(dim(x), c(3L, 5L))
+  expect_identical(
+    colnames(x)[5], 
+    "discrete_var_B"
+  )
+  expect_identical(colnames(x)[1:4], colnames(expr_mat))
+  expect_identical(rownames(x), rownames(expr_mat))
+  expect_type(x, "double")
+
+  # Test case 4: include no pheno variables
+  x <- generate_predictor(
+    expr_mat,
+    pheno_df,
+    NULL,
+    NULL
+  )
+  expect_identical(dim(x), c(3L, 4L))
+  expect_identical(colnames(x), colnames(expr_mat))
+  expect_identical(rownames(x), rownames(expr_mat))
+  expect_type(x, "double")
 })
 
 # Define test cases
@@ -39,14 +84,17 @@ test_that("generate_response works", {
   # Test case 1: model == "lasso_zerosum"
   model <- "lasso_zerosum"
   pfs_leq <- 2.0
-  expected <- rep(FALSE, 3)
-  names(expected) <- c("2", "3", "4")
-  output <- generate_response(pheno_tbl, model, pfs_leq)
-  expect_equal(output, expected)
+  y <- generate_response(pheno_tbl, model, pfs_leq, pfs_col = "pfs_yrs")
+  expect_identical(dim(y), c(3L, 1L))
+  expect_identical(rownames(y), c("2", "3", "4"))
+  expect_identical(colnames(y), "pfs_leq_2")
+  expect_type(y, "double")
   
   # Test case 2: model == "cox_lasso_zerosum"
   model <- "cox_lasso_zerosum"
-  expected <- pheno_tbl[, c("pfs_yrs", "progression")]
-  output <- generate_response(pheno_tbl, model)
-  expect_equal(output, expected)
+  y <- generate_response(pheno_tbl, model, pfs_col = "pfs_yrs")
+  expect_equal(rownames(y), as.character(pheno_tbl[["patient_id"]]))
+  expect_equal(dim(y), c(4L, 2L))
+  expect_equal(colnames(y), c("pfs_yrs", "progression"))
+  expect_type(y, "double")
 })
