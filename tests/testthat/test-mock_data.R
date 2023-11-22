@@ -9,10 +9,7 @@ test_that("mock_data_from_existing returns correct output", {
     gene_id_col <- "gene_id"
     save <- TRUE
     save_suffix <- "mock"
-    cleanup <- FALSE
-
-    print(directory)
-    print(list.dirs())
+    cleanup <- TRUE
 
     # generate mock real data (if not there yet)
     if(!file.exists(file.path(directory, expr_fname)) ||
