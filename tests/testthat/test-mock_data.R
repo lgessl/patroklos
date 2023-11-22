@@ -51,17 +51,9 @@ test_that("mock_data_from_existing returns correct output", {
 
     # clean up
     if(cleanup){
-        expr_fname <- stringr::str_replace(
-            expr_fname, 
-            ".csv", 
-            stringr::str_c("_", save_suffix, ".csv")
-        )
-        pheno_fname <- stringr::str_replace(
-            pheno_fname, 
-            ".csv", 
-            stringr::str_c("_", save_suffix, ".csv")
-        )
-        file.remove(file.path(directory, expr_fname))
-        file.remove(file.path(directory, pheno_fname))
+        for(i in 1:2){
+            file <- file.path(directory, result[["file_names"]][i])
+            file.remove(file)
+        }
     }
 })
