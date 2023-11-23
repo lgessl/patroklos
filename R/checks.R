@@ -50,3 +50,13 @@ check_consistent_patient_ids <- function(
         stop("Patient ids in expression and pheno data are not identical.")
     }
 }
+
+
+check_available <- function(
+    x,
+    y
+){
+    if(any(is.na(x)) || any(is.na(y))){
+        stop("There are missing values in the predictor or response matrix.")
+    }
+}
