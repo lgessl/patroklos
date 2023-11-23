@@ -19,6 +19,9 @@ and genes as columns.}
 \item{pheno_tbl}{tibble. The pheno data, with patients as rows and variables as
 columns.}
 
+\item{patient_id_col}{string. The name of the column in \code{pheno_tbl} that holds
+the patient identifiers. Default is \code{"patient_id"}.}
+
 \item{include_from_continuous_pheno}{vector of strings. The names of the continuous
 variables in \verb{pheno_tbl to include in the predictor matrix. The values will be coerced to numeric. Default is }NULL`, which means no continuous pheno
 variables will be included.}
