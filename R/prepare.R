@@ -60,11 +60,10 @@ prepare <- function(
         expr_mat = data[["expr"]],
         pheno_tbl = data[["pheno"]],
         include_from_continuous_pheno = include_from_continuous_pheno,
-        include_from_discrete_pheno = include_from_discrete_pheno,
-        gene_id_col = gene_id_col
+        include_from_discrete_pheno = include_from_discrete_pheno
     )
     y <- generate_response(
-        tbls[["pheno"]],
+        data[["pheno"]],
         model,
         pfs_leq = pfs_leq,
         patient_id_col = patient_id_col
@@ -74,8 +73,8 @@ prepare <- function(
         y = y
     )
     qc_prepare(
-        x = x,
-        y = y
+        x = x_y[["x"]],
+        y = x_y[["y"]]
     )
     return(list("x" = x, "y" = y))
 }
