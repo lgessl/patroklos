@@ -81,7 +81,7 @@ ensure_available <- function(
     )
     x_fully_available <- apply(x, 1, function(row) any(is.na(row)))
     y_fully_available <- apply(y, 1, function(row) any(is.na(row)))
-    x_and_y_fully_available <- x_row_has_na & y_row_has_na
+    x_and_y_fully_available <- x_fully_available & y_fully_available
     x <- x[x_and_y_fully_available, ]
     y <- y[x_and_y_fully_available, ]
     return(list("x" = x, "y" = y))
