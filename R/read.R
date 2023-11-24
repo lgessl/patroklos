@@ -34,7 +34,7 @@ read <- function(
         full_path <- file.path(directory, fnames[i])
         tbls[[i]] <- readr::read_csv(full_path, show_col_types = FALSE)
     }
-    expr_tbl <- tbls[["expr_mat"]]
+    expr_tbl <- tbls[["expr"]]
     pheno_tbl <- tbls[["pheno"]]
 
     # check if identifier columns are there
