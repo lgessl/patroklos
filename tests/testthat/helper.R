@@ -43,29 +43,37 @@ generate_mock_files <- function(
 generate_mock_data <- function(
     n_samples = 10,
     n_genes = 5,
-    patient_id_col = "patient_id"
+    n_na_in_pheno = 3
 ){
     # expression
     expr_mat <- matrix(
         sample(1:100, n_samples*n_genes, replace = TRUE),
-        nrow = n_genes
+        nrow = n_samples
     )
     rownames(expr_mat) <- stringr::str_c("sample_", 1:n_samples)
     colnames(expr_mat) <- stringr::str_c("gene_", 1:n_genes)
 
-    # pheno
-    pheno <- tibble::tibble(.rows = n_samples)
-    pheno[["progression"]] <- sample(
+    # pheno (n_samples x 5 tibble)
+    pheno_tbl <- tibble::tibble(.rows = n_samples)
+    pheno_tbl[["patient_id"]] <- rownames(expr_mat)
+    pheno_tbl[["progression"]] <- sample(
         c(0, 1),
         size = n_samples,
         replace = TRUE
     )
-    pheno[["pfs_yrs"]] <- rnorm(n_samples, 2, 1)
-    pheno[[patient_id_col]] <- rownames(expr_mat)
+    pheno_tbl[["pfs_years"]] <- rnorm(n_samples, 2, 1)
+    pheno_tbl[["discrete_var"]] <- sample(1:3, size = n_samples, replace = TRUE)
+    pheno_tbl[["continuous_var"]] <- rnorm(n_samples, 10, 10)
+    # insert NAs
+    na_rows <- sample(1:n_samples, n_na_in_pheno, replace = TRUE)
+    na_cols <- sample(2:ncol(pheno_tbl), n_na_in_pheno, replace = TRUE)
+    for(i in 1:n_na_in_pheno){
+        pheno_tbl[na_rows[i], na_cols[i]] <- NA
+    }
 
     res <- list(
-        "expr" = expr_tbl,
-        "pheno" = pheno
+        "expr_mat" = expr_mat,
+        "pheno_tbl" = pheno_tbl
     )
     return(res)
 }
