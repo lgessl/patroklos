@@ -53,7 +53,6 @@ test_that("mock_data_from_existing returns correct output", {
     if(cleanup){
         for(i in 1:2){
             file <- file.path(directory, result[["file_names"]][i])
-            print(file)
             file.remove(file)
         }
     }
