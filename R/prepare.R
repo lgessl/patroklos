@@ -1,7 +1,10 @@
 #' @title Prepare data for model fitting and predicting
-#' @description Read data from files, generate the predictor and
-#' respondent matirx and control quality.
-#' @inherit read
+#' @description Provided expression matrix and pheno tibble, generate the 
+#' predictor and respondent matirx model-specifically and check.
+#' @param expr_mat numeric matrix. The expression data, with patients as rows
+#' and genes as columns. The row names must be unique patient identifiers.
+#' @param pheno_tbl tibble. The pheno data, with patients as rows and variables as
+#' columns.
 #' @param model string. For which model to prepare. One of
 #'  * `"cox_lasso_zerosum"` (Cox proportional hazards with LASSO reularization 
 #'  and zero-sum constraint)
@@ -15,66 +18,57 @@
 #'  matrix. A discrete variable with n levels will be converted to n-1 binary
 #'  variables. Default is `NULL`, which means no discrete pheno variables will
 #'  be included.
-#' @param expr_fname string. The name of the expression .csv file inside `directory`.
-#'  Default is `"expr.csv"`.
-#' @param pheno_fname string. The name of the pheno data .csv inside `directory`.
-#'  Default is `"pheno.csv"`.
-#' @param patient_id_col string. The name of the column in the pheno data file
+#' @param patient_id_col string. The name of the column in `pheno_tbl`
 #' that holds the patient identifiers. Default is `"patient_id"`.
-#' @param gene_id_col string. The name of the column in the expression data file
-#' that holds the gene identifiers. Default is `"gene_id"`.
+#' @param pfs_col string. The name of the column in `pheno_tbl` that holds the
+#' progression-free survival (PFS) values. Default is `"pfs_years"`.
+#' @param progression_col string. The name of the column in `pheno_tbl` that
+#' holds the progression status encoded as 1 = progression, 0 = no progression. 
+#' Default is `"progression"`.
 #' @param pfs_leq numeric. Only necessary if model discretizes response (PFS). The value 
 #' of progression-free survival (PFS) above which samples are considered high-risk. 
 #' Default is 2.0.
-#' @return A list with two elements, `x` and `y`. `x` is the predictor matrix, `y` is
-#' the response matrix with the samples as rows.
-#' @details The pheno csv file holds the samples as rows, the variables as columns. 
-#' We need at least the columns
-#'  * progression (integer, 0 for censored, 1 for uncensored),
-#'  * pfs_yrs (integer, the time in years to progression or censoring),
-#'  * `ìnclude_from_continuous_pheno`,
-#'  * `include_from_discrete_pheno`, and
-#'  * `patient_id_col` with *unique* patient identifiers.
-#' The expr csv file holds the genes as rows (with *unique* gene ids in a row called 
-#' `gene_id_col`), the samples as columns.
+#' @return A list with two numeric matrices, `x` and `y`. `x` is the predictor matrix, 
+#' `y` is the response matrix, both ready to for model fitting or predicting.
 #' @export
 prepare <- function(
-    directory,
+    expr_mat,
+    pheno_tbl,
     model,
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL,
-    expr_fname = "expr.csv",
-    pheno_fname = "pheno.csv",
     patient_id_col = "patient_id",
-    gene_id_col = "gene_id",
+    pfs_col = "pfs_years",
+    progression_col = "progression",
     pfs_leq = 2.0
 ){
-    data <- read(
-        directory = directory,
-        expr_fname = expr_fname,
-        pheno_fname = pheno_fname,
-        patient_id_col = patient_id_col,
-        gene_id_col = gene_id_col
-    )
     x <- generate_predictor(
-        expr_mat = data[["expr"]],
-        pheno_tbl = data[["pheno"]],
+        expr_mat = expr_mat,
+        pheno_tbl = pheno_tbl,
+        patient_id_col = patient_id_col,
         include_from_continuous_pheno = include_from_continuous_pheno,
         include_from_discrete_pheno = include_from_discrete_pheno
     )
+
     y <- generate_response(
-        data[["pheno"]],
-        model,
-        pfs_leq = pfs_leq,
-        patient_id_col = patient_id_col
+        pheno_tbl = pheno_tbl,
+        model = model,
+        patient_id_col = patient_id_col,
+        pfs_col = pfs_col,
+        progression_col = progression_col,
+        pfs_leq = pfs_leq
     )
+
     x_y <- ensure_available(
         x = x,
         y = y
     )
+    x <- x_y[["x"]]
+    y <- x_y[["y"]]
+
     qc_prepare(
-        x = x_y[["x"]],
-        y = x_y[["y"]]
+        x = x,
+        y = y
     )
     return(list("x" = x, "y" = y))
 }
