@@ -7,9 +7,10 @@
 generate_response(
   pheno_tbl,
   model,
-  pfs_leq = 2,
   patient_id_col = "patient_id",
-  pfs_col = "pfs_years"
+  pfs_col = "pfs_years",
+  progression_col = "progression",
+  pfs_leq = 2
 )
 }
 \arguments{
@@ -18,15 +19,19 @@ columns.}
 
 \item{model}{string. The name of the model. One of \code{c("lasso-zerosum", "cox-lasso-zerosum")}.}
 
-\item{pfs_leq}{numeric. Categorize patients with progression-free survival (PFS) less than
-or equal \code{pfs_leq} as high-risk. Only necessary if model discretizes response (PFS).
-Default is 2.0.}
-
 \item{patient_id_col}{string. The name of the column in the pheno data file that holds
 patient identifiers. Default is \code{"patient_id"}.}
 
 \item{pfs_col}{string. The name of the column in the pheno data file that holds the
 progression-free survival (PFS) data. Default is \code{"pfs_years"}.}
+
+\item{progression_col}{string. The name of the column in the \code{pheno_tbl} that holds
+the progression status encoded as 1 = progession, 0 = no progression.
+Default is \code{"progression"}.}
+
+\item{pfs_leq}{numeric. Categorize patients with progression-free survival (PFS) less than
+or equal \code{pfs_leq} as high-risk. Only necessary if model discretizes response (PFS).
+Default is 2.0.}
 }
 \value{
 A numeric matrix with patients as rows and variables as columns.

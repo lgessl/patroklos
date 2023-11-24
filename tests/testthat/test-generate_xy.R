@@ -80,27 +80,41 @@ test_that("generate_predictor works", {
 test_that("generate_response works", {
   # Create a sample pheno_tbl
   pheno_tbl <- tibble::tibble(
-    pfs_yrs = c(1.5, 2.5, 3.0, 4.0),
-    progression = c(0, 1, 0, 0),
-    use_column = c("A", "B", "C", "D"),
-    "patient_id" = 1:4
+    "pfs" = c(1.5, 2.5, 3.0, 4.0),
+    "prog" = c(0, 1, 0, 0),
+    "use_column" = c("A", "B", "C", "D"),
+    "patient" = 1:4
   )
   
   # Test case 1: model == "lasso_zerosum"
   model <- "lasso_zerosum"
-  pfs_leq <- 2.0
-  y <- generate_response(pheno_tbl, model, pfs_leq, pfs_col = "pfs_yrs")
+  pfs_leq <- 1.86
+  y <- generate_response(
+    pheno_tbl = pheno_tbl,
+    model = model,
+    patient_id_col = "patient",
+    progression_col = "prog",
+    pfs_col = "pfs",
+    pfs_leq = pfs_leq 
+  )
   y_expected <- matrix(c(NA, 0, 0, 0), ncol = 1)
-  rownames(y_expected) <- pheno_tbl[["patient_id"]]
-  colnames(y_expected) <- "pfs_leq_2"
+  rownames(y_expected) <- pheno_tbl[["patient"]]
+  colnames(y_expected) <- "pfs_leq_1.9"
   expect_equal(y, y_expected)
   expect_type(y, "double")
   
   # Test case 2: model == "cox_lasso_zerosum"
   model <- "cox_lasso_zerosum"
-  y <- generate_response(pheno_tbl, model, pfs_col = "pfs_yrs")
-  expect_equal(rownames(y), as.character(pheno_tbl[["patient_id"]]))
+  y <- generate_response(
+    pheno_tbl = pheno_tbl, 
+    model = model,
+    patient_id_col = "patient", 
+    pfs_col = "pfs",
+    progression_col = "prog",
+    pfs_leq = pfs_leq
+  )
+  expect_equal(rownames(y), as.character(pheno_tbl[["patient"]]))
   expect_equal(dim(y), c(4L, 2L))
-  expect_equal(colnames(y), c("pfs_yrs", "progression"))
+  expect_equal(colnames(y), c("pfs", "prog"))
   expect_type(y, "double")
 })

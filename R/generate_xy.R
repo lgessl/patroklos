@@ -57,47 +57,46 @@ generate_predictor <- function(
 }
 
 
-response_mapper <- list(
-    "cox_lasso_zerosum" = c("pfs_yrs", "progression"),
-    "lasso_zerosum" = "pfs_leq"
-)
-
 #' @title Generate the response matrix in a model-specific way
 #' @description Generate the numeric response matrix from the pheno data for a
 #' certain model
 #' @param pheno_tbl tibble. The pheno data, with patients as rows and variables as
 #' columns.
 #' @param model string. The name of the model. One of `c("lasso-zerosum", "cox-lasso-zerosum")`.
-#' @param pfs_leq numeric. Categorize patients with progression-free survival (PFS) less than 
-#' or equal `pfs_leq` as high-risk. Only necessary if model discretizes response (PFS). 
-#' Default is 2.0.
 #' @param patient_id_col string. The name of the column in the pheno data file that holds 
 #' patient identifiers. Default is `"patient_id"`.
 #' @param pfs_col string. The name of the column in the pheno data file that holds the
 #' progression-free survival (PFS) data. Default is `"pfs_years"`.
+#' @param progression_col string. The name of the column in the `pheno_tbl` that holds
+#' the progression status encoded as 1 = progession, 0 = no progression. 
+#' Default is `"progression"`.
+#' @param pfs_leq numeric. Categorize patients with progression-free survival (PFS) less than 
+#' or equal `pfs_leq` as high-risk. Only necessary if model discretizes response (PFS). 
+#' Default is 2.0.
 #' @return A numeric matrix with patients as rows and variables as columns.
 #' @export
 generate_response <- function(
     pheno_tbl,
     model,
-    pfs_leq = 2.0,
     patient_id_col = "patient_id",
-    pfs_col = "pfs_years"
+    pfs_col = "pfs_years",
+    progression_col = "progression",
+    pfs_leq = 2.0
 ){
-    use <- response_mapper[[model]]
-    y <- NULL
-    if(length(use) == 1 && use == "pfs_leq"){ # lasso-zerosum
+    if(model == "lasso_zerosum"){
         # remove patients consored before pfs_leq
-        na_bool <- (pheno_tbl[[pfs_col]] <= pfs_leq) & (pheno_tbl[["progression"]] == 0)
+        na_bool <- (pheno_tbl[[pfs_col]] <= pfs_leq) & (pheno_tbl[[progression_col]] == 0)
         y <- pheno_tbl[[pfs_col]] <= pfs_leq
         y <- as.numeric(y)
         dim(y) <- c(length(y), 1)
         rownames(y) <- pheno_tbl[[patient_id_col]]
         colnames(y) <- stringr::str_c("pfs_leq_", round(pfs_leq, 1))
         y[na_bool, ] <- NA
-    } else { # cox-lasso-zerosum
-        y <- pheno_tbl[, use] |> as.matrix()
+    } else if(model == "cox_lasso_zerosum"){
+        y <- pheno_tbl[, c(pfs_col, progression_col)] |> as.matrix()
         rownames(y) <- pheno_tbl[[patient_id_col]]
-    }
+    } else {
+        stop("Model must be one of 'lasso_zerosum', 'cox_lasso_zerosum'.")}
+
     return(y)
 }
