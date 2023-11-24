@@ -1,6 +1,6 @@
 test_that("mock_data_from_existing returns correct output", {
 
-    directory <- test_path("data")
+    directory <- test_path("data/mock")
     n_samples <- 5L
     n_genes <- 3L
     expr_fname <- "expr.csv"
@@ -14,7 +14,7 @@ test_that("mock_data_from_existing returns correct output", {
     # generate mock real data (if not there yet)
     if(!file.exists(file.path(directory, expr_fname)) ||
         !file.exists(file.path(directory, pheno_fname))){    
-        generate_mock_data(
+        generate_mock_files(
             directory = directory,
             n_samples = 2*n_samples,
             n_genes = 2*n_genes,
@@ -53,6 +53,7 @@ test_that("mock_data_from_existing returns correct output", {
     if(cleanup){
         for(i in 1:2){
             file <- file.path(directory, result[["file_names"]][i])
+            print(file)
             file.remove(file)
         }
     }

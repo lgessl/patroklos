@@ -1,5 +1,5 @@
 # Generate random mock data
-generate_mock_data <- function(
+generate_mock_files <- function(
     directory = "data",
     n_samples = 10,
     n_genes = 5,
@@ -37,4 +37,35 @@ generate_mock_data <- function(
         pheno,
         file.path(directory, pheno_fname)
     )
+}
+
+
+generate_mock_data <- function(
+    n_samples = 10,
+    n_genes = 5,
+    patient_id_col = "patient_id"
+){
+    # expression
+    expr_mat <- matrix(
+        sample(1:100, n_samples*n_genes, replace = TRUE),
+        nrow = n_genes
+    )
+    rownames(expr_mat) <- stringr::str_c("sample_", 1:n_samples)
+    colnames(expr_mat) <- stringr::str_c("gene_", 1:n_genes)
+
+    # pheno
+    pheno <- tibble::tibble(.rows = n_samples)
+    pheno[["progression"]] <- sample(
+        c(0, 1),
+        size = n_samples,
+        replace = TRUE
+    )
+    pheno[["pfs_yrs"]] <- rnorm(n_samples, 2, 1)
+    pheno[[patient_id_col]] <- rownames(expr_mat)
+
+    res <- list(
+        "expr" = expr_tbl,
+        "pheno" = pheno
+    )
+    return(res)
 }
