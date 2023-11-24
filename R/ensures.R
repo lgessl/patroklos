@@ -1,10 +1,10 @@
 #' @title Ensure patients in expression and pheno tibbles match during preprocessing
 #' @description Ensure that the patients in the expression and pheno tibbles match 
 #' via subsetting and sorting, during preprocessing.
-#' @param expr tibble. With genes as rows and patients as columns. The column 
+#' @param expr_tbl tibble. With genes as rows and patients as columns. The column 
 #' `gene_id_col` (see below) holds the gene identifiers, all other colum names 
 #' are the patient identifiers.
-#' @param pheno tibble. The pheno data, with patients as rows and variables as 
+#' @param pheno_tbl tibble. The pheno data, with patients as rows and variables as 
 #' columns. The column `patient_id_col` (see below) holds the patient identifiers.
 #' @param patient_id_col string. The name of the column in `pheno` that holds
 #' the patient identifiers.

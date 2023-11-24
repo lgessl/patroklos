@@ -2,52 +2,38 @@
 % Please edit documentation in R/ensures.R
 \name{ensure_patients_match}
 \alias{ensure_patients_match}
-\title{Ensure patients in expression and pheno data match}
+\title{Ensure patients in expression and pheno tibbles match during preprocessing}
 \usage{
 ensure_patients_match(
-  stage,
-  expr,
-  pheno,
-  patient_id_col = NULL,
-  gene_id_col = NULL
+  expr_tbl,
+  pheno_tbl,
+  patient_id_col,
+  gene_id_col,
+  verbose = TRUE
 )
 }
 \arguments{
-\item{stage}{string. The pipeline stage we are in. One of \code{"preprocessing"},
-\code{"after_generate_xy"}.}
+\item{expr_tbl}{tibble. With genes as rows and patients as columns. The column
+\code{gene_id_col} (see below) holds the gene identifiers, all other colum names
+are the patient identifiers.}
 
-\item{expr}{tibble or numeric matrix.
-\itemize{
-\item If \code{stage == "preprocessing"}: \code{expr} is a tibble with genes as rows and
-patients as columns. The column \code{gene_id_col} (see below) holds the gene
-dentifiers, all other columns hold the patient identifiers.
-\item If \code{stage == "after_generate_xy"}: \code{expr} is a numeric matrix with patients
-as rows and genes as columns. The row names hold the patient identifiers, the
-column names hold the gene identifiers.
-}}
-
-\item{pheno}{tibble or numeric matrix. The pheno data, with patients as rows
-and variables as columns. The column \code{patient_id_col} (see below) holds the
-patient identifiers.
-\itemize{
-\item If \code{stage == "preprocessing"}: \code{pheno} is a tibble.
-\item If \code{stage == "after_generate_xy"}: \code{pheno} is a numeric matrix as returned
-by \code{generate_response()}.
-}}
+\item{pheno_tbl}{tibble. The pheno data, with patients as rows and variables as
+columns. The column \code{patient_id_col} (see below) holds the patient identifiers.}
 
 \item{patient_id_col}{string. The name of the column in \code{pheno} that holds
-the patient identifiers. Default is \code{NULL}.}
+the patient identifiers.}
 
 \item{gene_id_col}{string. The name of the column in \code{expr} that holds the
-gene identifiers. \code{patient_id_col} and \code{gene_id_col} are only used if
-\code{stage == "preprocessing"}. Default is \code{NULL}.}
+gene identifiers.}
+
+\item{verbose}{logical. Whether to print messages. Default is \code{FALSE}.}
 }
 \value{
-A list with two elements, \code{expr} and \code{pheno}. Matching and sorted
+A list with two tibbles named \code{expr} and \code{pheno}. Matching and sorted
 expression and pheno data, i.e. the vectors of patient identifiers are
 identical.
 }
 \description{
-Ensure that the patients in the expression and pheno data match
-via subsetting and sorting depenendent on pipeline stage.
+Ensure that the patients in the expression and pheno tibbles match
+via subsetting and sorting, during preprocessing.
 }
