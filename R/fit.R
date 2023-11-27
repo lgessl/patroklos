@@ -21,7 +21,7 @@
 #' `TRUE`.
 #' @return A `zeroSum.fit` object. The model fit.
 #' @details The model fit is stored in 
-#' `results_dir`/save_model_as[1]`/`model`/`save_model_as[2]` with, e.g., `save_model_as 
+#' `results_dir`/`save_model_as[1]`/`model`/`save_model_as[2]` with, e.g., `save_model_as 
 #' = c("schmitz", "with_ipi")`, meaning that `x` holds gene expression dara and the pheno
 #' variabes needed to calculate the IPI score. Row names in `x` and `y` must match.
 #' @export
@@ -67,9 +67,9 @@ fit <- function(
 
     # store lambda-vs-deviance plot
     if(plots){
-        pdf(file = file.path(save_dir, "lambda_vs_deviance.pdf"))
+        grDevices::pdf(file = file.path(save_dir, "lambda_vs_deviance.pdf"))
         plot(fit_obj)
-        dev.off()
+        grDevices::dev.off()
     }
 
     save_fname <- file.path(save_dir, "fit_obj.rds")
