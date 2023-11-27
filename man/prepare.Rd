@@ -7,7 +7,7 @@
 prepare(
   expr_mat,
   pheno_tbl,
-  model,
+  response_type,
   include_from_continuous_pheno = NULL,
   include_from_discrete_pheno = NULL,
   patient_id_col = "patient_id",
@@ -23,11 +23,13 @@ and genes as columns. The row names must be unique patient identifiers.}
 \item{pheno_tbl}{tibble. The pheno data, with patients as rows and variables as
 columns.}
 
-\item{model}{string. For which model to prepare. One of
+\item{response_type}{string. For which response type to prepare. One of
 \itemize{
-\item \code{"cox_lasso_zerosum"} (Cox proportional hazards with LASSO reularization
-and zero-sum constraint)
-\item \code{"lasso_zerosum"} (ordinary linear regression with LASSO regularization)
+\item \code{"survival_censored"}: response matrix has two columns, the first is the
+survival time, the second is the censoring status (1 = censored, 0 = not
+censored)
+\item \code{"binary"}: discretize the response via pfs <= \code{pfs_leq} (see below and
+for details see \code{generate_response()})
 }}
 
 \item{include_from_continuous_pheno}{vector of strings. The names of the
@@ -51,8 +53,8 @@ progression-free survival (PFS) values. Default is \code{"pfs_years"}.}
 holds the progression status encoded as 1 = progression, 0 = no progression.
 Default is \code{"progression"}.}
 
-\item{pfs_leq}{numeric. Only necessary if model discretizes response (PFS). The value
-of progression-free survival (PFS) above which samples are considered high-risk.
+\item{pfs_leq}{numeric. Only used if \code{response_type == "binary"}. The value
+of progression-free survival (PFS) below which samples are considered high-risk.
 Default is 2.0.}
 }
 \value{
@@ -61,5 +63,5 @@ A list with two numeric matrices, \code{x} and \code{y}. \code{x} is the predict
 }
 \description{
 Provided expression matrix and pheno tibble, generate the
-predictor and respondent matirx model-specifically and check.
+predictor and response matrix response-type-dependently and do checks.
 }

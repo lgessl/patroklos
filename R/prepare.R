@@ -1,14 +1,16 @@
 #' @title Prepare data for model fitting and predicting
 #' @description Provided expression matrix and pheno tibble, generate the 
-#' predictor and respondent matirx model-specifically and check.
+#' predictor and response matrix response-type-dependently and do checks.
 #' @param expr_mat numeric matrix. The expression data, with patients as rows
 #' and genes as columns. The row names must be unique patient identifiers.
 #' @param pheno_tbl tibble. The pheno data, with patients as rows and variables as
 #' columns.
-#' @param model string. For which model to prepare. One of
-#'  * `"cox_lasso_zerosum"` (Cox proportional hazards with LASSO reularization 
-#'  and zero-sum constraint)
-#'  * `"lasso_zerosum"` (ordinary linear regression with LASSO regularization)
+#' @param response_type string. For which response type to prepare. One of
+#'  * `"survival_censored"`: response matrix has two columns, the first is the
+#' survival time, the second is the censoring status (1 = censored, 0 = not
+#' censored)
+#'  * `"binary"`: discretize the response via pfs <= `pfs_leq` (see below and
+#' for details see `generate_response()`)
 #' @param include_from_continuous_pheno vector of strings. The names of the 
 #'  *continuous* variables in the pheno data file to be included in the
 #'  predictor matrix. The values will be coerced to numeric. Default is `NULL`,
@@ -25,8 +27,8 @@
 #' @param progression_col string. The name of the column in `pheno_tbl` that
 #' holds the progression status encoded as 1 = progression, 0 = no progression. 
 #' Default is `"progression"`.
-#' @param pfs_leq numeric. Only necessary if model discretizes response (PFS). The value 
-#' of progression-free survival (PFS) above which samples are considered high-risk. 
+#' @param pfs_leq numeric. Only used if `response_type == "binary"`. The value 
+#' of progression-free survival (PFS) below which samples are considered high-risk. 
 #' Default is 2.0.
 #' @return A list with two numeric matrices, `x` and `y`. `x` is the predictor matrix, 
 #' `y` is the response matrix, both ready to for model fitting or predicting.
@@ -34,7 +36,7 @@
 prepare <- function(
     expr_mat,
     pheno_tbl,
-    model,
+    response_type,
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL,
     patient_id_col = "patient_id",
@@ -52,7 +54,7 @@ prepare <- function(
 
     y <- generate_response(
         pheno_tbl = pheno_tbl,
-        model = model,
+        response_type = response_type,
         patient_id_col = patient_id_col,
         pfs_col = pfs_col,
         progression_col = progression_col,

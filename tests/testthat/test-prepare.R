@@ -18,7 +18,7 @@ test_that("Prepare works",{
     result <- prepare(
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
-      model = "cox_lasso_zerosum",
+      response_type = "survival_censored",
       include_from_continuous_pheno = NULL,
       include_from_discrete_pheno = "discrete_var"
     )
@@ -27,7 +27,7 @@ test_that("Prepare works",{
     result <- prepare(
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
-      model = "lasso_zerosum",
+      response_type = "binary",
       include_from_continuous_pheno = "continuous_var",
       include_from_discrete_pheno = "discrete_var",
       pfs_leq = 1.8
@@ -40,7 +40,7 @@ test_that("Prepare works",{
     result <- prepare(
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
-      model = "lasso_zerosum",
+      response_type = "binary",
       include_from_continuous_pheno = NULL,
       include_from_discrete_pheno = "discrete_var",
       pfs_leq = 2.3,
