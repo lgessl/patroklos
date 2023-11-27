@@ -57,12 +57,16 @@ generate_predictor <- function(
 }
 
 
-#' @title Generate the response matrix in a model-specific way
+#' @title Generate the response matrix in a response-specific way
 #' @description Generate the numeric response matrix from the pheno data for a
 #' certain model
 #' @param pheno_tbl tibble. The pheno data, with patients as rows and variables as
 #' columns.
-#' @param model string. The name of the model. One of `c("lasso-zerosum", "cox-lasso-zerosum")`.
+#' @param response_type string. For which response type to prepare. One of
+#'  * `"survival_censored"`: response matrix (return value) will have two columns, 
+#' the first is the survival time, the second is the censoring status (1 = censored, 
+#' 0 = not censored)
+#'  * `"binary"`: discretize the response via pfs <= `pfs_leq` (see details)
 #' @param patient_id_col string. The name of the column in the pheno data file that holds 
 #' patient identifiers. Default is `"patient_id"`.
 #' @param pfs_col string. The name of the column in the pheno data file that holds the
@@ -71,19 +75,27 @@ generate_predictor <- function(
 #' the progression status encoded as 1 = progession, 0 = no progression. 
 #' Default is `"progression"`.
 #' @param pfs_leq numeric. Categorize patients with progression-free survival (PFS) less than 
-#' or equal `pfs_leq` as high-risk. Only necessary if model discretizes response (PFS). 
+#' or equal `pfs_leq` as high-risk. Only used if `response_type == "binary"`. 
 #' Default is 2.0.
-#' @return A numeric matrix with patients as rows and variables as columns.
+#' @return Response matrix: a numeric matrix with patients as rows and variables as columns.
+#' @details If `response_type == "binary"`, the response matrix will have one column filled 
+#' with 
+#' * `1` if progress is observed at a time <= `pfs_leq`,
+#' * `0` if progress or censoring is observed at a time > `pfs_leq`,
+#' * `NA` if censoring without progression is observed at a time <= `pfs_leq`.
 #' @export
 generate_response <- function(
     pheno_tbl,
-    model,
-    patient_id_col = "patient_id",
-    pfs_col = "pfs_years",
-    progression_col = "progression",
-    pfs_leq = 2.0
+    response_type,
+    patient_id_col,
+    pfs_col,
+    progression_col,
+    pfs_leq
 ){
-    if(model == "lasso_zerosum"){
+    if(!(response_type %in% c("survival_censored", "binary"))){
+        stop("Response type ", response_type, " is not supported")
+    }
+    if(response_type == "binary"){
         # remove patients consored before pfs_leq
         na_bool <- (pheno_tbl[[pfs_col]] <= pfs_leq) & (pheno_tbl[[progression_col]] == 0)
         y <- pheno_tbl[[pfs_col]] <= pfs_leq
@@ -92,11 +104,10 @@ generate_response <- function(
         rownames(y) <- pheno_tbl[[patient_id_col]]
         colnames(y) <- stringr::str_c("pfs_leq_", round(pfs_leq, 1))
         y[na_bool, ] <- NA
-    } else if(model == "cox_lasso_zerosum"){
+    } else if(response_type == "survival_censored"){
         y <- pheno_tbl[, c(pfs_col, progression_col)] |> as.matrix()
         rownames(y) <- pheno_tbl[[patient_id_col]]
-    } else {
-        stop("Model must be one of 'lasso_zerosum', 'cox_lasso_zerosum'.")}
+    }
 
     return(y)
 }

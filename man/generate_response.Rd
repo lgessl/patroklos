@@ -2,22 +2,28 @@
 % Please edit documentation in R/generate_xy.R
 \name{generate_response}
 \alias{generate_response}
-\title{Generate the response matrix in a model-specific way}
+\title{Generate the response matrix in a response-specific way}
 \usage{
 generate_response(
   pheno_tbl,
-  model,
-  patient_id_col = "patient_id",
-  pfs_col = "pfs_years",
-  progression_col = "progression",
-  pfs_leq = 2
+  response_type,
+  patient_id_col,
+  pfs_col,
+  progression_col,
+  pfs_leq
 )
 }
 \arguments{
 \item{pheno_tbl}{tibble. The pheno data, with patients as rows and variables as
 columns.}
 
-\item{model}{string. The name of the model. One of \code{c("lasso-zerosum", "cox-lasso-zerosum")}.}
+\item{response_type}{string. For which response type to prepare. One of
+\itemize{
+\item \code{"survival_censored"}: response matrix (return value) will have two columns,
+the first is the survival time, the second is the censoring status (1 = censored,
+0 = not censored)
+\item \code{"binary"}: discretize the response via pfs <= \code{pfs_leq} (see details)
+}}
 
 \item{patient_id_col}{string. The name of the column in the pheno data file that holds
 patient identifiers. Default is \code{"patient_id"}.}
@@ -30,13 +36,22 @@ the progression status encoded as 1 = progession, 0 = no progression.
 Default is \code{"progression"}.}
 
 \item{pfs_leq}{numeric. Categorize patients with progression-free survival (PFS) less than
-or equal \code{pfs_leq} as high-risk. Only necessary if model discretizes response (PFS).
+or equal \code{pfs_leq} as high-risk. Only used if \code{response_type == "binary"}.
 Default is 2.0.}
 }
 \value{
-A numeric matrix with patients as rows and variables as columns.
+Response matrix: a numeric matrix with patients as rows and variables as columns.
 }
 \description{
 Generate the numeric response matrix from the pheno data for a
 certain model
+}
+\details{
+If \code{response_type == "binary"}, the response matrix will have one column filled
+with
+\itemize{
+\item \code{1} if progress is observed at a time <= \code{pfs_leq},
+\item \code{0} if progress or censoring is observed at a time > \code{pfs_leq},
+\item \code{NA} if censoring without progression is observed at a time <= \code{pfs_leq}.
+}
 }

@@ -78,7 +78,7 @@ test_that("generate_predictor works", {
 
 # Define test cases
 test_that("generate_response works", {
-  # Create a sample pheno_tbl
+
   pheno_tbl <- tibble::tibble(
     "pfs" = c(1.5, 2.5, 3.0, 4.0),
     "prog" = c(0, 1, 0, 0),
@@ -91,7 +91,7 @@ test_that("generate_response works", {
   pfs_leq <- 1.86
   y <- generate_response(
     pheno_tbl = pheno_tbl,
-    model = model,
+    response_type = "binary",
     patient_id_col = "patient",
     progression_col = "prog",
     pfs_col = "pfs",
@@ -107,7 +107,7 @@ test_that("generate_response works", {
   model <- "cox_lasso_zerosum"
   y <- generate_response(
     pheno_tbl = pheno_tbl, 
-    model = model,
+    response_type = "survival_censored",
     patient_id_col = "patient", 
     pfs_col = "pfs",
     progression_col = "prog",
