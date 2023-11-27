@@ -60,3 +60,26 @@ check_available <- function(
         stop("There are missing values in the predictor or response matrix.")
     }
 }
+
+
+check_fitter <- function(
+    fitter,
+    optional_args = NULL
+){
+    if(!is.function(fitter)){
+        stop("fitter must be a function.")
+    }
+    parameters <- names(formals(fitter))
+    for(pos_arg in c("x", "y")){
+        if(!(pos_arg %in% parameters)){
+            stop("fitter must have an argument named '", pos_arg, "'.")
+        }
+    }
+    if(!("..." %in% parameters)){
+        for(arg in optional_args){
+            if(!(arg %in% parameters)){
+                stop("fitter must have an argument named '", arg, "'.")
+            }
+        }
+    }
+}
