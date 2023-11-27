@@ -7,12 +7,13 @@
 fit(
   x,
   y,
-  model,
-  save_model_as,
-  additional_model_par = list(),
-  results_dir = "results",
-  create_dir = TRUE,
-  plots = TRUE
+  fitter,
+  save_dir,
+  optional_fitter_args = list(),
+  create_save_dir = TRUE,
+  save_plots = TRUE,
+  plot_fname = "lambda_vs_deviance.pdf",
+  fit_fname = "fit_obj.rds"
 )
 }
 \arguments{
@@ -22,27 +23,28 @@ as row names.}
 \item{y}{numeric matrix. The response matrix with samples in rows and their names
 as row names.}
 
-\item{model}{string. The name of the model to fit. Currently supported are
-\itemize{
-\item \code{cox_lasso_zerosum}, Cox proportional hazards with LASSO regularization and
-zero-sum constraint,
-\item \code{lasso_zerosum}, ordinary linear regression with LASSO regularization.
-}}
+\item{fitter}{function. The model fitting function to be used. Must take \code{x} and
+\code{y} as first two positional arguments. Further arguments can be passed via
+\code{optional_fitter_args} (below). Its return value must be an S3 object with a \code{plot()}
+method.}
 
-\item{save_model_as}{character vector of length 2. The first element is the data-set
-name from which data originates, the second element is the name of the very model
-(usually a telling name in terms of \code{x}). See details.}
+\item{save_dir}{string. The directory in which to store the model and (if \code{save_plots  == TRUE}) the plots in.}
 
-\item{additional_model_par}{list. Additional parameters to be passed to the model
-fitting function, see \code{zeroSum::zeroSum} for details. Default is \code{list()}.}
+\item{optional_fitter_args}{list. Optional arguments passed to \code{fitter}, e.g. alpha
+in case of an elastic net. Default is \code{list()}, i.e., no arguments other than \code{x}, \code{y}
+passed to \code{fitter}.}
 
-\item{results_dir}{string. The directory holding results. Default is \code{"results"}.}
+\item{create_save_dir}{logical. Whether to create \code{save_dir} if it does not exist, yet.
+Default is \code{TRUE}.}
 
-\item{create_dir}{logical. Whether to create the directory to store the model and
-plots in if it does not exist. Default is \code{TRUE}.}
-
-\item{plots}{logical. Whether to store a lambda-versus-deviance plot. Default is
+\item{save_plots}{logical. Whether to store a lambda-versus-deviance plot. Default is
 \code{TRUE}.}
+
+\item{plot_fname}{string. The name of the lambda-versus-deviance plot file inside
+\code{save_dir}. Default is \code{"lambda_vs_deviance.pdf"}.}
+
+\item{fit_fname}{string. The name of the (binary) model-fit file inside \code{save_dir}.
+Default is \code{"fit_obj.rds"}.}
 }
 \value{
 A \code{zeroSum.fit} object. The model fit.
