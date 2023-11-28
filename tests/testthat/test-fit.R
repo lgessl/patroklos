@@ -5,8 +5,8 @@ test_that("fit function works correctly", {
   set.seed(4325)
   n_samples = 5
   n_features = 5
+  n_fold = 3
 
-  n_fold = floor(n_samples/2)
   x <- matrix(rnorm(n_samples*n_features), nrow = n_samples)
   y <- rnorm(n_samples) |> as.matrix()
   y <- cbind(y, sample(c(0, 1), n_samples, replace = TRUE))
@@ -18,7 +18,7 @@ test_that("fit function works correctly", {
   model_spec <- ModelSpec(
     fitter = zeroSum::zeroSum,
     response_type = "survival_censored",
-    optional_fitter_args = list("alpha" = 0.5, nFold = 3),
+    optional_fitter_args = list("alpha" = 0.5, nFold = n_fold),
     pfs_leq = 2.0,
     plot_fname = "foo.pdf",
     fit_fname = "bar.rds"

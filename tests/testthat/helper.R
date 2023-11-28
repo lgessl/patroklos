@@ -49,7 +49,7 @@ generate_mock_data <- function(
     expr_mat <- matrix(
         sample(1:100, n_samples*n_genes, replace = TRUE),
         nrow = n_samples
-    )
+    ) |> log()
     rownames(expr_mat) <- stringr::str_c("sample_", 1:n_samples)
     colnames(expr_mat) <- stringr::str_c("gene_", 1:n_genes)
 
