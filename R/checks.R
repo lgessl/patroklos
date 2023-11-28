@@ -69,6 +69,9 @@ check_fitter <- function(
     if(!is.function(fitter)){
         stop("fitter must be a function.")
     }
+    if(!(is.null(optional_args) || is.list(optional_args))){
+        stop("optional_args must be a list.")
+    }
     parameters <- names(formals(fitter))
     for(pos_arg in c("x", "y")){
         if(!(pos_arg %in% parameters)){
