@@ -7,10 +7,8 @@
 #' See details for the expected format.
 #' @param pheno_fname string. The name of the pheno data .csv inside `directory`.
 #' See details for the expected format.
-#' @param patient_id_col string. The name of the column in the pheno data file
-#' that holds the patient identifiers.
-#' @param gene_id_col string. The name of the column in the expression data file
-#' that holds the gene identifiers.
+#' @param data_spec DataSpec S3 object. Specifications on the data. See the the
+#' constructor `DataSpec()` for details.
 #' @return A list with a numeric matrix, named `expr`, and a tibble named `pheno`. 
 #' `expr` holds the expression data, with patient ids as row names and gene ids as
 #' column names. I.e., we transpose the expression data. `pheno` holds the pheno data, 
@@ -24,18 +22,21 @@ read <- function(
     directory,
     expr_fname,
     pheno_fname,
-    patient_id_col,
-    gene_id_col
+    data_spec
 ){
+    # extract values from data_spec
+    patient_id_col <- data_spec$patient_id_col
+    gene_id_col <- data_spec$gene_id_col
+
     # read
     fnames <- c(expr_fname, pheno_fname)
-    tbls <- list("expr" = NULL, "pheno" = NULL)
+    tbls <- list()
     for (i in 1:length(fnames)){
         full_path <- file.path(directory, fnames[i])
         tbls[[i]] <- readr::read_csv(full_path, show_col_types = FALSE)
     }
-    expr_tbl <- tbls[["expr"]]
-    pheno_tbl <- tbls[["pheno"]]
+    expr_tbl <- tbls[[1]]
+    pheno_tbl <- tbls[[2]]
 
     # check if identifier columns are there
     if(is.null(expr_tbl[[gene_id_col]])){

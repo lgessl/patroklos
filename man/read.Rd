@@ -4,7 +4,7 @@
 \alias{read}
 \title{Read expression and pheno data from csv files into consistent format}
 \usage{
-read(directory, expr_fname, pheno_fname, patient_id_col, gene_id_col)
+read(directory, expr_fname, pheno_fname, data_spec)
 }
 \arguments{
 \item{directory}{string. The directory where both expression and pheno csv
@@ -16,11 +16,8 @@ See details for the expected format.}
 \item{pheno_fname}{string. The name of the pheno data .csv inside \code{directory}.
 See details for the expected format.}
 
-\item{patient_id_col}{string. The name of the column in the pheno data file
-that holds the patient identifiers.}
-
-\item{gene_id_col}{string. The name of the column in the expression data file
-that holds the gene identifiers.}
+\item{data_spec}{DataSpec S3 object. Specifications on the data. See the the
+constructor \code{DataSpec()} for details.}
 }
 \value{
 A list with a numeric matrix, named \code{expr}, and a tibble named \code{pheno}.
