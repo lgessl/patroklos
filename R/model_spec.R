@@ -66,6 +66,7 @@ new_ModelSpec <- function(
 #' @param fit_fname string. The name of the model-fit file inside `save_dir`.
 #' Default is `"fit_obj.rds"`.
 #' @return A ModelSpec S3 object.
+#' @export
 ModelSpec <- function(
     fitter,
     optional_fitter_args = NULL,
