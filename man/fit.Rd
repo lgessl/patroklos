@@ -4,17 +4,7 @@
 \alias{fit}
 \title{Fit and store a model}
 \usage{
-fit(
-  x,
-  y,
-  fitter,
-  save_dir,
-  optional_fitter_args = list(),
-  create_save_dir = TRUE,
-  save_plots = TRUE,
-  plot_fname = "lambda_vs_deviance.pdf",
-  fit_fname = "fit_obj.rds"
-)
+fit(x, y, model_spec, save_plots = TRUE)
 }
 \arguments{
 \item{x}{numeric matrix. The predictor matrix with samples in rows and their names
@@ -23,38 +13,16 @@ as row names.}
 \item{y}{numeric matrix. The response matrix with samples in rows and their names
 as row names.}
 
-\item{fitter}{function. The model fitting function to be used. Must take \code{x} and
-\code{y} as first two positional arguments. Further arguments can be passed via
-\code{optional_fitter_args} (below). Its return value must be an S3 object with a \code{plot()}
-method.}
+\item{model_spec}{ModelSpec S3 object. Specifications on the model. See the the
+constructor \code{ModelSpec()} for details.}
 
-\item{save_dir}{string. The directory in which to store the model and (if \code{save_plots  == TRUE}) the plots in.}
-
-\item{optional_fitter_args}{list. Optional arguments passed to \code{fitter}, e.g. alpha
-in case of an elastic net. Default is \code{list()}, i.e., no arguments other than \code{x}, \code{y}
-passed to \code{fitter}.}
-
-\item{create_save_dir}{logical. Whether to create \code{save_dir} if it does not exist, yet.
-Default is \code{TRUE}.}
-
-\item{save_plots}{logical. Whether to store a lambda-versus-deviance plot. Default is
-\code{TRUE}.}
-
-\item{plot_fname}{string. The name of the lambda-versus-deviance plot file inside
-\code{save_dir}. Default is \code{"lambda_vs_deviance.pdf"}.}
-
-\item{fit_fname}{string. The name of the (binary) model-fit file inside \code{save_dir}.
-Default is \code{"fit_obj.rds"}.}
+\item{save_plots}{logical. Whether to save the lambda-vs-deviance plot in
+\code{model_spec$save_dir}. Default is \code{TRUE}.}
 }
 \value{
-A \code{zeroSum.fit} object. The model fit.
+A \code{zeroSum.fit} object, with a \code{ModelSpec} object appended.
 }
 \description{
 Given a model and data in a model-specific form, fit this model
 and store it
-}
-\details{
-The model fit is stored in
-\code{results_dir}/\code{save_model_as[1]}/\code{model}/\code{save_model_as[2]} with, e.g., \code{save_model_as  = c("schmitz", "with_ipi")}, meaning that \code{x} holds gene expression dara and the pheno
-variabes needed to calculate the IPI score. Row names in \code{x} and \code{y} must match.
 }

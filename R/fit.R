@@ -5,40 +5,26 @@
 #' as row names.
 #' @param y numeric matrix. The response matrix with samples in rows and their names
 #' as row names.
-#' @param fitter function. The model fitting function to be used. Must take `x` and
-#' `y` as first two positional arguments. Further arguments can be passed via
-#' `optional_fitter_args` (below). Its return value must be an S3 object with a `plot()` 
-#' method.
-#' @param save_dir string. The directory in which to store the model and (if `save_plots 
-#' == TRUE`) the plots in.
-#' @param optional_fitter_args list. Optional arguments passed to `fitter`, e.g. alpha 
-#' in case of an elastic net. Default is `list()`, i.e., no arguments other than `x`, `y`
-#' passed to `fitter`.
-#' @param create_save_dir logical. Whether to create `save_dir` if it does not exist, yet. 
-#' Default is `TRUE`.
-#' @param save_plots logical. Whether to store a lambda-versus-deviance plot. Default is 
-#' `TRUE`.
-#' @param plot_fname string. The name of the lambda-versus-deviance plot file inside
-#' `save_dir`. Default is `"lambda_vs_deviance.pdf"`.
-#' @param fit_fname string. The name of the (binary) model-fit file inside `save_dir`.
-#' Default is `"fit_obj.rds"`.
-#' @return A `zeroSum.fit` object. The model fit.
-#' @details The model fit is stored in 
-#' `results_dir`/`save_model_as[1]`/`model`/`save_model_as[2]` with, e.g., `save_model_as 
-#' = c("schmitz", "with_ipi")`, meaning that `x` holds gene expression dara and the pheno
-#' variabes needed to calculate the IPI score. Row names in `x` and `y` must match.
+#' @param model_spec ModelSpec S3 object. Specifications on the model. See the the 
+#' constructor `ModelSpec()` for details.
+#' @param save_plots logical. Whether to save the lambda-vs-deviance plot in 
+#' `model_spec$save_dir`. Default is `TRUE`.
+#' @return A `zeroSum.fit` object, with a `ModelSpec` object appended.
 #' @export
 fit <- function(
     x,
     y,
-    fitter,
-    save_dir,
-    optional_fitter_args = list(),
-    create_save_dir = TRUE,
-    save_plots = TRUE,
-    plot_fname = "lambda_vs_deviance.pdf",
-    fit_fname = "fit_obj.rds"
+    model_spec,
+    save_plots = TRUE
 ){
+    # extract values from model_spec
+    fitter <- model_spec$fitter
+    optional_fitter_args <- model_spec$optional_fitter_args
+    save_dir <- model_spec$save_dir
+    create_save_dir <- model_spec$create_save_dir
+    plot_fname <- model_spec$plot_fname
+    fit_fname <- model_spec$fit_fname
+
     check_fitter(fitter, optional_fitter_args)
     # make sure directory to store model exists
     if(!dir.exists(save_dir)){

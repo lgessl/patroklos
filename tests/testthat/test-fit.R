@@ -12,59 +12,42 @@ test_that("fit function works correctly", {
   y <- cbind(y, sample(c(0, 1), n_samples, replace = TRUE))
   rownames(y) <- stringr::str_c("sample_", 1:n_samples)
   rownames(x) <- rownames(y)
-  optional_fitter_args <- list("alpha" = 0.5, nFold = 3)
   results_dir <- withr::local_tempdir(pattern = "results")
   save_dir_base <- file.path(results_dir, "mock")
-  
-  fitter <- zeroSum::zeroSum
+
+  model_spec <- ModelSpec(
+    fitter = zeroSum::zeroSum,
+    response_type = "survival_censored",
+    optional_fitter_args = list("alpha" = 0.5, nFold = 3),
+    pfs_leq = 2.0,
+    plot_fname = "foo.pdf",
+    fit_fname = "bar.rds"
+  )
 
   # Case 1:
-  save_dir <- file.path(save_dir_base, "cox_lasso_zerosum", "std")
-  optional_fitter_args[["family"]] <- "cox"
+  model_spec$save_dir <- file.path(save_dir_base, "cox_lasso_zerosum", "std")
+  model_spec$optional_fitter_args[["family"]] <- "cox"
+  model_spec$create_save_dir <- FALSE
 
   # non-existing directory
-  expect_error(fit(
-      x, y, fitter, save_dir, 
-      optional_fitter_args,  
-      create_save_dir = FALSE
-    ),
-    regexp = "not exist"
-  )
+  expect_error(fit(x, y, model_spec), regexp = "not exist")
   
   # valid
-  expect_message(fit_obj <- fit(
-      x, y, fitter, save_dir, 
-      optional_fitter_args = optional_fitter_args, 
-      create_save_dir = TRUE,
-      save_plots = TRUE
-    ),
-    regexp = "Creating directory"
-  )
+  model_spec$create_save_dir <- TRUE
+  expect_message(fit_obj <- fit(x, y, model_spec), regexp = "Creating directory")
   expect_s3_class(fit_obj, "zeroSum")
   
   # Case 2:
-  fake_fitter <- function(x) {}
+  model_spec$fitter <- function(x) {}
 
-  expect_error(fit(
-      x, y, fake_fitter, save_dir, 
-      optional_fitter_args = optional_fitter_args
-    )
-  )
+  expect_error(fit(x, y, model_spec))
   
   # Case 3: model = "lasso_zerosum"
-  save_dir <- file.path(save_dir_base, "lasso_zerosum", "std")
-  optional_fitter_args[["family"]] <- "binomial"
+  model_spec$fitter <- zeroSum::zeroSum
+  model_spec$save_dir <- file.path(save_dir_base, "lasso_zerosum", "std")
+  model_spec$optional_fitter_args[["family"]] <- "binomial"
   y <- y[, 2, drop = FALSE]
 
-  expect_message(fit_obj <- fit(
-      x, y, fitter, save_dir, 
-      optional_fitter_args = optional_fitter_args, 
-      create_save_dir = TRUE,
-      save_plots = FALSE,
-      plot_fname = "other.pdf",
-      fit_fname = "other.rds"
-    ),
-    regexp = "Creating directory"
-  )
+  expect_message(fit_obj <- fit(x, y, model_spec), regexp = "Creating directory")
   expect_s3_class(fit_obj, "zeroSum")
 })
