@@ -6,6 +6,7 @@ new_ModelSpec <- function(
     include_from_continuous_pheno,
     include_from_discrete_pheno,
     save_dir,
+    create_save_dir,
     pfs_leq,
     plot_fname,
     fit_fname 
@@ -15,7 +16,8 @@ new_ModelSpec <- function(
     stopifnot(is.character(include_from_continuous_pheno) || is.null(include_from_continuous_pheno))
     stopifnot(is.character(include_from_discrete_pheno) || is.null(include_from_discrete_pheno))
     stopifnot(is.character(save_dir))
-    stopifnot(is.numeric(pfs_leq))
+    stopifnot(is.logical(create_save_dir))
+    stopifnot(is.numeric(pfs_leq) || is.null(pfs_leq))
     stopifnot(is.character(plot_fname))
     stopifnot(is.character(fit_fname))
 
@@ -27,6 +29,7 @@ new_ModelSpec <- function(
         "include_from_discrete_pheno" = include_from_discrete_pheno,
         "pfs_leq" = pfs_leq,
         "save_dir" = save_dir,
+        "create_save_dir" = create_save_dir,
         "plot_fname" = plot_fname,
         "fit_fname" = fit_fname
     )
@@ -75,6 +78,7 @@ ModelSpec <- function(
     include_from_discrete_pheno = NULL,
     pfs_leq = NULL,
     save_dir = ".",
+    create_save_dir = TRUE,
     plot_fname = "training_error.pdf",
     fit_fname = "fit_obj.rds"
 ){
@@ -85,6 +89,7 @@ ModelSpec <- function(
         include_from_continuous_pheno = include_from_continuous_pheno,
         include_from_discrete_pheno = include_from_discrete_pheno,
         save_dir = save_dir,
+        create_save_dir = create_save_dir,
         pfs_leq = pfs_leq,
         plot_fname = plot_fname,
         fit_fname = fit_fname

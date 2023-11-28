@@ -12,6 +12,7 @@ ModelSpec(
   include_from_discrete_pheno = NULL,
   pfs_leq = NULL,
   save_dir = ".",
+  create_save_dir = TRUE,
   plot_fname = "training_error.pdf",
   fit_fname = "fit_obj.rds"
 )
@@ -46,14 +47,14 @@ is \code{NULL}.}
 \item{save_dir}{string. The directory in which to store the model in. Default is \code{"."},
 the current working directory.}
 
+\item{create_save_dir}{logical. Whether to create \code{save_dir} if it does not exist, yet.
+Default is \code{TRUE}.}
+
 \item{plot_fname}{string. Store the plot resulting from \code{plot(fit_obj)} in \code{save_dir}
 under this name. Default is \code{"training_error.pdf"}.}
 
 \item{fit_fname}{string. The name of the model-fit file inside \code{save_dir}.
 Default is \code{"fit_obj.rds"}.}
-
-\item{create_save_dir}{logical. Whether to create \code{save_dir} if it does not exist, yet.
-Default is \code{TRUE}.}
 }
 \value{
 A ModelSpec S3 object.
