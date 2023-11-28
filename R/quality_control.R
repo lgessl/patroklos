@@ -5,11 +5,11 @@ qc_prepare <- function(
     # check class and type of x and y
     x_y_list <- list("x" = x, "y" = y)
     for(x_y in names(x_y_list)){
-        if(!("matrix" %in% class(x_y_list[[x_y]]))){
+        if(!(is.matrix(x_y_list[[x_y]]))){
             stop(x_y, "must be a matrix.")
         }
-        if(typeof(x_y_list[[x_y]]) !="double"){
-            stop(x_y, "must be of type double.")
+        if(!is.numeric(x_y_list[[x_y]])){
+            stop(x_y, " must be numeric.")
         }
     }
 
