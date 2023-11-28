@@ -14,7 +14,7 @@ new_DataSpec <- function(
         "progression_col" = progression_col,
         "gene_id_col" = gene_id_col
     )
-    return(structure(data_spec_list, class = "data_spec")) 
+    return(structure(data_spec_list, class = "DataSpec")) 
 }
 
 #' @title Construct a DataSpec S3 object
