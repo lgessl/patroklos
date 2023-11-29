@@ -1,3 +1,15 @@
+#' @title Prepare data, fit and store models
+#' @description Given an expression matrix and a pheno tibble, prepare the data for a 
+#' list of models and fit these models to the data.
+#' @param expr_mat numeric matrix. The expression matrix with genes in rows and samples
+#' in columns.
+#' @param pheno_tbl tibble. The pheno data with samples in rows and variables in columns.
+#' @param data_spec DataSpec S3 object. Specifications on the data. See the the 
+#' constructor `DataSpec()` for details.
+#' @param model_spec_list list of ModelSpec S3 objects. Specifications on the models. See
+#' the the constructor `ModelSpec()` for details.
+#' @return A list of `zeroSum.fit` objects, with a `ModelSpec` object appended.
+#' @export
 prepare_and_fit <- function(
     expr_mat,
     pheno_tbl,
@@ -29,7 +41,7 @@ prepare_and_fit <- function(
             pheno_tbl = pheno_tbl,
             response_type = model_spec$response_type,
             include_from_continuous_pheno = model_spec$include_from_continuous_pheno,
-            include_from_discrete_pheno = model_spec$include_from_categorical_pheno,
+            include_from_discrete_pheno = model_spec$include_from_discrete_pheno,
             patient_id_col = data_spec$patient_id_col,
             pfs_col = data_spec$pfs_col,
             progression_col = data_spec$progression_col,
