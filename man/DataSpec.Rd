@@ -5,6 +5,9 @@
 \title{Construct a DataSpec S3 object}
 \usage{
 DataSpec(
+  directory = ".",
+  expr_fname = "expr.csv",
+  pheno_fname = "pheno.csv",
   patient_id_col = "patient_id",
   pfs_col = "pfs_years",
   progression_col = "progression",
@@ -12,6 +15,15 @@ DataSpec(
 )
 }
 \arguments{
+\item{directory}{string. The directory where both expression and pheno csv
+files lie.}
+
+\item{expr_fname}{string. The name of the expression csv file inside \code{directory}.
+Default is \code{"expr.csv"}. See details for the expected format.}
+
+\item{pheno_fname}{string. The name of the pheno data csv inside \code{directory}.
+Default is \code{"pheno.csv"}. See details for the expected format.}
+
 \item{patient_id_col}{string. The name of the column in the pheno data that holds
 the patient identifiers. Default is \code{"patient_id"}.}
 
@@ -29,10 +41,15 @@ the gene identifiers. Default is \code{"gene_id"}.}
 A DataSpec object.
 }
 \description{
-A DataSpec object holds the pieces of information key to reading and
-preparing the expression and pheno data, namely:
+A DataSpec object specifies the location and format of the expression
+and pheno data of a single data set. This enables reading and preparing the data.
 }
 \details{
-Note that the appearance of the pheno data changes over the course of the
-pipeline: first, it is csv file, later it is a tibble.
+The pheno csv file holds the samples as rows (with \emph{unique} sample ids in a
+column called \code{patient_id_col}), the variables as columns. The expr csv file holds
+the genes as rows (with \emph{unique} gene ids in a column called \code{gene_id_col}), the
+samples as columns.
+While the computatinal representation of both expression and pheno data will
+change over the course of the pipeline, a DataSpec object will hold timeless
+information on the data.
 }
