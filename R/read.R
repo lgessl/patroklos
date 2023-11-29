@@ -1,32 +1,23 @@
 #' @title Read expression and pheno data from csv files into consistent format
 #' @description Read expression data into a matrix and pheno data into a tibble.
 #' Both will hold patients as rows.
-#' @param directory string. The directory where both expression and pheno csv
-#' files lie.
-#' @param expr_fname string. The name of the expression .csv file inside `directory`.
-#' See details for the expected format.
-#' @param pheno_fname string. The name of the pheno data .csv inside `directory`.
-#' See details for the expected format.
 #' @param data_spec DataSpec S3 object. Specifications on the data. See the the
 #' constructor `DataSpec()` for details.
 #' @return A list with a numeric matrix, named `expr`, and a tibble named `pheno`. 
 #' `expr` holds the expression data, with patient ids as row names and gene ids as
 #' column names. I.e., we transpose the expression data. `pheno` holds the pheno data, 
 #' with the patient ids in the first column `patient_id_col`.
-#' @details The pheno csv file holds the samples as rows (with *unique* sample ids in a
-#' column called `patient_id_col``), the variables as columns. The expr csv file holds 
-#' the genes as rows (with *unique* gene ids in a column called `gene_id_col`), the 
-#' samples as columns.
 #' @export
 read <- function(
-    directory,
-    expr_fname,
-    pheno_fname,
     data_spec
 ){
     # extract values from data_spec
+    directory <- data_spec$directory
+    expr_fname <- data_spec$expr_fname
+    pheno_fname <- data_spec$pheno_fname
     patient_id_col <- data_spec$patient_id_col
     gene_id_col <- data_spec$gene_id_col
+
 
     # read
     fnames <- c(expr_fname, pheno_fname)
