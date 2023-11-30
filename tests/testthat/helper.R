@@ -43,15 +43,18 @@ generate_mock_files <- function(
 generate_mock_data <- function(
     n_samples = 10,
     n_genes = 5,
-    n_na_in_pheno = 3
+    n_na_in_pheno = 3,
+    to_csv = NULL
 ){
-    # expression
+    # expression matrix
     expr_mat <- matrix(
         sample(1:100, n_samples*n_genes, replace = TRUE),
         nrow = n_samples
     ) |> log()
     rownames(expr_mat) <- stringr::str_c("sample_", 1:n_samples)
     colnames(expr_mat) <- stringr::str_c("gene_", 1:n_genes)
+    # to expression tibble
+    expr_tbl <- expr_mat |> t() |> tibble::as_tibble(rownames = "gene_id")
 
     # pheno (n_samples x 5 tibble)
     pheno_tbl <- tibble::tibble(.rows = n_samples)
@@ -69,6 +72,11 @@ generate_mock_data <- function(
     na_cols <- sample(2:ncol(pheno_tbl), n_na_in_pheno, replace = TRUE)
     for(i in 1:n_na_in_pheno){
         pheno_tbl[na_rows[i], na_cols[i]] <- NA
+    }
+
+    if(is.character(to_csv)){
+        readr::write_csv(expr_tbl, file.path(to_csv, "expr.csv"))
+        readr::write_csv(pheno_tbl, file.path(to_csv, "pheno.csv"))
     }
 
     res <- list(
