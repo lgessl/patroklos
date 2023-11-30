@@ -11,13 +11,16 @@
 read <- function(
     data_spec
 ){
+    if(!inherits(data_spec, "DataSpec")){
+        stop("data_spec must be a DataSpec object")
+    }
+    
     # extract values from data_spec
     directory <- data_spec$directory
     expr_fname <- data_spec$expr_fname
     pheno_fname <- data_spec$pheno_fname
     patient_id_col <- data_spec$patient_id_col
     gene_id_col <- data_spec$gene_id_col
-
 
     # read
     fnames <- c(expr_fname, pheno_fname)
