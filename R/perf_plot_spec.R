@@ -2,6 +2,7 @@ new_PerfPlotSpec <- function(
     fname,
     x_metric,
     y_metric,
+    benchmark,
     model_names_in_legend,
     also_single_plots,
     single_csvs,
@@ -17,6 +18,7 @@ new_PerfPlotSpec <- function(
     stopifnot(is.character(fname))
     stopifnot(is.character(x_metric))
     stopifnot(is.character(y_metric))
+    stopifnot(is.character(benchmark))
     stopifnot(is.logical(also_single_plots))
     stopifnot(is.numeric(width))
     stopifnot(is.numeric(height))
@@ -29,6 +31,7 @@ new_PerfPlotSpec <- function(
         "fname" = fname,
         "x_metric" = x_metric,
         "y_metric" = y_metric,
+        "benchmark" = benchmark,
         "model_names_in_legend" = model_names_in_legend,
         "also_single_plots" = also_single_plots,
         "single_csvs" = single_csvs,
@@ -54,6 +57,8 @@ new_PerfPlotSpec <- function(
 #' @param y_metric string. The name of the performance measure to be plotted on the y-axis.
 #' All measures that can be passed to the `measure` parameter of `ROCR::performance()` are
 #' valid.
+#' @param benchmark string. Column in the test pheno holding the numeric benchmark values.
+#' Default is `"ipi"` (international prognostic index for DLBCL).
 #' @param also_single_plots logical. If passed to `compare_models()`, whether to also create
 #' a single plot for every model-data pair. Default is `TRUE`.
 #' @param width numeric. The width of the plot in `units`. Default is `7`.
@@ -69,6 +74,7 @@ PerfPlotSpec <- function(
     fname,
     x_metric,
     y_metric,
+    benchmark = "ipi",
     model_names_in_legend = NULL,
     also_single_plots = TRUE,
     single_csvs = TRUE,
@@ -91,6 +97,7 @@ PerfPlotSpec <- function(
         fname = fname,
         x_metric = x_metric,
         y_metric = y_metric,
+        benchmark = benchmark,
         model_names_in_legend = model_names_in_legend,
         also_single_plots = also_single_plots,
         single_csvs = single_csvs,
