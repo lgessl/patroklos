@@ -36,3 +36,47 @@ tibble_to_binary <- function(
 elements_unique <- function(x){
     return(length(unique(x)) == length(x))
 }
+
+
+# For two matrices or two vectors, intersect the (row)names and return the
+# correspnnding subset of both matrices or vectors. Additonally, you can
+# remove values, rows, columns with NA 
+intersect_by_names <- function(
+    a,
+    b,
+    rm_na = FALSE
+){
+    if(is.matrix(a) && is.matrix(b)){
+        if(is.null(rownames(a))) stop("intersect_by_names(): a has no row names")
+        if(is.null(rownames(b))) stop("intersect_by_names(): b has no row names")
+        if(rm_na){
+            complete_rows_a <- apply(a, 1, function(row) all(!is.na(row)))
+            complete_rows_b <- apply(b, 1, function(row) all(!is.na(row)))
+            a <- a[complete_rows_a, , drop = FALSE]
+            b <- b[complete_rows_b, , drop = FALSE]
+        }
+        intersect_names <- intersect(rownames(a), rownames(b))
+        if(length(intersect_names) == 0){
+            stop("intersect_by_names(): no common row names")
+        }
+        a <- a[intersect_names, , drop = FALSE]
+        b <- b[intersect_names, , drop = FALSE]
+        return(list(a, b))
+    } else if(is.vector(a) && is.vector(b)){
+        if(is.null(names(a))) stop("intersect_by_names(): a has no names")
+        if(is.null(names(b))) stop("intersect_by_names(): b has no names")
+        if(rm_na){
+            a <- a[!is.na(a)]
+            b <- b[!is.na(b)]
+        }
+        intersect_names <- intersect(names(a), names(b))
+        if(length(intersect_names) == 0){
+            stop("intersect_by_names(): no common names")
+        }
+        a <- a[intersect_names]
+        b <- b[intersect_names]
+        return(list(a, b))
+    } else {
+        stop("intersect_by_names(): a and b must be both matrices or both vectors")
+    }
+}
