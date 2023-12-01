@@ -51,9 +51,10 @@ test_that("prepare_and_fit", {
       model_spec = model_spec_1
   ))
   expect_true(is.list(pred_obs))
-  expect_true(is.matrix(pred_obs[["predictions"]]))
-  expect_equal(ncol(pred_obs[["predictions"]]), 1L)
-  expect_equal(ncol(pred_obs[["y"]]), 1L)
+  expect_true(is.vector(pred_obs[["predicted"]]))
+  expect_true(is.vector(pred_obs[["actual"]]))
+  expect_true(is.numeric(pred_obs[["predicted"]]))
+  expect_true(is.numeric(pred_obs[["actual"]]))
 
   expect_silent(pred_obs <- prepare_and_predict(
       expr_mat = expr_mat,

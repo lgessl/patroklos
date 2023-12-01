@@ -8,9 +8,9 @@
 #' constructor `DataSpec()` for details.
 #' @param model_spec ModelSpec S3 object. Specifications on the model. See the the
 #' constructor `ModelSpec()` for details.
-#' @return A list with two elements: 
-#' * `"predictions"`, a numeric one-column matrix holding predicted scores, and
-#' *  "y", a numeric vector holding the true response.
+#' @return A list with two numeric vectors: 
+#' * `"predictions"`: predicted scores,
+#' *  "actual": actual respponse.
 #' @export
 prepare_and_predict <- function(
     expr_mat,
@@ -44,10 +44,27 @@ prepare_and_predict <- function(
     }
     fit_obj <- readRDS(file.path(model_spec$save_dir, model_spec$fit_fname))
 
-    predictions <- predict(fit_obj, newx = x_y[["x"]])
+    predicted <- predict(fit_obj, newx = x_y[["x"]])
+
+    # Check what predict method did
+    if(!is.numeric(predicted)){
+        stop("predict method for class ", class(model_obj), "does not return a ", 
+        "numeric matrix or vector")
+    }
+    if(is.matrix(predicted)){
+        if(ncol(predicted) > 1L){
+            stop("predict method for class ", class(model_obj), " returns a matrix ",
+            "with more than one column")
+        }
+        predicted <- predicted[, 1]
+    }
+    if(is.null(names(predicted))){
+        names(predicted) <- rownames(x_y[["x"]])
+    }
+
     res <- list(
-        "predictions" = predictions, 
-        "y" = x_y[["y"]]
+        "predicted" = predicted, 
+        "actual" = x_y[["y"]][, 1]
     )
     return(res)
 }
