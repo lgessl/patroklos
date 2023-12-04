@@ -5,19 +5,22 @@
 \title{Construct a ModelSpec S3 object}
 \usage{
 ModelSpec(
+  name,
   fitter,
   optional_fitter_args = NULL,
   response_type = NULL,
   include_from_continuous_pheno = NULL,
   include_from_discrete_pheno = NULL,
   pfs_leq = NULL,
-  save_dir = ".",
+  save_dir = NULL,
   create_save_dir = TRUE,
   plot_fname = "training_error.pdf",
   fit_fname = "fit_obj.rds"
 )
 }
 \arguments{
+\item{name}{string. A telling name for the model.}
+
 \item{fitter}{function. The model fitting function to be used. Must take \code{x} and
 \code{y} as first two positional arguments. Further arguments can be passed via
 \code{optional_fitter_args} (below). Its return value must be an S3 object with a \code{plot()}
@@ -44,8 +47,8 @@ which means no discrete pheno variables are or will be included.}
 progression-free survival (PFS) below which samples are considered high-risk. Default
 is \code{NULL}.}
 
-\item{save_dir}{string. The directory in which to store the model in. Default is \code{"."},
-the current working directory.}
+\item{save_dir}{string. The directory in which to store the model in. Default is \code{NULL},
+in which case is is set to \code{name}.}
 
 \item{create_save_dir}{logical. Whether to create \code{save_dir} if it does not exist, yet.
 Default is \code{TRUE}.}

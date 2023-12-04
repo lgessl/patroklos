@@ -18,6 +18,7 @@ test_that("prepare_and_fit", {
   dir <- withr::local_tempdir()
 
   model_spec_1 <- ModelSpec(
+    name = "cox-zerosum",
     fitter = zeroSum::zeroSum,
     optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold),
     response_type = "survival_censored",
@@ -27,6 +28,7 @@ test_that("prepare_and_fit", {
     pfs_leq = 2.
   )
   model_spec_2 <- ModelSpec(
+    name = "binomial-zerosum",
     fitter = zeroSum::zeroSum,
     optional_fitter_args = list(family = "binomial", alpha = 1, nFold = n_fold),
     response_type = "binary",

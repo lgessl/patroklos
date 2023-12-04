@@ -15,6 +15,7 @@ test_that("Prepare() works",{
   pheno_tbl <- data[["pheno_tbl"]]
   data_spec <- DataSpec(name = "Mock et al. (2023)")
   model_spec <- ModelSpec(
+    name = "zerosum",
     fitter = zeroSum::zeroSum,
     response_type = "survival_censored",
     include_from_continuous_pheno = "continuous_var",

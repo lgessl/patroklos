@@ -10,6 +10,7 @@ test_that("generate_predictor() works", {
   )
   data_spec <- DataSpec(name = "Mock et al. (2023)")
   model_spec <- ModelSpec(
+    name = "zerosum",
     fitter = zeroSum::zeroSum,
     include_from_continuous_pheno = "continuous_var",
     include_from_discrete_pheno = "discrete_var"
@@ -97,6 +98,7 @@ test_that("generate_response() works", {
     progression_col = "prog"
   )
   model_spec <- ModelSpec(
+    name = "zerosum",
     fitter = zeroSum::zeroSum,
     response_type = "binary",
     pfs_leq = 1.9

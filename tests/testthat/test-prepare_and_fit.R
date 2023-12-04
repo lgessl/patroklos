@@ -19,6 +19,7 @@ test_that("prepare_and_fit() works", {
 
   # Case 1: Fit all models specified
   model_spec_1 <- ModelSpec(
+    model = "cox-zerosum",
     fitter = zeroSum::zeroSum,
     optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold),
     response_type = "survival_censored",
@@ -27,6 +28,7 @@ test_that("prepare_and_fit() works", {
     save_dir = file.path(dir, "model1") 
   )
   model_spec_2 <- ModelSpec(
+    model = "binomial-zerosum",
     fitter = zeroSum::zeroSum,
     optional_fitter_args = list(family = "binomial", alpha = 1, nFold = n_fold),
     response_type = "binary",
@@ -49,6 +51,7 @@ test_that("prepare_and_fit() works", {
 
   # Case 2: Fit all models specified, but one already exists
   model_spec_3 <- ModelSpec(
+    name = "cox-zerosum",
     fitter = zeroSum::zeroSum,
     optional_fitter_args = list(family = "cox", alpha = 0.5, nFold = n_fold),
     response_type = "survival_censored",

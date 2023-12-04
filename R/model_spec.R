@@ -1,5 +1,6 @@
 
 new_ModelSpec <- function(
+    name,
     fitter,
     optional_fitter_args,
     response_type,
@@ -13,6 +14,7 @@ new_ModelSpec <- function(
 ){
     check_fitter(fitter, optional_fitter_args)
     response_type <- match.arg(response_type, c("binary", "survival_censored"))
+    stopifnot(is.character(name))
     stopifnot(is.character(include_from_continuous_pheno) || is.null(include_from_continuous_pheno))
     stopifnot(is.character(include_from_discrete_pheno) || is.null(include_from_discrete_pheno))
     stopifnot(is.character(save_dir))
@@ -22,6 +24,7 @@ new_ModelSpec <- function(
     stopifnot(is.character(fit_fname))
 
     model_spec_list <- list(
+        "name" = name,
         "fitter" = fitter,
         "optional_fitter_args" = optional_fitter_args,
         "response_type" = response_type,
@@ -40,6 +43,7 @@ new_ModelSpec <- function(
 #' @description A ModelSpec object holds all the tools and information needed to fit and
 #' store a model. It is used as an argument to `fit()` and `prepare_and_fit()`. Its base
 #' object is a list containing:
+#' @param name string. A telling name for the model.
 #' @param fitter function. The model fitting function to be used. Must take `x` and
 #' `y` as first two positional arguments. Further arguments can be passed via
 #' `optional_fitter_args` (below). Its return value must be an S3 object with a `plot()` 
@@ -60,8 +64,8 @@ new_ModelSpec <- function(
 #' @param pfs_leq numeric. Only used if `response_type == "binary"`. The value of
 #' progression-free survival (PFS) below which samples are considered high-risk. Default
 #' is `NULL`.
-#' @param save_dir string. The directory in which to store the model in. Default is `"."`,
-#' the current working directory.
+#' @param save_dir string. The directory in which to store the model in. Default is `NULL`, 
+#' in which case is is set to `name`.
 #' @param create_save_dir logical. Whether to create `save_dir` if it does not exist, yet. 
 #' Default is `TRUE`.
 #' @param plot_fname string. Store the plot resulting from `plot(fit_obj)` in `save_dir`
@@ -71,18 +75,23 @@ new_ModelSpec <- function(
 #' @return A ModelSpec S3 object.
 #' @export
 ModelSpec <- function(
+    name,
     fitter,
     optional_fitter_args = NULL,
     response_type = NULL,
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL,
     pfs_leq = NULL,
-    save_dir = ".",
+    save_dir = NULL,
     create_save_dir = TRUE,
     plot_fname = "training_error.pdf",
     fit_fname = "fit_obj.rds"
 ){
+    if(is.null(save_dir)){
+        save_dir <- name
+    }
     model_spec <- new_ModelSpec(
+        name = name,
         fitter = fitter,
         optional_fitter_args = optional_fitter_args,
         response_type = response_type,
