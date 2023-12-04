@@ -40,7 +40,7 @@ elements_unique <- function(x){
 
 # For two matrices or two vectors, intersect the (row)names and return the
 # correspnnding subset of both matrices or vectors. Additonally, you can
-# remove values, rows, columns with NA 
+# remove values (rows) with NA 
 intersect_by_names <- function(
     a,
     b,
