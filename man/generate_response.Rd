@@ -2,42 +2,19 @@
 % Please edit documentation in R/generate_xy.R
 \name{generate_response}
 \alias{generate_response}
-\title{Generate the response matrix in a response-specific way}
+\title{Generate the response matrix in a model-specific way}
 \usage{
-generate_response(
-  pheno_tbl,
-  response_type,
-  patient_id_col,
-  pfs_col,
-  progression_col,
-  pfs_leq
-)
+generate_response(pheno_tbl, data_spec, model_spec)
 }
 \arguments{
 \item{pheno_tbl}{tibble. The pheno data, with patients as rows and variables as
 columns.}
 
-\item{response_type}{string. For which response type to prepare. One of
-\itemize{
-\item \code{"survival_censored"}: response matrix (return value) will have two columns,
-the first is the survival time, the second is the censoring status (1 = censored,
-0 = not censored)
-\item \code{"binary"}: discretize the response via pfs <= \code{pfs_leq} (see details)
-}}
+\item{data_spec}{DataSpec S3 object. Specifications on the data (\code{pheno_tbl}). See
+the constructor \code{DataSpec()} for details.}
 
-\item{patient_id_col}{string. The name of the column in the pheno data file that holds
-patient identifiers. Default is \code{"patient_id"}.}
-
-\item{pfs_col}{string. The name of the column in the pheno data file that holds the
-progression-free survival (PFS) data. Default is \code{"pfs_years"}.}
-
-\item{progression_col}{string. The name of the column in the \code{pheno_tbl} that holds
-the progression status encoded as 1 = progession, 0 = no progression.
-Default is \code{"progression"}.}
-
-\item{pfs_leq}{numeric. Categorize patients with progression-free survival (PFS) less than
-or equal \code{pfs_leq} as high-risk. Only used if \code{response_type == "binary"}.
-Default is 2.0.}
+\item{model_spec}{ModelSpec S3 object. Specifications on the model to prepare for.
+See the constructor \code{ModelSpec()} for details.}
 }
 \value{
 Response matrix: a numeric matrix with patients as rows and variables as columns.
@@ -47,8 +24,8 @@ Generate the numeric response matrix from the pheno data for a
 certain model
 }
 \details{
-If \code{response_type == "binary"}, the response matrix will have one column filled
-with
+If \code{model_spec$response_type == "binary"}, the response matrix will have one
+column filled with
 \itemize{
 \item \code{1} if progress is observed at a time <= \code{pfs_leq},
 \item \code{0} if progress or censoring is observed at a time > \code{pfs_leq},

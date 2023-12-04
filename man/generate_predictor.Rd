@@ -4,13 +4,7 @@
 \alias{generate_predictor}
 \title{Generate the predictor matrix in a model-specific way}
 \usage{
-generate_predictor(
-  expr_mat,
-  pheno_tbl,
-  patient_id_col,
-  include_from_continuous_pheno = NULL,
-  include_from_discrete_pheno = NULL
-)
+generate_predictor(expr_mat, pheno_tbl, data_spec, model_spec)
 }
 \arguments{
 \item{expr_mat}{numeric matrix. The expression data, with patients as rows
@@ -19,17 +13,11 @@ and genes as columns.}
 \item{pheno_tbl}{tibble. The pheno data, with patients as rows and variables as
 columns.}
 
-\item{patient_id_col}{string. The name of the column in \code{pheno_tbl} that holds
-the patient identifiers. Default is \code{"patient_id"}.}
+\item{data_spec}{DataSpec S3 object. Specifications on the data (\code{expr_mat} and
+\code{model_spec}). See the the constructor \code{DataSpec()} for details.}
 
-\item{include_from_continuous_pheno}{vector of strings. The names of the continuous
-variables in \verb{pheno_tbl to include in the predictor matrix. The values will be coerced to numeric. Default is }NULL`, which means no continuous pheno
-variables will be included.}
-
-\item{include_from_discrete_pheno}{vector of strings. The names of the discrete
-variables in \code{pheno_tbl} to be include in the predictor matrix. A discrete
-variable with n levels will be converted to n-1 dummy binary variables. Default is
-\code{NULL}, which means no discrete pheno variables will be included.}
+\item{model_spec}{ModelSpec S3 object. Specifications on the model to prepare for.
+See the the constructor \code{ModelSpec()} for details.}
 }
 \value{
 A numeric matrix with patients as rows and variables as columns.
