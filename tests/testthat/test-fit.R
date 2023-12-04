@@ -16,7 +16,7 @@ test_that("fit function works correctly", {
   save_dir_base <- file.path(results_dir, "mock")
 
   model_spec <- ModelSpec(
-    model "zerosum",
+    name = "zerosum",
     fitter = zeroSum::zeroSum,
     response_type = "survival_censored",
     optional_fitter_args = list("alpha" = 0.5, nFold = n_fold),
