@@ -19,10 +19,10 @@ constructor \code{DataSpec()} for details.}
 constructor \code{ModelSpec()} for details.}
 }
 \value{
-A list with two elements:
+A list with two numeric vectors:
 \itemize{
-\item \code{"predictions"}, a numeric one-column matrix holding predicted scores, and
-\item "y", a numeric vector holding the true response.
+\item \code{"predictions"}: predicted scores,
+\item "actual": actual, \emph{according to \code{model_spec$pfs_leq} discretized} response
 }
 }
 \description{
