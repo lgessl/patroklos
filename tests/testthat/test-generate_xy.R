@@ -8,7 +8,7 @@ test_that("generate_predictor() works", {
     continuous_var = c(1, 2, 3), # +1 column
     discrete_var = c("A", "B", "A") # +1 column
   )
-  data_spec <- DataSpec()
+  data_spec <- DataSpec(name = "Mock et al. (2023)")
   model_spec <- ModelSpec(
     fitter = zeroSum::zeroSum,
     include_from_continuous_pheno = "continuous_var",
@@ -91,6 +91,7 @@ test_that("generate_response() works", {
     "patient" = 1:4
   )
   data_spec <- DataSpec(
+    name = "Mock et al. (2023)",
     patient_id_col = "patient",
     pfs_col = "pfs",
     progression_col = "prog"

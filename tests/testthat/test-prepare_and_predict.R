@@ -14,7 +14,7 @@ test_that("prepare_and_fit", {
   )
   expr_mat <- data[["expr_mat"]]
   pheno_tbl <- data[["pheno_tbl"]]
-  data_spec <- DataSpec()
+  data_spec <- DataSpec(name = "Mock et al. (2023)")
   dir <- withr::local_tempdir()
 
   model_spec_1 <- ModelSpec(

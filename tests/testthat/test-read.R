@@ -1,6 +1,7 @@
 test_that("read function works correctly", {
 
   data_spec <- DataSpec(
+    name = "Mock et al. (2023)"
     directory = "data/schmitz",
     expr_fname = "expr1.csv",
     pheno_fname = "pheno1.csv",

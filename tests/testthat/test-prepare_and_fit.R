@@ -14,7 +14,7 @@ test_that("prepare_and_fit() works", {
   )
   expr_mat <- data[["expr_mat"]]
   pheno_tbl <- data[["pheno_tbl"]]
-  data_spec <- DataSpec()
+  data_spec <- DataSpec(name = "Mock et al. (2023)")
   dir <- withr::local_tempdir()
 
   # Case 1: Fit all models specified

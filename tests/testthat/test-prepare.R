@@ -13,7 +13,7 @@ test_that("Prepare() works",{
   )
   expr_mat <- data[["expr_mat"]]
   pheno_tbl <- data[["pheno_tbl"]]
-  data_spec <- DataSpec()
+  data_spec <- DataSpec(name = "Mock et al. (2023)")
   model_spec <- ModelSpec(
     fitter = zeroSum::zeroSum,
     response_type = "survival_censored",

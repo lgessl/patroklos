@@ -5,6 +5,7 @@
 \title{Construct a DataSpec S3 object}
 \usage{
 DataSpec(
+  name,
   directory = ".",
   expr_fname = "expr.csv",
   pheno_fname = "pheno.csv",
@@ -15,6 +16,8 @@ DataSpec(
 )
 }
 \arguments{
+\item{name}{string. A telling name for the data set (e.g. \code{"Schmitz et al. 2018"}).}
+
 \item{directory}{string. The directory where both expression and pheno csv
 files lie.}
 

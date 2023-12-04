@@ -1,4 +1,5 @@
 new_DataSpec <- function(
+    name,
     directory,
     expr_fname,
     pheno_fname,
@@ -7,6 +8,7 @@ new_DataSpec <- function(
     progression_col,
     gene_id_col
 ){
+    stopifnot(is.character(name))
     stopifnot(is.character(directory))
     stopifnot(is.character(expr_fname))
     stopifnot(is.character(pheno_fname))
@@ -15,6 +17,7 @@ new_DataSpec <- function(
     stopifnot(is.character(progression_col))
     stopifnot(is.character(gene_id_col))
     data_spec_list <- list(
+        "name" = name,
         "directory" = directory,
         "expr_fname" = expr_fname,
         "pheno_fname" = pheno_fname,
@@ -29,6 +32,7 @@ new_DataSpec <- function(
 #' @title Construct a DataSpec S3 object
 #' @description A DataSpec object specifies the location and format of the expression
 #' and pheno data of a single data set. This enables reading and preparing the data.
+#' @param name string. A telling name for the data set (e.g. `"Schmitz et al. 2018"`).
 #' @param directory string. The directory where both expression and pheno csv
 #' files lie.
 #' @param expr_fname string. The name of the expression csv file inside `directory`.
@@ -54,6 +58,7 @@ new_DataSpec <- function(
 #' information on the data.
 #' @export
 DataSpec <- function(
+    name,
     directory = ".",
     expr_fname = "expr.csv",
     pheno_fname = "pheno.csv",
@@ -63,6 +68,7 @@ DataSpec <- function(
     gene_id_col = "gene_id"
 ){
     data_spec <- new_DataSpec(
+        name = name,
         directory = directory,
         expr_fname = expr_fname,
         pheno_fname = pheno_fname,
