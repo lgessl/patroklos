@@ -63,7 +63,7 @@ new_ModelSpec <- function(
 #' which means no discrete pheno variables are or will be included.
 #' @param pfs_leq numeric. Only used if `response_type == "binary"`. The value of
 #' progression-free survival (PFS) below which samples are considered high-risk. Default
-#' is `NULL`.
+#' is `2.0`.
 #' @param save_dir string. The directory in which to store the model in. Default is `NULL`, 
 #' in which case is is set to `name`.
 #' @param create_save_dir logical. Whether to create `save_dir` if it does not exist, yet. 
@@ -81,7 +81,7 @@ ModelSpec <- function(
     response_type = NULL,
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL,
-    pfs_leq = NULL,
+    pfs_leq = 2.0,
     save_dir = NULL,
     create_save_dir = TRUE,
     plot_fname = "training_error.pdf",

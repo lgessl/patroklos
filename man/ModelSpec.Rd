@@ -11,7 +11,7 @@ ModelSpec(
   response_type = NULL,
   include_from_continuous_pheno = NULL,
   include_from_discrete_pheno = NULL,
-  pfs_leq = NULL,
+  pfs_leq = 2,
   save_dir = NULL,
   create_save_dir = TRUE,
   plot_fname = "training_error.pdf",
@@ -45,7 +45,7 @@ which means no discrete pheno variables are or will be included.}
 
 \item{pfs_leq}{numeric. Only used if \code{response_type == "binary"}. The value of
 progression-free survival (PFS) below which samples are considered high-risk. Default
-is \code{NULL}.}
+is \code{2.0}.}
 
 \item{save_dir}{string. The directory in which to store the model in. Default is \code{NULL},
 in which case is is set to \code{name}.}
