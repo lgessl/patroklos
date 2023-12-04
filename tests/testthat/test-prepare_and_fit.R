@@ -1,4 +1,4 @@
-test_that("prepare_and_fit", {
+test_that("prepare_and_fit() works", {
 
   set.seed(4352)
 
