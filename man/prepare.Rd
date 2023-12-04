@@ -4,17 +4,7 @@
 \alias{prepare}
 \title{Prepare data for model fitting and predicting}
 \usage{
-prepare(
-  expr_mat,
-  pheno_tbl,
-  response_type,
-  include_from_continuous_pheno = NULL,
-  include_from_discrete_pheno = NULL,
-  patient_id_col = "patient_id",
-  pfs_col = "pfs_years",
-  progression_col = "progression",
-  pfs_leq = 2
-)
+prepare(expr_mat, pheno_tbl, data_spec, model_spec)
 }
 \arguments{
 \item{expr_mat}{numeric matrix. The expression data, with patients as rows
@@ -23,39 +13,11 @@ and genes as columns. The row names must be unique patient identifiers.}
 \item{pheno_tbl}{tibble. The pheno data, with patients as rows and variables as
 columns.}
 
-\item{response_type}{string. For which response type to prepare. One of
-\itemize{
-\item \code{"survival_censored"}: response matrix has two columns, the first is the
-survival time, the second is the censoring status (1 = censored, 0 = not
-censored)
-\item \code{"binary"}: discretize the response via pfs <= \code{pfs_leq} (see below and
-for details see \code{generate_response()})
-}}
+\item{data_spec}{DataSpec S3 object. Specifications on the data (\code{expr_mat},
+\code{pheno_tbl}). See the the constructor \code{DataSpec()} for details.}
 
-\item{include_from_continuous_pheno}{vector of strings. The names of the
-\emph{continuous} variables in the pheno data file to be included in the
-predictor matrix. The values will be coerced to numeric. Default is \code{NULL},
-which means no continuous pheno variables will be included.}
-
-\item{include_from_discrete_pheno}{vector of strings. The names of the
-\emph{discrete} variables in the pheno data file to be included in the predictor
-matrix. A discrete variable with n levels will be converted to n-1 binary
-variables. Default is \code{NULL}, which means no discrete pheno variables will
-be included.}
-
-\item{patient_id_col}{string. The name of the column in \code{pheno_tbl}
-that holds the patient identifiers. Default is \code{"patient_id"}.}
-
-\item{pfs_col}{string. The name of the column in \code{pheno_tbl} that holds the
-progression-free survival (PFS) values. Default is \code{"pfs_years"}.}
-
-\item{progression_col}{string. The name of the column in \code{pheno_tbl} that
-holds the progression status encoded as 1 = progression, 0 = no progression.
-Default is \code{"progression"}.}
-
-\item{pfs_leq}{numeric. Only used if \code{response_type == "binary"}. The value
-of progression-free survival (PFS) below which samples are considered high-risk.
-Default is 2.0.}
+\item{model_spec}{ModelSpec S3 object. Specifications on the model to prepare for.
+See the the constructor \code{ModelSpec()} for details.}
 }
 \value{
 A list with two numeric matrices, \code{x} and \code{y}. \code{x} is the predictor matrix,
