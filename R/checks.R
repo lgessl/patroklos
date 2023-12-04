@@ -16,13 +16,14 @@ check_tbl_columns_exist <- function(
 }
 
 check_consistent_patient_ids <- function(
-    stage,
+    stage = c("preprocessing", "before_generate_predictor", "after_generate_xy"),
     expr,
     pheno,
-    patient_id_col = NULL,
-    gene_id_col = NULL
+    data_spec = NULL
 ){
-    # extract patient ids from expression and pheno data
+    # Extract
+    stage <- match.arg(stage)
+    patient_id_col <- data_spec$patient_id_col
     patient_ids_expr <- NULL
     patient_ids_pheno <- NULL
     # case 1: during preprocessing
@@ -39,11 +40,6 @@ check_consistent_patient_ids <- function(
     if(stage == "after_generate_xy"){
         patient_ids_expr <- rownames(expr)
         patient_ids_pheno <- rownames(pheno)
-    }
-
-    if(length(c(patient_ids_expr, patient_ids_pheno)) < 2){
-        stop("stage must be on of 'preprocessing', \
-            'before_generate_predictor', 'after_generate_xy'.")
     }
 
     if(!identical(patient_ids_expr, patient_ids_pheno)){

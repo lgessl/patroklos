@@ -31,7 +31,7 @@ generate_predictor <- function(
         stage = "before_generate_predictor", 
         expr = expr_mat, 
         pheno = pheno_tbl,
-        patient_id_col = patient_id_col
+        data_spec = data_spec
     )
 
     # continuous pheno first
