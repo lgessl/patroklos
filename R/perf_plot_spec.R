@@ -3,7 +3,6 @@ new_PerfPlotSpec <- function(
     x_metric,
     y_metric,
     benchmark,
-    model_names_in_legend,
     also_single_plots,
     single_csvs,
     x_lab,
@@ -32,7 +31,6 @@ new_PerfPlotSpec <- function(
         "x_metric" = x_metric,
         "y_metric" = y_metric,
         "benchmark" = benchmark,
-        "model_names_in_legend" = model_names_in_legend,
         "also_single_plots" = also_single_plots,
         "single_csvs" = single_csvs,
         "x_lab" = x_lab,
@@ -57,6 +55,10 @@ new_PerfPlotSpec <- function(
 #' @param y_metric string. The name of the performance measure to be plotted on the y-axis.
 #' All measures that can be passed to the `measure` parameter of `ROCR::performance()` are
 #' valid.
+#' @param pfs_leq numeric. Progression-free survival threshold that divides samples into 
+#' high-risk (PFS < `pfs_leq`) and low-risk (PFS >= `pfs_leq`) group. Model performance
+#' will be measured in terms of how well it can separate these two groups as a binary
+#' classifier. Default is `2.0`.
 #' @param benchmark string. Column in the test pheno holding the numeric benchmark values.
 #' Default is `"ipi"` (international prognostic index for DLBCL).
 #' @param also_single_plots logical. If passed to `compare_models()`, whether to also create
@@ -75,7 +77,6 @@ PerfPlotSpec <- function(
     x_metric,
     y_metric,
     benchmark = "ipi",
-    model_names_in_legend = NULL,
     also_single_plots = TRUE,
     single_csvs = TRUE,
     x_lab = NULL,
@@ -98,7 +99,6 @@ PerfPlotSpec <- function(
         x_metric = x_metric,
         y_metric = y_metric,
         benchmark = benchmark,
-        model_names_in_legend = model_names_in_legend,
         also_single_plots = also_single_plots,
         single_csvs = single_csvs,
         x_lab = x_lab,
