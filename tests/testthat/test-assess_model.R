@@ -5,16 +5,16 @@ test_that("calculate_perf_metric() works", {
 
   dir <- withr::local_tempdir()
   n_fold <- 3
-  generate_mock_data(
+  data <- generate_mock_data(
     n_samples = n,
     n_genes = 5,
-    n_na_in_pheno = 3,
-    to_csv = dir
+    n_na_in_pheno = 3
   )
+  expr_mat <- data[["expr_mat"]]
+  pheno_tbl <- data[["pheno_tbl"]]
 
   data_spec <- DataSpec(
-    name = "Mock et al. (2023)",
-    directory = dir
+    name = "Mock et al. (2023)"
   )
   model_spec_1 <- ModelSpec(
     name = "cox-zerosum",
@@ -36,19 +36,23 @@ test_that("calculate_perf_metric() works", {
     y_metric = "prec",
     benchmark = "ipi"
   )
-  data <- read(data_spec)
   prepare_and_fit(
-    expr_mat = data[["expr_mat"]],
-    pheno_tbl = data[["pheno_tbl"]],
+    expr_mat = expr_mat,
+    pheno_tbl = pheno_tbl,
     data_spec = data_spec,
     model_spec = list(model_spec_1, model_spec_2)
   )
+
   expect_silent(assess_model(
+    expr_mat = expr_mat,
+    pheno_tbl = pheno_tbl,
     data_spec = data_spec,
     model_spec = model_spec_1,
     perf_plot_spec = perf_plot_spec
   ))
   expect_silent(assess_model(
+    expr_mat = expr_mat,
+    pheno_tbl = pheno_tbl,
     data_spec = data_spec,
     model_spec = model_spec_2,
     perf_plot_spec = perf_plot_spec
