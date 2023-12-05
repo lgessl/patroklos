@@ -1,133 +1,77 @@
+#' @title Compare multiple models in a single plot
+#' @description Compare the performance of multiple models and (optionally)
+#' multiple data sets in a single plot. Consider the model a classifier for
+#' high-risk versus low-risk patients (depening on `per_plot_spec$pfs_leq`).
+#' For every model-data pair, plot one classifier property on the x-axis 
+#' against another one on the y-axis. If all models are evaluated on the same
+#' data set, the plot can also contain a benchmark classifier given via a score
+#' in the pheno data (e.g. the International Prognostic Index (IPI) for DLBCL).
+#' @param model_spec_list list of ModelSpec objects. The models to be compared.
+#' @param data_spec_list list of DataSpec objects. Data sets corresponing to the
+#' models in `model_spec_list`. If is has length 1, the same data will be used 
+#' to evaluate every model specified in `model_spec_list`. If more than one data 
+#' set is given, the benchmark classifier will not be plotted to avoid an 
+#' overcrowded plot.
+#' @param perf_plot_spec PerfPlotSpec object. The specifications for the plot.
+#' @return A tibble containing the performance measures for all models and the
+#' benchmark classifier (if given and included in the plot).
+#' @details If `perf_plot_spec$also_single_plots` is `TRUE`, create a single plot
+#' for every model-data pair. For every such plot, a PlotSpec object inheriting
+#' from `perf_plot_spec` is derived in a reasonable way and stored in the model 
+#' directory under `paste0(perf_plot_spec$x_metric, _vs_, perf_plot_spec$y_metric, 
+#' .pdf)`. If `perf_plot_spec$single_csvs` is `TRUE`, a csv table holding the 
+#' plot the data will show up in the same directory under the same name except
+#' for the file extension (`.csv` instead of `.pdf`).
 compare_models <- function(
     model_spec_list,
     data_spec_list,
     perf_plot_spec
 ){
-    # If model names for legend are not present, automatically generate them 
-    if(is.null(perf_plot_spec$model_names_in_legend)){
-        perf_plot_spec$model_names_in_legend <- 
-            sapply(model_spec_list, function(model_spec) model_spec$fit_fname)
-    }
     perf_tbls <- list()
+    # If more than one data_spec (i.e., several data sets) are given, do not plot
+    # the benchmark (too crowdy) 
+    one_data <- FALSE
     if(length(data_spec_list) == 1L){
         data_spec_list <- rep(data_spec_list, length(model_spec_list))
+        one_data <- TRUE
     }
 
-    # Collect tibbles, (optionally) individual plots, csv files
+    # Collect tibbles, (optionally) generate individual plots, csv files
     for(i in seq_along(model_spec_list)){
+
+        # Extract and read in
         data_spec <- data_spec_list[[i]]
         model_spec <- model_spec_list[[i]]
         data <- read(data_spec)
-        pred_y <- prepare_and_predict(
-            expr_mat = data[["expr_mat"]],
-            pheno_tbl = data[["pheno_tbl"]],
-            data_spec = data_spec,
-            model_spec = model_spec
-        )
-        perf_tbls[[i]] <- assess_model(
-            predictions = pred_y[["predictions"]],
-            y = pred_y[["y"]],
-            perf_plot_spec = perf_plot_spec,
-            model_spec = model_spec
-        )
-    }
-    names(perf_tbls) <- perf_plot_spec$model_names_in_legend
-    perf_tbl <- dplyr::bind_rows(perf_tbls, .id = "model")
+        expr_mat <- data[["expr_mat"]]
+        pheno_tbl <- data[["pheno_tbl"]]
 
-    # Plot
-    plt <- ggplot2::ggplot(
-        perf_tbl,
-        ggplot2::aes(
-            x = .data[[perf_plot_spec$x_metric]], 
-            y = .data[[perf_plot_spec$y_metric]], 
-            color = model
-            )
-        ) +
-        ggplot2::geom_line() +
-        ggplot2::geom_point() +
-        ggplot2::ggtitle(perf_plot_spec$title) +
-        ggplot2::xlab(perf_plot_spec$x_axis) +
-        ggplot2::ylab(perf_plot_spec$y_axis)
-    if(!is.null(perf_plot_spec$colors)){
-        plt <- plt + ggplot2::scale_color_manual(values = perf_plot_spec$colors)
+        # Prepare for assess_model()
+        single_perf_plot_spec <- perf_plot_spec
+        single_perf_plot_spec$fname <- file.path(
+            model_spec$save_dir,
+            stringr::str_c(perf_plot_spec$x_metric, "_vs_", 
+                perf_plot_spec$y_metric, ".pdf")
+        )
+
+        single_tbls <- assess_model(
+            expr_mat = expr_mat,
+            pheno_tbl = pheno_tbl,
+            data_spec = data_spec,
+            model_spec = model_spec,
+            perf_plot_spec = single_perf_plot_spec
+        )
+        perf_tbls[names(single_tbls)] <- single_tbls
+
+        if(!one_data) # Remove if more than one data set is given
+            perf_tbls[[perf_plot_spec$benchmark]] <- NULL
     }
-    if(perf_plot_spec$show_plots){
-        print(plt)
-    }
-    ggplot2::ggsave(
-        perf_plot_spec$fname, 
-        plt, 
-        width = perf_plot_spec$width, 
-        height = perf_plot_spec$height, 
-        units = perf_plot_spec$units
+
+    perf_tbl <- dplyr::bind_rows(perf_tbls, .id = "model")
+    plot_perf_metric(
+        perf_tbl = perf_tbl,
+        perf_plot_spec = perf_plot_spec
     )
 
     return(perf_tbl)
-}
-
-assess_model <- function(
-    predictions,
-    y,
-    perf_plot_spec,
-    model_spec
-){
-    # Extract most frequently used values
-    x_metric <- perf_plot_spec$x_metric
-    y_metric <- perf_plot_spec$y_metric
-    plt_basename <- basename(perf_plot_spec$fname)
-
-    # Calculate performance measures
-    rocr_prediction <- ROCR::prediction(predictions, y)
-    rocr_perf <- ROCR::performance(
-        rocr_prediction,
-        measure =  x_metric,
-        x.measure = y_metric
-    )
-    # Store them in a tibble
-    tbl <- tibble::tibble(
-        rocr_perf@x.values[[1]],
-        rocr_perf@y.values[[1]],
-        rocr_perf@alpha.values[[1]]
-    )
-    names(tbl) <- c(
-        x_metric, 
-        y_metric,
-        "cutoff"
-        )
-    any_na <- apply(tbl, 1, function(x) any(is.na(x)))
-    tbl <- tbl[!any_na, ]
-
-    # Plot
-    if(perf_plot_spec$also_single_plots){
-        plt <- ggplot2::ggplot(tbl, ggplot2::aes(.data[[x_metric]], .data[[y_metric]])) +
-            ggplot2::geom_line() +
-            ggplot2::geom_point() +
-            ggplot2::ggtitle(perf_plot_spec$title) +
-            ggplot2::xlab(perf_plot_spec$x_axis) +
-            ggplot2::ylab(perf_plot_spec$y_axis)
-        if(!is.null(perf_plot_spec$colors)){
-            plt <- plt + ggplot2::scale_color_manual(values = perf_plot_spec$colors)
-        }
-
-        plt_fname <- file.path(model_spec$save_dir, plt_basename)
-        ggplot2::ggsave(
-            plt_fname, 
-            plt, 
-            width = perf_plot_spec$width, 
-            height = perf_plot_spec$height, 
-            units = perf_plot_spec$units
-        )
-        if(perf_plot_spec$show_plots){
-            print(plt)
-        }
-    }
-
-    # store csv
-    if(perf_plot_spec$single_csvs){
-        csv_basename <- stringr::str_replace(plt_basename, "\\..+$", ".csv")
-        csv_fname <- file.path(model_spec$save_dir, csv_basename)
-        readr::write_csv(tbl, csv_fname)
-    }
-
-    return(tbl)
 }

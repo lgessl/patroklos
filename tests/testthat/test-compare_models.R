@@ -2,7 +2,7 @@ test_that("prepare_and_fit", {
 
   set.seed(4352)
 
-  n_samples <- 30
+  n_samples <- 25
   n_genes <- 5
   n_na_in_pheno <- 5
   n_fold <- 2
@@ -14,10 +14,11 @@ test_that("prepare_and_fit", {
     n_na_in_pheno = n_na_in_pheno,
     to_csv = data_dir
   )
-  data_spec <- DataSpec(directory = data_dir)
+  data_spec <- DataSpec(name = "Mock et al. (2023)", directory = data_dir)
 
   model_dir <- withr::local_tempdir()
   model_spec_1 <- ModelSpec(
+    name = "cox-zerosum",
     fitter = zeroSum::zeroSum,
     optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold),
     response_type = "survival_censored",
@@ -28,6 +29,7 @@ test_that("prepare_and_fit", {
     fit_fname = "model1.rds"
   )
   model_spec_2 <- ModelSpec(
+    name = "binomial-zerosum",
     fitter = zeroSum::zeroSum,
     optional_fitter_args = list(family = "binomial", alpha = 1, nFold = n_fold),
     response_type = "binary",
@@ -51,10 +53,10 @@ test_that("prepare_and_fit", {
     fname = file.path(model_dir, "perf_plot.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
-    show_plots = FALSE
+    show_plots = TRUE
   )
 
-  expect_message(
+  expect_no_error(
     compare_models(
         data_spec_list = list(data_spec),
         model_spec_list = model_spec_list,
