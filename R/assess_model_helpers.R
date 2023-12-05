@@ -1,3 +1,4 @@
+#' @importFrom rlang .data
 plot_perf_metric <- function(
     perf_tbl,
     perf_plot_spec
@@ -8,7 +9,7 @@ plot_perf_metric <- function(
         ggplot2::aes(
             x = .data[[perf_plot_spec$x_metric]], 
             y = .data[[perf_plot_spec$y_metric]], 
-            color = model
+            color = .data[["model"]]
             )
         ) +
         ggplot2::geom_line() +
