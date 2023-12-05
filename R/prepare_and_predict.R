@@ -11,6 +11,7 @@
 #' @return A list with two numeric vectors: 
 #' * `"predictions"`: predicted scores,
 #' *  "actual": actual, *according to `model_spec$pfs_leq` discretized* response
+#' @importFrom stats predict
 #' @export
 prepare_and_predict <- function(
     expr_mat,
@@ -44,12 +45,12 @@ prepare_and_predict <- function(
 
     # Check what predict method did
     if(!is.numeric(predicted)){
-        stop("predict method for class ", class(model_obj), "does not return a ", 
+        stop("predict method for class ", class(fit_obj), "does not return a ", 
         "numeric matrix or vector")
     }
     if(is.matrix(predicted)){
         if(ncol(predicted) > 1L){
-            stop("predict method for class ", class(model_obj), " returns a matrix ",
+            stop("predict method for class ", class(fit_obj), " returns a matrix ",
             "with more than one column")
         }
         predicted <- predicted[, 1]
