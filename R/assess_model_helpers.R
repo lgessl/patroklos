@@ -84,7 +84,8 @@ add_benchmark_perf_metric <- function(
 ){
     
     if(is.null(perf_plot_spec$benchmark))
-        return(NULL)
+        stop("Cannot calculate performance metric for benchmark classifier ",
+            "if it is not provided as `benchmark` in `perf_plot_spec`.")
 
     bm_name <- perf_plot_spec$benchmark
     if(is.null(pheno_tbl[[bm_name]])){
