@@ -1,6 +1,6 @@
 Package: lymphomaSurvivalPipeline
 Title: R tools for a pipeline to analyze lymphoma survival data based on RNAseq
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: 
     person("Lukas", "Gessl", , "lukas.gessl@icloud.com", role = c("aut", "cre"))
 Description: This package provides tools to train classifiers predicting 
