@@ -2,6 +2,7 @@ new_PerfPlotSpec <- function(
     fname,
     x_metric,
     y_metric,
+    pfs_leq,
     benchmark,
     also_single_plots,
     single_csvs,
@@ -17,6 +18,7 @@ new_PerfPlotSpec <- function(
     stopifnot(is.character(fname))
     stopifnot(is.character(x_metric))
     stopifnot(is.character(y_metric))
+    stopifnot(is.null(pfs_leq) || is.numeric(pfs_leq))
     stopifnot(is.character(benchmark))
     stopifnot(is.logical(also_single_plots))
     stopifnot(is.numeric(width))
@@ -30,6 +32,7 @@ new_PerfPlotSpec <- function(
         "fname" = fname,
         "x_metric" = x_metric,
         "y_metric" = y_metric,
+        "pfs_leq" = pfs_leq,
         "benchmark" = benchmark,
         "also_single_plots" = also_single_plots,
         "single_csvs" = single_csvs,
@@ -63,6 +66,10 @@ new_PerfPlotSpec <- function(
 #' Default is `"ipi"` (international prognostic index for DLBCL).
 #' @param also_single_plots logical. If passed to `compare_models()`, whether to also create
 #' a single plot for every model-data pair. Default is `TRUE`.
+#' @param single_csvs logical. If passed to `compare_models()`, whether to also create a
+#' csv file for every model-data pair. Default is `TRUE`.
+#' @param x_lab string. The label for the x-axis. Default is `x_metric`.
+#' @param y_lab string. The label for the y-axis. Default is `y_metric`.
 #' @param width numeric. The width of the plot in `units`. Default is `7`.
 #' @param height numeric. The height of the plot in `units`. Default is `4`.
 #' @param units string. The units of `width` and `height`. Default is `"in"` (inches).
@@ -76,6 +83,7 @@ PerfPlotSpec <- function(
     fname,
     x_metric,
     y_metric,
+    pfs_leq = NULL,
     benchmark = "ipi",
     also_single_plots = TRUE,
     single_csvs = TRUE,
@@ -98,6 +106,7 @@ PerfPlotSpec <- function(
         fname = fname,
         x_metric = x_metric,
         y_metric = y_metric,
+        pfs_leq = pfs_leq,
         benchmark = benchmark,
         also_single_plots = also_single_plots,
         single_csvs = single_csvs,

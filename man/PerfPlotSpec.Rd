@@ -8,6 +8,7 @@ PerfPlotSpec(
   fname,
   x_metric,
   y_metric,
+  pfs_leq = NULL,
   benchmark = "ipi",
   also_single_plots = TRUE,
   single_csvs = TRUE,
@@ -32,11 +33,23 @@ valid.}
 All measures that can be passed to the \code{measure} parameter of \code{ROCR::performance()} are
 valid.}
 
+\item{pfs_leq}{numeric. Progression-free survival threshold that divides samples into
+high-risk (PFS < \code{pfs_leq}) and low-risk (PFS >= \code{pfs_leq}) group. Model performance
+will be measured in terms of how well it can separate these two groups as a binary
+classifier. Default is \code{2.0}.}
+
 \item{benchmark}{string. Column in the test pheno holding the numeric benchmark values.
 Default is \code{"ipi"} (international prognostic index for DLBCL).}
 
 \item{also_single_plots}{logical. If passed to \code{compare_models()}, whether to also create
 a single plot for every model-data pair. Default is \code{TRUE}.}
+
+\item{single_csvs}{logical. If passed to \code{compare_models()}, whether to also create a
+csv file for every model-data pair. Default is \code{TRUE}.}
+
+\item{x_lab}{string. The label for the x-axis. Default is \code{x_metric}.}
+
+\item{y_lab}{string. The label for the y-axis. Default is \code{y_metric}.}
 
 \item{width}{numeric. The width of the plot in \code{units}. Default is \code{7}.}
 
@@ -51,11 +64,6 @@ Default is \code{NULL}, which means that the default colors of \code{ggplot2} wi
 
 \item{show_plots}{logical. Whether to show the plots after creation in an interactive
 graphics device. Default is \code{FALSE}.}
-
-\item{pfs_leq}{numeric. Progression-free survival threshold that divides samples into
-high-risk (PFS < \code{pfs_leq}) and low-risk (PFS >= \code{pfs_leq}) group. Model performance
-will be measured in terms of how well it can separate these two groups as a binary
-classifier. Default is \code{2.0}.}
 }
 \value{
 A PlotSpec S3 object.
