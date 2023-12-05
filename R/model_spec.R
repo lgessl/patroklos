@@ -6,6 +6,7 @@ new_ModelSpec <- function(
     response_type,
     include_from_continuous_pheno,
     include_from_discrete_pheno,
+    base_dir,
     save_dir,
     create_save_dir,
     pfs_leq,
@@ -17,6 +18,7 @@ new_ModelSpec <- function(
     stopifnot(is.character(name))
     stopifnot(is.character(include_from_continuous_pheno) || is.null(include_from_continuous_pheno))
     stopifnot(is.character(include_from_discrete_pheno) || is.null(include_from_discrete_pheno))
+    stopifnot(is.character(base_dir))
     stopifnot(is.character(save_dir))
     stopifnot(is.logical(create_save_dir))
     stopifnot(is.numeric(pfs_leq) || is.null(pfs_leq))
@@ -31,6 +33,7 @@ new_ModelSpec <- function(
         "include_from_continuous_pheno" = include_from_continuous_pheno,
         "include_from_discrete_pheno" = include_from_discrete_pheno,
         "pfs_leq" = pfs_leq,
+        "base_dir" = base_dir,
         "save_dir" = save_dir,
         "create_save_dir" = create_save_dir,
         "plot_fname" = plot_fname,
@@ -64,8 +67,10 @@ new_ModelSpec <- function(
 #' @param pfs_leq numeric. Only used if `response_type == "binary"`. The value of
 #' progression-free survival (PFS) below which samples are considered high-risk. Default
 #' is `2.0`.
+#' @param base_dir string. The base directory to store the model in. See `save_dir` below
+#' on how it is used to automatically set `save_dir`. Default is `"."`.
 #' @param save_dir string. The directory in which to store the model in. Default is `NULL`, 
-#' in which case is is set to `name`.
+#' in which case is is set to `file.path(base_dir, name)`.
 #' @param create_save_dir logical. Whether to create `save_dir` if it does not exist, yet. 
 #' Default is `TRUE`.
 #' @param plot_fname string. Store the plot resulting from `plot(fit_obj)` in `save_dir`
@@ -82,13 +87,14 @@ ModelSpec <- function(
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL,
     pfs_leq = 2.0,
+    base_dir = ".",
     save_dir = NULL,
     create_save_dir = TRUE,
     plot_fname = "training_error.pdf",
     fit_fname = "fit_obj.rds"
 ){
     if(is.null(save_dir)){
-        save_dir <- name
+        save_dir <- file.path(base_dir, name)
     }
     model_spec <- new_ModelSpec(
         name = name,
@@ -98,6 +104,7 @@ ModelSpec <- function(
         include_from_continuous_pheno = include_from_continuous_pheno,
         include_from_discrete_pheno = include_from_discrete_pheno,
         save_dir = save_dir,
+        base_dir = base_dir,
         create_save_dir = create_save_dir,
         pfs_leq = pfs_leq,
         plot_fname = plot_fname,
