@@ -53,7 +53,7 @@ test_that("prepare_and_fit", {
     fname = file.path(model_dir, "perf_plot.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
-    show_plots = TRUE
+    show_plots = FALSE
   )
 
   expect_no_error(

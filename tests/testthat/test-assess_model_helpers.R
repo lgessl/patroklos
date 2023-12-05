@@ -15,7 +15,7 @@ test_that("plot_perf_metric() works", {
     fname = file.path(dir, "test.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
-    show_plots = TRUE,
+    show_plots = FALSE,
     title = "this title",
     x_lab = "this x lab",
     y_lab = "that y lab"
