@@ -12,6 +12,7 @@ DataSpec(
   patient_id_col = "patient_id",
   pfs_col = "pfs_years",
   progression_col = "progression",
+  ipi_col = "ipi",
   gene_id_col = "gene_id"
 )
 }
@@ -36,6 +37,9 @@ progression-free survival (PFS) values. Default is \code{"pfs_years"}.}
 \item{progression_col}{string. The name of the column in the pheno data that holds
 the progression status encoded as 1 = progression, 0 = no progression. Default is
 \code{"progression"}.}
+
+\item{ipi_col}{string. The name of the column in the pheno data that holds the
+International Prognostic Index (IPI) values. Default is \code{"ipi"}.}
 
 \item{gene_id_col}{string. The name of the column in the expression data that holds
 the gene identifiers. Default is \code{"gene_id"}.}
