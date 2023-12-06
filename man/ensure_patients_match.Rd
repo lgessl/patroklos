@@ -7,8 +7,8 @@
 ensure_patients_match(
   expr_tbl,
   pheno_tbl,
-  patient_id_col,
-  gene_id_col,
+  patient_id_col = "patient_id",
+  gene_id_col = "gene_id",
   verbose = TRUE
 )
 }

@@ -18,15 +18,15 @@
 ensure_patients_match <- function(
     expr_tbl,
     pheno_tbl,
-    patient_id_col,
-    gene_id_col,
+    patient_id_col = "patient_id",
+    gene_id_col = "gene_id",
     verbose = TRUE
 ){
     if(!is.data.frame(expr_tbl)){
-        stop("expr_tbl must be a tibble.")
+        stop("expr_tbl must inherit from `data.frame`.")
     }
     if(!is.data.frame(pheno_tbl)){
-        stop("pheno_tbl must be a tibble.")
+        stop("pheno_tbl must inherit from `data.frame`.")
     }
     check_tbl_columns_exist(pheno_tbl, "pheno_tbl", patient_id_col)
     check_tbl_columns_exist(expr_tbl, "expr_tbl", gene_id_col)
@@ -40,7 +40,8 @@ ensure_patients_match <- function(
     }
 
     if(verbose){
-        message(nrow(pheno_tbl), " samples in pheno before matching.")
+        message(nrow(pheno_tbl), " samples in pheno before matching.\n",
+            ncol(expr_tbl) - 1, " samples in expr before matching.")
     }
     intersect_ids <- NULL
     patient_ids_expr <- colnames(expr_tbl)[-1]
