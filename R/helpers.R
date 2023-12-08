@@ -1,4 +1,6 @@
-# convert a tibble with factor-like columns into binary indicator matrix 
+# Internal helper functions
+
+# Convert a tibble with factor-like columns into binary indicator matrix 
 # using dummy variables
 tibble_to_binary <- function(
     tbl
@@ -33,6 +35,7 @@ tibble_to_binary <- function(
 }
 
 
+# Are all elements of a vector unique? FALSE if NA is present.
 elements_unique <- function(x){
     if(any(is.na(x))) return(FALSE)
     return(length(unique(x)) == length(x))
