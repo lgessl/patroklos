@@ -32,6 +32,7 @@ new_DataSpec <- function(
     return(structure(data_spec_list, class = "DataSpec")) 
 }
 
+
 #' @title Construct a DataSpec S3 object
 #' @description A DataSpec object specifies the location and format of the expression
 #' and pheno data of a single data set. This enables reading and preparing the data.
@@ -54,11 +55,11 @@ new_DataSpec <- function(
 #' @param gene_id_col string. The name of the column in the expression data that holds
 #' the gene identifiers. Default is `"gene_id"`.
 #' @return A DataSpec object.
-#' @details The pheno csv file holds the samples as rows (with *unique* sample ids in a
-#' column called `patient_id_col`), the variables as columns. The expr csv file holds 
-#' the genes as rows (with *unique* gene ids in a column called `gene_id_col`), the 
-#' samples as columns.
-#' While the computatinal representation of both expression and pheno data will
+#' @details The pheno csv file holds the samples as rows (with *unique* sample ids in the
+#' first column called `patient_id_col`), the variables as columns. The expr csv file 
+#' holds the genes as rows (with *unique* gene ids in the first column called `gene_id_col`), 
+#' the samples as columns.
+#' While the computational representation of both expression and pheno data will
 #' change over the course of the pipeline, a DataSpec object will hold timeless
 #' information on the data.
 #' @export

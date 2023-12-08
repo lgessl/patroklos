@@ -52,11 +52,11 @@ A DataSpec object specifies the location and format of the expression
 and pheno data of a single data set. This enables reading and preparing the data.
 }
 \details{
-The pheno csv file holds the samples as rows (with \emph{unique} sample ids in a
-column called \code{patient_id_col}), the variables as columns. The expr csv file holds
-the genes as rows (with \emph{unique} gene ids in a column called \code{gene_id_col}), the
-samples as columns.
-While the computatinal representation of both expression and pheno data will
+The pheno csv file holds the samples as rows (with \emph{unique} sample ids in the
+first column called \code{patient_id_col}), the variables as columns. The expr csv file
+holds the genes as rows (with \emph{unique} gene ids in the first column called \code{gene_id_col}),
+the samples as columns.
+While the computational representation of both expression and pheno data will
 change over the course of the pipeline, a DataSpec object will hold timeless
 information on the data.
 }
