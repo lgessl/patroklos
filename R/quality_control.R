@@ -1,3 +1,12 @@
+#' @title Quality control at the end of preparation step
+#' @description Check types of predictor and response matrix, their 
+#' consistency and availability.
+#' @param x A numeric matrix with dimnames holding predictors (as rows).
+#' @param y A numeric matrix with dimnames holding responses (as rows).
+#' @details Intended to be used after `generate_predictor()` and 
+#' `generate_response()`. `prepare()` and, in particular, `prepare_and_fit()`
+#' call this function.
+#' @export
 qc_prepare <- function(
     x,
     y
@@ -25,6 +34,20 @@ qc_prepare <- function(
 }
 
 
+#' @title Quality control at the end of preprocessing step
+#' @description Check if the expression and pheno tibble have the format
+#' specified in the `DataSpec` and match to one another.
+#' @param expr_tbl A tibble holding the expression data (see `DataSpec()`
+#' for details).
+#' @param pheno_tbl A tibble holding the pheno data (see `DataSpec()`
+#' for details).
+#' @param data_spec A `DataSpec` object referring to `expr_tbl` and `pheno_tbl`.
+#' @param check_default logical. If `TRUE`, check if all default arguments of
+#' `DataSpec()` apply (i.e., replace `data_spec` with a `DataSpec()` except for 
+#' the `directory` attribute). Default is `FALSE`, in which case we use `data_spec`.
+#' @details Intended to be used at the end of preprocessing and before applying
+#' `split_data()`.
+#' @export
 qc_preprocess <- function(
     expr_tbl,
     pheno_tbl,
@@ -84,6 +107,9 @@ qc_preprocess <- function(
             ipi_col
         )
     )
+    if(names(pheno_tbl)[1] != patient_id_col){
+        stop("First column of pheno tibble must be ", patient_id_col)
+    }
     if(!is.character(pheno_tbl[[patient_id_col]]) || !elements_unique(pheno_tbl[[patient_id_col]])){
         stop("Patient ids must be unique characters.")
     }

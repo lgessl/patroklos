@@ -100,4 +100,14 @@ test_that("qc_preprocess() works", {
     regexp = "missing values"
   )
   expr_tbl[[2]][1] <- 1
+
+  pheno_tbl <- pheno_tbl[, c(2:ncol(pheno_tbl), 1)]
+  expect_error(
+    qc_preprocess(
+      expr_tbl = expr_tbl,
+      pheno_tbl = pheno_tbl,
+      data_spec = data_spec
+    ),
+    regexp = "First column"
+  )
 })
