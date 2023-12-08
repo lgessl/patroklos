@@ -34,7 +34,30 @@ tibble_to_binary <- function(
 
 
 elements_unique <- function(x){
+    if(any(is.na(x))) return(FALSE)
     return(length(unique(x)) == length(x))
+}
+
+
+# Split the indices of the factor `outcome` into two groups by sampling a 
+# fraction `p` of the indices belonging to each level of `outcome`.
+create_data_partition <- function(
+    outcome,
+    p
+){
+    if(!is.factor(outcome)){
+        stop("outcome must be a factor")
+    }
+
+    selected <- NULL
+    for(lvl in levels(outcome)){
+        at_stake <- which(outcome == lvl)
+        selected <- c(
+            selected, 
+            sample(at_stake, round(p*length(at_stake)), replace = FALSE)
+        )
+    }
+    return(selected)
 }
 
 
