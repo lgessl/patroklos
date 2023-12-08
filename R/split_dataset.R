@@ -1,3 +1,23 @@
+#' @title Split a data set into train and test data
+#' @description Split a data set into train and test data sets, (optionally) 
+#' preserving the ratio of high- and low-risk patients.
+#' @param expr_tbl A tibble holding the expression data (see `DataSpec()`
+#' for details).
+#' @param pheno_tbl A tibble holding the pheno data (see `DataSpec()`
+#' for details).
+#' @param data_spec A `DataSpec` object referring to `expr_tbl` and `pheno_tbl`.
+#' @param train_prop numeric. The proportion of samples to be included in the
+#' train data set.
+#' @param pfs_cut numeric in [0, 1] or NULL. The cut-off for progression-free survival 
+#' (PFS) to distinguish between high- and low-risk patients. Default is `NULL`, but must 
+#' be specified if `based_on_pfs_cut` is `TRUE`.
+#' @param based_on_pfs_cut logical. If `TRUE`, split the data set into high-risk, low-risk,
+#' NA (where PFS < `pfs_cut` cannot be inferred from `pheno_tbl`) patients based on `pfs_cut`
+#' and preserve the ratio of these three groups in the resulting train and test data sets.
+#' Default is `FALSE`, in which case train and test samples are drawn randomly without 
+#' any further constraints.
+#' @param quiet logical. If `TRUE`, suppress all messages. Default is `FALSE`. 
+#' @export
 split_dataset <- function(
     expr_tbl,
     pheno_tbl,
@@ -78,5 +98,5 @@ split_dataset <- function(
         saveRDS(ds_partition, file.path(ds_partition$directory, "data_spec.rds"))
     }
 
-    return(split)
+    invisible(split)
 }
