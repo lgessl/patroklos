@@ -68,6 +68,7 @@ generate_mock_data <- function(
     pheno_tbl[["discrete_var"]] <- sample(1:3, size = n_samples, replace = TRUE)
     pheno_tbl[["continuous_var"]] <- rnorm(n_samples, 10, 10)
     pheno_tbl[["ipi"]] <- sample(1:5, size = n_samples, replace = TRUE)
+    pheno_tbl[["ipi"]][1] <- NA
     # insert NAs
     na_rows <- sample(1:n_samples, n_na_in_pheno, replace = TRUE)
     na_cols <- sample(2:ncol(pheno_tbl), n_na_in_pheno, replace = TRUE)
@@ -84,6 +85,7 @@ generate_mock_data <- function(
 
     res <- list(
         "expr_mat" = expr_mat,
+        "expr_tbl" = expr_tbl,
         "pheno_tbl" = pheno_tbl
     )
     return(res)
