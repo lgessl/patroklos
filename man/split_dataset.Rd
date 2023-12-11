@@ -26,7 +26,7 @@ for details).}
 \item{train_prop}{numeric. The proportion of samples to be included in the
 train data set.}
 
-\item{pfs_cut}{numeric in \link{0, 1} or NULL. The cut-off for progression-free survival
+\item{pfs_cut}{numeric in (0, 1) or NULL. The cut-off for progression-free survival
 (PFS) to distinguish between high- and low-risk patients. Default is \code{NULL}, but must
 be specified if \code{based_on_pfs_cut} is \code{TRUE}.}
 

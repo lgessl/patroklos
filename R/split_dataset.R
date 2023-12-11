@@ -8,7 +8,7 @@
 #' @param data_spec A `DataSpec` object referring to `expr_tbl` and `pheno_tbl`.
 #' @param train_prop numeric. The proportion of samples to be included in the
 #' train data set.
-#' @param pfs_cut numeric in [0, 1] or NULL. The cut-off for progression-free survival 
+#' @param pfs_cut numeric in (0, 1) or NULL. The cut-off for progression-free survival 
 #' (PFS) to distinguish between high- and low-risk patients. Default is `NULL`, but must 
 #' be specified if `based_on_pfs_cut` is `TRUE`.
 #' @param based_on_pfs_cut logical. If `TRUE`, split the data set into high-risk, low-risk,
