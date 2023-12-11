@@ -1,9 +1,9 @@
 #' @importFrom rlang .data
 plot_perf_metric <- function(
     perf_tbl,
-    perf_plot_spec
+    perf_plot_spec,
+    quiet = FALSE
 ){
-    xlab <- "heya"
     plt <- ggplot2::ggplot(
         perf_tbl,
         ggplot2::aes(
@@ -27,6 +27,8 @@ plot_perf_metric <- function(
         print(plt)
     }
 
+    if(!quiet)
+        message("Saving performance plot to ", perf_plot_spec$fname)
     ggplot2::ggsave(
         perf_plot_spec$fname, 
         plt, 
@@ -34,6 +36,14 @@ plot_perf_metric <- function(
         height = perf_plot_spec$height, 
         units = perf_plot_spec$units
     )
+
+    # Save to csv (if wanted)
+    if(perf_plot_spec$fellow_csv){
+        csv_fname <- stringr::str_replace(perf_plot_spec$fname, "\\..+", ".csv")
+        if(!quiet)
+            message("Saving performance table to ", csv_fname)
+        readr::write_csv(perf_tbl, csv_fname)
+    }
 
     return(plt)
 }
@@ -115,4 +125,60 @@ add_benchmark_perf_metric <- function(
     )
 
     return(perf_tbl)
+}
+
+
+#' @importFrom rlang .data
+plot_scores <- function(
+    predicted,
+    actual,
+    perf_plot_spec,
+    quiet = FALSE
+){
+    true_risk <- ifelse(actual == 1, "high", "low") |> as.factor()
+    tbl <- tibble::tibble(
+        patient_id = names(predicted),
+        rank = rank(-predicted),
+        `risk score` = predicted,
+        `true risk` = true_risk
+    )
+    tbl <- tbl[order(tbl[["rank"]]), ]
+    plt <- ggplot2::ggplot(
+        tbl,
+        ggplot2::aes(
+            x = .data[["rank"]], 
+            y = .data[["risk score"]], 
+            color = .data[["true risk"]]
+            )
+        ) +
+        ggplot2::geom_point() +
+        ggplot2::labs(
+            title = perf_plot_spec$title
+        )
+    if(!is.null(perf_plot_spec$colors)){
+        plt <- plt + ggplot2::scale_color_manual(values = perf_plot_spec$colors)
+    }
+
+    if(perf_plot_spec$show_plots){
+        print(plt)
+    }
+
+    if(!quiet)
+        message("Saving scores plot to ", perf_plot_spec$fname)
+    ggplot2::ggsave(
+        perf_plot_spec$fname, 
+        plt, 
+        width = perf_plot_spec$width, 
+        height = perf_plot_spec$height, 
+        units = perf_plot_spec$units
+    )
+
+    if(perf_plot_spec$fellow_csv){
+        csv_fname <- stringr::str_replace(perf_plot_spec$fname, "\\..+", ".csv")
+        if(!quiet)
+            message("Saving scores table to ", csv_fname)
+        readr::write_csv(tbl, csv_fname)
+    }
+
+    return(tbl)
 }

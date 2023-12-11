@@ -24,7 +24,8 @@ test_that("plot_perf_metric() works", {
   expect_silent(
     plot_perf_metric(
       perf_tbl = perf_tbl,
-      perf_plot_spec = perf_plot_spec
+      perf_plot_spec = perf_plot_spec,
+      quiet = TRUE
     )
   )
 })
@@ -91,4 +92,35 @@ test_that("add_benchmark_perf_metric() works", {
   expect_s3_class(perf_tbl, "tbl_df")
   expect_lt(nrow(perf_tbl), n_samples)
   expect_equal(ncol(perf_tbl), 3)  
+})
+
+test_that("plot_scores() works", {
+  
+    set.seed(134)
+  
+    n_samples <- 5
+  
+    predicted <- rnorm(n_samples)
+    actual <- sample(c(0, 1), n_samples, replace = TRUE)
+    dir <- withr::local_tempdir()
+    perf_plot_spec <- PerfPlotSpec(
+      fname = file.path(dir, "scores.pdf"),
+      x_metric = "rank",
+      y_metric = "scores",
+      title = "this title",
+      show_plots = FALSE
+    )
+
+    expect_silent(
+      plot_scores(
+        predicted = predicted,
+        actual = actual,
+        perf_plot_spec = perf_plot_spec,
+        quiet = TRUE
+      )
+    )
+    expect_true(all(
+      file.exists(file.path(dir, "scores.pdf")),
+      file.exists(file.path(dir, "scores.csv"))
+    ))
 })
