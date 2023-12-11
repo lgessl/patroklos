@@ -45,7 +45,7 @@ prepare_and_predict <- function(
 
     # Check what predict method did
     if(!is.numeric(predicted)){
-        stop("predict method for class ", class(fit_obj), "does not return a ", 
+        stop("predict method for class ", class(fit_obj), " does not return a ", 
         "numeric matrix or vector")
     }
     if(is.matrix(predicted)){
