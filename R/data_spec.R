@@ -87,3 +87,25 @@ DataSpec <- function(
     )
     return(data_spec)
 }
+
+
+#' @title To every `ModelSpec` in a list of `ModelSpec`s, prepend a fixed directory to the
+#' `save_dir` attribute
+#' @description Often one specifies the models in general, for all data sets. If you fit the 
+#' models to a specific data set (say `"mock"`), you might want to prepend a fixed directory 
+#' like `"results/mock"` to the `save_dir` attribute of all `ModelSpec`s in the list.
+#' @param model_spec_list list of `ModelSpec`s.
+#' @param dir string. The directory to prepend to the `save_dir` attribute of all 
+#' `ModelSpec`s in `model_spec_list`.
+#' @return A list of `ModelSpec`s, with `dir` prepended to the `save_dir` attribute.
+#' @export
+prepend_to_save_dir <- function(
+    model_spec_list, 
+    dir
+){
+    stopifnot(is.character(dir))
+    for(i in seq_along(model_spec_list)){
+        model_spec_list[[i]]$save_dir <- file.path(dir, model_spec_list[[i]]$save_dir)
+    }
+    return(model_spec_list)
+}
