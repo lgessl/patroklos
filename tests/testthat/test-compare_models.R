@@ -1,4 +1,4 @@
-test_that("prepare_and_fit", {
+test_that("compare_models() works", {
 
   set.seed(4352)
 
@@ -7,7 +7,9 @@ test_that("prepare_and_fit", {
   n_na_in_pheno <- 5
   n_fold <- 2
 
-  data_dir <- withr::local_tempdir()
+  base_dir <- withr::local_tempdir("data")
+  data_dir <- file.path(base_dir, "data/mock")
+  dir.create(data_dir, recursive = TRUE)
   generate_mock_data(
     n_samples = n_samples,
     n_genes = n_genes,
@@ -16,7 +18,8 @@ test_that("prepare_and_fit", {
   )
   data_spec <- DataSpec(name = "Mock et al. (2023)", directory = data_dir)
 
-  model_dir <- withr::local_tempdir()
+  model_dir <- file.path(base_dir, "models")
+  dir.create(model_dir)
   model_spec_1 <- ModelSpec(
     name = "cox-zerosum",
     fitter = zeroSum::zeroSum,
@@ -49,8 +52,9 @@ test_that("prepare_and_fit", {
     model_spec_list = model_spec_list
   )
 
+  res_dir <- file.path(base_dir, "results")
   perf_plot_spec <- PerfPlotSpec(
-    fname = file.path(model_dir, "perf_plot.pdf"),
+    fname = file.path(res_dir, "perf_plot.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
     show_plots = FALSE
@@ -60,7 +64,8 @@ test_that("prepare_and_fit", {
     compare_models(
         data_spec_list = list(data_spec),
         model_spec_list = model_spec_list,
-        perf_plot_spec = perf_plot_spec
+        perf_plot_spec = perf_plot_spec,
+        model_tree_mirror = c("models", "results")
     )
   )
 })

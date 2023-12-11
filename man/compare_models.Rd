@@ -4,7 +4,14 @@
 \alias{compare_models}
 \title{Compare multiple models in a single plot}
 \usage{
-compare_models(model_spec_list, data_spec_list, perf_plot_spec)
+compare_models(
+  model_spec_list,
+  data_spec_list,
+  perf_plot_spec,
+  single_plots = TRUE,
+  model_tree_mirror = c("models", "results"),
+  quiet = FALSE
+)
 }
 \arguments{
 \item{model_spec_list}{list of ModelSpec objects. The models to be compared.}
@@ -16,6 +23,15 @@ set is given, the benchmark classifier will not be plotted to avoid an
 overcrowded plot.}
 
 \item{perf_plot_spec}{PerfPlotSpec object. The specifications for the plot.}
+
+\item{single_plots}{logical. Whether to also generate individual plots for
+every model-data pair. Default is \code{TRUE}.}
+
+\item{model_tree_mirror}{character vector of lengtgh 2. For the individual plots,
+mirror the model file tree by replacing the directory \code{tree_mirror[1]} in the
+model file path by \code{tree_mirror[2]}. Default is \code{c("models", "results")}.}
+
+\item{quiet}{logical. Whether to suppress messages. Default is \code{FALSE}.}
 }
 \value{
 A tibble containing the performance measures for all models and the
@@ -24,17 +40,17 @@ benchmark classifier (if given and included in the plot).
 \description{
 Compare the performance of multiple models and (optionally)
 multiple data sets in a single plot. Consider the model a classifier for
-high-risk versus low-risk patients (depening on \code{per_plot_spec$pfs_leq}).
+high-risk versus low-risk patients (depending on \code{per_plot_spec$pfs_leq}).
 For every model-data pair, plot one classifier property on the x-axis
 against another one on the y-axis. If all models are evaluated on the same
 data set, the plot can also contain a benchmark classifier given via a score
 in the pheno data (e.g. the International Prognostic Index (IPI) for DLBCL).
 }
 \details{
-If \code{perf_plot_spec$also_single_plots} is \code{TRUE}, create a single plot
-for every model-data pair. For every such plot, a PlotSpec object inheriting
-from \code{perf_plot_spec} is derived in a reasonable way and stored in the model
-directory under \verb{paste0(perf_plot_spec$x_metric, _vs_, perf_plot_spec$y_metric,  .pdf)}. If \code{perf_plot_spec$single_csvs} is \code{TRUE}, a csv table holding the
-plot the data will show up in the same directory under the same name except
+If \code{single_plots == TRUE}, create a single plot for every model-data
+pair. For every such plot, a PlotSpec object inheriting
+from \code{perf_plot_spec} is derived in a reasonable way. If
+\code{perf_plot_spec$fellow_csv} is \code{TRUE}, a csv table holding the plot the data
+will show up in the same directory under the same name except
 for the file extension (\code{.csv} instead of \code{.pdf}).
 }
