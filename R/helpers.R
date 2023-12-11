@@ -106,3 +106,18 @@ intersect_by_names <- function(
         stop("intersect_by_names(): a and b must be both matrices or both vectors")
     }
 }
+
+
+# Replace unique directory in filepath with another directory
+mirror_directory <- function(
+    filepath,
+    mirror
+){
+    path_split <- stringr::str_split(filepath, .Platform$file.sep)[[1]]
+    replace_at <- which(path_split == mirror[1])
+    if(length(replace_at) != 1)
+        stop("mirror_directory(): mirror[1] must match exactly one element of filepath")
+    path_split[replace_at] <- mirror[2]
+    new_filepath <- do.call(file.path, as.list(path_split))
+    return(new_filepath)
+}
