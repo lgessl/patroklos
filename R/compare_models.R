@@ -27,6 +27,7 @@
 #' `perf_plot_spec$fellow_csv` is `TRUE`, a csv table holding the plot the data 
 #' will show up in the same directory under the same name except
 #' for the file extension (`.csv` instead of `.pdf`).
+#' @export
 compare_models <- function(
     model_spec_list,
     data_spec_list,
