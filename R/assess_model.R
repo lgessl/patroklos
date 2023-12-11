@@ -14,6 +14,9 @@
 #' @param perf_plot_spec PerfPlotSpec object. The specifications for the plot. See
 #' the constructor `PerfPlotSpec()` for details. The `pfs_leq` attribute of
 #' `perf_plot_spec` will override the same in `model_spec` if both are given.
+#' @param plots logical. Whether to generate plots; if false, still return the data 
+#' underlying the plots (see return). Default is `TRUE`.
+#' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
 #' @return A named list of two tibbles:
 #' * `model_spec$name`: The performance measures for the model with three variables:
 #' `perf_plot_spec$x_metric`, `perf_plot_spec$y_metric`, and `"cutoff"`.
@@ -27,7 +30,9 @@ assess_model <- function(
     pheno_tbl,
     data_spec,
     model_spec,
-    perf_plot_spec
+    perf_plot_spec,
+    plots = TRUE,
+    quiet = FALSE
 ){
     # Infer reasonable values for missing plot specs
     if(!is.null(perf_plot_spec$pfs_leq)){
@@ -78,16 +83,27 @@ assess_model <- function(
     perf_tbl <- dplyr::bind_rows(perf_tbl_list, .id = "model")
 
     # Plot
-    if(perf_plot_spec$also_single_plots){
+    if(plots){
         plot_perf_metric(
             perf_tbl = perf_tbl,
-            perf_plot_spec = perf_plot_spec
+            perf_plot_spec = perf_plot_spec,
+            quiet = quiet
         )
     }
-    # Save to csv (if wanted)
-    if(perf_plot_spec$single_csvs){
-        csv_fname <- stringr::str_replace(perf_plot_spec$fname, "\\..+", ".csv")
-        readr::write_csv(perf_tbl_model, csv_fname)
+
+    if(perf_plot_spec$scores_plot){
+        perf_plot_spec$title <- stringr::str_c(
+            data_spec$name, ", pfs < ", model_spec$pfs_leq
+        )
+        perf_plot_spec$fname <- file.path(
+            dirname(perf_plot_spec$fname),
+            "scores.pdf"
+        )
+        plot_scores(
+            predicted = predicted,
+            actual = actual,
+            perf_plot_spec = perf_plot_spec
+        )
     }
 
     return(perf_tbl_list)

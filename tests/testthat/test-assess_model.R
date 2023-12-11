@@ -1,4 +1,4 @@
-test_that("calculate_perf_metric() works", {
+test_that("assess_model() works", {
   
   set.seed(134)
   n <- 10
@@ -34,7 +34,8 @@ test_that("calculate_perf_metric() works", {
     fname = file.path(dir, "perf.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
-    benchmark = "ipi"
+    benchmark = "ipi",
+    show_plots = TRUE
   )
   prepare_and_fit(
     expr_mat = expr_mat,
@@ -43,14 +44,14 @@ test_that("calculate_perf_metric() works", {
     model_spec = list(model_spec_1, model_spec_2)
   )
 
-  expect_silent(assess_model(
+  expect_no_error(assess_model(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
     data_spec = data_spec,
     model_spec = model_spec_1,
     perf_plot_spec = perf_plot_spec
   ))
-  expect_silent(assess_model(
+  expect_no_error(assess_model(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
     data_spec = data_spec,

@@ -4,7 +4,15 @@
 \alias{assess_model}
 \title{Assess a model on a data set in terms of classifying high-risk patients}
 \usage{
-assess_model(expr_mat, pheno_tbl, data_spec, model_spec, perf_plot_spec)
+assess_model(
+  expr_mat,
+  pheno_tbl,
+  data_spec,
+  model_spec,
+  perf_plot_spec,
+  plots = TRUE,
+  quiet = FALSE
+)
 }
 \arguments{
 \item{expr_mat}{numeric matrix. The expression matrix. Rows are samples, columns
@@ -22,6 +30,11 @@ constructor \code{DataSpec()} for details.}
 \item{perf_plot_spec}{PerfPlotSpec object. The specifications for the plot. See
 the constructor \code{PerfPlotSpec()} for details. The \code{pfs_leq} attribute of
 \code{perf_plot_spec} will override the same in \code{model_spec} if both are given.}
+
+\item{plots}{logical. Whether to generate plots; if false, still return the data
+underlying the plots (see return). Default is \code{TRUE}.}
+
+\item{quiet}{logical. Whether to suppress messages. Default is \code{FALSE}.}
 }
 \value{
 A named list of two tibbles:
