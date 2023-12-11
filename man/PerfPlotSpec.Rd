@@ -2,7 +2,7 @@
 % Please edit documentation in R/perf_plot_spec.R
 \name{PerfPlotSpec}
 \alias{PerfPlotSpec}
-\title{Create a PlotSpec object}
+\title{Create a PerfPlotSpec object}
 \usage{
 PerfPlotSpec(
   fname,
@@ -10,8 +10,8 @@ PerfPlotSpec(
   y_metric,
   pfs_leq = NULL,
   benchmark = "ipi",
-  also_single_plots = TRUE,
-  single_csvs = TRUE,
+  fellow_csv = TRUE,
+  scores_plot = TRUE,
   x_lab = NULL,
   y_lab = NULL,
   width = 7,
@@ -41,11 +41,11 @@ classifier. Default is \code{2.0}.}
 \item{benchmark}{string. Column in the test pheno holding the numeric benchmark values.
 Default is \code{"ipi"} (international prognostic index for DLBCL).}
 
-\item{also_single_plots}{logical. If passed to \code{compare_models()}, whether to also create
-a single plot for every model-data pair. Default is \code{TRUE}.}
-
-\item{single_csvs}{logical. If passed to \code{compare_models()}, whether to also create a
+\item{fellow_csv}{logical. If passed to \code{compare_models()}, whether to also create a
 csv file for every model-data pair. Default is \code{TRUE}.}
+
+\item{scores_plot}{logical. Display the ordered scores output by the model in a scatter
+plot. Default is \code{TRUE}.}
 
 \item{x_lab}{string. The label for the x-axis. Default is \code{x_metric}.}
 
@@ -70,5 +70,6 @@ A PlotSpec S3 object.
 }
 \description{
 A PlotSpec object holds all the info on how to create a model performance
-plot and what to do with it. Its base object is a list containing:
+plot and what to do with it. It is tailored for \code{assess_model()}. Its base object is a
+list containing:
 }

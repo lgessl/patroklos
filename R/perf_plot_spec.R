@@ -4,8 +4,8 @@ new_PerfPlotSpec <- function(
     y_metric,
     pfs_leq,
     benchmark,
-    also_single_plots,
-    single_csvs,
+    fellow_csv,
+    scores_plot,
     x_lab,
     y_lab,
     width,
@@ -20,7 +20,8 @@ new_PerfPlotSpec <- function(
     stopifnot(is.character(y_metric))
     stopifnot(is.null(pfs_leq) || is.numeric(pfs_leq))
     stopifnot(is.character(benchmark))
-    stopifnot(is.logical(also_single_plots))
+    stopifnot(is.logical(fellow_csv))
+    stopifnot(is.logical(scores_plot))
     stopifnot(is.numeric(width))
     stopifnot(is.numeric(height))
     stopifnot(is.character(units))
@@ -34,8 +35,8 @@ new_PerfPlotSpec <- function(
         "y_metric" = y_metric,
         "pfs_leq" = pfs_leq,
         "benchmark" = benchmark,
-        "also_single_plots" = also_single_plots,
-        "single_csvs" = single_csvs,
+        "fellow_csv" = fellow_csv,
+        "scores_plot" = scores_plot,
         "x_lab" = x_lab,
         "y_lab" = y_lab,
         "width" = width,
@@ -48,9 +49,10 @@ new_PerfPlotSpec <- function(
     return(structure(perf_plot_spec_list, class = "PerfPlotSpec"))
 }
 
-#' @title Create a PlotSpec object
+#' @title Create a PerfPlotSpec object
 #' @description A PlotSpec object holds all the info on how to create a model performance
-#' plot and what to do with it. Its base object is a list containing:
+#' plot and what to do with it. It is tailored for `assess_model()`. Its base object is a 
+#' list containing:
 #' @param fname string. The name of the file to save the plot to.
 #' @param x_metric string. The name of the performance measure to be plotted on the x-axis.
 #' All measures that can be passed to the `x.measure` parameter of `ROCR::performance()` are
@@ -64,10 +66,10 @@ new_PerfPlotSpec <- function(
 #' classifier. Default is `2.0`.
 #' @param benchmark string. Column in the test pheno holding the numeric benchmark values.
 #' Default is `"ipi"` (international prognostic index for DLBCL).
-#' @param also_single_plots logical. If passed to `compare_models()`, whether to also create
-#' a single plot for every model-data pair. Default is `TRUE`.
-#' @param single_csvs logical. If passed to `compare_models()`, whether to also create a
+#' @param fellow_csv logical. If passed to `compare_models()`, whether to also create a
 #' csv file for every model-data pair. Default is `TRUE`.
+#' @param scores_plot logical. Display the ordered scores output by the model in a scatter 
+#' plot. Default is `TRUE`.  
 #' @param x_lab string. The label for the x-axis. Default is `x_metric`.
 #' @param y_lab string. The label for the y-axis. Default is `y_metric`.
 #' @param width numeric. The width of the plot in `units`. Default is `7`.
@@ -85,8 +87,8 @@ PerfPlotSpec <- function(
     y_metric,
     pfs_leq = NULL,
     benchmark = "ipi",
-    also_single_plots = TRUE,
-    single_csvs = TRUE,
+    fellow_csv = TRUE,
+    scores_plot = TRUE,
     x_lab = NULL,
     y_lab = NULL,
     width = 7,
@@ -102,14 +104,14 @@ PerfPlotSpec <- function(
     if(is.null(y_lab)){
         y_lab <- y_metric
     }
-    per_plot_spec <- new_PerfPlotSpec(
+    perf_plot_spec <- new_PerfPlotSpec(
         fname = fname,
         x_metric = x_metric,
         y_metric = y_metric,
         pfs_leq = pfs_leq,
         benchmark = benchmark,
-        also_single_plots = also_single_plots,
-        single_csvs = single_csvs,
+        fellow_csv = fellow_csv,
+        scores_plot = scores_plot,
         x_lab = x_lab,
         y_lab = y_lab,
         width = width,
@@ -119,5 +121,5 @@ PerfPlotSpec <- function(
         colors = colors,
         show_plots = show_plots
     )
-    return(per_plot_spec)
+    return(perf_plot_spec)
 }
