@@ -2,6 +2,7 @@
 
 export(DataSpec)
 export(ModelSpec)
+export(PerfPlotSpec)
 export(ensure_patients_match)
 export(fit)
 export(generate_predictor)

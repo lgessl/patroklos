@@ -81,6 +81,7 @@ new_PerfPlotSpec <- function(
 #' @param show_plots logical. Whether to show the plots after creation in an interactive 
 #' graphics device. Default is `FALSE`. 
 #' @return A PlotSpec S3 object.
+#' @export
 PerfPlotSpec <- function(
     fname,
     x_metric,
