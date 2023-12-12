@@ -12,14 +12,15 @@ PerfPlotSpec(
   benchmark = "ipi",
   fellow_csv = TRUE,
   scores_plot = TRUE,
+  show_plots = FALSE,
+  title = NULL,
   x_lab = NULL,
   y_lab = NULL,
+  alpha = 0.5,
   width = 7,
   height = 4,
-  units = "in",
-  title = NULL,
   colors = NULL,
-  show_plots = FALSE
+  units = "in"
 )
 }
 \arguments{
@@ -47,23 +48,26 @@ csv file for every model-data pair. Default is \code{TRUE}.}
 \item{scores_plot}{logical. Display the ordered scores output by the model in a scatter
 plot. Default is \code{TRUE}.}
 
+\item{show_plots}{logical. Whether to show the plots after creation in an interactive
+graphics device. Default is \code{FALSE}.}
+
+\item{title}{string. The title of the plot. Default is \code{NULL}.}
+
 \item{x_lab}{string. The label for the x-axis. Default is \code{x_metric}.}
 
 \item{y_lab}{string. The label for the y-axis. Default is \code{y_metric}.}
+
+\item{alpha}{numeric in [0, 1]. The alpha value for the points and lines in the
+plot.}
 
 \item{width}{numeric. The width of the plot in \code{units}. Default is \code{7}.}
 
 \item{height}{numeric. The height of the plot in \code{units}. Default is \code{4}.}
 
-\item{units}{string. The units of \code{width} and \code{height}. Default is \code{"in"} (inches).}
-
-\item{title}{string. The title of the plot. Default is \code{NULL}.}
-
 \item{colors}{character vector. The colors to be used for the different models.
 Default is \code{NULL}, which means that the default colors of \code{ggplot2} will be used.}
 
-\item{show_plots}{logical. Whether to show the plots after creation in an interactive
-graphics device. Default is \code{FALSE}.}
+\item{units}{string. The units of \code{width} and \code{height}. Default is \code{"in"} (inches).}
 }
 \value{
 A PlotSpec S3 object.

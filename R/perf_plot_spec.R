@@ -6,14 +6,15 @@ new_PerfPlotSpec <- function(
     benchmark,
     fellow_csv,
     scores_plot,
+    show_plots,
+    title,
     x_lab,
     y_lab,
+    alpha,
+    colors,
     width,
     height,
-    units,
-    title,
-    colors,
-    show_plots
+    units
 ){
     stopifnot(is.character(fname))
     stopifnot(is.character(x_metric))
@@ -22,12 +23,15 @@ new_PerfPlotSpec <- function(
     stopifnot(is.character(benchmark))
     stopifnot(is.logical(fellow_csv))
     stopifnot(is.logical(scores_plot))
-    stopifnot(is.numeric(width))
-    stopifnot(is.numeric(height))
-    stopifnot(is.character(units))
-    stopifnot(is.character(title) || is.null(title))
-    stopifnot(is.character(colors) || is.null(colors))
     stopifnot(is.logical(show_plots))
+    stopifnot(is.character(title) || is.null(title))
+    stopifnot(is.character(x_lab))
+    stopifnot(is.character(y_lab))
+    stopifnot(is.numeric(alpha) && alpha >= 0 && alpha <= 1)
+    stopifnot(is.character(colors) || is.null(colors))
+    stopifnot(is.numeric(width) && width > 0)
+    stopifnot(is.numeric(height) && height > 0)
+    stopifnot(is.character(units))
 
     perf_plot_spec_list <- list(
         "fname" = fname,
@@ -37,14 +41,15 @@ new_PerfPlotSpec <- function(
         "benchmark" = benchmark,
         "fellow_csv" = fellow_csv,
         "scores_plot" = scores_plot,
+        "show_plots" = show_plots,
+        "title" = title,
         "x_lab" = x_lab,
         "y_lab" = y_lab,
+        "alpha" = alpha,
+        "colors" = colors,
         "width" = width,
         "height" = height,
-        "units" = units,
-        "title" = title,
-        "colors" = colors,
-        "show_plots" = show_plots
+        "units" = units
     )
     return(structure(perf_plot_spec_list, class = "PerfPlotSpec"))
 }
@@ -70,16 +75,18 @@ new_PerfPlotSpec <- function(
 #' csv file for every model-data pair. Default is `TRUE`.
 #' @param scores_plot logical. Display the ordered scores output by the model in a scatter 
 #' plot. Default is `TRUE`.  
-#' @param x_lab string. The label for the x-axis. Default is `x_metric`.
-#' @param y_lab string. The label for the y-axis. Default is `y_metric`.
-#' @param width numeric. The width of the plot in `units`. Default is `7`.
-#' @param height numeric. The height of the plot in `units`. Default is `4`.
-#' @param units string. The units of `width` and `height`. Default is `"in"` (inches).
-#' @param title string. The title of the plot. Default is `NULL`.
-#' @param colors character vector. The colors to be used for the different models.
-#' Default is `NULL`, which means that the default colors of `ggplot2` will be used.
 #' @param show_plots logical. Whether to show the plots after creation in an interactive 
 #' graphics device. Default is `FALSE`. 
+#' @param title string. The title of the plot. Default is `NULL`.
+#' @param x_lab string. The label for the x-axis. Default is `x_metric`.
+#' @param y_lab string. The label for the y-axis. Default is `y_metric`.
+#' @param alpha numeric in \[0, 1\]. The alpha value for the points and lines in the 
+#' plot.
+#' @param width numeric. The width of the plot in `units`. Default is `7`.
+#' @param height numeric. The height of the plot in `units`. Default is `4`.
+#' @param colors character vector. The colors to be used for the different models.
+#' Default is `NULL`, which means that the default colors of `ggplot2` will be used.
+#' @param units string. The units of `width` and `height`. Default is `"in"` (inches).
 #' @return A PlotSpec S3 object.
 #' @export
 PerfPlotSpec <- function(
@@ -90,14 +97,15 @@ PerfPlotSpec <- function(
     benchmark = "ipi",
     fellow_csv = TRUE,
     scores_plot = TRUE,
+    show_plots = FALSE,
+    title = NULL,
     x_lab = NULL,
     y_lab = NULL,
+    alpha = 0.5,
     width = 7,
     height = 4,
-    units = "in",
-    title = NULL,
     colors = NULL,
-    show_plots = FALSE
+    units = "in"
 ){
     if(is.null(x_lab)){
         x_lab <- x_metric
@@ -115,6 +123,7 @@ PerfPlotSpec <- function(
         scores_plot = scores_plot,
         x_lab = x_lab,
         y_lab = y_lab,
+        alpha = alpha,
         width = width,
         height = height,
         units = units,
