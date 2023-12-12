@@ -1,4 +1,4 @@
-test_that("compare_models() works", {
+test_that("assess_multiple_models() works", {
 
   set.seed(4352)
 
@@ -23,7 +23,7 @@ test_that("compare_models() works", {
   model_spec_1 <- ModelSpec(
     name = "cox-zerosum",
     fitter = zeroSum::zeroSum,
-    optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold),
+    optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold, zeroSum = FALSE),
     response_type = "survival_censored",
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL,
@@ -34,7 +34,7 @@ test_that("compare_models() works", {
   model_spec_2 <- ModelSpec(
     name = "binomial-zerosum",
     fitter = zeroSum::zeroSum,
-    optional_fitter_args = list(family = "binomial", alpha = 1, nFold = n_fold),
+    optional_fitter_args = list(family = "binomial", alpha = 1, nFold = n_fold, zeroSum = FALSE),
     response_type = "binary",
     include_from_continuous_pheno = "continuous_var",
     include_from_discrete_pheno = "discrete_var",
@@ -61,11 +61,24 @@ test_that("compare_models() works", {
   )
 
   expect_no_error(
-    compare_models(
+    assess_multiple_models(
         data_spec_list = list(data_spec),
         model_spec_list = model_spec_list,
         perf_plot_spec = perf_plot_spec,
         model_tree_mirror = c("models", "results")
+    )
+  )
+  perf_plot_spec$fname <- file.path(model_dir, "all.pdf")
+  expect_no_error(
+    assess_train_and_test(
+        model_spec_list = list(model_spec_1),
+        data_spec_train = data_spec,
+        data_spec_test = data_spec,
+        perf_plot_spec_train = perf_plot_spec,
+        model_tree_mirror = c("models", "results"),
+        single_plots = FALSE,
+        comparison_plot = FALSE,
+        quiet = TRUE
     )
   )
 })
