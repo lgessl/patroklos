@@ -100,5 +100,5 @@ compare_models <- function(
     )
     message("Saving comparative performance plot to", perf_plot_spec$fname)
 
-    return(perf_tbl)
+    invisible(perf_tbl)
 }

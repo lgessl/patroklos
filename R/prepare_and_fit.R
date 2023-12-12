@@ -50,5 +50,5 @@ prepare_and_fit <- function(
         fit_obj$model_spec <- model_spec
         fits[[i]] <- fit_obj
     }
-    return(fits)
+    invisible(fits)
 }
