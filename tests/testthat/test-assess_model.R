@@ -19,14 +19,14 @@ test_that("assess_model() works", {
   model_spec_1 <- ModelSpec(
     name = "cox-zerosum",
     fitter = zeroSum::zeroSum,
-    optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold),
+    optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold, zeroSum = FALSE),
     response_type = "survival_censored",
     base_dir = dir
   )
   model_spec_2 <- ModelSpec(
     name = "cox-lasso",
     fitter = zeroSum::zeroSum,
-    optional_fitter_args = list(family = "binomial", alpha = 1, nFold = n_fold),
+    optional_fitter_args = list(family = "binomial", alpha = 1, nFold = n_fold, zeroSum = FALSE),
     response_type = "binary",
     base_dir = dir
   )

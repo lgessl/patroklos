@@ -19,7 +19,7 @@ test_that("fit function works correctly", {
     name = "zerosum",
     fitter = zeroSum::zeroSum,
     response_type = "survival_censored",
-    optional_fitter_args = list("alpha" = 0.5, nFold = n_fold),
+    optional_fitter_args = list("alpha" = 0.5, nFold = n_fold, zeroSum = FALSE),
     pfs_leq = 2.0,
     plot_fname = "foo.pdf",
     fit_fname = "bar.rds"
