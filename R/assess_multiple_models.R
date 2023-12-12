@@ -106,7 +106,7 @@ assess_multiple_models <- function(
         perf_plot_spec = perf_plot_spec,
         quiet = TRUE
         )
-        message("Saving comparative performance plot to", perf_plot_spec$fname)
+        message("Saving comparative performance plot to ", perf_plot_spec$fname)
     }
 
     invisible(perf_tbl)
