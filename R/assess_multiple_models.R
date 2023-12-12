@@ -146,7 +146,7 @@ assess_train_and_test <- function(
         data_spec_list = list(data_spec_train),
         perf_plot_spec = perf_plot_spec_train,
         single_plots = single_plots,
-        model_tree_mirror = rep(tree_mirror[1], 2),
+        model_tree_mirror = rep(model_tree_mirror[1], 2),
         comparison_plot = comparison_plot,
         quiet = quiet
     )
