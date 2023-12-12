@@ -35,7 +35,7 @@ test_that("assess_model() works", {
     x_metric = "rpp",
     y_metric = "prec",
     benchmark = "ipi",
-    show_plots = TRUE
+    show_plots = FALSE
   )
   prepare_and_fit(
     expr_mat = expr_mat,
