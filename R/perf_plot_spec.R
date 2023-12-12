@@ -56,14 +56,14 @@ new_PerfPlotSpec <- function(
 
 #' @title Create a PerfPlotSpec object
 #' @description A PlotSpec object holds all the info on how to create a model performance
-#' plot and what to do with it. It is tailored for `assess_model()`. Its base object is a 
+#' plot and what to do with it. It is tailored for [assess_model()]. Its base object is a 
 #' list containing:
 #' @param fname string. The name of the file to save the plot to.
 #' @param x_metric string. The name of the performance measure to be plotted on the x-axis.
-#' All measures that can be passed to the `x.measure` parameter of `ROCR::performance()` are
+#' All measures that can be passed to the `x.measure` parameter of [ROCR::performance()] are
 #' valid.
 #' @param y_metric string. The name of the performance measure to be plotted on the y-axis.
-#' All measures that can be passed to the `measure` parameter of `ROCR::performance()` are
+#' All measures that can be passed to the `measure` parameter of [ROCR::performance()] are
 #' valid.
 #' @param pfs_leq numeric. Progression-free survival threshold that divides samples into 
 #' high-risk (PFS < `pfs_leq`) and low-risk (PFS >= `pfs_leq`) group. Model performance
@@ -71,7 +71,7 @@ new_PerfPlotSpec <- function(
 #' classifier. Default is `2.0`.
 #' @param benchmark string. Column in the test pheno holding the numeric benchmark values.
 #' Default is `"ipi"` (international prognostic index for DLBCL).
-#' @param fellow_csv logical. If passed to `compare_models()`, whether to also create a
+#' @param fellow_csv logical. If passed to [assess_multiple_models()], whether to also create a
 #' csv file for every model-data pair. Default is `TRUE`.
 #' @param scores_plot logical. Display the ordered scores output by the model in a scatter 
 #' plot. Default is `TRUE`.  

@@ -42,7 +42,7 @@ classifier. Default is \code{2.0}.}
 \item{benchmark}{string. Column in the test pheno holding the numeric benchmark values.
 Default is \code{"ipi"} (international prognostic index for DLBCL).}
 
-\item{fellow_csv}{logical. If passed to \code{compare_models()}, whether to also create a
+\item{fellow_csv}{logical. If passed to \code{assess_multiple_models()}, whether to also create a
 csv file for every model-data pair. Default is \code{TRUE}.}
 
 \item{scores_plot}{logical. Display the ordered scores output by the model in a scatter
