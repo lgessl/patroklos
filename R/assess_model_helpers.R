@@ -12,8 +12,8 @@ plot_perf_metric <- function(
             color = .data[["model"]]
             )
         ) +
-        ggplot2::geom_line() +
-        ggplot2::geom_point() +
+        ggplot2::geom_line(alpha = perf_plot_spec$alpha) +
+        ggplot2::geom_point(alpha = perf_plot_spec$alpha) +
         ggplot2::labs(
             title = perf_plot_spec$title, 
             x = perf_plot_spec$x_lab, 
