@@ -116,7 +116,8 @@ mirror_directory <- function(
     path_split <- stringr::str_split(filepath, .Platform$file.sep)[[1]]
     replace_at <- which(path_split == mirror[1])
     if(length(replace_at) != 1)
-        stop("mirror_directory(): mirror[1] must match exactly one element of filepath")
+        stop("mirror_directory(): mirror[1] must match exactly one element of filepath",
+            "\n filepath: ", filepath, "\n mirror: ", mirror)
     path_split[replace_at] <- mirror[2]
     new_filepath <- do.call(file.path, as.list(path_split))
     return(new_filepath)
