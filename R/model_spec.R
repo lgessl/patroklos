@@ -1,4 +1,4 @@
-
+# (Internally) construct a ModelSpec S3 object
 new_ModelSpec <- function(
     name,
     fitter,
@@ -6,18 +6,21 @@ new_ModelSpec <- function(
     response_type,
     include_from_continuous_pheno,
     include_from_discrete_pheno,
+    append_to_includes,
+    pheno_regexp,
     base_dir,
     save_dir,
     create_save_dir,
     pfs_leq,
     plot_fname,
-    fit_fname 
+    fit_fname
 ){
     check_fitter(fitter, optional_fitter_args)
     response_type <- match.arg(response_type, c("binary", "survival_censored"))
     stopifnot(is.character(name))
     stopifnot(is.character(include_from_continuous_pheno) || is.null(include_from_continuous_pheno))
     stopifnot(is.character(include_from_discrete_pheno) || is.null(include_from_discrete_pheno))
+    stopifnot(is.character(append_to_includes))
     stopifnot(is.character(base_dir))
     stopifnot(is.character(save_dir))
     stopifnot(is.logical(create_save_dir))
@@ -32,6 +35,7 @@ new_ModelSpec <- function(
         "response_type" = response_type,
         "include_from_continuous_pheno" = include_from_continuous_pheno,
         "include_from_discrete_pheno" = include_from_discrete_pheno,
+        "append_to_includes" = append_to_includes,
         "pfs_leq" = pfs_leq,
         "base_dir" = base_dir,
         "save_dir" = save_dir,
@@ -64,6 +68,8 @@ new_ModelSpec <- function(
 #' variables in the pheno data (to be) included in the predictor matrix. A discrete
 #' variable with n levels will be converted to n-1 binary variables. Default is `NULL`,
 #' which means no discrete pheno variables are or will be included.
+#' @param append_to_includes string. Append this to the names of features from the pheno
+#' data when adding them to the predictor matrix. Default is `"++"`.
 #' @param pfs_leq numeric. Only used if `response_type == "binary"`. The value of
 #' progression-free survival (PFS) below which samples are considered high-risk. Default
 #' is `2.0`.
@@ -86,6 +92,7 @@ ModelSpec <- function(
     response_type = NULL,
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL,
+    append_to_includes = "++",
     pfs_leq = 2.0,
     base_dir = ".",
     save_dir = NULL,
@@ -103,6 +110,7 @@ ModelSpec <- function(
         response_type = response_type,
         include_from_continuous_pheno = include_from_continuous_pheno,
         include_from_discrete_pheno = include_from_discrete_pheno,
+        append_to_includes = append_to_includes,
         save_dir = save_dir,
         base_dir = base_dir,
         create_save_dir = create_save_dir,

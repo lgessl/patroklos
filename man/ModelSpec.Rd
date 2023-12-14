@@ -11,6 +11,7 @@ ModelSpec(
   response_type = NULL,
   include_from_continuous_pheno = NULL,
   include_from_discrete_pheno = NULL,
+  append_to_includes = "++",
   pfs_leq = 2,
   base_dir = ".",
   save_dir = NULL,
@@ -43,6 +44,9 @@ variables are or will be included.}
 variables in the pheno data (to be) included in the predictor matrix. A discrete
 variable with n levels will be converted to n-1 binary variables. Default is \code{NULL},
 which means no discrete pheno variables are or will be included.}
+
+\item{append_to_includes}{string. Append this to the names of features from the pheno
+data when adding them to the predictor matrix. Default is \code{"++"}.}
 
 \item{pfs_leq}{numeric. Only used if \code{response_type == "binary"}. The value of
 progression-free survival (PFS) below which samples are considered high-risk. Default

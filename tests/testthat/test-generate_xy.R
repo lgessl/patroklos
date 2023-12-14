@@ -13,7 +13,8 @@ test_that("generate_predictor() works", {
     name = "zerosum",
     fitter = zeroSum::zeroSum,
     include_from_continuous_pheno = "continuous_var",
-    include_from_discrete_pheno = "discrete_var"
+    include_from_discrete_pheno = "discrete_var",
+    append_to_includes = "APP"
   )
   
   # Test case 1: include both continuous and discrete pheno variables
@@ -26,7 +27,7 @@ test_that("generate_predictor() works", {
   expect_identical(dim(x), c(3L, 6L))
   expect_identical(
     colnames(x)[5:6], 
-    c("continuous_var", "discrete_var_B")
+    c("continuous_varAPP", "discrete_var_BAPP")
   )
   expect_identical(colnames(x)[1:4], colnames(expr_mat))
   expect_identical(rownames(x), rownames(expr_mat))
@@ -43,7 +44,7 @@ test_that("generate_predictor() works", {
   expect_identical(dim(x), c(3L, 5L))
   expect_identical(
     colnames(x)[5], 
-    "continuous_var"
+    "continuous_varAPP"
   )
   expect_identical(colnames(x)[1:4], colnames(expr_mat))
   expect_identical(rownames(x), rownames(expr_mat))
@@ -61,7 +62,7 @@ test_that("generate_predictor() works", {
   expect_identical(dim(x), c(3L, 5L))
   expect_identical(
     colnames(x)[5], 
-    "discrete_var_B"
+    "discrete_var_BAPP"
   )
   expect_identical(colnames(x)[1:4], colnames(expr_mat))
   expect_identical(rownames(x), rownames(expr_mat))

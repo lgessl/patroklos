@@ -39,12 +39,16 @@ generate_predictor <- function(
         check_tbl_columns_exist(pheno_tbl, "pheno_tbl", include_from_continuous_pheno)
         bind_continuous <- pheno_tbl[, include_from_continuous_pheno, drop = FALSE] |> 
             as.matrix()
+        colnames(bind_continuous) <- colnames(bind_continuous) |> 
+            stringr::str_c(model_spec$append_to_includes)
     }
     # discrete pheno second
     if(!is.null(include_from_discrete_pheno)){
         check_tbl_columns_exist(pheno_tbl, "pheno_tbl", include_from_discrete_pheno)
         bind_discrete <- pheno_tbl[, include_from_discrete_pheno, drop = FALSE] |>
             tibble_to_binary()
+        colnames(bind_discrete) <- colnames(bind_discrete) |>
+            stringr::str_c(model_spec$append_to_includes)
     }
 
     # combine into numeric matrix, the predictor matrix    
