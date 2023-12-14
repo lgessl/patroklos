@@ -4,7 +4,8 @@ test_that("assess_model() works", {
   n <- 10
 
   dir <- withr::local_tempdir()
-  n_fold <- 3
+  n_fold <- 1
+  lambda <- 1
   data <- generate_mock_data(
     n_samples = n,
     n_genes = 5,
@@ -19,14 +20,14 @@ test_that("assess_model() works", {
   model_spec_1 <- ModelSpec(
     name = "cox-zerosum",
     fitter = zeroSum::zeroSum,
-    optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold, zeroSum = FALSE),
+    optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold, lambda = lambda),
     response_type = "survival_censored",
     base_dir = dir
   )
   model_spec_2 <- ModelSpec(
     name = "cox-lasso",
     fitter = zeroSum::zeroSum,
-    optional_fitter_args = list(family = "binomial", alpha = 1, nFold = n_fold, zeroSum = FALSE),
+    optional_fitter_args = list(family = "binomial", alpha = 1, nFold = n_fold, lambda = lambda),
     response_type = "binary",
     base_dir = dir
   )

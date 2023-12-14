@@ -27,11 +27,11 @@ PerfPlotSpec(
 \item{fname}{string. The name of the file to save the plot to.}
 
 \item{x_metric}{string. The name of the performance measure to be plotted on the x-axis.
-All measures that can be passed to the \code{x.measure} parameter of \code{ROCR::performance()} are
+All measures that can be passed to the \code{x.measure} parameter of \code{\link[ROCR:performance]{ROCR::performance()}} are
 valid.}
 
 \item{y_metric}{string. The name of the performance measure to be plotted on the y-axis.
-All measures that can be passed to the \code{measure} parameter of \code{ROCR::performance()} are
+All measures that can be passed to the \code{measure} parameter of \code{\link[ROCR:performance]{ROCR::performance()}} are
 valid.}
 
 \item{pfs_leq}{numeric. Progression-free survival threshold that divides samples into
@@ -42,7 +42,7 @@ classifier. Default is \code{2.0}.}
 \item{benchmark}{string. Column in the test pheno holding the numeric benchmark values.
 Default is \code{"ipi"} (international prognostic index for DLBCL).}
 
-\item{fellow_csv}{logical. If passed to \code{assess_multiple_models()}, whether to also create a
+\item{fellow_csv}{logical. If passed to \code{\link[=assess_multiple_models]{assess_multiple_models()}}, whether to also create a
 csv file for every model-data pair. Default is \code{TRUE}.}
 
 \item{scores_plot}{logical. Display the ordered scores output by the model in a scatter
@@ -74,6 +74,6 @@ A PlotSpec S3 object.
 }
 \description{
 A PlotSpec object holds all the info on how to create a model performance
-plot and what to do with it. It is tailored for \code{assess_model()}. Its base object is a
+plot and what to do with it. It is tailored for \code{\link[=assess_model]{assess_model()}}. Its base object is a
 list containing:
 }
