@@ -5,8 +5,8 @@
 #' @description Recognize features added to predcitor from pheno via a common suffix
 #' and set zeroSum.weights to 0 for those features (since they are, unlike RNAseq data, 
 #' not affected by rescaling), then call [zeroSum::zeroSum()]
-#' @param x. See [zeroSum::zeroSum()].
-#' @param y. See [zeroSum::zeroSum()].
+#' @param x, see [zeroSum::zeroSum()].
+#' @param y, see [zeroSum::zeroSum()].
 #' @param pheno_regexp string that matches exactly those features (column names) in 
 #' `x` that were added from pheno data. Default is `"\\+\\+$"`.
 #' @param ... further arguments passed to [zeroSum::zeroSum()].

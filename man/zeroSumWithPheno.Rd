@@ -8,14 +8,14 @@ from pheno data set to zero}
 zeroSumWithPheno(x, y, pheno_regexp = "\\\\+\\\\+$", ...)
 }
 \arguments{
+\item{x, }{see \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum()}}.}
+
+\item{y, }{see \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum()}}.}
+
 \item{pheno_regexp}{string that matches exactly those features (column names) in
 \code{x} that were added from pheno data. Default is \code{"\\\\+\\\\+$"}.}
 
 \item{...}{further arguments passed to \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum()}}.}
-
-\item{x.}{See \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum()}}.}
-
-\item{y.}{See \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum()}}.}
 }
 \value{
 \code{zeroSumFit} S3 object as returned by \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum()}}.
