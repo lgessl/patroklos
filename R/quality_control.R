@@ -14,14 +14,18 @@ qc_prepare <- function(
     # check class and type of x and y
     x_y_list <- list("x" = x, "y" = y)
     for(x_y in names(x_y_list)){
-        if(!(is.matrix(x_y_list[[x_y]]))){
-            stop(x_y, "must be a matrix.")
-        }
-        if(!is.numeric(x_y_list[[x_y]])){
-            stop(x_y, " must be numeric.")
-        }
+        obj <- x_y_list[[x_y]]
+        if(!is.matrix(obj))
+            stop(
+                x_y, " must be a matrix. But its S3 class is (", 
+                stringr::str_c(sloop::s3_class(obj), collapse = ", "), ")"
+            )
+        if(!is.numeric(obj))
+            stop(
+                x_y, " must be a numeric. But its S3 class is (", 
+                stringr::str_c(sloop::s3_class(obj), collapse = ", "), ")"
+            )
     }
-
     check_consistent_patient_ids(
         stage = "after_generate_xy",
         expr = x,
