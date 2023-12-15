@@ -39,6 +39,8 @@ generate_predictor <- function(
         check_tbl_columns_exist(pheno_tbl, "pheno_tbl", include_from_continuous_pheno)
         bind_continuous <- pheno_tbl[, include_from_continuous_pheno, drop = FALSE] |> 
             as.matrix()
+        if(!is.numeric(bind_continuous))
+            stop("Variables specified in `include_from_continuous_pheno` must be numeric.")
         colnames(bind_continuous) <- colnames(bind_continuous) |> 
             stringr::str_c(model_spec$append_to_includes)
     }

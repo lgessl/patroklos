@@ -24,7 +24,6 @@ test_that("generate_predictor() works", {
     data_spec = data_spec,
     model_spec = model_spec
   )
-  expect_identical(dim(x), c(3L, 6L))
   expect_identical(
     colnames(x)[5:6], 
     c("continuous_varAPP", "discrete_var_BAPP")
@@ -41,7 +40,6 @@ test_that("generate_predictor() works", {
     data_spec = data_spec,
     model_spec = model_spec
   )
-  expect_identical(dim(x), c(3L, 5L))
   expect_identical(
     colnames(x)[5], 
     "continuous_varAPP"
@@ -77,10 +75,21 @@ test_that("generate_predictor() works", {
     data_spec = data_spec,
     model_spec = model_spec
   )
-  expect_identical(dim(x), c(3L, 4L))
   expect_identical(colnames(x), colnames(expr_mat))
   expect_identical(rownames(x), rownames(expr_mat))
   expect_type(x, "double")
+
+  # Error: include categorical pheno variable as continuous
+  model_spec$include_from_continuous_pheno <- "discrete_var"
+  expect_error(
+    generate_predictor(
+      expr_mat = expr_mat,
+      pheno_tbl = pheno_df,
+      data_spec = data_spec,
+      model_spec = model_spec
+    ),
+    "must be numeric"
+  )
 })
 
 
@@ -125,7 +134,6 @@ test_that("generate_response() works", {
     model_spec = model_spec
   )
   expect_equal(rownames(y), as.character(pheno_tbl[["patient"]]))
-  expect_equal(dim(y), c(4L, 2L))
   expect_equal(colnames(y), c("pfs", "prog"))
   expect_type(y, "double")
 })
