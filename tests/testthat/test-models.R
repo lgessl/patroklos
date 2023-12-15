@@ -16,8 +16,17 @@ test_that("zeroSum_with_pheno() works", {
   )
   expect_equal(fit_obj$zeroSum.weights, zs_weights)
 
-  fit_obj_cox <- zeroSumWithPheno(
+  fit_obj <- zeroSumWithPheno(
     x = x, y = y_survival, family = "cox", nFold = 1, lambda = lambda
   )
   expect_equal(fit_obj$zeroSum.weights, zs_weights)
+
+  colnames(x) <- as.character(seq(n_genes + n_pheno_features))
+  zs_weights <- rep(1, ncol(x))
+  
+  fit_obj <- zeroSumWithPheno(
+    x = x, y = y_binary, family = "binomial", nFold = 1, lambda = lambda
+  )
+  expect_equal(fit_obj$zeroSum.weights, zs_weights)
+
 })
