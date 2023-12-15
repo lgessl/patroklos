@@ -3,22 +3,25 @@
 \name{zeroSumWithPheno}
 \alias{zeroSumWithPheno}
 \title{Call \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum()}} with zeroSum.weights corresponding to features
-from pheno data to zero}
+from pheno data set to zero}
 \usage{
 zeroSumWithPheno(x, y, pheno_regexp = "\\\\+\\\\+$", ...)
 }
 \arguments{
-\item{x, }{y. See \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum()}}}
-
 \item{pheno_regexp}{string that matches exactly those features (column names) in
 \code{x} that were added from pheno data. Default is \code{"\\\\+\\\\+$"}.}
 
-\item{...}{further arguments passed to \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum()}}}
+\item{...}{further arguments passed to \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum()}}.}
+
+\item{x.}{See \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum()}}.}
+
+\item{y.}{See \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum()}}.}
 }
 \value{
-\code{zeroSumFit} S3 object as returned by \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum()}}
+\code{zeroSumFit} S3 object as returned by \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum()}}.
 }
 \description{
 Recognize features added to predcitor from pheno via a common suffix
-and set zeroSum.weights to 0 for those features, then call \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum()}}
+and set zeroSum.weights to 0 for those features (since they are, unlike RNAseq data,
+not affected by rescaling), then call \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum()}}
 }
