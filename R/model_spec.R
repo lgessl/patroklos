@@ -16,8 +16,8 @@ new_ModelSpec <- function(
     fit_fname
 ){
     check_fitter(fitter, optional_fitter_args)
-    response_type <- match.arg(response_type, c("binary", "survival_censored"))
     stopifnot(is.character(name))
+    stopifnot(is.character(response_type))
     stopifnot(is.character(include_from_continuous_pheno) || is.null(include_from_continuous_pheno))
     stopifnot(is.character(include_from_discrete_pheno) || is.null(include_from_discrete_pheno))
     stopifnot(is.character(append_to_includes))
@@ -89,7 +89,7 @@ ModelSpec <- function(
     name,
     fitter,
     optional_fitter_args = NULL,
-    response_type = NULL,
+    response_type = c("binary", "survival_censored"),
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL,
     append_to_includes = "++",
@@ -103,6 +103,7 @@ ModelSpec <- function(
     if(is.null(save_dir)){
         save_dir <- file.path(base_dir, name)
     }
+    response_type <- match.arg(response_type)
     model_spec <- new_ModelSpec(
         name = name,
         fitter = fitter,

@@ -8,7 +8,7 @@ ModelSpec(
   name,
   fitter,
   optional_fitter_args = NULL,
-  response_type = NULL,
+  response_type = c("binary", "survival_censored"),
   include_from_continuous_pheno = NULL,
   include_from_discrete_pheno = NULL,
   append_to_includes = "++",
