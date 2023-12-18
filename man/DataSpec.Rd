@@ -13,6 +13,9 @@ DataSpec(
   pfs_col = "pfs_years",
   progression_col = "progression",
   ipi_col = "ipi",
+  ipi_feat_cols = c(age = "age", stage = "ann_arbor_stage", ldh_ratio = "ldh_ratio",
+    performance_status = "ecog_performance_status", n_extranodal_sites =
+    "n_extranodal_sites"),
   gene_id_col = "gene_id"
 )
 }
@@ -40,6 +43,11 @@ the progression status encoded as 1 = progression, 0 = no progression. Default i
 
 \item{ipi_col}{string. The name of the column in the pheno data that holds the
 International Prognostic Index (IPI) values. Default is \code{"ipi"}.}
+
+\item{ipi_feat_cols}{named character vector of length 5 or \code{NULL}. The names of the
+\emph{five} features in the pheno data needed to compute the IPI. If NULL, no information
+about the IPI features is provided, e.g. because they are not in the pheno data. For
+the default, see Usage.}
 
 \item{gene_id_col}{string. The name of the column in the expression data that holds
 the gene identifiers. Default is \code{"gene_id"}.}

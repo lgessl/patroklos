@@ -7,6 +7,7 @@ new_DataSpec <- function(
     pfs_col,
     progression_col,
     ipi_col,
+    ipi_feat_cols,
     gene_id_col
 ){
     stopifnot(is.character(name))
@@ -17,7 +18,21 @@ new_DataSpec <- function(
     stopifnot(is.character(pfs_col))
     stopifnot(is.character(progression_col))
     stopifnot(is.character(ipi_col))
+    stopifnot(is.character(ipi_feat_cols) | is.null(ipi_feat_cols))
     stopifnot(is.character(gene_id_col))
+
+    # More complex checks for ipi_feat_cols
+    if(is.character(ipi_feat_cols)){
+        if(is.null(names(ipi_feat_cols))){
+            stop("ipi_feat_cols must be a named character vector.")
+        }
+        ipi_feat_names <- names(ipi_feat_cols_default)
+        if(any(names(ipi_feat_cols) != ipi_feat_names)){
+            stop("ipi_feat_cols must be a character vector with the following names: ",
+                paste0(ipi_feat_names, collapse = ", "))
+        }
+    }
+
     data_spec_list <- list(
         "name" = name,
         "directory" = directory,
@@ -27,10 +42,21 @@ new_DataSpec <- function(
         "pfs_col" = pfs_col,
         "progression_col" = progression_col,
         "ipi_col" = ipi_col,
+        "ipi_feat_cols" = ipi_feat_cols,
         "gene_id_col" = gene_id_col
     )
     return(structure(data_spec_list, class = "DataSpec")) 
 }
+
+
+# For below helper 
+ipi_feat_cols_default <- c(
+    "age" = "age",
+    "stage" = "ann_arbor_stage",
+    "ldh_ratio" = "ldh_ratio",
+    "performance_status" = "ecog_performance_status",
+    "n_extranodal_sites" = "n_extranodal_sites"
+)
 
 
 #' @title Construct a DataSpec S3 object
@@ -52,6 +78,10 @@ new_DataSpec <- function(
 #' `"progression"`.
 #' @param ipi_col string. The name of the column in the pheno data that holds the
 #' International Prognostic Index (IPI) values. Default is `"ipi"`.
+#' @param ipi_feat_cols named character vector of length 5 or `NULL`. The names of the 
+#' *five* features in the pheno data needed to compute the IPI. If NULL, no information 
+#' about the IPI features is provided, e.g. because they are not in the pheno data. For 
+#' the default, see Usage.
 #' @param gene_id_col string. The name of the column in the expression data that holds
 #' the gene identifiers. Default is `"gene_id"`.
 #' @return A DataSpec object.
@@ -72,6 +102,13 @@ DataSpec <- function(
     pfs_col = "pfs_years",
     progression_col = "progression",
     ipi_col = "ipi",
+    ipi_feat_cols = c(
+        "age" = "age",
+        "stage" = "ann_arbor_stage",
+        "ldh_ratio" = "ldh_ratio",
+        "performance_status" = "ecog_performance_status",
+        "n_extranodal_sites" = "n_extranodal_sites"
+    ),
     gene_id_col = "gene_id"
 ){
     data_spec <- new_DataSpec(
@@ -83,6 +120,7 @@ DataSpec <- function(
         pfs_col = pfs_col,
         progression_col = progression_col,
         ipi_col = ipi_col,
+        ipi_feat_cols = ipi_feat_cols,
         gene_id_col = gene_id_col
     )
     return(data_spec)
