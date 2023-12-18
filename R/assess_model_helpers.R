@@ -1,9 +1,9 @@
 #' @importFrom rlang .data
 plot_perf_metric <- function(
-    perf_tbl,
     perf_plot_spec,
     quiet = FALSE
 ){
+    perf_tbl <- perf_plot_spec$data
     plt <- ggplot2::ggplot(
         perf_tbl,
         ggplot2::aes(
@@ -65,6 +65,11 @@ calculate_perf_metric <- function(
         measure =  y_metric,
         x.measure = x_metric
     )
+    # By default, also infer ROC-AUC
+    roc_auc <- ROCR::performance(
+        rocr_prediction,
+        measure = "auc"
+    )@y.values[[1]]
 
     # Store them in a tibble
     tbl <- tibble::tibble(
@@ -82,7 +87,13 @@ calculate_perf_metric <- function(
     any_na <- apply(tbl, 1, function(x) any(is.na(x)))
     tbl <- tbl[!any_na, ]
 
-    return(tbl)
+    perf_plot_spec$data <- tbl
+    perf_plot_spec$title <- stringr::str_c(
+        perf_plot_spec$title, 
+        ", ROC-AUC = ", round(roc_auc, 3)
+    )
+
+    return(perf_plot_spec)
 }
 
 
@@ -118,13 +129,14 @@ add_benchmark_perf_metric <- function(
         rm_na = TRUE
     )
 
-    perf_tbl <- calculate_perf_metric(
+    pps_bm <- calculate_perf_metric(
         predicted = pred_act[[1]],
         actual = pred_act[[2]],
         perf_plot_spec = perf_plot_spec
     )
+    perf_plot_spec$bm_data <- pps_bm$data
 
-    return(perf_tbl)
+    return(perf_plot_spec)
 }
 
 

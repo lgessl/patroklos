@@ -57,53 +57,55 @@ assess_model <- function(
     )
     actual <- pred_act[["actual"]]
     predicted <- pred_act[["predicted"]]
-    perf_tbl_model <- calculate_perf_metric(
+    perf_plot_spec <- calculate_perf_metric(
         predicted = predicted,
         actual = actual,
         perf_plot_spec = perf_plot_spec
     )
+    perf_tbl_model <- perf_plot_spec$data
 
     # (b) For benchmark (if given)
     perf_tbl_bm <- NULL
     if(!is.null(perf_plot_spec$benchmark)){
-        perf_tbl_bm <- add_benchmark_perf_metric(
+        perf_plot_spec <- add_benchmark_perf_metric(
             pheno_tbl = pheno_tbl,
             data_spec = data_spec,
             perf_plot_spec = perf_plot_spec,
             model_spec = model_spec
         )
+        perf_tbl_bm <- perf_plot_spec$bm_data
     }
 
-    # Combine both into tibble
+    # Combine both performance tibbles into one
     perf_tbl_list <- list()
     perf_tbl_list[[model_spec$name]] <- perf_tbl_model
     if(!is.null(perf_tbl_bm)){
         perf_tbl_list[[perf_plot_spec$benchmark]] <- perf_tbl_bm
     }
     perf_tbl <- dplyr::bind_rows(perf_tbl_list, .id = "model")
+    perf_plot_spec$data <- perf_tbl
 
     # Plot
     if(plots){
         plot_perf_metric(
-            perf_tbl = perf_tbl,
             perf_plot_spec = perf_plot_spec,
             quiet = quiet
         )
-    }
 
-    if(perf_plot_spec$scores_plot){
-        perf_plot_spec$title <- stringr::str_c(
-            data_spec$name, ", pfs < ", model_spec$pfs_leq
-        )
-        perf_plot_spec$fname <- file.path(
-            dirname(perf_plot_spec$fname),
-            "scores.pdf"
-        )
-        plot_scores(
-            predicted = predicted,
-            actual = actual,
-            perf_plot_spec = perf_plot_spec
-        )
+        if(perf_plot_spec$scores_plot){
+            perf_plot_spec$title <- stringr::str_c(
+                data_spec$name, ", pfs < ", model_spec$pfs_leq
+            )
+            perf_plot_spec$fname <- file.path(
+                dirname(perf_plot_spec$fname),
+                "scores.pdf"
+            )
+            plot_scores(
+                predicted = predicted,
+                actual = actual,
+                perf_plot_spec = perf_plot_spec
+            )
+        }
     }
 
     return(perf_tbl_list)

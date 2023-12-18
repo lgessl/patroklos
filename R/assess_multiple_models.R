@@ -100,11 +100,11 @@ assess_multiple_models <- function(
     }
 
     perf_tbl <- dplyr::bind_rows(perf_tbls, .id = "model")
+    perf_plot_spec$data <- perf_tbl
     if(comparison_plot){
         plot_perf_metric(
-        perf_tbl = perf_tbl,
-        perf_plot_spec = perf_plot_spec,
-        quiet = TRUE
+            perf_plot_spec = perf_plot_spec,
+            quiet = TRUE
         )
         message("Saving comparative performance plot to ", perf_plot_spec$fname)
     }

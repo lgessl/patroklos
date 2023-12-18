@@ -20,10 +20,10 @@ test_that("plot_perf_metric() works", {
     x_lab = "this x lab",
     y_lab = "that y lab"
   )
+  perf_plot_spec$data <- perf_tbl
 
   expect_silent(
     plot_perf_metric(
-      perf_tbl = perf_tbl,
       perf_plot_spec = perf_plot_spec,
       quiet = TRUE
     )
@@ -45,12 +45,13 @@ test_that("calculate_perf_metric() works", {
     )
   
     expect_silent(
-      perf_tbl <- calculate_perf_metric(
+      perf_plot_spec <- calculate_perf_metric(
         predicted = predicted,
         actual = actual,
         perf_plot_spec = perf_plot_spec
       )
     )
+    perf_tbl <- perf_plot_spec$data
     expect_equal(names(perf_tbl), c("rpp", "prec", "cutoff"))
     expect_s3_class(perf_tbl, "tbl_df")
     expect_equal(dim(perf_tbl), c(n_samples, 3))
@@ -79,14 +80,13 @@ test_that("add_benchmark_perf_metric() works", {
     y_metric = "prec"
   )
 
-  # expect_silent(
-    perf_tbl <- add_benchmark_perf_metric(
-      pheno_tbl = pheno_tbl,
-      data_spec = data_spec,
-      perf_plot_spec = perf_plot_spec,
-      model_spec = model_spec
-    )
-  # )
+  perf_plot_spec <- add_benchmark_perf_metric(
+    pheno_tbl = pheno_tbl,
+    data_spec = data_spec,
+    perf_plot_spec = perf_plot_spec,
+    model_spec = model_spec
+  )
+  perf_tbl <- perf_plot_spec$bm_data
 
   expect_equal(names(perf_tbl), c("rpp", "prec", "cutoff"))
   expect_s3_class(perf_tbl, "tbl_df")
