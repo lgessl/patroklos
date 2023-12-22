@@ -3,6 +3,18 @@ plot_perf_metric <- function(
     perf_plot_spec,
     quiet = FALSE
 ){
+    if(!is.null(perf_plot_spec$xlim)){
+        perf_plot_spec$data <- perf_plot_spec$data[
+            perf_plot_spec$data[[perf_plot_spec$x_metric]] >= perf_plot_spec$xlim[1] &
+            perf_plot_spec$data[[perf_plot_spec$x_metric]] <= perf_plot_spec$xlim[2],
+        ]
+    }
+    if(!is.null(perf_plot_spec$ylim)){
+        perf_plot_spec$data <- perf_plot_spec$data[
+            perf_plot_spec$data[[perf_plot_spec$y_metric]] >= perf_plot_spec$ylim[1] &
+            perf_plot_spec$data[[perf_plot_spec$y_metric]] <= perf_plot_spec$ylim[2],
+        ]
+    }
     perf_tbl <- perf_plot_spec$data
     plt <- ggplot2::ggplot(
         perf_tbl,
@@ -21,6 +33,13 @@ plot_perf_metric <- function(
         )
     if(!is.null(perf_plot_spec$colors)){
         plt <- plt + ggplot2::scale_color_manual(values = perf_plot_spec$colors)
+    }
+    if(!is.null(perf_plot_spec$smooth_method)){
+        plt <- plt + ggplot2::geom_smooth(
+            method = perf_plot_spec$smooth_method,
+            se = FALSE,
+            formula = y ~ x
+        )
     }
 
     if(perf_plot_spec$show_plots){

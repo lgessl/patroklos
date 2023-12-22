@@ -2,7 +2,7 @@ test_that("plot_perf_metric() works", {
 
   set.seed(134)
 
-  n_samples <- 5
+  n_samples <- 10
 
   perf_tbl <- tibble::tibble(
     rpp = runif(2*n_samples),
@@ -15,14 +15,17 @@ test_that("plot_perf_metric() works", {
     fname = file.path(dir, "test.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
-    show_plots = FALSE,
+    show_plots = TRUE,
     title = "this title",
     x_lab = "this x lab",
-    y_lab = "that y lab"
+    y_lab = "that y lab",
+    xlim = c(0, 1),
+    ylim = c(0, 1),
+    smooth_method = "loess"
   )
   perf_plot_spec$data <- perf_tbl
 
-  expect_silent(
+  expect_no_error(
     plot_perf_metric(
       perf_plot_spec = perf_plot_spec,
       quiet = TRUE

@@ -16,6 +16,9 @@ PerfPlotSpec(
   title = NULL,
   x_lab = NULL,
   y_lab = NULL,
+  xlim = NULL,
+  ylim = NULL,
+  smooth_method = NULL,
   alpha = 0.5,
   width = 7,
   height = 4,
@@ -53,9 +56,14 @@ graphics device. Default is \code{FALSE}.}
 
 \item{title}{string. The title of the plot. Default is \code{NULL}.}
 
-\item{x_lab}{string. The label for the x-axis. Default is \code{x_metric}.}
+\item{x_lab, y_lab}{string. Axis labels. Default is \code{x_metric} and \code{y_metric}, respectively.}
 
-\item{y_lab}{string. The label for the y-axis. Default is \code{y_metric}.}
+\item{xlim, ylim}{numeric vector of length 2 or \code{NULL}. The limits for both axes. Default is
+\code{NULL}, no limits.}
+
+\item{smooth_method}{string or function. Smooth method to plot an additional smoothed graph.
+If \code{NULL}, no smoothing. Else we pass \code{smooth_method} as the \code{method} parameter to
+\code{\link[ggplot2:geom_smooth]{ggplot2::geom_smooth()}}. Default is \code{"loess"}.}
 
 \item{alpha}{numeric in [0, 1]. The alpha value for the points and lines in the
 plot.}

@@ -10,6 +10,9 @@ new_PerfPlotSpec <- function(
     title,
     x_lab,
     y_lab,
+    xlim,
+    ylim,
+    smooth_method,
     alpha,
     colors,
     width,
@@ -27,6 +30,10 @@ new_PerfPlotSpec <- function(
     stopifnot(is.character(title) || is.null(title))
     stopifnot(is.character(x_lab))
     stopifnot(is.character(y_lab))
+    stopifnot(is.numeric(xlim) || is.null(xlim))
+    stopifnot(is.numeric(ylim) || is.null(ylim))
+    stopifnot(is.character(smooth_method) || is.null(smooth_method) ||
+        is.function(smooth_method))
     stopifnot(is.numeric(alpha) && alpha >= 0 && alpha <= 1)
     stopifnot(is.character(colors) || is.null(colors))
     stopifnot(is.numeric(width) && width > 0)
@@ -45,6 +52,9 @@ new_PerfPlotSpec <- function(
         "title" = title,
         "x_lab" = x_lab,
         "y_lab" = y_lab,
+        "xlim" = xlim,
+        "ylim" = ylim,
+        "smooth_method" = smooth_method,
         "alpha" = alpha,
         "colors" = colors,
         "width" = width,
@@ -78,8 +88,12 @@ new_PerfPlotSpec <- function(
 #' @param show_plots logical. Whether to show the plots after creation in an interactive 
 #' graphics device. Default is `FALSE`. 
 #' @param title string. The title of the plot. Default is `NULL`.
-#' @param x_lab string. The label for the x-axis. Default is `x_metric`.
-#' @param y_lab string. The label for the y-axis. Default is `y_metric`.
+#' @param x_lab,y_lab string. Axis labels. Default is `x_metric` and `y_metric`, respectively.
+#' @param xlim,ylim numeric vector of length 2 or `NULL`. The limits for both axes. Default is
+#' `NULL`, no limits.
+#' @param smooth_method string or function. Smooth method to plot an additional smoothed graph.
+#' If `NULL`, no smoothing. Else we pass `smooth_method` as the `method` parameter to
+#' [ggplot2::geom_smooth()]. Default is `"loess"`.
 #' @param alpha numeric in \[0, 1\]. The alpha value for the points and lines in the 
 #' plot.
 #' @param width numeric. The width of the plot in `units`. Default is `7`.
@@ -101,6 +115,9 @@ PerfPlotSpec <- function(
     title = NULL,
     x_lab = NULL,
     y_lab = NULL,
+    xlim = NULL,
+    ylim = NULL,
+    smooth_method = NULL,
     alpha = 0.5,
     width = 7,
     height = 4,
@@ -123,6 +140,9 @@ PerfPlotSpec <- function(
         scores_plot = scores_plot,
         x_lab = x_lab,
         y_lab = y_lab,
+        xlim = xlim,
+        ylim = ylim,
+        smooth_method = smooth_method,
         alpha = alpha,
         width = width,
         height = height,
