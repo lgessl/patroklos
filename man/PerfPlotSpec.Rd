@@ -19,6 +19,7 @@ PerfPlotSpec(
   xlim = NULL,
   ylim = NULL,
   smooth_method = NULL,
+  smooth_benchmark = FALSE,
   alpha = 0.5,
   width = 7,
   height = 4,
@@ -76,6 +77,9 @@ plot.}
 Default is \code{NULL}, which means that the default colors of \code{ggplot2} will be used.}
 
 \item{units}{string. The units of \code{width} and \code{height}. Default is \code{"in"} (inches).}
+
+\item{smoth_benchmark}{logical. Whether to also smooth the benchmark data. Default is
+\code{FALSE}.}
 }
 \value{
 A PlotSpec S3 object.

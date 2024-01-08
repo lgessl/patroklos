@@ -13,6 +13,7 @@ new_PerfPlotSpec <- function(
     xlim,
     ylim,
     smooth_method,
+    smooth_benchmark,
     alpha,
     colors,
     width,
@@ -34,6 +35,7 @@ new_PerfPlotSpec <- function(
     stopifnot(is.numeric(ylim) || is.null(ylim))
     stopifnot(is.character(smooth_method) || is.null(smooth_method) ||
         is.function(smooth_method))
+    stopifnot(is.logical(smooth_benchmark))
     stopifnot(is.numeric(alpha) && alpha >= 0 && alpha <= 1)
     stopifnot(is.character(colors) || is.null(colors))
     stopifnot(is.numeric(width) && width > 0)
@@ -55,6 +57,7 @@ new_PerfPlotSpec <- function(
         "xlim" = xlim,
         "ylim" = ylim,
         "smooth_method" = smooth_method,
+        "smooth_benchmark" = smooth_benchmark,
         "alpha" = alpha,
         "colors" = colors,
         "width" = width,
@@ -94,6 +97,8 @@ new_PerfPlotSpec <- function(
 #' @param smooth_method string or function. Smooth method to plot an additional smoothed graph.
 #' If `NULL`, no smoothing. Else we pass `smooth_method` as the `method` parameter to
 #' [ggplot2::geom_smooth()]. Default is `"loess"`.
+#' @param smoth_benchmark logical. Whether to also smooth the benchmark data. Default is
+#' `FALSE`.
 #' @param alpha numeric in \[0, 1\]. The alpha value for the points and lines in the 
 #' plot.
 #' @param width numeric. The width of the plot in `units`. Default is `7`.
@@ -118,6 +123,7 @@ PerfPlotSpec <- function(
     xlim = NULL,
     ylim = NULL,
     smooth_method = NULL,
+    smooth_benchmark = FALSE,
     alpha = 0.5,
     width = 7,
     height = 4,
@@ -143,6 +149,7 @@ PerfPlotSpec <- function(
         xlim = xlim,
         ylim = ylim,
         smooth_method = smooth_method,
+        smooth_benchmark = smooth_benchmark,
         alpha = alpha,
         width = width,
         height = height,
