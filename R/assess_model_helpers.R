@@ -40,8 +40,7 @@ plot_perf_metric <- function(
         )
     if(!is.null(perf_plot_spec$benchmark) && !is.null(perf_plot_spec$bm_data)){
         plt <- plt + ggplot2::geom_point(
-            data = perf_plot_spec$bm_data,
-            shape = "triangle filled"
+            data = perf_plot_spec$bm_data
         )
     }
     if(!is.null(perf_plot_spec$colors)){
