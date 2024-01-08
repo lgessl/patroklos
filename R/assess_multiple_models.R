@@ -84,7 +84,7 @@ assess_multiple_models <- function(
             )
         }
 
-        single_tbls <- assess_model(
+        single_pps <- assess_model(
             expr_mat = expr_mat,
             pheno_tbl = pheno_tbl,
             data_spec = data_spec,
@@ -93,14 +93,12 @@ assess_multiple_models <- function(
             plots = single_plots,
             quiet = quiet
         )
-        perf_tbls[names(single_tbls)] <- single_tbls
-
-        if(!one_data) # Remove if more than one data set is given
-            perf_tbls[[perf_plot_spec$benchmark]] <- NULL
+        perf_tbls[[model_spec$name]] <- single_pps$data
+        if(one_data && !is.null(model_spec$benchmark) && i==1)
+            perf_plot_spec$bm_data <- single_pps$bm_data
     }
 
-    perf_tbl <- dplyr::bind_rows(perf_tbls, .id = "model")
-    perf_plot_spec$data <- perf_tbl
+    perf_plot_spec$data <- dplyr::bind_rows(perf_tbls)
     if(comparison_plot){
         plot_perf_metric(
             perf_plot_spec = perf_plot_spec,
@@ -109,7 +107,7 @@ assess_multiple_models <- function(
         message("Saving comparative performance plot to ", perf_plot_spec$fname)
     }
 
-    invisible(perf_tbl)
+    invisible(perf_plot_spec)
 }
 
 
