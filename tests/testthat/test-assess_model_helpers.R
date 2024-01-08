@@ -2,28 +2,37 @@ test_that("plot_perf_metric() works", {
 
   set.seed(134)
 
-  n_samples <- 10
+  n_samples <- 20
 
   perf_tbl <- tibble::tibble(
     rpp = runif(2*n_samples),
     prec = runif(2*n_samples),
     cutoff = runif(2*n_samples),
-    model = sample(c("model1", "model2"), 2*n_samples, replace = TRUE)
+    model = "model1"
+  )
+  bm_tbl <- tibble::tibble(
+    rpp = runif(2*n_samples),
+    prec = runif(2*n_samples),
+    cutoff = runif(2*n_samples),
+    model = "bm"
   )
   dir <- withr::local_tempdir()
   perf_plot_spec <- PerfPlotSpec(
     fname = file.path(dir, "test.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
-    show_plots = TRUE,
+    benchmark = "bm",
+    show_plots = FALSE,
     title = "this title",
     x_lab = "this x lab",
     y_lab = "that y lab",
-    xlim = c(0, 1),
-    ylim = c(0, 1),
-    smooth_method = "loess"
+    xlim = c(0, .5),
+    ylim = c(0, .5),
+    smooth_method = "loess",
+    smooth_benchmark = TRUE
   )
   perf_plot_spec$data <- perf_tbl
+  perf_plot_spec$bm_data <- bm_tbl
 
   expect_no_error(
     plot_perf_metric(

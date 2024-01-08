@@ -8,29 +8,42 @@ plot_perf_metric <- function(
             perf_plot_spec$data[[perf_plot_spec$x_metric]] >= perf_plot_spec$xlim[1] &
             perf_plot_spec$data[[perf_plot_spec$x_metric]] <= perf_plot_spec$xlim[2],
         ]
+        perf_plot_spec$bm_data <- perf_plot_spec$bm_data[
+            perf_plot_spec$bm_data[[perf_plot_spec$x_metric]] >= perf_plot_spec$xlim[1] &
+            perf_plot_spec$bm_data[[perf_plot_spec$x_metric]] <= perf_plot_spec$xlim[2],
+        ]
     }
     if(!is.null(perf_plot_spec$ylim)){
         perf_plot_spec$data <- perf_plot_spec$data[
             perf_plot_spec$data[[perf_plot_spec$y_metric]] >= perf_plot_spec$ylim[1] &
             perf_plot_spec$data[[perf_plot_spec$y_metric]] <= perf_plot_spec$ylim[2],
         ]
+        perf_plot_spec$bm_data <- perf_plot_spec$bm_data[
+            perf_plot_spec$bm_data[[perf_plot_spec$y_metric]] >= perf_plot_spec$ylim[1] &
+            perf_plot_spec$bm_data[[perf_plot_spec$y_metric]] <= perf_plot_spec$ylim[2],
+        ]
     }
-    perf_tbl <- perf_plot_spec$data
+
     plt <- ggplot2::ggplot(
-        perf_tbl,
+        perf_plot_spec$data,
         ggplot2::aes(
             x = .data[[perf_plot_spec$x_metric]], 
             y = .data[[perf_plot_spec$y_metric]], 
             color = .data[["model"]]
             )
         ) +
-        ggplot2::geom_line(alpha = perf_plot_spec$alpha) +
         ggplot2::geom_point(alpha = perf_plot_spec$alpha) +
         ggplot2::labs(
             title = perf_plot_spec$title, 
             x = perf_plot_spec$x_lab, 
             y = perf_plot_spec$y_lab
         )
+    if(!is.null(perf_plot_spec$benchmark) && !is.null(perf_plot_spec$bm_data)){
+        plt <- plt + ggplot2::geom_point(
+            data = perf_plot_spec$bm_data,
+            shape = "triangle filled"
+        )
+    }
     if(!is.null(perf_plot_spec$colors)){
         plt <- plt + ggplot2::scale_color_manual(values = perf_plot_spec$colors)
     }
@@ -40,6 +53,14 @@ plot_perf_metric <- function(
             se = FALSE,
             formula = y ~ x
         )
+        if(perf_plot_spec$smooth_benchmark && !is.null(perf_plot_spec$bm_data)){
+            plt <- plt + ggplot2::geom_smooth(
+                data = perf_plot_spec$bm_data,
+                method = perf_plot_spec$smooth_method,
+                se = FALSE,
+                formula = y ~ x
+            )
+        }
     }
 
     if(perf_plot_spec$show_plots){
@@ -48,6 +69,7 @@ plot_perf_metric <- function(
 
     if(!quiet)
         message("Saving performance plot to ", perf_plot_spec$fname)
+
     ggplot2::ggsave(
         perf_plot_spec$fname, 
         plt, 
@@ -57,6 +79,7 @@ plot_perf_metric <- function(
     )
 
     # Save to csv (if wanted)
+    perf_tbl <- rbind(perf_plot_spec$data, perf_plot_spec$bm_data)
     if(perf_plot_spec$fellow_csv){
         csv_fname <- stringr::str_replace(perf_plot_spec$fname, "\\..+", ".csv")
         if(!quiet)
