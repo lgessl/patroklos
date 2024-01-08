@@ -94,7 +94,7 @@ assess_multiple_models <- function(
             quiet = quiet
         )
         perf_tbls[[model_spec$name]] <- single_pps$data
-        if(one_data && !is.null(model_spec$benchmark) && i==1)
+        if(one_data && !is.null(perf_plot_spec$benchmark) && i==1)
             perf_plot_spec$bm_data <- single_pps$bm_data
     }
 
