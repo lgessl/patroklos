@@ -66,6 +66,9 @@ graphics device. Default is \code{FALSE}.}
 If \code{NULL}, no smoothing. Else we pass \code{smooth_method} as the \code{method} parameter to
 \code{\link[ggplot2:geom_smooth]{ggplot2::geom_smooth()}}. Default is \code{"loess"}.}
 
+\item{smooth_benchmark}{logical. Whether to also smooth the benchmark data. Default is
+\code{FALSE}.}
+
 \item{alpha}{numeric in [0, 1]. The alpha value for the points and lines in the
 plot.}
 
@@ -77,9 +80,6 @@ plot.}
 Default is \code{NULL}, which means that the default colors of \code{ggplot2} will be used.}
 
 \item{units}{string. The units of \code{width} and \code{height}. Default is \code{"in"} (inches).}
-
-\item{smoth_benchmark}{logical. Whether to also smooth the benchmark data. Default is
-\code{FALSE}.}
 }
 \value{
 A PlotSpec S3 object.

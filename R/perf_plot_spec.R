@@ -97,7 +97,7 @@ new_PerfPlotSpec <- function(
 #' @param smooth_method string or function. Smooth method to plot an additional smoothed graph.
 #' If `NULL`, no smoothing. Else we pass `smooth_method` as the `method` parameter to
 #' [ggplot2::geom_smooth()]. Default is `"loess"`.
-#' @param smoth_benchmark logical. Whether to also smooth the benchmark data. Default is
+#' @param smooth_benchmark logical. Whether to also smooth the benchmark data. Default is
 #' `FALSE`.
 #' @param alpha numeric in \[0, 1\]. The alpha value for the points and lines in the 
 #' plot.
