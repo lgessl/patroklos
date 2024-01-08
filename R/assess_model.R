@@ -62,7 +62,7 @@ assess_model <- function(
         actual = actual,
         perf_plot_spec = perf_plot_spec
     )
-    perf_tbl_model <- perf_plot_spec$data
+    perf_plot_spec$data[["model"]] <- model_spec$name
 
     # (b) For benchmark (if given)
     perf_tbl_bm <- NULL
@@ -73,17 +73,8 @@ assess_model <- function(
             perf_plot_spec = perf_plot_spec,
             model_spec = model_spec
         )
-        perf_tbl_bm <- perf_plot_spec$bm_data
+        perf_plot_spec$bm_data[["model"]] <- perf_plot_spec$benchmark
     }
-
-    # Combine both performance tibbles into one
-    perf_tbl_list <- list()
-    perf_tbl_list[[model_spec$name]] <- perf_tbl_model
-    if(!is.null(perf_tbl_bm)){
-        perf_tbl_list[[perf_plot_spec$benchmark]] <- perf_tbl_bm
-    }
-    perf_tbl <- dplyr::bind_rows(perf_tbl_list, .id = "model")
-    perf_plot_spec$data <- perf_tbl
 
     # Plot
     if(plots){
@@ -108,5 +99,5 @@ assess_model <- function(
         }
     }
 
-    return(perf_tbl_list)
+    return(perf_plot_spec)
 }
