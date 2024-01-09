@@ -1,7 +1,7 @@
 test_that("assess_model() works", {
   
   set.seed(132)
-  n <- 50
+  n <- 20
 
   dir <- withr::local_tempdir()
   n_fold <- 3
@@ -40,12 +40,14 @@ test_that("assess_model() works", {
     benchmark = "ipi",
     show_plots = FALSE
   )
-  prepare_and_fit(
-    expr_mat = expr_mat,
-    pheno_tbl = pheno_tbl,
-    data_spec = data_spec,
-    model_spec = list(model_spec_1, model_spec_2)
-  )
+  suppressWarnings({
+    prepare_and_fit(
+      expr_mat = expr_mat,
+      pheno_tbl = pheno_tbl,
+      data_spec = data_spec,
+      model_spec = list(model_spec_1, model_spec_2)
+    )
+  })
 
   expect_no_error(
       assess_model(

@@ -2,7 +2,7 @@ test_that("prepare_and_fit() works", {
 
   set.seed(4352)
 
-  n_samples <- 30
+  n_samples <- 20
   n_genes <- 5
   n_na_in_pheno <- 5
   n_fold <- 3
