@@ -64,7 +64,7 @@ generate_mock_data <- function(
         size = n_samples,
         replace = TRUE
     )
-    pheno_tbl[["pfs_years"]] <- rnorm(n_samples, 2, 1)
+    pheno_tbl[["pfs_years"]] <- runif(n_samples, 0, 4)
     pheno_tbl[["discrete_var"]] <- sample(1:3, size = n_samples, replace = TRUE)
     pheno_tbl[["continuous_var"]] <- rnorm(n_samples, 10, 10)
     pheno_tbl[["ipi"]] <- sample(1:5, size = n_samples, replace = TRUE)

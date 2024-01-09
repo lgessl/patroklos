@@ -9,6 +9,7 @@ ModelSpec(
   fitter,
   optional_fitter_args = NULL,
   response_type = c("binary", "survival_censored"),
+  response_colnames = c("time", "status"),
   include_from_continuous_pheno = NULL,
   include_from_discrete_pheno = NULL,
   append_to_includes = "++",
@@ -34,6 +35,16 @@ passed to \code{fitter}.}
 
 \item{response_type}{string. The type of response to be used. One of \code{"binary"} or
 \code{"survival_censored"}. Default is \code{NULL}.}
+
+\item{response_colnames}{string vector of length 2. If \code{response_type == "survival_censored"},
+use as column names for the response matrix.
+\itemize{
+\item The first element is the name of the column holding the time until the event or
+censoring, and
+\item the second one is the anme of the column holding the event status (1 = event, 0 =
+censoring).
+Default is \code{c("time", "status")}.
+}}
 
 \item{include_from_continuous_pheno}{vector of strings. The names of the
 \emph{continuous} variables in the pheno data (to be) included in the predictor matrix. The

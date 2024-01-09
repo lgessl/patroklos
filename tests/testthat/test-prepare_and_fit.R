@@ -5,7 +5,7 @@ test_that("prepare_and_fit() works", {
   n_samples <- 30
   n_genes <- 5
   n_na_in_pheno <- 5
-  n_fold <- 2
+  n_fold <- 3
   lambda <- 1
 
   data <- generate_mock_data(
@@ -21,8 +21,8 @@ test_that("prepare_and_fit() works", {
   # Case 1: Fit all models specified
   model_spec_1 <- ModelSpec(
     name = "cox-zerosum",
-    fitter = zeroSum::zeroSum,
-    optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold, lambda = lambda),
+    fitter = glmnet::cv.glmnet,
+    optional_fitter_args = list(family = "cox", alpha = 1, nfolds = n_fold, lambda = c(lambda, 2)),
     response_type = "survival_censored",
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL,
@@ -31,7 +31,8 @@ test_that("prepare_and_fit() works", {
   model_spec_2 <- ModelSpec(
     name = "binomial-zerosum",
     fitter = zeroSum::zeroSum,
-    optional_fitter_args = list(family = "binomial", alpha = 1, nFold = n_fold, lambda = lambda),
+    optional_fitter_args = list(family = "binomial", alpha = 1, 
+      nFold = n_fold, lambda = lambda, zeroSum = FALSE),
     response_type = "binary",
     include_from_continuous_pheno = "continuous_var",
     include_from_discrete_pheno = "discrete_var",

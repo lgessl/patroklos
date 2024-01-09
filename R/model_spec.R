@@ -4,6 +4,7 @@ new_ModelSpec <- function(
     fitter,
     optional_fitter_args,
     response_type,
+    response_colnames,
     include_from_continuous_pheno,
     include_from_discrete_pheno,
     append_to_includes,
@@ -18,6 +19,7 @@ new_ModelSpec <- function(
     check_fitter(fitter, optional_fitter_args)
     stopifnot(is.character(name))
     stopifnot(is.character(response_type))
+    stopifnot(is.character(response_colnames))
     stopifnot(is.character(include_from_continuous_pheno) || is.null(include_from_continuous_pheno))
     stopifnot(is.character(include_from_discrete_pheno) || is.null(include_from_discrete_pheno))
     stopifnot(is.character(append_to_includes))
@@ -33,6 +35,7 @@ new_ModelSpec <- function(
         "fitter" = fitter,
         "optional_fitter_args" = optional_fitter_args,
         "response_type" = response_type,
+        "response_colnames" = response_colnames,
         "include_from_continuous_pheno" = include_from_continuous_pheno,
         "include_from_discrete_pheno" = include_from_discrete_pheno,
         "append_to_includes" = append_to_includes,
@@ -60,6 +63,13 @@ new_ModelSpec <- function(
 #' passed to `fitter`.
 #' @param response_type string. The type of response to be used. One of `"binary"` or
 #' `"survival_censored"`. Default is `NULL`.
+#' @param response_colnames string vector of length 2. If `response_type == "survival_censored"`,
+#' use as column names for the response matrix. 
+#' * The first element is the name of the column holding the time until the event or 
+#' censoring, and 
+#' * the second one is the anme of the column holding the event status (1 = event, 0 =
+#' censoring). 
+#' Default is `c("time", "status")`.
 #' @param include_from_continuous_pheno vector of strings. The names of the 
 #' *continuous* variables in the pheno data (to be) included in the predictor matrix. The
 #' values will be coerced to numeric. Default is `NULL`, which means no continuous pheno
@@ -90,6 +100,7 @@ ModelSpec <- function(
     fitter,
     optional_fitter_args = NULL,
     response_type = c("binary", "survival_censored"),
+    response_colnames = c("time", "status"),
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL,
     append_to_includes = "++",
@@ -109,6 +120,7 @@ ModelSpec <- function(
         fitter = fitter,
         optional_fitter_args = optional_fitter_args,
         response_type = response_type,
+        response_colnames = response_colnames,
         include_from_continuous_pheno = include_from_continuous_pheno,
         include_from_discrete_pheno = include_from_discrete_pheno,
         append_to_includes = append_to_includes,

@@ -134,6 +134,6 @@ test_that("generate_response() works", {
     model_spec = model_spec
   )
   expect_equal(rownames(y), as.character(pheno_tbl[["patient"]]))
-  expect_equal(colnames(y), c("pfs", "prog"))
+  expect_equal(colnames(y), model_spec$response_colnames)
   expect_type(y, "double")
 })

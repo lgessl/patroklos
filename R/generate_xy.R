@@ -106,6 +106,7 @@ generate_response <- function(
     } else if(response_type == "survival_censored"){
         y <- pheno_tbl[, c(pfs_col, progression_col)] |> as.matrix()
         rownames(y) <- pheno_tbl[[patient_id_col]]
+        colnames(y) <- model_spec$response_colnames
     }
 
     return(y)
