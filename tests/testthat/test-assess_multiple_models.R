@@ -58,7 +58,7 @@ test_that("assess_multiple_models() works", {
     fname = file.path(res_dir, "perf_plot.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
-    show_plots = TRUE
+    show_plots = FALSE
   )
 
   expect_no_error(

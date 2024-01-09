@@ -48,7 +48,7 @@ generate_mock_data <- function(
 ){
     # expression matrix
     expr_mat <- matrix(
-        sample(1:100, n_samples*n_genes, replace = TRUE),
+        sample(1:10, n_samples*n_genes, replace = TRUE),
         nrow = n_samples
     ) |> log()
     rownames(expr_mat) <- stringr::str_c("sample_", 1:n_samples)
@@ -60,9 +60,10 @@ generate_mock_data <- function(
     pheno_tbl <- tibble::tibble(.rows = n_samples)
     pheno_tbl[["patient_id"]] <- rownames(expr_mat)
     pheno_tbl[["progression"]] <- sample(
-        c(0, 1),
+        0:1,
         size = n_samples,
-        replace = TRUE
+        replace = TRUE,
+        prob = c(.3, .7)
     )
     pheno_tbl[["pfs_years"]] <- runif(n_samples, 0, 4)
     pheno_tbl[["discrete_var"]] <- sample(1:3, size = n_samples, replace = TRUE)
