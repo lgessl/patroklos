@@ -51,7 +51,8 @@ test_that("prepare_and_fit", {
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
       data_spec = data_spec,
-      model_spec = model_spec_1
+      model_spec = model_spec_1,
+      lambda = "lambda.min"
   ))
   expect_true(is.list(pred_obs))
   expect_true(is.vector(pred_obs[["predicted"]]))
@@ -63,6 +64,7 @@ test_that("prepare_and_fit", {
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
       data_spec = data_spec,
-      model_spec = model_spec_2
+      model_spec = model_spec_2,
+      lambda = "lambda.min"
   ))
 })

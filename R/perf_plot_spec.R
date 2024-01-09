@@ -3,6 +3,7 @@ new_PerfPlotSpec <- function(
     x_metric,
     y_metric,
     pfs_leq,
+    lambda,
     benchmark,
     fellow_csv,
     scores_plot,
@@ -24,6 +25,7 @@ new_PerfPlotSpec <- function(
     stopifnot(is.character(x_metric))
     stopifnot(is.character(y_metric))
     stopifnot(is.null(pfs_leq) || is.numeric(pfs_leq))
+    stopifnot(is.character(lambda) || is.numeric(lambda))
     stopifnot(is.character(benchmark))
     stopifnot(is.logical(fellow_csv))
     stopifnot(is.logical(scores_plot))
@@ -47,6 +49,7 @@ new_PerfPlotSpec <- function(
         "x_metric" = x_metric,
         "y_metric" = y_metric,
         "pfs_leq" = pfs_leq,
+        "lambda" = lambda,
         "benchmark" = benchmark,
         "fellow_csv" = fellow_csv,
         "scores_plot" = scores_plot,
@@ -82,6 +85,8 @@ new_PerfPlotSpec <- function(
 #' high-risk (PFS < `pfs_leq`) and low-risk (PFS >= `pfs_leq`) group. Model performance
 #' will be measured in terms of how well it can separate these two groups as a binary
 #' classifier. Default is `2.0`.
+#' @param lambda numeric or string. The lambda regularization parameter of the model to
+#' evaluate. See [prepare_and_predict()] for details. Default is `"lambda.min"`.
 #' @param benchmark string. Column in the test pheno holding the numeric benchmark values.
 #' Default is `"ipi"` (international prognostic index for DLBCL).
 #' @param fellow_csv logical. If passed to [assess_multiple_models()], whether to also create a
@@ -113,6 +118,7 @@ PerfPlotSpec <- function(
     x_metric,
     y_metric,
     pfs_leq = NULL,
+    lambda = "lambda.min",
     benchmark = "ipi",
     fellow_csv = TRUE,
     scores_plot = TRUE,
@@ -141,6 +147,7 @@ PerfPlotSpec <- function(
         x_metric = x_metric,
         y_metric = y_metric,
         pfs_leq = pfs_leq,
+        lambda = lambda,
         benchmark = benchmark,
         fellow_csv = fellow_csv,
         scores_plot = scores_plot,

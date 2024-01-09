@@ -8,6 +8,10 @@
 #' constructor `DataSpec()` for details.
 #' @param model_spec ModelSpec S3 object. Specifications on the model. See the the
 #' constructor `ModelSpec()` for details.
+#' @param lambda string or numeric. The lambda regularization parameter of the model
+#' to predict with. Technically, we will pass it to the `s` parameter of `predict()`
+#' method of the object returned by the `fitter` attribute of the `ModelSpec` object.
+#' See, e.g., [glmnet::predict.cv.glmnet()] or [zeroSum::predict.zeroSum()].
 #' @return A list with two numeric vectors: 
 #' * `"predictions"`: predicted scores,
 #' *  "actual": actual, *according to `model_spec$pfs_leq` discretized* response
@@ -17,7 +21,8 @@ prepare_and_predict <- function(
     expr_mat,
     pheno_tbl,
     data_spec,
-    model_spec
+    model_spec,
+    lambda
 ){
     if(!inherits(model_spec, "ModelSpec")){
         stop("model_spec must be a ModelSpec object")
@@ -41,7 +46,7 @@ prepare_and_predict <- function(
     }
     fit_obj <- readRDS(file.path(model_spec$save_dir, model_spec$fit_fname))
 
-    predicted <- predict(fit_obj, newx = x_y[["x"]])
+    predicted <- predict(fit_obj, newx = x_y[["x"]], s = lambda)
 
     # Check what predict method did
     if(!is.numeric(predicted)){

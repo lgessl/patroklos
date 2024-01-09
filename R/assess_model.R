@@ -53,7 +53,8 @@ assess_model <- function(
         expr_mat = expr_mat,
         pheno_tbl = pheno_tbl,
         data_spec = data_spec,
-        model_spec = model_spec
+        model_spec = model_spec,
+        lambda = perf_plot_spec$lambda
     )
     actual <- pred_act[["actual"]]
     predicted <- pred_act[["predicted"]]

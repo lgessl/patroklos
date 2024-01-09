@@ -4,7 +4,7 @@
 \alias{prepare_and_predict}
 \title{Prepare data and predict with a loaded model}
 \usage{
-prepare_and_predict(expr_mat, pheno_tbl, data_spec, model_spec)
+prepare_and_predict(expr_mat, pheno_tbl, data_spec, model_spec, lambda)
 }
 \arguments{
 \item{expr_mat}{numeric matrix. The expression matrix with genes in rows and samples
@@ -17,6 +17,11 @@ constructor \code{DataSpec()} for details.}
 
 \item{model_spec}{ModelSpec S3 object. Specifications on the model. See the the
 constructor \code{ModelSpec()} for details.}
+
+\item{lambda}{string or numeric. The lambda regularization parameter of the model
+to predict with. Technically, we will pass it to the \code{s} parameter of \code{predict()}
+method of the object returned by the \code{fitter} attribute of the \code{ModelSpec} object.
+See, e.g., \code{\link[glmnet:predict.cv.glmnet]{glmnet::predict.cv.glmnet()}} or \code{\link[zeroSum:predict.zeroSum]{zeroSum::predict.zeroSum()}}.}
 }
 \value{
 A list with two numeric vectors:

@@ -9,6 +9,7 @@ PerfPlotSpec(
   x_metric,
   y_metric,
   pfs_leq = NULL,
+  lambda = "lambda.min",
   benchmark = "ipi",
   fellow_csv = TRUE,
   scores_plot = TRUE,
@@ -42,6 +43,9 @@ valid.}
 high-risk (PFS < \code{pfs_leq}) and low-risk (PFS >= \code{pfs_leq}) group. Model performance
 will be measured in terms of how well it can separate these two groups as a binary
 classifier. Default is \code{2.0}.}
+
+\item{lambda}{numeric or string. The lambda regularization parameter of the model to
+evaluate. See \code{\link[=prepare_and_predict]{prepare_and_predict()}} for details. Default is \code{"lambda.min"}.}
 
 \item{benchmark}{string. Column in the test pheno holding the numeric benchmark values.
 Default is \code{"ipi"} (international prognostic index for DLBCL).}
