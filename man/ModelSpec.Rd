@@ -7,13 +7,14 @@
 ModelSpec(
   name,
   fitter,
+  split_index,
+  cutoff_times,
   optional_fitter_args = NULL,
   response_type = c("binary", "survival_censored"),
   response_colnames = c("time", "status"),
   include_from_continuous_pheno = NULL,
   include_from_discrete_pheno = NULL,
   append_to_includes = "++",
-  pfs_leq = 2,
   base_dir = ".",
   save_dir = NULL,
   create_save_dir = TRUE,
@@ -28,6 +29,19 @@ ModelSpec(
 \code{y} as first two positional arguments. Further arguments can be passed via
 \code{optional_fitter_args} (below). Its return value must be an S3 object with a \code{plot()}
 method, and (ideally, for assessment) with a \code{predict()} method. Default is \code{NULL}.}
+
+\item{split_index}{integer vector. Split the given data into training and test samples
+\code{length(split_index)} times, i.e., every index in \code{split_index} will get its own split.}
+
+\item{cutoff_times}{numeric vector.
+\itemize{
+\item If \code{response_type == "survival_censored"}: For every value in \code{cutoff_times}, censor
+all patients where the event ouccured after \code{cutoff_times} at this value and train the
+specified model.
+\item If \code{response_type == "binary"}: For every value in \code{cutoff_times}, binarize the
+outcome depending on whether it occured before or after this value, and train the
+specified model.
+}}
 
 \item{optional_fitter_args}{list. Optional arguments passed to \code{fitter}, e.g. alpha
 in case of an elastic net. Default is \code{list()}, i.e., no arguments other than \code{x}, \code{y}
@@ -59,15 +73,12 @@ which means no discrete pheno variables are or will be included.}
 \item{append_to_includes}{string. Append this to the names of features from the pheno
 data when adding them to the predictor matrix. Default is \code{"++"}.}
 
-\item{pfs_leq}{numeric. Only used if \code{response_type == "binary"}. The value of
-progression-free survival (PFS) below which samples are considered high-risk. Default
-is \code{2.0}.}
-
 \item{base_dir}{string. The base directory to store the model in. See \code{save_dir} below
 on how it is used to automatically set \code{save_dir}. Default is \code{"."}.}
 
-\item{save_dir}{string. The directory in which to store the model in. Default is \code{NULL},
-in which case is is set to \code{file.path(base_dir, name)}.}
+\item{save_dir}{string. The directory to store the models in. For every value in
+\code{cutoff_times}, find the corresponding model in a subdirectory named after this value.
+Default is \code{NULL}, in which case is is set to \code{file.path(base_dir, name)}.}
 
 \item{create_save_dir}{logical. Whether to create \code{save_dir} if it does not exist, yet.
 Default is \code{TRUE}.}
@@ -75,7 +86,7 @@ Default is \code{TRUE}.}
 \item{plot_fname}{string. Store the plot resulting from \code{plot(fit_obj)} in \code{save_dir}
 under this name. Default is \code{"training_error.pdf"}.}
 
-\item{fit_fname}{string. The name of the model-fit file inside \code{save_dir}.
+\item{fit_fname}{string. The name of the model-fits file inside \code{save_dir}.
 Default is \code{"fit_obj.rds"}.}
 }
 \value{
@@ -83,6 +94,15 @@ A ModelSpec S3 object.
 }
 \description{
 A ModelSpec object holds all the tools and information needed to fit and
-store a model. It is used as an argument to \code{fit()} and \code{prepare_and_fit()}. Its base
-object is a list containing:
+store models. Most importantly, it is passed as an argument to \code{\link[=training_camp]{training_camp()}}.
+Its base object is a list.
+}
+\details{
+Strictly speaking, one \code{ModelSpec} instance holds the instructions to fit
+\code{length(cutoff_times) * length(split_index)} models. In terms of storing and assessing models,
+we consider the models obtained via repeated splitting according to \code{split_index} as one
+model; repeated splitting serves the purpose of getting more reliable estimates of its
+performance. We view models obtained via different values of \code{cutoff_times}, in
+contrast, as different models; e.g., we can compare them against one another in an
+assessment.
 }

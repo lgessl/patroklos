@@ -1,6 +1,8 @@
 new_DataSpec <- function(
     name,
     directory,
+    train_prop,
+    pivot_time_cutoff,
     expr_fname,
     pheno_fname,
     patient_id_col,
@@ -8,10 +10,13 @@ new_DataSpec <- function(
     progression_col,
     ipi_col,
     ipi_feat_cols,
-    gene_id_col
+    gene_id_col,
+    split_col_prefix
 ){
     stopifnot(is.character(name))
     stopifnot(is.character(directory))
+    stopifnot(is.numeric(train_prop))
+    stopifnot(is.numeric(pivot_time_cutoff))
     stopifnot(is.character(expr_fname))
     stopifnot(is.character(pheno_fname))
     stopifnot(is.character(patient_id_col))
@@ -20,6 +25,7 @@ new_DataSpec <- function(
     stopifnot(is.character(ipi_col))
     stopifnot(is.character(ipi_feat_cols) | is.null(ipi_feat_cols))
     stopifnot(is.character(gene_id_col))
+    stopifnot(is.character(split_col_prefix))
 
     # More complex checks for ipi_feat_cols
     if(is.character(ipi_feat_cols)){
@@ -36,6 +42,8 @@ new_DataSpec <- function(
     data_spec_list <- list(
         "name" = name,
         "directory" = directory,
+        "train_prop" = train_prop,
+        "pivot_time_cutoff" = pivot_time_cutoff,
         "expr_fname" = expr_fname,
         "pheno_fname" = pheno_fname,
         "patient_id_col" = patient_id_col,
@@ -43,7 +51,8 @@ new_DataSpec <- function(
         "progression_col" = progression_col,
         "ipi_col" = ipi_col,
         "ipi_feat_cols" = ipi_feat_cols,
-        "gene_id_col" = gene_id_col
+        "gene_id_col" = gene_id_col,
+        "split_col_prefix" = split_col_prefix
     )
     return(structure(data_spec_list, class = "DataSpec")) 
 }
@@ -65,6 +74,12 @@ ipi_feat_cols_default <- c(
 #' @param name string. A telling name for the data set (e.g. `"Schmitz et al. 2018"`).
 #' @param directory string. The directory where both expression and pheno csv
 #' files lie.
+#' @param train_prop numeric in (0, 1). The proportion of samples to draw for the 
+#' training cohort in every splitting run.
+#' @param pivot_time_cutoff numeric or NULL. Pivotal time cutoff for the analysis and, explicitly,
+#' for splitting the data into the train and test cohort: If a numeric in (0, 1), preserve 
+#' the the proportion of individuals below and above `time_cutoff` in both cohorts. Default 
+#' is `NULL`, i.e. no further constraints on splitting.
 #' @param expr_fname string. The name of the expression csv file inside `directory`.
 #' Default is `"expr.csv"`. See details for the expected format.
 #' @param pheno_fname string. The name of the pheno data csv inside `directory`.
@@ -84,6 +99,10 @@ ipi_feat_cols_default <- c(
 #' the default, see Usage.
 #' @param gene_id_col string. The name of the column in the expression data that holds
 #' the gene identifiers. Default is `"gene_id"`.
+#' @param split_col_prefix string. Column-name prefix for those columns holding splits into 
+#' train and test cohort. Some of these columns may be present in the pheno data already,
+#' others will be added during the training process if required. Default is `"split_"`, 
+#' i.e., split columns are named `"split_1"`, `"split_2"`, etc.
 #' @return A DataSpec object.
 #' @details The pheno csv file holds the samples as rows (with *unique* sample ids in the
 #' first column called `patient_id_col`), the variables as columns. The expr csv file 
@@ -95,7 +114,9 @@ ipi_feat_cols_default <- c(
 #' @export
 DataSpec <- function(
     name,
-    directory = ".",
+    directory,
+    train_prop,
+    pivot_time_cutoff = 2.0,
     expr_fname = "expr.csv",
     pheno_fname = "pheno.csv",
     patient_id_col = "patient_id",
@@ -109,11 +130,14 @@ DataSpec <- function(
         "performance_status" = "ecog_performance_status",
         "n_extranodal_sites" = "n_extranodal_sites"
     ),
-    gene_id_col = "gene_id"
+    gene_id_col = "gene_id",
+    split_col_prefix = "split_"
 ){
     data_spec <- new_DataSpec(
         name = name,
         directory = directory,
+        train_prop = train_prop,
+        pivot_time_cutoff = pivot_time_cutoff,
         expr_fname = expr_fname,
         pheno_fname = pheno_fname,
         patient_id_col = patient_id_col,
@@ -121,7 +145,8 @@ DataSpec <- function(
         progression_col = progression_col,
         ipi_col = ipi_col,
         ipi_feat_cols = ipi_feat_cols,
-        gene_id_col = gene_id_col
+        gene_id_col = gene_id_col,
+        split_col_prefix = split_col_prefix
     )
     return(data_spec)
 }

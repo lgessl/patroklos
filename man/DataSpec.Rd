@@ -6,7 +6,9 @@
 \usage{
 DataSpec(
   name,
-  directory = ".",
+  directory,
+  train_prop,
+  pivot_time_cutoff = 2,
   expr_fname = "expr.csv",
   pheno_fname = "pheno.csv",
   patient_id_col = "patient_id",
@@ -16,7 +18,8 @@ DataSpec(
   ipi_feat_cols = c(age = "age", stage = "ann_arbor_stage", ldh_ratio = "ldh_ratio",
     performance_status = "ecog_performance_status", n_extranodal_sites =
     "n_extranodal_sites"),
-  gene_id_col = "gene_id"
+  gene_id_col = "gene_id",
+  split_col_prefix = "split_"
 )
 }
 \arguments{
@@ -24,6 +27,14 @@ DataSpec(
 
 \item{directory}{string. The directory where both expression and pheno csv
 files lie.}
+
+\item{train_prop}{numeric in (0, 1). The proportion of samples to draw for the
+training cohort in every splitting run.}
+
+\item{pivot_time_cutoff}{numeric or NULL. Pivotal time cutoff for the analysis and, explicitly,
+for splitting the data into the train and test cohort: If a numeric in (0, 1), preserve
+the the proportion of individuals below and above \code{time_cutoff} in both cohorts. Default
+is \code{NULL}, i.e. no further constraints on splitting.}
 
 \item{expr_fname}{string. The name of the expression csv file inside \code{directory}.
 Default is \code{"expr.csv"}. See details for the expected format.}
@@ -51,6 +62,11 @@ the default, see Usage.}
 
 \item{gene_id_col}{string. The name of the column in the expression data that holds
 the gene identifiers. Default is \code{"gene_id"}.}
+
+\item{split_col_prefix}{string. Column-name prefix for those columns holding splits into
+train and test cohort. Some of these columns may be present in the pheno data already,
+others will be added during the training process if required. Default is \code{"split_"},
+i.e., split columns are named \code{"split_1"}, \code{"split_2"}, etc.}
 }
 \value{
 A DataSpec object.
