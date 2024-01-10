@@ -6,6 +6,7 @@
 \usage{
 ModelSpec(
   name,
+  directory,
   fitter,
   split_index,
   cutoff_times,
@@ -16,14 +17,18 @@ ModelSpec(
   include_from_discrete_pheno = NULL,
   append_to_includes = "++",
   base_dir = ".",
-  save_dir = NULL,
-  create_save_dir = TRUE,
+  create_directory = TRUE,
   plot_fname = "training_error.pdf",
+  plot_ncols = 2,
   fit_fname = "fit_obj.rds"
 )
 }
 \arguments{
 \item{name}{string. A telling name for the model.}
+
+\item{directory}{string. The directory to store the models in. For every value in
+\code{cutoff_times}, find the corresponding model in a subdirectory named after this value.
+Default is \code{NULL}, in which case is is set to \code{file.path(base_dir, name)}.}
 
 \item{fitter}{function. The model fitting function to be used. Must take \code{x} and
 \code{y} as first two positional arguments. Further arguments can be passed via
@@ -73,20 +78,18 @@ which means no discrete pheno variables are or will be included.}
 \item{append_to_includes}{string. Append this to the names of features from the pheno
 data when adding them to the predictor matrix. Default is \code{"++"}.}
 
-\item{base_dir}{string. The base directory to store the model in. See \code{save_dir} below
-on how it is used to automatically set \code{save_dir}. Default is \code{"."}.}
+\item{base_dir}{string. The base directory to store the model in. See \code{directory} below
+on how it is used to automatically set \code{directory}. Default is \code{"."}.}
 
-\item{save_dir}{string. The directory to store the models in. For every value in
-\code{cutoff_times}, find the corresponding model in a subdirectory named after this value.
-Default is \code{NULL}, in which case is is set to \code{file.path(base_dir, name)}.}
-
-\item{create_save_dir}{logical. Whether to create \code{save_dir} if it does not exist, yet.
+\item{create_directory}{logical. Whether to create \code{directory} if it does not exist, yet.
 Default is \code{TRUE}.}
 
-\item{plot_fname}{string. Store the plot resulting from \code{plot(fit_obj)} in \code{save_dir}
+\item{plot_fname}{string. Store the plot resulting from \code{plot(fit_obj)} in \code{directory}
 under this name. Default is \code{"training_error.pdf"}.}
 
-\item{fit_fname}{string. The name of the model-fits file inside \code{save_dir}.
+\item{plot_ncols}{integer. The number of columns in the plot. Default is \code{2}.}
+
+\item{fit_fname}{string. The name of the model-fits file inside \code{directory}.
 Default is \code{"fit_obj.rds"}.}
 }
 \value{

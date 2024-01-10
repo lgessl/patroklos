@@ -12,9 +12,10 @@ new_ModelSpec <- function(
     append_to_includes,
     pheno_regexp,
     base_dir,
-    save_dir,
-    create_save_dir,
+    directory,
+    create_directory,
     plot_fname,
+    plot_ncols,
     fit_fname
 ){
     stopifnot(is.character(name))
@@ -27,10 +28,11 @@ new_ModelSpec <- function(
     stopifnot(is.character(include_from_discrete_pheno) || is.null(include_from_discrete_pheno))
     stopifnot(is.character(append_to_includes))
     stopifnot(is.character(base_dir))
-    stopifnot(is.character(save_dir))
-    stopifnot(is.logical(create_save_dir))
+    stopifnot(is.character(directory))
+    stopifnot(is.logical(create_directory))
     stopifnot(is.numeric(cutoff_times) || is.null(cutoff_times))
     stopifnot(is.character(plot_fname))
+    stopifnot(is.numeric(plot_ncols))
     stopifnot(is.character(fit_fname))
 
     model_spec_list <- list(
@@ -46,9 +48,10 @@ new_ModelSpec <- function(
         "append_to_includes" = append_to_includes,
         "cutoff_times" = cutoff_times,
         "base_dir" = base_dir,
-        "save_dir" = save_dir,
-        "create_save_dir" = create_save_dir,
+        "directory" = directory,
+        "create_directory" = create_directory,
         "plot_fname" = plot_fname,
+        "plot_ncols" = plot_ncols,
         "fit_fname" = fit_fname
     )
     return(structure(model_spec_list, class = "ModelSpec"))
@@ -94,16 +97,17 @@ new_ModelSpec <- function(
 #' which means no discrete pheno variables are or will be included.
 #' @param append_to_includes string. Append this to the names of features from the pheno
 #' data when adding them to the predictor matrix. Default is `"++"`.
-#' @param base_dir string. The base directory to store the model in. See `save_dir` below
-#' on how it is used to automatically set `save_dir`. Default is `"."`.
-#' @param save_dir string. The directory to store the models in. For every value in 
+#' @param base_dir string. The base directory to store the model in. See `directory` below
+#' on how it is used to automatically set `directory`. Default is `"."`.
+#' @param directory string. The directory to store the models in. For every value in 
 #' `cutoff_times`, find the corresponding model in a subdirectory named after this value. 
 #' Default is `NULL`, in which case is is set to `file.path(base_dir, name)`.
-#' @param create_save_dir logical. Whether to create `save_dir` if it does not exist, yet. 
+#' @param create_directory logical. Whether to create `directory` if it does not exist, yet. 
 #' Default is `TRUE`.
-#' @param plot_fname string. Store the plot resulting from `plot(fit_obj)` in `save_dir`
+#' @param plot_fname string. Store the plot resulting from `plot(fit_obj)` in `directory`
 #' under this name. Default is `"training_error.pdf"`.
-#' @param fit_fname string. The name of the model-fits file inside `save_dir`.
+#' @param plot_ncols integer. The number of columns in the plot. Default is `2`.
+#' @param fit_fname string. The name of the model-fits file inside `directory`.
 #' Default is `"fit_obj.rds"`.
 #' @return A ModelSpec S3 object.
 #' @details Strictly speaking, one `ModelSpec` instance holds the instructions to fit
@@ -116,6 +120,7 @@ new_ModelSpec <- function(
 #' @export
 ModelSpec <- function(
     name,
+    directory,
     fitter,
     split_index,
     cutoff_times,
@@ -126,13 +131,13 @@ ModelSpec <- function(
     include_from_discrete_pheno = NULL,
     append_to_includes = "++",
     base_dir = ".",
-    save_dir = NULL,
-    create_save_dir = TRUE,
+    create_directory = TRUE,
     plot_fname = "training_error.pdf",
+    plot_ncols = 2,
     fit_fname = "fit_obj.rds"
 ){
-    if(is.null(save_dir)){
-        save_dir <- file.path(base_dir, name)
+    if(is.null(directory)){
+        directory <- file.path(base_dir, name)
     }
     response_type <- match.arg(response_type)
     stopifnot(all(cutoff_times >= 0))
@@ -148,10 +153,11 @@ ModelSpec <- function(
         include_from_continuous_pheno = include_from_continuous_pheno,
         include_from_discrete_pheno = include_from_discrete_pheno,
         append_to_includes = append_to_includes,
-        save_dir = save_dir,
+        directory = directory,
         base_dir = base_dir,
-        create_save_dir = create_save_dir,
+        create_directory = create_directory,
         plot_fname = plot_fname,
+        plot_ncols = plot_ncols,
         fit_fname = fit_fname
     )
     return(model_spec)

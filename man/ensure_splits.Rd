@@ -4,15 +4,16 @@
 \alias{ensure_splits}
 \title{Split a data set into train and test data multiple times}
 \usage{
-ensure_splits(pheno_tbl, data_spec, model_spec_list, quiet = FALSE)
+ensure_splits(pheno_tbl, data_spec, model_spec_list)
 }
 \arguments{
 \item{pheno_tbl}{A tibble holding the pheno data (see \code{DataSpec()}
 for details).}
 
 \item{data_spec}{A \code{DataSpec} object referring to \code{expr_tbl} and \code{pheno_tbl}.}
-
-\item{quiet}{logical. If \code{TRUE}, suppress all messages. Default is \code{FALSE}.}
+}
+\value{
+\code{pheno_tbl} with all required splits.
 }
 \description{
 Split a data set into train and test data sets by noting down

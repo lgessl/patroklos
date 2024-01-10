@@ -54,6 +54,4 @@ test_that("prepare_and_fit() works", {
     ),
     regexp = "Found stored"
   )
-
-  
 })
