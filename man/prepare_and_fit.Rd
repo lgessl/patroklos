@@ -4,7 +4,7 @@
 \alias{prepare_and_fit}
 \title{Prepare data, fit and store models}
 \usage{
-prepare_and_fit(expr_mat, pheno_tbl, data_spec, model_spec_list)
+prepare_and_fit(expr_mat, pheno_tbl, data_spec, model_spec)
 }
 \arguments{
 \item{expr_mat}{numeric matrix. The expression matrix with genes in rows and samples
@@ -15,11 +15,11 @@ in columns.}
 \item{data_spec}{DataSpec S3 object. Specifications on the data. See the the
 constructor \code{DataSpec()} for details.}
 
-\item{model_spec_list}{list of ModelSpec S3 objects. Specifications on the models. See
+\item{model_spec}{ModelSpec S3 object. Specifications on the model. See
 the the constructor \code{ModelSpec()} for details.}
 }
 \value{
-A list of \code{zeroSum.fit} objects, with a \code{ModelSpec} object appended.
+A list of fit objects as returned by the \code{fit()} method of \code{model_spec}.
 }
 \description{
 Given an expression matrix and a pheno tibble, prepare the data for a

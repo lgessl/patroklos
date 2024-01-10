@@ -4,7 +4,7 @@ test_that("prepare_and_fit() works", {
 
   n_samples <- 20
   n_genes <- 5
-  n_na_in_pheno <- 5
+  n_na_in_pheno <- 0
   n_fold <- 3
   lambda <- 1
 
@@ -15,60 +15,45 @@ test_that("prepare_and_fit() works", {
   )
   expr_mat <- data[["expr_mat"]]
   pheno_tbl <- data[["pheno_tbl"]]
-  data_spec <- DataSpec(name = "Mock et al. (2023)")
+  pheno_tbl[["split_1"]] <- sample(c("train", "test"), n_samples, replace = TRUE)
+  pheno_tbl[["split_2"]] <- sample(c("train", "test"), n_samples, replace = TRUE)
+  data_spec <- DataSpec(name = "Mock et al. (2023)", directory = "mock", train_prop = 0.8)
   dir <- withr::local_tempdir()
 
   # Case 1: Fit all models specified
-  model_spec_1 <- ModelSpec(
-    name = "cox-zerosum",
-    fitter = glmnet::cv.glmnet,
-    optional_fitter_args = list(family = "cox", alpha = 1, nfolds = n_fold, lambda = c(lambda, 2)),
+  model_spec <- ModelSpec(
+    name = "cox-vanilla",
+    directory = file.path(dir, "model1"),
+    fitter = zeroSum::zeroSum,
+    split_index = 1,
+    cutoff_times = 2,
+    optional_fitter_args = list(family = "cox", nfolds = n_fold, lambda = lambda, 
+      zeroSum = FALSE),
     response_type = "survival_censored",
     include_from_continuous_pheno = NULL,
-    include_from_discrete_pheno = NULL,
-    save_dir = file.path(dir, "model1") 
+    include_from_discrete_pheno = NULL
   )
-  model_spec_2 <- ModelSpec(
-    name = "binomial-zerosum",
-    fitter = zeroSum::zeroSum,
-    optional_fitter_args = list(family = "binomial", alpha = 1, 
-      nFold = n_fold, lambda = lambda, zeroSum = FALSE),
-    response_type = "binary",
-    include_from_continuous_pheno = "continuous_var",
-    include_from_discrete_pheno = "discrete_var",
-    save_dir = file.path(dir, "model2"),
-    pfs_leq = 2.
-  )
-  model_spec_list <- list(model_spec_1, model_spec_2)
 
   expect_message(
     prepare_and_fit(
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
       data_spec = data_spec,
-      model_spec_list = model_spec_list
+      model_spec = model_spec
     ),
-    regexp = "Creating directory"
+    regexp = "Creating"
   )
 
-  # Case 2: Fit all models specified, but one already exists
-  model_spec_3 <- ModelSpec(
-    name = "cox-zerosum",
-    fitter = zeroSum::zeroSum,
-    optional_fitter_args = list(family = "cox", alpha = 0.5, nFold = n_fold, zeroSum = FALSE),
-    response_type = "survival_censored",
-    include_from_continuous_pheno = NULL,
-    include_from_discrete_pheno = NULL,
-    save_dir = file.path(dir, "model3") 
-  )
-  model_spec_list <- list(model_spec_2, model_spec_3)
+  model_spec$split_index <- 1:2
   expect_message(
     prepare_and_fit(
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
       data_spec = data_spec,
-      model_spec_list = model_spec_list
+      model_spec = model_spec
     ),
-    regexp = "already exists"
+    regexp = "Found stored"
   )
+
+  
 })
