@@ -71,11 +71,12 @@ prepare_and_fit <- function(
     saveRDS(fits, stored_fits_fname)
 
     # Plots about fitting as a grid
-    grDevices::jpeg(file = file.path(directory, model_spec$plot_fname))
-    par(mfrow = c(ceiling(length(fits)/model_spec$plot_ncols), model_spec$plot_ncols))
-    for(fit in fits)
+    grDevices::pdf(file = file.path(directory, model_spec$plot_fname))
+    par(mfrow = c(ceiling((length(fits)-1)/model_spec$plot_ncols), model_spec$plot_ncols))
+    for(fit in fits){
         if("ModelSpec" %in% class(fit)) next
         plot(fit)
+    }
     grDevices::dev.off()
 
     return(fits)

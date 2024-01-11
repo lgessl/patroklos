@@ -35,7 +35,7 @@ test_that("prepare_and_fit() works", {
   )
 
   expect_message(
-    prepare_and_fit(
+    fits <- prepare_and_fit(
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
       data_spec = data_spec,
@@ -43,10 +43,11 @@ test_that("prepare_and_fit() works", {
     ),
     regexp = "Creating"
   )
+  expect_equal(length(fits), 2)
 
   model_spec$split_index <- 1:2
   expect_message(
-    prepare_and_fit(
+    fits <- prepare_and_fit(
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
       data_spec = data_spec,
@@ -54,4 +55,5 @@ test_that("prepare_and_fit() works", {
     ),
     regexp = "Found stored"
   )
+  expect_equal(length(fits), 3)
 })
