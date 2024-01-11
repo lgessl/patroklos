@@ -8,10 +8,17 @@ test_that("generate_predictor() works", {
     continuous_var = c(1, 2, 3), # +1 column
     discrete_var = c("A", "B", "A") # +1 column
   )
-  data_spec <- DataSpec(name = "Mock et al. (2023)")
+  data_spec <- DataSpec(
+    name = "Mock et al. (2023)", 
+    directory =  "some_dir",
+    train_prop = 0.8
+  )
   model_spec <- ModelSpec(
     name = "zerosum",
+    directory = "some_dir",
     fitter = zeroSum::zeroSum,
+    split_index = 1,
+    time_cutoffs = 2.,
     include_from_continuous_pheno = "continuous_var",
     include_from_discrete_pheno = "discrete_var",
     append_to_includes = "APP"
@@ -103,15 +110,19 @@ test_that("generate_response() works", {
   )
   data_spec <- DataSpec(
     name = "Mock et al. (2023)",
+    directory = "some_dir",
+    train_prop = 0.8,
     patient_id_col = "patient",
     pfs_col = "pfs",
     progression_col = "prog"
   )
   model_spec <- ModelSpec(
     name = "zerosum",
+    directory = "some_dir",
     fitter = zeroSum::zeroSum,
-    response_type = "binary",
-    pfs_leq = 1.9
+    split_index = 1,
+    time_cutoffs = 1.9,
+    response_type = "binary"
   )
 
   # Test case 1: binary response
@@ -122,7 +133,7 @@ test_that("generate_response() works", {
   )
   y_expected <- matrix(c(NA, 0, 0, 0), ncol = 1)
   rownames(y_expected) <- pheno_tbl[["patient"]]
-  colnames(y_expected) <- "pfs_leq_1.9"
+  colnames(y_expected) <- "cutoff_time_1.9"
   expect_equal(y, y_expected)
   expect_type(y, "double")
   

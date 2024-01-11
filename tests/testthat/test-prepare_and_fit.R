@@ -26,7 +26,7 @@ test_that("prepare_and_fit() works", {
     directory = file.path(dir, "model1"),
     fitter = zeroSum::zeroSum,
     split_index = 1,
-    cutoff_times = 2,
+    time_cutoffs = 2,
     optional_fitter_args = list(family = "cox", nfolds = n_fold, lambda = lambda, 
       zeroSum = FALSE),
     response_type = "survival_censored",

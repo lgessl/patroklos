@@ -73,9 +73,9 @@ generate_predictor <- function(
 #' @return Response matrix: a numeric matrix with patients as rows and variables as columns.
 #' @details If `model_spec$response_type == "binary"`, the response matrix will have one 
 #' column filled with 
-#' * `1` if progress is observed at a time <= `pfs_leq`,
-#' * `0` if progress or censoring is observed at a time > `pfs_leq`,
-#' * `NA` if censoring without progression is observed at a time <= `pfs_leq`.
+#' * `1` if progress is observed at a time <= `cutoff_time`,
+#' * `0` if progress or censoring is observed at a time > `cutoff_time`,
+#' * `NA` if censoring without progression is observed at a time <= `cutoff_time`.
 #' @export
 generate_response <- function(
     pheno_tbl,
@@ -87,21 +87,20 @@ generate_response <- function(
     pfs_col <- data_spec$pfs_col
     progression_col <- data_spec$progression_col
     patient_id_col <- data_spec$patient_id_col
-    pfs_leq <- model_spec$pfs_leq
+    cutoff_time <- model_spec$time_cutoffs
     response_type <- model_spec$response_type
 
-    if(!(response_type %in% c("survival_censored", "binary"))){
-        stop("Response type ", response_type, " is not supported")
-    }
+    if(length(cutoff_time) > 1)
+        stop("Can only handle one cutoff time.")
 
     if(response_type == "binary"){
-        # flag patients consored before pfs_leq as NA
-        na_bool <- (pheno_tbl[[pfs_col]] <= pfs_leq) & (pheno_tbl[[progression_col]] == 0)
-        y <- pheno_tbl[[pfs_col]] <= pfs_leq
+        # flag patients consored before cutoff_time as NA
+        na_bool <- (pheno_tbl[[pfs_col]] <= cutoff_time) & (pheno_tbl[[progression_col]] == 0)
+        y <- pheno_tbl[[pfs_col]] <= cutoff_time
         y <- as.numeric(y)
         dim(y) <- c(length(y), 1)
         rownames(y) <- pheno_tbl[[patient_id_col]]
-        colnames(y) <- stringr::str_c("pfs_leq_", round(pfs_leq, 1))
+        colnames(y) <- stringr::str_c("cutoff_time_", round(cutoff_time, 1))
         y[na_bool, ] <- NA
     } else if(response_type == "survival_censored"){
         y <- pheno_tbl[, c(pfs_col, progression_col)] |> as.matrix()

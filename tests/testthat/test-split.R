@@ -22,13 +22,13 @@ test_that("split_dataset works", {
     name = "dummy1",
     fitter = zeroSum::zeroSum,
     split_index = 1:2,
-    cutoff_times = 2
+    time_cutoffs = 2
   )
   model_spec_2 <- ModelSpec(
     name = "dummy2",
     fitter = zeroSum::zeroSum,
     split_index = 1,
-    cutoff_times = 2
+    time_cutoffs = 2
   )
 
   for(pivot_time_cutoff in list(NULL, 2)){

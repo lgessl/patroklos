@@ -26,14 +26,14 @@ test_that("training_camp() works", {
     directory = file.path(dir, "model1"),
     fitter = zeroSum::zeroSum,
     split_index = 1,
-    cutoff_times = 1.5,
+    time_cutoffs = 1.5,
     optional_fitter_args = list(family = "cox", nfolds = n_fold, lambda = lambda, 
       zeroSum = FALSE),
     response_type = "survival_censored"
   )
   model_spec_2 <- model_spec_1
   model_spec_2$split_index <- 1:2
-  model_spec_2$cutoff_times <- c(1.5, 2.)
+  model_spec_2$time_cutoffs <- c(1.5, 2.)
   
   expect_no_error(
     training_camp(

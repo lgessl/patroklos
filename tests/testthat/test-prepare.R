@@ -13,14 +13,20 @@ test_that("Prepare() works",{
   )
   expr_mat <- data[["expr_mat"]]
   pheno_tbl <- data[["pheno_tbl"]]
-  data_spec <- DataSpec(name = "Mock et al. (2023)")
+  data_spec <- DataSpec(
+    name = "Mock et al. (2023)",
+    directory = "some_dir",
+    train_prop = 0.8
+  )
   model_spec <- ModelSpec(
     name = "zerosum",
+    directory = "some_dir",
     fitter = zeroSum::zeroSum,
+    split_index = 1,
+    time_cutoffs = 2.,
     response_type = "survival_censored",
     include_from_continuous_pheno = "continuous_var",
-    include_from_discrete_pheno = "discrete_var",
-    pfs_leq = 1.8
+    include_from_discrete_pheno = "discrete_var"
   )
 
   expect_no_error(
@@ -47,7 +53,7 @@ test_that("Prepare() works",{
   colnames(pheno_tbl)[3] <- "pfs"
   data_spec$patient_id_col <- "patient"
   data_spec$pfs_col <- "pfs"
-  model_spec$pfs_leq <- 2.3
+  model_spec$pivot_time_cutoff <- 2.3
   expect_no_error(
     result <- prepare(
       expr_mat = expr_mat,
