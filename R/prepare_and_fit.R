@@ -66,6 +66,7 @@ prepare_and_fit <- function(
             )
         )
         fits[[split_colname]] <- fit_obj
+        message("\tFitted split ", i, " of ", length(model_spec$split_index))
     }
 
     saveRDS(fits, stored_fits_fname)
@@ -73,9 +74,11 @@ prepare_and_fit <- function(
     # Plots about fitting as a grid
     grDevices::pdf(file = file.path(directory, model_spec$plot_fname))
     par(mfrow = c(ceiling((length(fits)-1)/model_spec$plot_ncols), model_spec$plot_ncols))
-    for(fit in fits){
+    for(split_name in names(fits)){
+        fit <- fits[[split_name]]
         if("ModelSpec" %in% class(fit)) next
         plot(fit)
+        graphics::title(main = split_name)
     }
     grDevices::dev.off()
 
