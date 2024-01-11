@@ -105,7 +105,7 @@ new_ModelSpec <- function(
 #' @param create_directory logical. Whether to create `directory` if it does not exist, yet. 
 #' Default is `TRUE`.
 #' @param plot_fname string. Store the plot resulting from `plot(fit_obj)` in `directory`
-#' under this name. Default is `"training_error.jpg"`.
+#' under this name. Default is `"training_error.pdf"`.
 #' @param plot_ncols integer. The number of columns in the plot. Default is `2`.
 #' @param fit_fname string. The name of the model-fits file inside `directory`.
 #' Default is `"fit_obj.rds"`.
@@ -132,7 +132,7 @@ ModelSpec <- function(
     append_to_includes = "++",
     base_dir = ".",
     create_directory = TRUE,
-    plot_fname = "training_error.jpeg",
+    plot_fname = "training_error.pdf",
     plot_ncols = 2,
     fit_fname = "fit_obj.rds"
 ){

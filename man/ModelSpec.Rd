@@ -18,7 +18,7 @@ ModelSpec(
   append_to_includes = "++",
   base_dir = ".",
   create_directory = TRUE,
-  plot_fname = "training_error.jpeg",
+  plot_fname = "training_error.pdf",
   plot_ncols = 2,
   fit_fname = "fit_obj.rds"
 )
@@ -85,7 +85,7 @@ on how it is used to automatically set \code{directory}. Default is \code{"."}.}
 Default is \code{TRUE}.}
 
 \item{plot_fname}{string. Store the plot resulting from \code{plot(fit_obj)} in \code{directory}
-under this name. Default is \code{"training_error.jpg"}.}
+under this name. Default is \code{"training_error.pdf"}.}
 
 \item{plot_ncols}{integer. The number of columns in the plot. Default is \code{2}.}
 
