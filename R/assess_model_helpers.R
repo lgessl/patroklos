@@ -1,34 +1,96 @@
+calculate_2d_metric <- function(
+    actual,
+    predicted,
+    perf_plot_spec,
+    model_spec,
+    benchmark = NULL
+){
+    # Extract most frequently used values
+    x_metric <- perf_plot_spec$x_metric
+    y_metric <- perf_plot_spec$y_metric
+    # Prepare for loop
+    tbl_list <- list()
+    aucs <- rep(NA, length(actual))
+    estimate_list <- list(predicted, benchmark)
+    if(is.null(benchmark)) estimate_list <- list(predicted)
+    names(estimate_list) <- c(model_spec$name, perf_plot_spec$benchmark)
+
+    for(i in model_spec$split_index){
+        for(estimate_name in names(estimate_list)){
+            estimate <- estimate_list[[estimate_name]]
+            # Calculate performance measures
+            rocr_prediction <- ROCR::prediction(estimate[[i]], actual[[i]])
+            rocr_perf <- ROCR::performance(
+                rocr_prediction,
+                measure =  y_metric,
+                x.measure = x_metric
+            )
+            if(estimate_name == model_spec$name){
+                # Infer ROC-AUC
+                aucs[i] <- ROCR::performance(
+                    rocr_prediction,
+                    measure = "auc"
+                )@y.values[[1]]
+            }
+            # Store them in a tibble
+            tbl <- tibble::tibble(
+                rocr_perf@x.values[[1]],
+                rocr_perf@y.values[[1]],
+                rocr_perf@alpha.values[[1]]
+            )
+            names(tbl) <- c(
+                x_metric, 
+                y_metric,
+                "cutoff"
+            )
+            tbl[["split"]] <- i
+            tbl[["model"]] <- estimate_name
+            tbl_list <- c(tbl_list, list(tbl))
+        }
+    }
+    auc_avg <- mean(aucs, na.rm = TRUE)
+    avg_string <- ifelse(length(aucs) > 1, "avg ", "")
+
+    # Combine all splits to one tibble
+    tbl <- dplyr::bind_rows(tbl_list)
+    any_na <- apply(tbl, 1, function(x) any(is.na(x)))
+    tbl <- tbl[!any_na, ]
+    perf_plot_spec$data <- tbl
+    perf_plot_spec$title <- stringr::str_c(
+        perf_plot_spec$title, ", ", 
+        "ROC-AUC = ", round(auc_avg, 3)
+    )
+
+    return(perf_plot_spec)
+}
+
+
 #' @importFrom rlang .data
-plot_perf_metric <- function(
+plot_2d_metric <- function(
     perf_plot_spec,
     quiet = FALSE
 ){
-    if(!is.null(perf_plot_spec$xlim)){
-        perf_plot_spec$data <- perf_plot_spec$data[
-            perf_plot_spec$data[[perf_plot_spec$x_metric]] >= perf_plot_spec$xlim[1] &
-            perf_plot_spec$data[[perf_plot_spec$x_metric]] <= perf_plot_spec$xlim[2],
-        ]
-        perf_plot_spec$bm_data <- perf_plot_spec$bm_data[
-            perf_plot_spec$bm_data[[perf_plot_spec$x_metric]] >= perf_plot_spec$xlim[1] &
-            perf_plot_spec$bm_data[[perf_plot_spec$x_metric]] <= perf_plot_spec$xlim[2],
-        ]
-    }
-    if(!is.null(perf_plot_spec$ylim)){
-        perf_plot_spec$data <- perf_plot_spec$data[
-            perf_plot_spec$data[[perf_plot_spec$y_metric]] >= perf_plot_spec$ylim[1] &
-            perf_plot_spec$data[[perf_plot_spec$y_metric]] <= perf_plot_spec$ylim[2],
-        ]
-        perf_plot_spec$bm_data <- perf_plot_spec$bm_data[
-            perf_plot_spec$bm_data[[perf_plot_spec$y_metric]] >= perf_plot_spec$ylim[1] &
-            perf_plot_spec$bm_data[[perf_plot_spec$y_metric]] <= perf_plot_spec$ylim[2],
-        ]
-    }
+    # Extract
+    data <- perf_plot_spec$data
+    x_metric <- perf_plot_spec$x_metric
+    y_metric <- perf_plot_spec$y_metric
+    # Constraint data to range
+    data <- data[
+        data[[x_metric]] >= perf_plot_spec$xlim[1] &
+        data[[x_metric]] <= perf_plot_spec$xlim[2],
+    ]
+    data <- data[
+        data[[y_metric]] >= perf_plot_spec$ylim[1] &
+        data[[y_metric]] <= perf_plot_spec$ylim[2],
+    ]
+    bm_data <- data[data[["model"]] == perf_plot_spec$benchmark, ]
+    data <- data[data[["model"]] != perf_plot_spec$benchmark, ]
 
     plt <- ggplot2::ggplot(
-        perf_plot_spec$data,
-        ggplot2::aes(
-            x = .data[[perf_plot_spec$x_metric]], 
-            y = .data[[perf_plot_spec$y_metric]], 
+        data = data,
+        mapping = ggplot2::aes(
+            x = .data[[x_metric]], 
+            y = .data[[y_metric]], 
             color = .data[["model"]]
             )
         ) +
@@ -38,9 +100,15 @@ plot_perf_metric <- function(
             x = perf_plot_spec$x_lab, 
             y = perf_plot_spec$y_lab
         )
-    if(!is.null(perf_plot_spec$benchmark) && !is.null(perf_plot_spec$bm_data)){
+    if(!is.null(perf_plot_spec$benchmark) && !is.null(bm_data)){
+        bm_alpha <- ifelse(
+            perf_plot_spec$smooth_benchmark, 
+            perf_plot_spec$alpha,
+            1.
+        )
         plt <- plt + ggplot2::geom_point(
-            data = perf_plot_spec$bm_data
+            data = bm_data,
+            alpha = bm_alpha
         )
     }
     if(!is.null(perf_plot_spec$colors)){
@@ -52,9 +120,9 @@ plot_perf_metric <- function(
             se = FALSE,
             formula = y ~ x
         )
-        if(perf_plot_spec$smooth_benchmark && !is.null(perf_plot_spec$bm_data)){
+        if(perf_plot_spec$smooth_benchmark && !is.null(bm_data)){
             plt <- plt + ggplot2::geom_smooth(
-                data = perf_plot_spec$bm_data,
+                data = bm_data,
                 method = perf_plot_spec$smooth_method,
                 se = FALSE,
                 formula = y ~ x
@@ -67,7 +135,7 @@ plot_perf_metric <- function(
     }
 
     if(!quiet)
-        message("Saving performance plot to ", perf_plot_spec$fname)
+        message("Saving 2D metric plot to ", perf_plot_spec$fname)
 
     ggplot2::ggsave(
         perf_plot_spec$fname, 
@@ -78,124 +146,37 @@ plot_perf_metric <- function(
     )
 
     # Save to csv (if wanted)
-    perf_tbl <- rbind(perf_plot_spec$data, perf_plot_spec$bm_data)
     if(perf_plot_spec$fellow_csv){
         csv_fname <- stringr::str_replace(perf_plot_spec$fname, "\\..+", ".csv")
         if(!quiet)
-            message("Saving performance table to ", csv_fname)
-        readr::write_csv(perf_tbl, csv_fname)
+            message("Saving 2D metric table to ", csv_fname)
+        readr::write_csv(perf_plot_spec$data, csv_fname)
     }
 
     return(plt)
 }
 
 
-calculate_perf_metric <- function(
-    predicted,
-    actual,
-    perf_plot_spec
-){
-    # Extract most frequently used values
-    x_metric <- perf_plot_spec$x_metric
-    y_metric <- perf_plot_spec$y_metric
-
-    # Calculate performance measures
-    rocr_prediction <- ROCR::prediction(predicted, actual)
-    rocr_perf <- ROCR::performance(
-        rocr_prediction,
-        measure =  y_metric,
-        x.measure = x_metric
-    )
-    # By default, also infer ROC-AUC
-    roc_auc <- ROCR::performance(
-        rocr_prediction,
-        measure = "auc"
-    )@y.values[[1]]
-
-    # Store them in a tibble
-    tbl <- tibble::tibble(
-        rocr_perf@x.values[[1]],
-        rocr_perf@y.values[[1]],
-        rocr_perf@alpha.values[[1]]
-    )
-    names(tbl) <- c(
-        x_metric, 
-        y_metric,
-        "cutoff"
-        )
-
-    # Guarantee availability
-    any_na <- apply(tbl, 1, function(x) any(is.na(x)))
-    tbl <- tbl[!any_na, ]
-
-    perf_plot_spec$data <- tbl
-    perf_plot_spec$title <- stringr::str_c(
-        perf_plot_spec$title, 
-        ", ROC-AUC = ", round(roc_auc, 3)
-    )
-
-    return(perf_plot_spec)
-}
-
-
-add_benchmark_perf_metric <- function(
-    pheno_tbl,
-    data_spec,
-    perf_plot_spec,
-    model_spec
-){
-    
-    if(is.null(perf_plot_spec$benchmark))
-        stop("Cannot calculate performance metric for benchmark classifier ",
-            "if it is not provided as `benchmark` in `perf_plot_spec`.")
-
-    bm_name <- perf_plot_spec$benchmark
-    if(is.null(pheno_tbl[[bm_name]])){
-        stop("There is no column named ", bm_name, " in ",
-            file.path(data_spec$directory, data_spec$pheno_fname))
-    }
-
-    predicted <- pheno_tbl[[bm_name]]
-    names(predicted) <- pheno_tbl[[data_spec$patient_id_col]]
-    model_spec$response_type <- "binary" # always evaluate for discretized response
-    actual <- generate_response(
-        pheno_tbl = pheno_tbl, 
-        data_spec = data_spec, 
-        model_spec = model_spec
-    )[, 1]
-
-    pred_act <- intersect_by_names(
-        predicted,
-        actual,
-        rm_na = TRUE
-    )
-
-    pps_bm <- calculate_perf_metric(
-        predicted = pred_act[[1]],
-        actual = pred_act[[2]],
-        perf_plot_spec = perf_plot_spec
-    )
-    perf_plot_spec$bm_data <- pps_bm$data
-
-    return(perf_plot_spec)
-}
-
-
 #' @importFrom rlang .data
-plot_scores <- function(
+plot_risk_scores <- function(
     predicted,
     actual,
     perf_plot_spec,
+    ncol = 2,
     quiet = FALSE
 ){
-    true_risk <- ifelse(actual == 1, "high", "low") |> as.factor()
     tbl <- tibble::tibble(
-        patient_id = names(predicted),
-        rank = rank(-predicted),
-        `risk score` = predicted,
-        `true risk` = true_risk
+        patient_id = names(unlist(predicted)),
+        rank = unlist(lapply(predicted, function(x) rank(-x))),
+        split = rep(
+            which(!sapply(predicted, is.null)), 
+            sapply(predicted, length)
+        ),
+        `risk score` = unlist(predicted),
+        `true risk` = ifelse(unlist(actual) == 1, "high", "low")
     )
-    tbl <- tbl[order(tbl[["rank"]]), ]
+    tbl[["split"]] <- paste0("Split ", tbl[["split"]])
+
     plt <- ggplot2::ggplot(
         tbl,
         ggplot2::aes(
@@ -203,6 +184,10 @@ plot_scores <- function(
             y = .data[["risk score"]], 
             color = .data[["true risk"]]
             )
+        ) +
+        ggplot2::facet_wrap(
+            facets = ggplot2::vars(.data[["split"]]),
+            ncol = ncol
         ) +
         ggplot2::geom_point() +
         ggplot2::labs(

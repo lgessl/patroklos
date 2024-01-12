@@ -12,7 +12,8 @@
 #' @param model_spec ModelSpec S3 object. Specifications on the model to prepare for. 
 #' See the the constructor `ModelSpec()` for details.
 #' @return A list with two numeric matrices, `x` and `y`. `x` is the predictor matrix, 
-#' `y` is the response matrix, both ready to for model fitting or predicting.
+#' `y` is the response matrix, both ready to for model fitting or predicting. Row names 
+#' match.
 #' @export
 prepare <- function(
     expr_mat,

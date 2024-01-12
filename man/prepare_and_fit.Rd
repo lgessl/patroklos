@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare_and_fit.R
 \name{prepare_and_fit}
 \alias{prepare_and_fit}
-\title{Prepare data, fit and store models}
+\title{Prepare data, fit and store models across splits}
 \usage{
 prepare_and_fit(expr_mat, pheno_tbl, data_spec, model_spec)
 }
@@ -23,5 +23,7 @@ A list of fit objects as returned by the \code{fit()} method of \code{model_spec
 }
 \description{
 Given an expression matrix and a pheno tibble, prepare the data for a
-list of models and fit these models to the data.
+model and fit this model. Do this for all splits into training and test cohort.
+Howeve, we do not support multiple time cutoffs at this step; enabling them is
+the job of \verb{[training_camp()]}.
 }

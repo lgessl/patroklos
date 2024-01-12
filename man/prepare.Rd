@@ -21,9 +21,12 @@ See the the constructor \code{ModelSpec()} for details.}
 }
 \value{
 A list with two numeric matrices, \code{x} and \code{y}. \code{x} is the predictor matrix,
-\code{y} is the response matrix, both ready to for model fitting or predicting.
+\code{y} is the response matrix, both ready to for model fitting or predicting. Row names
+match.
 }
 \description{
 Provided expression matrix and pheno tibble, generate the
-predictor and response matrix response-type-dependently and do checks.
+predictor and response matrix response-type-dependently and do checks. At
+this point, the ModelSpec must specifiy exactly one time cutoff and exactly
+one split index.
 }

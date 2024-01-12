@@ -2,9 +2,16 @@
 % Please edit documentation in R/prepare_and_predict.R
 \name{prepare_and_predict}
 \alias{prepare_and_predict}
-\title{Prepare data and predict with a loaded model}
+\title{Prepare data and predict with a loaded model across splits}
 \usage{
-prepare_and_predict(expr_mat, pheno_tbl, data_spec, model_spec, lambda)
+prepare_and_predict(
+  expr_mat,
+  pheno_tbl,
+  data_spec,
+  model_spec,
+  lambda,
+  benchmark = NULL
+)
 }
 \arguments{
 \item{expr_mat}{numeric matrix. The expression matrix with genes in rows and samples
@@ -24,13 +31,21 @@ method of the object returned by the \code{fitter} attribute of the \code{ModelS
 See, e.g., \code{\link[glmnet:predict.cv.glmnet]{glmnet::predict.cv.glmnet()}} or \code{\link[zeroSum:predict.zeroSum]{zeroSum::predict.zeroSum()}}.}
 }
 \value{
-A list with two numeric vectors:
+A list holding:
 \itemize{
-\item \code{"predictions"}: predicted scores,
-\item "actual": actual, \emph{according to \code{model_spec$pfs_leq} discretized} response
+\item \code{"predicted"}: a list of named numeric vectors, the scores output by the model for
+each split, sorted in decreasing order.
+\item "actual": a list of named numeric vectors, for each split the actual values of
+whether time to event was above or below \code{model_spec$time_cutoffs}, encoded as 1
+("high risk") and 0 ("low risk"), respectively.
+\item "benchmark": A list of named numeric vectors, for each split the values of the
+benchmark classifier. If \code{benchmark} is NULL, it is an empty list.
+For every split, the names of all three vectors match.
 }
 }
 \description{
 Given an expression matrix and a pheno tibble, prepare the data for a
-certain model and predict with this model.
+certain model and predict with this model. Do this for all splits into training and
+test cohort. As with \verb{[prepare_and_fit()]}, we do not support multiple time cutoffs
+at this step; this is \verb{[assessment_center()]}'s job.
 }

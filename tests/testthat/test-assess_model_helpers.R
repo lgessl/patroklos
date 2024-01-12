@@ -1,90 +1,21 @@
-test_that("plot_perf_metric() works", {
 
-  set.seed(134)
-
-  n_samples <- 20
-
-  perf_tbl <- tibble::tibble(
-    rpp = runif(2*n_samples),
-    prec = runif(2*n_samples),
-    cutoff = runif(2*n_samples),
-    model = "model1"
-  )
-  bm_tbl <- tibble::tibble(
-    rpp = runif(2*n_samples),
-    prec = runif(2*n_samples),
-    cutoff = runif(2*n_samples),
-    model = "bm"
-  )
-  dir <- withr::local_tempdir()
-  perf_plot_spec <- PerfPlotSpec(
-    fname = file.path(dir, "test.pdf"),
-    x_metric = "rpp",
-    y_metric = "prec",
-    benchmark = "bm",
-    show_plots = FALSE,
-    title = "this title",
-    x_lab = "this x lab",
-    y_lab = "that y lab",
-    xlim = c(0, .5),
-    ylim = c(0, .5),
-    smooth_method = "loess",
-    smooth_benchmark = TRUE
-  )
-  perf_plot_spec$data <- perf_tbl
-  perf_plot_spec$bm_data <- bm_tbl
-
-  expect_no_error(
-    plot_perf_metric(
-      perf_plot_spec = perf_plot_spec,
-      quiet = TRUE
-    )
-  )
-})
-
-test_that("calculate_perf_metric() works", {
+test_that("calculate_2d_metric() works", {
     
-    set.seed(134)
-
-    n_samples <- 5
-
-    predicted <- rnorm(n_samples)
-    actual <- sample(c(0, 1), n_samples, replace = TRUE)
-    perf_plot_spec <- PerfPlotSpec(
-      fname = "test.pdf",
-      x_metric = "rpp",
-      y_metric = "prec"
-    )
-  
-    expect_silent(
-      perf_plot_spec <- calculate_perf_metric(
-        predicted = predicted,
-        actual = actual,
-        perf_plot_spec = perf_plot_spec
-      )
-    )
-    perf_tbl <- perf_plot_spec$data
-    expect_equal(names(perf_tbl), c("rpp", "prec", "cutoff"))
-    expect_s3_class(perf_tbl, "tbl_df")
-    expect_equal(dim(perf_tbl), c(n_samples, 3))
-})
-
-test_that("add_benchmark_perf_metric() works", {
-
   set.seed(134)
 
   n_samples <- 20
+  split_index <- 1:2
 
-  pheno_tbl <- generate_mock_data(
-    n_samples = n_samples,
-    n_genes = 1,
-    n_na_in_pheno = 0
-  )[["pheno_tbl"]]
-  pheno_tbl[["ipi"]][1] <- NA
-  data_spec <- DataSpec(name = "Mock et al. (2023)")
+  l <- apb(n_samples, split_index)
+  actual <- l[[1]]
+  predicted <- l[[2]]
+  benchmark <- l[[3]]
   model_spec <- ModelSpec(
-    name = "cox-zerosum",
-    fitter = zeroSum::zeroSum
+    name = "mock",
+    directory = "mock",
+    fitter = zeroSum::zeroSum,
+    split_index = split_index,
+    time_cutoffs = 2.
   )
   perf_plot_spec <- PerfPlotSpec(
     fname = "test.pdf",
@@ -92,47 +23,88 @@ test_that("add_benchmark_perf_metric() works", {
     y_metric = "prec"
   )
 
-  perf_plot_spec <- add_benchmark_perf_metric(
-    pheno_tbl = pheno_tbl,
-    data_spec = data_spec,
-    perf_plot_spec = perf_plot_spec,
-    model_spec = model_spec
+  expect_silent(
+    perf_plot_spec <- calculate_2d_metric(
+      actual = actual,
+      predicted = predicted,
+      benchmark = benchmark,
+      perf_plot_spec = perf_plot_spec,
+      model_spec = model_spec
+    )
   )
-  perf_tbl <- perf_plot_spec$bm_data
-
-  expect_equal(names(perf_tbl), c("rpp", "prec", "cutoff"))
+  perf_tbl <- perf_plot_spec$data
+  expect_equal(names(perf_tbl), c("rpp", "prec", "cutoff", "split", "model"))
   expect_s3_class(perf_tbl, "tbl_df")
-  expect_lt(nrow(perf_tbl), n_samples)
-  expect_equal(ncol(perf_tbl), 3)  
+  expect_true(all(perf_tbl[["model"]] %in% c(model_spec$name, perf_plot_spec$benchmark)))
+  expect_true(perf_tbl[, 1:4] |> as.matrix() |> is.numeric() |> all())
 })
 
-test_that("plot_scores() works", {
-  
-    set.seed(134)
-  
-    n_samples <- 5
-  
-    predicted <- rnorm(n_samples)
-    actual <- sample(c(0, 1), n_samples, replace = TRUE)
-    dir <- withr::local_tempdir()
-    perf_plot_spec <- PerfPlotSpec(
-      fname = file.path(dir, "scores.pdf"),
-      x_metric = "rank",
-      y_metric = "scores",
-      title = "this title",
-      show_plots = FALSE
-    )
 
-    expect_silent(
-      plot_scores(
-        predicted = predicted,
-        actual = actual,
-        perf_plot_spec = perf_plot_spec,
-        quiet = TRUE
-      )
+test_that("plot_2d_metric() works", {
+
+  set.seed(134)
+
+  n_row <- 30
+
+  dir <- withr::local_tempdir()
+  perf_plot_spec <- PerfPlotSpec(
+    fname = file.path(dir, "test.pdf"),
+    x_metric = "rpp",
+    y_metric = "prec",
+    pivot_time_cutoff = 2.,
+    benchmark = "bm",
+    show_plots = TRUE,
+    title = "this title",
+    x_lab = "this x lab",
+    y_lab = "that y lab",
+    xlim = c(0, .9),
+    smooth_method = "loess",
+    smooth_benchmark = TRUE
+  )
+  perf_plot_spec$data <- tibble::tibble(
+    rpp = runif(n_row),
+    prec = runif(n_row),
+    model = sample(c("model", "bm"), n_row, replace = TRUE)
+  )
+
+  expect_no_error(
+    plot_2d_metric(
+      perf_plot_spec = perf_plot_spec,
+      quiet = TRUE
     )
-    expect_true(all(
-      file.exists(file.path(dir, "scores.pdf")),
-      file.exists(file.path(dir, "scores.csv"))
-    ))
+  )
+})
+
+
+test_that("plot_risk_scores() works", {
+  
+  set.seed(134)
+
+  n_samples <- 5
+  split_index <- 1:2
+
+  l <- apb(n_samples, split_index)
+  actual <- l[[1]]
+  predicted <- l[[2]]
+  dir <- withr::local_tempdir()
+  perf_plot_spec <- PerfPlotSpec(
+    fname = file.path(dir, "scores.pdf"),
+    x_metric = "rank",
+    y_metric = "scores",
+    title = "this title",
+    show_plots = TRUE
+  )
+
+  expect_no_error(
+    plot_risk_scores(
+      predicted = predicted,
+      actual = actual,
+      perf_plot_spec = perf_plot_spec,
+      quiet = TRUE
+    )
+  )
+  expect_true(all(
+    file.exists(file.path(dir, "scores.pdf")),
+    file.exists(file.path(dir, "scores.csv"))
+  ))
 })

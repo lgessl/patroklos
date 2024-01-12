@@ -91,3 +91,24 @@ generate_mock_data <- function(
     )
     return(res)
 }
+
+
+apb <- function(
+    n_samples,
+    split_index
+){
+    l <- list()
+    for(i in 1:3){
+        l[[i]] <- list()
+        for(j in split_index){
+            if(i == 1){
+                l[[i]][[j]] <- sample(c(0, 1), n_samples, replace = TRUE)
+            } else {
+                l[[i]][[j]] <- rnorm(n_samples)
+            }
+            names(l[[i]][[j]]) <- paste0("sample_", 1:n_samples)
+        }
+    }
+    names(l) <- c("actual", "predicted", "benchmark")
+    return(l)
+}
