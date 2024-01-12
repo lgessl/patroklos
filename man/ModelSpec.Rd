@@ -9,14 +9,13 @@ ModelSpec(
   directory,
   fitter,
   split_index,
-  cutoff_times,
+  time_cutoffs,
   optional_fitter_args = NULL,
   response_type = c("binary", "survival_censored"),
   response_colnames = c("time", "status"),
   include_from_continuous_pheno = NULL,
   include_from_discrete_pheno = NULL,
   append_to_includes = "++",
-  base_dir = ".",
   create_directory = TRUE,
   plot_fname = "training_error.pdf",
   plot_ncols = 2,
@@ -27,8 +26,7 @@ ModelSpec(
 \item{name}{string. A telling name for the model.}
 
 \item{directory}{string. The directory to store the models in. For every value in
-\code{cutoff_times}, find the corresponding model in a subdirectory named after this value.
-Default is \code{NULL}, in which case is is set to \code{file.path(base_dir, name)}.}
+\code{time_cutoffs}, find the corresponding model in a subdirectory named after this value.}
 
 \item{fitter}{function. The model fitting function to be used. Must take \code{x} and
 \code{y} as first two positional arguments. Further arguments can be passed via
@@ -38,12 +36,12 @@ method, and (ideally, for assessment) with a \code{predict()} method. Default is
 \item{split_index}{integer vector. Split the given data into training and test samples
 \code{length(split_index)} times, i.e., every index in \code{split_index} will get its own split.}
 
-\item{cutoff_times}{numeric vector.
+\item{time_cutoffs}{numeric vector.
 \itemize{
-\item If \code{response_type == "survival_censored"}: For every value in \code{cutoff_times}, censor
-all patients where the event ouccured after \code{cutoff_times} at this value and train the
+\item If \code{response_type == "survival_censored"}: For every value in \code{time_cutoffs}, censor
+all patients where the event ouccured after \code{time_cutoffs} at this value and train the
 specified model.
-\item If \code{response_type == "binary"}: For every value in \code{cutoff_times}, binarize the
+\item If \code{response_type == "binary"}: For every value in \code{time_cutoffs}, binarize the
 outcome depending on whether it occured before or after this value, and train the
 specified model.
 }}
@@ -78,9 +76,6 @@ which means no discrete pheno variables are or will be included.}
 \item{append_to_includes}{string. Append this to the names of features from the pheno
 data when adding them to the predictor matrix. Default is \code{"++"}.}
 
-\item{base_dir}{string. The base directory to store the model in. See \code{directory} below
-on how it is used to automatically set \code{directory}. Default is \code{"."}.}
-
 \item{create_directory}{logical. Whether to create \code{directory} if it does not exist, yet.
 Default is \code{TRUE}.}
 
@@ -102,10 +97,10 @@ Its base object is a list.
 }
 \details{
 Strictly speaking, one \code{ModelSpec} instance holds the instructions to fit
-\code{length(cutoff_times) * length(split_index)} models. In terms of storing and assessing models,
+\code{length(time_cutoffs) * length(split_index)} models. In terms of storing and assessing models,
 we consider the models obtained via repeated splitting according to \code{split_index} as one
 model; repeated splitting serves the purpose of getting more reliable estimates of its
-performance. We view models obtained via different values of \code{cutoff_times}, in
+performance. We view models obtained via different values of \code{time_cutoffs}, in
 contrast, as different models; e.g., we can compare them against one another in an
 assessment.
 }

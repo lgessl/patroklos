@@ -27,8 +27,8 @@ certain model
 If \code{model_spec$response_type == "binary"}, the response matrix will have one
 column filled with
 \itemize{
-\item \code{1} if progress is observed at a time <= \code{pfs_leq},
-\item \code{0} if progress or censoring is observed at a time > \code{pfs_leq},
-\item \code{NA} if censoring without progression is observed at a time <= \code{pfs_leq}.
+\item \code{1} if progress is observed at a time <= \code{cutoff_time},
+\item \code{0} if progress or censoring is observed at a time > \code{cutoff_time},
+\item \code{NA} if censoring without progression is observed at a time <= \code{cutoff_time}.
 }
 }

@@ -31,6 +31,8 @@ prepare_and_fit <- function(
         message("\tCreating ", directory)
         dir.create(directory, recursive = TRUE)
     }
+    if(is.null(data_spec$cohort))
+        data_spec$cohort <- "train"
     # Set up list holding fits
     fits <- list()
     stored_fits_fname <- file.path(model_spec$directory, model_spec$fit_fname)
