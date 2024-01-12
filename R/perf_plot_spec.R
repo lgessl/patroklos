@@ -2,7 +2,7 @@ new_PerfPlotSpec <- function(
     fname,
     x_metric,
     y_metric,
-    pfs_leq,
+    pivot_time_cutoff,
     lambda,
     benchmark,
     fellow_csv,
@@ -24,7 +24,7 @@ new_PerfPlotSpec <- function(
     stopifnot(is.character(fname))
     stopifnot(is.character(x_metric))
     stopifnot(is.character(y_metric))
-    stopifnot(is.null(pfs_leq) || is.numeric(pfs_leq))
+    stopifnot(is.null(pivot_time_cutoff) || is.numeric(pivot_time_cutoff))
     stopifnot(is.character(lambda) || is.numeric(lambda))
     stopifnot(is.character(benchmark))
     stopifnot(is.logical(fellow_csv))
@@ -48,7 +48,7 @@ new_PerfPlotSpec <- function(
         "fname" = fname,
         "x_metric" = x_metric,
         "y_metric" = y_metric,
-        "pfs_leq" = pfs_leq,
+        "pivot_time_cutoff" = pivot_time_cutoff,
         "lambda" = lambda,
         "benchmark" = benchmark,
         "fellow_csv" = fellow_csv,
@@ -81,10 +81,11 @@ new_PerfPlotSpec <- function(
 #' @param y_metric string. The name of the performance measure to be plotted on the y-axis.
 #' All measures that can be passed to the `measure` parameter of [ROCR::performance()] are
 #' valid.
-#' @param pfs_leq numeric. Progression-free survival threshold that divides samples into 
-#' high-risk (PFS < `pfs_leq`) and low-risk (PFS >= `pfs_leq`) group. Model performance
+#' @param pivot_time_cutoff numeric. Time-to-event threshold that divides samples into a
+#' high/low-risk (time to event below/above `pivot_time_cutoff`) group. Model performance
 #' will be measured in terms of how well it can separate these two groups as a binary
-#' classifier. Default is `2.0`.
+#' classifier. Default is NULL, in which case the `pivot_time_cutoff` of an accompanying
+#' DataSpec is used.
 #' @param lambda numeric or string. The lambda regularization parameter of the model to
 #' evaluate. See [prepare_and_predict()] for details. Default is `"lambda.min"`.
 #' @param benchmark string. Column in the test pheno holding the numeric benchmark values.
@@ -117,7 +118,7 @@ PerfPlotSpec <- function(
     fname,
     x_metric,
     y_metric,
-    pfs_leq = NULL,
+    pivot_time_cutoff = NULL,
     lambda = "lambda.min",
     benchmark = "ipi",
     fellow_csv = TRUE,
@@ -146,7 +147,7 @@ PerfPlotSpec <- function(
         fname = fname,
         x_metric = x_metric,
         y_metric = y_metric,
-        pfs_leq = pfs_leq,
+        pivot_time_cutoff = pivot_time_cutoff,
         lambda = lambda,
         benchmark = benchmark,
         fellow_csv = fellow_csv,
