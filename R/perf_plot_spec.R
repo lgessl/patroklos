@@ -98,8 +98,8 @@ new_PerfPlotSpec <- function(
 #' graphics device. Default is `FALSE`. 
 #' @param title string. The title of the plot. Default is `NULL`.
 #' @param x_lab,y_lab string. Axis labels. Default is `x_metric` and `y_metric`, respectively.
-#' @param xlim,ylim numeric vector of length 2 or `NULL`. The limits for both axes. Default is
-#' `NULL`, no limits.
+#' @param xlim,ylim numeric vector of length 2. The limits for both axes. Default is
+#' `c(-Inf, Inf)`, i.e. no contraints.
 #' @param smooth_method string or function. Smooth method to plot an additional smoothed graph.
 #' If `NULL`, no smoothing. Else we pass `smooth_method` as the `method` parameter to
 #' [ggplot2::geom_smooth()]. Default is `"loess"`.
@@ -127,8 +127,8 @@ PerfPlotSpec <- function(
     title = NULL,
     x_lab = NULL,
     y_lab = NULL,
-    xlim = NULL,
-    ylim = NULL,
+    xlim = c(-Inf, Inf),
+    ylim = c(-Inf, Inf),
     smooth_method = NULL,
     smooth_benchmark = FALSE,
     alpha = 0.5,

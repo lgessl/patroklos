@@ -8,7 +8,7 @@ PerfPlotSpec(
   fname,
   x_metric,
   y_metric,
-  pfs_leq = NULL,
+  pivot_time_cutoff = NULL,
   lambda = "lambda.min",
   benchmark = "ipi",
   fellow_csv = TRUE,
@@ -17,8 +17,8 @@ PerfPlotSpec(
   title = NULL,
   x_lab = NULL,
   y_lab = NULL,
-  xlim = NULL,
-  ylim = NULL,
+  xlim = c(-Inf, Inf),
+  ylim = c(-Inf, Inf),
   smooth_method = NULL,
   smooth_benchmark = FALSE,
   alpha = 0.5,
@@ -39,10 +39,11 @@ valid.}
 All measures that can be passed to the \code{measure} parameter of \code{\link[ROCR:performance]{ROCR::performance()}} are
 valid.}
 
-\item{pfs_leq}{numeric. Progression-free survival threshold that divides samples into
-high-risk (PFS < \code{pfs_leq}) and low-risk (PFS >= \code{pfs_leq}) group. Model performance
+\item{pivot_time_cutoff}{numeric. Time-to-event threshold that divides samples into a
+high/low-risk (time to event below/above \code{pivot_time_cutoff}) group. Model performance
 will be measured in terms of how well it can separate these two groups as a binary
-classifier. Default is \code{2.0}.}
+classifier. Default is NULL, in which case the \code{pivot_time_cutoff} of an accompanying
+DataSpec is used.}
 
 \item{lambda}{numeric or string. The lambda regularization parameter of the model to
 evaluate. See \code{\link[=prepare_and_predict]{prepare_and_predict()}} for details. Default is \code{"lambda.min"}.}
@@ -63,8 +64,8 @@ graphics device. Default is \code{FALSE}.}
 
 \item{x_lab, y_lab}{string. Axis labels. Default is \code{x_metric} and \code{y_metric}, respectively.}
 
-\item{xlim, ylim}{numeric vector of length 2 or \code{NULL}. The limits for both axes. Default is
-\code{NULL}, no limits.}
+\item{xlim, ylim}{numeric vector of length 2. The limits for both axes. Default is
+\code{c(-Inf, Inf)}, i.e. no contraints.}
 
 \item{smooth_method}{string or function. Smooth method to plot an additional smoothed graph.
 If \code{NULL}, no smoothing. Else we pass \code{smooth_method} as the \code{method} parameter to
