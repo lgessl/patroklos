@@ -5,6 +5,7 @@ new_DataSpec <- function(
     pivot_time_cutoff,
     expr_fname,
     pheno_fname,
+    cohort,
     patient_id_col,
     pfs_col,
     progression_col,
@@ -19,6 +20,7 @@ new_DataSpec <- function(
     stopifnot(is.numeric(pivot_time_cutoff))
     stopifnot(is.character(expr_fname))
     stopifnot(is.character(pheno_fname))
+    stopifnot(is.null(cohort) | is.character(cohort))
     stopifnot(is.character(patient_id_col))
     stopifnot(is.character(pfs_col))
     stopifnot(is.character(progression_col))
@@ -46,6 +48,7 @@ new_DataSpec <- function(
         "pivot_time_cutoff" = pivot_time_cutoff,
         "expr_fname" = expr_fname,
         "pheno_fname" = pheno_fname,
+        "cohort" = cohort,
         "patient_id_col" = patient_id_col,
         "pfs_col" = pfs_col,
         "progression_col" = progression_col,
@@ -84,6 +87,10 @@ ipi_feat_cols_default <- c(
 #' Default is `"expr.csv"`. See details for the expected format.
 #' @param pheno_fname string. The name of the pheno data csv inside `directory`.
 #' Default is `"pheno.csv"`. See details for the expected format.
+#' @param cohort string in `c("train", "test")` or NULL. The cohort, train or test, to 
+#' prepare the data for. If NULL, the default, some functions will set it themselves
+#' (e.g. `training_camp()` to `"train"`, `assess_model()` to `"test"`), others will
+#' throw an error.
 #' @param patient_id_col string. The name of the column in the pheno data that holds 
 #' the patient identifiers. Default is `"patient_id"`.
 #' @param pfs_col string. The name of the column in the pheno data that holds the 
@@ -119,6 +126,7 @@ DataSpec <- function(
     pivot_time_cutoff = 2.0,
     expr_fname = "expr.csv",
     pheno_fname = "pheno.csv",
+    cohort = NULL,
     patient_id_col = "patient_id",
     pfs_col = "pfs_years",
     progression_col = "progression",
@@ -133,6 +141,9 @@ DataSpec <- function(
     gene_id_col = "gene_id",
     split_col_prefix = "split_"
 ){
+    if(!is.null(cohort)){
+        cohort <- match.arg(cohort, c("train", "test"))
+    }
     data_spec <- new_DataSpec(
         name = name,
         directory = directory,
@@ -140,6 +151,7 @@ DataSpec <- function(
         pivot_time_cutoff = pivot_time_cutoff,
         expr_fname = expr_fname,
         pheno_fname = pheno_fname,
+        cohort = cohort,
         patient_id_col = patient_id_col,
         pfs_col = pfs_col,
         progression_col = progression_col,
