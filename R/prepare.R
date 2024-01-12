@@ -1,6 +1,8 @@
 #' @title Prepare data for model fitting and predicting
 #' @description Provided expression matrix and pheno tibble, generate the 
-#' predictor and response matrix response-type-dependently and do checks.
+#' predictor and response matrix response-type-dependently and do checks. At
+#' this point, the ModelSpec must specifiy exactly one time cutoff and exactly
+#' one split index.
 #' @param expr_mat numeric matrix. The expression data, with patients as rows
 #' and genes as columns. The row names must be unique patient identifiers.
 #' @param pheno_tbl tibble. The pheno data, with patients as rows and variables as
@@ -18,6 +20,24 @@ prepare <- function(
     data_spec,
     model_spec
 ){
+    if(length(model_spec$split_index) != 1){
+        stop("ModelSpec must specify exactly one split index")
+    }
+    if(length(model_spec$time_cutoffs) != 1){
+        stop("ModelSpec must specify exactly one time cutoff")
+    }
+    if(is.null(data_spec$cohort)){
+        stop("data_spec$cohort must be set to `'train'` or `'test'`")
+    }
+
+    # Subset data to cohort
+    split_colname <- paste0(data_spec$split_col_prefix, model_spec$split_index)
+    if(!split_colname %in% colnames(pheno_tbl))
+        stop("Column ", split_colname, " not found in pheno table.")
+    cohort_bool <- pheno_tbl[[split_colname]] == data_spec$cohort
+    expr_mat <- expr_mat[cohort_bool, ]
+    pheno_tbl <- pheno_tbl[cohort_bool, ]
+
     x <- generate_predictor(
         expr_mat = expr_mat,
         pheno_tbl = pheno_tbl,

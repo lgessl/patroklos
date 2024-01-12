@@ -1,6 +1,8 @@
-#' @title Prepare data and predict with a loaded model
+#' @title Prepare data and predict with a loaded model across splits
 #' @description Given an expression matrix and a pheno tibble, prepare the data for a
-#' certain model and predict with this model.
+#' certain model and predict with this model. Do this for all splits into training and
+#' test cohort. As with `[prepare_and_fit()]`, we do not support multiple time cutoffs
+#' at this step; this is `[assessment_center()]`'s job.
 #' @param expr_mat numeric matrix. The expression matrix with genes in rows and samples
 #' in columns.
 #' @param pheno_tbl tibble. The pheno data with samples in rows and variables in columns.
@@ -14,7 +16,7 @@
 #' See, e.g., [glmnet::predict.cv.glmnet()] or [zeroSum::predict.zeroSum()].
 #' @return A list with two numeric vectors: 
 #' * `"predictions"`: predicted scores,
-#' *  "actual": actual, *according to `model_spec$pfs_leq` discretized* response
+#' *  "actual": actual, *according to `model_spec$pivot_time_cutoff` discretized* response
 #' @importFrom stats predict
 #' @export
 prepare_and_predict <- function(
@@ -22,51 +24,64 @@ prepare_and_predict <- function(
     pheno_tbl,
     data_spec,
     model_spec,
-    lambda
+    lambda,
+    benchmark = NULL
 ){
-    if(!inherits(model_spec, "ModelSpec")){
-        stop("model_spec must be a ModelSpec object")
-    }
-    if(!inherits(data_spec, "DataSpec")){
-        stop("data_spec must be a DataSpec object")
+    if(length(model_spec$time_cutoffs) > 1L){
+        stop("Multiple time cutoffs are not supported")
     }
 
-    model_spec$response_type <- "binary" # always evaluate for descretized response
-    x_y <- prepare(
-        expr_mat = expr_mat,
-        pheno_tbl = pheno_tbl,
-        data_spec = data_spec,
-        model_spec = model_spec
-    )
-    
     # Retrieve model
-    fit_path <- file.path(model_spec$save_dir, model_spec$fit_fname)
+    fit_path <- file.path(model_spec$directory, model_spec$fit_fname)
     if(!file.exists(fit_path)){
         stop("Model object does not exist at ", fit_path)
     }
-    fit_obj <- readRDS(file.path(model_spec$save_dir, model_spec$fit_fname))
+    fits <- readRDS(file.path(model_spec$directory, model_spec$fit_fname))
 
-    predicted <- predict(fit_obj, newx = x_y[["x"]], s = lambda)
+    model_spec$response_type <- "binary" # always evaluate for descretized response
+    predicted_list <- list()
+    actual_list <- list()
+    benchmark_list <- list()
 
-    # Check what predict method did
-    if(!is.numeric(predicted)){
-        stop("predict method for class ", class(fit_obj), " does not return a ", 
-        "numeric matrix or vector")
-    }
-    if(is.matrix(predicted)){
-        if(ncol(predicted) > 1L){
-            stop("predict method for class ", class(fit_obj), " returns a matrix ",
-            "with more than one column")
+    for(i in model_spec$split_index){
+        split_name <- paste0(data_spec$split_col_prefix, i)
+        split_ms <- model_spec
+        split_ms$split_index <- i
+        x_y <- prepare(
+            expr_mat = expr_mat,
+            pheno_tbl = pheno_tbl,
+            data_spec = data_spec,
+            model_spec = split_ms
+        )
+        actual_list[[split_name]] <- x_y[["y"]][, 1]
+        fit <- fits[[split_name]]
+        if(is.null(fit))
+            stop("No fit found for split ", split)
+        predicted <- predict(fit, newx = x_y[["x"]], s = lambda)
+
+        # Check what predict method did
+        if(!is.numeric(predicted)){
+            stop("predict method for class ", class(fit_obj), " does not return a ", 
+            "numeric matrix or vector")
         }
-        predicted <- predicted[, 1]
-    }
-    if(is.null(names(predicted))){
-        names(predicted) <- rownames(x_y[["x"]])
+        if(is.matrix(predicted)){
+            if(ncol(predicted) > 1L){
+                stop("predict method for class ", class(fit_obj), " returns a matrix ",
+                "with more than one column")
+            }
+            predicted <- predicted[, 1]
+        }
+        if(is.null(names(predicted))){
+            names(predicted) <- rownames(x_y[["x"]])
+        }
+        predicted_list[[split_name]] <- predicted
+        benchmark_list[[split_name]] <- pheno_tbl[[benchmark]][names(predicted)]
     }
 
     res <- list(
-        "predicted" = predicted, 
-        "actual" = x_y[["y"]][, 1]
+        "predicted" = predicted_list, 
+        "actual" = actual_list,
+        "benchmark" = benchmark_list
     )
     return(res)
 }

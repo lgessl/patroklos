@@ -1,6 +1,8 @@
-#' @title Prepare data, fit and store models
+#' @title Prepare data, fit and store models across splits
 #' @description Given an expression matrix and a pheno tibble, prepare the data for a 
-#' list of models and fit these models to the data.
+#' model and fit this model. Do this for all splits into training and test cohort. 
+#' Howeve, we do not support multiple time cutoffs at this step; enabling them is 
+#' the job of `[training_camp()]`.
 #' @param expr_mat numeric matrix. The expression matrix with genes in rows and samples
 #' in columns.
 #' @param pheno_tbl tibble. The pheno data with samples in rows and variables in columns.
@@ -40,22 +42,18 @@ prepare_and_fit <- function(
     
     # Fit split after split
     for(i in model_spec$split_index){
-        split_colname <- paste0(data_spec$split_col_prefix, i)
-        if(split_colname %in% names(fits)){
+        split_name <- paste0(data_spec$split_col_prefix, i)
+        if(split_name %in% names(fits)){
             message("\tFound a fit for split ", i, ". Skipping")
             next
         }
-        # Reduce data to train samples for split i
-        if(!split_colname %in% colnames(pheno_tbl))
-            stop("Column ", split_colname, " not found in pheno table.")
-        train_bool <- pheno_tbl[[split_colname]] == "train"
-        pheno_tbl_train <- pheno_tbl[train_bool, ]
-        expr_mat_train <- expr_mat[train_bool, ]
+        split_ms <- model_spec
+        split_ms$split_index <- i
         # Prepare and fit
         x_y <- prepare(
-            expr_mat = expr_mat_train,
-            pheno_tbl = pheno_tbl_train,
-            model_spec = model_spec,
+            expr_mat = expr_mat,
+            pheno_tbl = pheno_tbl,
+            model_spec = split_ms,
             data_spec = data_spec
         )
         fit_obj <- do.call(
@@ -65,7 +63,7 @@ prepare_and_fit <- function(
                 model_spec$optional_fitter_args
             )
         )
-        fits[[split_colname]] <- fit_obj
+        fits[[split_name]] <- fit_obj
         message("\tFitted split ", i, " of ", length(model_spec$split_index))
     }
 
@@ -74,11 +72,11 @@ prepare_and_fit <- function(
     # Plots about fitting as a grid
     grDevices::pdf(file = file.path(directory, model_spec$plot_fname))
     par(mfrow = c(ceiling((length(fits)-1)/model_spec$plot_ncols), model_spec$plot_ncols))
-    for(split_name in names(fits)){
+    for(i in model_spec$split_index){
+        split_name <- paste0(data_spec$split_col_prefix, i)
         fit <- fits[[split_name]]
-        if("ModelSpec" %in% class(fit)) next
         plot(fit)
-        graphics::title(main = split_name)
+        graphics::title(main = paste0("Split ", i))
     }
     grDevices::dev.off()
 

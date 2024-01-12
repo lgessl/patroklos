@@ -13,58 +13,52 @@ test_that("prepare_and_fit", {
     n_genes = n_genes,
     n_na_in_pheno = n_na_in_pheno
   )
+  data_spec <- DataSpec(
+    name = "mock",
+    directory = "mock_dir",
+    train_prop = .5,
+    pivot_time_cutoff = 2.,
+    cohort = "train"
+  )
   expr_mat <- data[["expr_mat"]]
   pheno_tbl <- data[["pheno_tbl"]]
-  data_spec <- DataSpec(name = "Mock et al. (2023)")
+  pheno_tbl[["split_1"]] <- sample(c("train", "test"), n_samples, replace = TRUE)
+  pheno_tbl[["split_2"]] <- sample(c("train", "test"), n_samples, replace = TRUE)
   dir <- withr::local_tempdir()
 
-  model_spec_1 <- ModelSpec(
+  model_spec <- ModelSpec(
     name = "cox-zerosum",
+    directory = dir,
     fitter = zeroSum::zeroSum,
-    optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold, lambda = lambda),
+    split_index = 1:2,
+    time_cutoffs = 2.,
+    optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold, lambda = lambda,
+      zeroSum = FALSE),
     response_type = "survival_censored",
     include_from_continuous_pheno = NULL,
-    include_from_discrete_pheno = NULL,
-    save_dir = file.path(dir, "cox"),
-    pfs_leq = 2.
+    include_from_discrete_pheno = NULL
   )
-  model_spec_2 <- ModelSpec(
-    name = "binomial-zerosum",
-    fitter = zeroSum::zeroSum,
-    optional_fitter_args = list(family = "binomial", alpha = 1, nFold = n_fold, lambda = lambda),
-    response_type = "binary",
-    include_from_continuous_pheno = "continuous_var",
-    include_from_discrete_pheno = "discrete_var",
-    save_dir = file.path(dir, "binomial"),
-    pfs_leq = 2.
-  )
-  model_spec_list <- list(model_spec_1, model_spec_2)
 
   prepare_and_fit(
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
       data_spec = data_spec,
-      model_spec_list = model_spec_list
+      model_spec = model_spec
   )
 
-  expect_silent(pred_obs <- prepare_and_predict(
+  data_spec$cohort <- "test"
+  expect_silent(res <- prepare_and_predict(
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
       data_spec = data_spec,
-      model_spec = model_spec_1,
-      lambda = "lambda.min"
+      model_spec = model_spec,
+      lambda = "lambda.min",
+      benchmark = "ipi"
   ))
-  expect_true(is.list(pred_obs))
-  expect_true(is.vector(pred_obs[["predicted"]]))
-  expect_true(is.vector(pred_obs[["actual"]]))
-  expect_true(is.numeric(pred_obs[["predicted"]]))
-  expect_true(is.numeric(pred_obs[["actual"]]))
 
-  expect_silent(pred_obs <- prepare_and_predict(
-      expr_mat = expr_mat,
-      pheno_tbl = pheno_tbl,
-      data_spec = data_spec,
-      model_spec = model_spec_2,
-      lambda = "lambda.min"
-  ))
+  expect_true(is.list(res))
+  expect_equal(length(res), 3)
+  expect_true(all(sapply(res, is.list)))
+  expect_true(all(sapply(res, length) == length(model_spec$split_index)))
+  expect_true(all(sapply(res, function(x) all(sapply(x, is.numeric)))))
 })

@@ -17,7 +17,12 @@ test_that("prepare_and_fit() works", {
   pheno_tbl <- data[["pheno_tbl"]]
   pheno_tbl[["split_1"]] <- sample(c("train", "test"), n_samples, replace = TRUE)
   pheno_tbl[["split_2"]] <- sample(c("train", "test"), n_samples, replace = TRUE)
-  data_spec <- DataSpec(name = "Mock et al. (2023)", directory = "mock", train_prop = 0.8)
+  data_spec <- DataSpec(
+    name = "Mock et al. (2023)", 
+    directory = "mock", 
+    train_prop = 0.8,
+    cohort = "train"
+  )
   dir <- withr::local_tempdir()
 
   # Case 1: Fit all models specified
