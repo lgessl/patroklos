@@ -53,7 +53,7 @@ prepare_and_predict <- function(
             data_spec = data_spec,
             model_spec = split_ms
         )
-        actual_list[[split_name]] <- x_y[["y"]][, 1]
+        actual_list[[i]] <- x_y[["y"]][, 1]
         fit <- fits[[split_name]]
         if(is.null(fit))
             stop("No fit found for split ", split)
@@ -74,8 +74,8 @@ prepare_and_predict <- function(
         if(is.null(names(predicted))){
             names(predicted) <- rownames(x_y[["x"]])
         }
-        predicted_list[[split_name]] <- predicted
-        benchmark_list[[split_name]] <- pheno_tbl[[benchmark]][names(predicted)]
+        predicted_list[[i]] <- predicted
+        benchmark_list[[i]] <- pheno_tbl[[benchmark]][names(predicted)]
     }
 
     res <- list(
