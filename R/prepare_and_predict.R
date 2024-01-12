@@ -14,9 +14,15 @@
 #' to predict with. Technically, we will pass it to the `s` parameter of `predict()`
 #' method of the object returned by the `fitter` attribute of the `ModelSpec` object.
 #' See, e.g., [glmnet::predict.cv.glmnet()] or [zeroSum::predict.zeroSum()].
-#' @return A list with two numeric vectors: 
-#' * `"predictions"`: predicted scores,
-#' *  "actual": actual, *according to `model_spec$pivot_time_cutoff` discretized* response
+#' @return A list holding:
+#' * `"predicted"`: a list of named numeric vectors, the scores output by the model for 
+#'  each split, sorted in decreasing order.
+#' *  "actual": a list of named numeric vectors, for each split the actual values of 
+#' whether time to event was above or below `model_spec$time_cutoffs`, encoded as 1 
+#'  ("high risk") and 0 ("low risk"), respectively. 
+#' * "benchmark": A list of named numeric vectors, for each split the values of the
+#'  benchmark classifier. If `benchmark` is NULL, it is an empty list.
+#' For every split, the names of all three vectors match.
 #' @importFrom stats predict
 #' @export
 prepare_and_predict <- function(
@@ -53,7 +59,7 @@ prepare_and_predict <- function(
             data_spec = data_spec,
             model_spec = split_ms
         )
-        actual_list[[i]] <- x_y[["y"]][, 1]
+        actual <- x_y[["y"]][, 1]
         fit <- fits[[split_name]]
         if(is.null(fit))
             stop("No fit found for split ", split)
@@ -74,7 +80,10 @@ prepare_and_predict <- function(
         if(is.null(names(predicted))){
             names(predicted) <- rownames(x_y[["x"]])
         }
+        predicted <- sort(predicted, decreasing = TRUE)
+        actual <- actual[names(predicted)]
         predicted_list[[i]] <- predicted
+        actual_list[[i]] <- actual
         benchmark_list[[i]] <- pheno_tbl[[benchmark]][names(predicted)]
     }
 
