@@ -23,16 +23,8 @@ training_camp <- function(
         if(!inherits(model_spec, "ModelSpec")){
             stop("model_spec_list must be a list of ModelSpec objects")
         }
-        for(j in seq_along(model_spec$time_cutoffs)){
-            # Adapt ModelSpec to very cutoff_time
-            ms_cutoff <- model_spec # Rely on copy-on-modify
-            cutoff_time <- model_spec$time_cutoffs[j]
-            ms_cutoff$name <- paste0(model_spec$name, "@", cutoff_time)
-            ms_cutoff$time_cutoffs <- cutoff_time
-            ms_cutoff$directory <- file.path(
-                model_spec$directory, 
-                stringr::str_replace(as.character(cutoff_time), "\\.", "-")
-            )
+        for(time_cutoff in model_spec$time_cutoffs){
+            ms_cutoff <- at_time_cutoff(model_spec, time_cutoff)
             prepare_and_fit(
                 expr_mat = expr_mat,
                 pheno_tbl = pheno_tbl,

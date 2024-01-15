@@ -2,7 +2,8 @@
 % Please edit documentation in R/assess_model.R
 \name{assess_model}
 \alias{assess_model}
-\title{Assess a model on a data set in terms of classifying high-risk patients}
+\title{Assess a model on a single data set in terms how well it filters
+high-risk patients}
 \usage{
 assess_model(
   expr_mat,
@@ -36,22 +37,21 @@ the constructor \code{PerfPlotSpec()} for details. The \code{pivot_time_cutoff} 
 underlying the plots (see return). Default is \code{TRUE}.}
 }
 \value{
-A named list of two tibbles:
-\itemize{
-\item \code{model_spec$name}: The performance measures for the model with three variables:
-\code{perf_plot_spec$x_metric}, \code{perf_plot_spec$y_metric}, and \code{"cutoff"}.
-\item \code{perf_plot_spec$benchmark}: The performance measures for the benchmark classifier
-with the same three variables.
-}
+A PerfPlotSpec object. \code{perf_plot_spec} with one additional attribute named
+\code{data} holding the data underlying the plots.
 }
 \description{
-Given a data-model pair, assess the model's performance in terms of
-classifying high-risk patients by plotting one binary-classifier characteristic
-(e.g. prevalance) versus another one (e.g. precision) and comparing it to a
-benchmark classifier (e.g. the International Prognostic Index (IPI) for DLBCL).
+Given a data set and a model, assess how well the model can filter
+high-risk patients. This includes:
+\enumerate{
+\item A 2D scatter plot of two performance metrics, namely the \code{x_metric} and \code{y_metric}
+attributes of \code{perf_plot_spec}.
+\item A plot of the risk scores of the model.
+Supports multiple splits into train and test cohorts, but not multiple time cutoffs
+or multiple models. For the this, see \code{\link[=assessment_center]{assessment_center()}}.
+}
 }
 \details{
-The assessment views every model as a binary classifier for high-risk (pfs <
-\code{pivot_time_cutoff}) versus low-risk (pfs >= \code{pivot_time_cutoff}) patients (where
-\code{pivot_time_cutoff} is determined as described above).
+The PerfPlotSpec class is tailored for this function, so see its constructor
+\code{\link[=PerfPlotSpec]{PerfPlotSpec()}} for details.
 }

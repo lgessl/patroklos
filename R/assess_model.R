@@ -1,8 +1,12 @@
-#' @title Assess a model on a data set in terms of classifying high-risk patients
-#' @description Given a data-model pair, assess the model's performance in terms of
-#' classifying high-risk patients by plotting one binary-classifier characteristic
-#' (e.g. prevalance) versus another one (e.g. precision) and comparing it to a
-#' benchmark classifier (e.g. the International Prognostic Index (IPI) for DLBCL).
+#' @title Assess a model on a single data set in terms how well it filters 
+#' high-risk patients
+#' @description Given a data set and a model, assess how well the model can filter
+#' high-risk patients. This includes: 
+#' 1. A 2D scatter plot of two performance metrics, namely the `x_metric` and `y_metric`
+#' attributes of `perf_plot_spec`. 
+#' 2. A plot of the risk scores of the model.
+#' Supports multiple splits into train and test cohorts, but not multiple time cutoffs 
+#' or multiple models. For the this, see [`assessment_center()`].
 #' @param expr_mat numeric matrix. The expression matrix. Rows are samples, columns
 #' are genes, their identifiers are given as row and column names, respectively.
 #' @param pheno_tbl tibble. The phenotype table. Observations are samples, columns 
@@ -17,14 +21,10 @@
 #' @param plots logical. Whether to generate plots; if false, still return the data 
 #' underlying the plots (see return). Default is `TRUE`.
 #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
-#' @return A named list of two tibbles:
-#' * `model_spec$name`: The performance measures for the model with three variables:
-#' `perf_plot_spec$x_metric`, `perf_plot_spec$y_metric`, and `"cutoff"`.
-#' * `perf_plot_spec$benchmark`: The performance measures for the benchmark classifier
-#' with the same three variables.
-#' @details The assessment views every model as a binary classifier for high-risk (pfs <
-#' `pivot_time_cutoff`) versus low-risk (pfs >= `pivot_time_cutoff`) patients (where 
-#' `pivot_time_cutoff` is determined as described above).
+#' @return A PerfPlotSpec object. `perf_plot_spec` with one additional attribute named
+#' `data` holding the data underlying the plots.
+#' @details The PerfPlotSpec class is tailored for this function, so see its constructor 
+#' [`PerfPlotSpec()`] for details.
 assess_model <- function(
     expr_mat,
     pheno_tbl,
@@ -74,8 +74,9 @@ assess_model <- function(
     )
 
     if(perf_plot_spec$scores_plot){
-        perf_plot_spec$title <- paste0(model_spec$name, " on ", perf_plot_spec$title)
-        perf_plot_spec$fname <- file.path(
+        pps_scores <- perf_plot_spec
+        pps_scores$title <- paste0(model_spec$name, " on ", perf_plot_spec$title)
+        pps_scores$fname <- file.path(
             dirname(perf_plot_spec$fname),
             "scores.pdf"
         )
@@ -85,4 +86,6 @@ assess_model <- function(
             perf_plot_spec = perf_plot_spec
         )
     }
+
+    return(perf_plot_spec)
 }

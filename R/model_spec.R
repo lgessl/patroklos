@@ -151,3 +151,19 @@ ModelSpec <- function(
     )
     return(model_spec)
 }
+
+
+at_time_cutoff <- function(
+    model_spec,
+    time_cutoff
+){
+    ms_cutoff <- model_spec # Rely on copy-on-modify
+    cutoff_time <- time_cutoff
+    ms_cutoff$name <- paste0(model_spec$name, "@", cutoff_time)
+    ms_cutoff$time_cutoffs <- cutoff_time
+    ms_cutoff$directory <- file.path(
+        model_spec$directory, 
+        stringr::str_replace(as.character(cutoff_time), "\\.", "-")
+    )
+    return(ms_cutoff)
+}

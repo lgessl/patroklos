@@ -71,9 +71,11 @@ new_PerfPlotSpec <- function(
 }
 
 #' @title Create a PerfPlotSpec object
-#' @description A PlotSpec object holds all the info on how to create a model performance
-#' plot and what to do with it. It is tailored for [assess_model()]. Its base object is a 
-#' list containing:
+#' @description A PerfPlotSpec object holds all the info on how to assess how well a 
+#' model filters high-risk patients. Its base object is a list. The core of the 
+#' assessment is a scatter plot of two performance measures. Moreover, a PerfPlotSpec
+#' object holds the commands (usually bools) on whether do more assessments (that 
+#' require considerably less specifications).
 #' @param fname string. The name of the file to save the plot to.
 #' @param x_metric string. The name of the performance measure to be plotted on the x-axis.
 #' All measures that can be passed to the `x.measure` parameter of [ROCR::performance()] are
@@ -167,4 +169,30 @@ PerfPlotSpec <- function(
         show_plots = show_plots
     )
     return(perf_plot_spec)
+}
+
+
+infer_pps <- function(
+    perf_plot_spec,
+    model_spec,
+    data_spec
+){
+    # Prepare for assess_model()
+    this_pps <- perf_plot_spec
+    this_pps$fname <- file.path(
+        basedir(model_spec$directory),
+        paste0(
+            perf_plot_spec$x_metric, "_vs_", perf_plot_spec$y_metric, ".pdf"
+        )
+    )
+    if(data_spec$cohort == "test")
+        this_pps$fname <- mirror_directory(
+            filepath = this_pps$fname,
+            mirror = model_tree_mirror
+        )
+    this_pps$title <- paste0(
+        data_spec$name, " ", data_spec$cohort, ", ",
+        data_spec$time_to_event_col, " < ", this_pps$pivot_time_cutoff
+    )
+    return(this_pps)
 }

@@ -90,7 +90,9 @@ Default is \code{NULL}, which means that the default colors of \code{ggplot2} wi
 A PlotSpec S3 object.
 }
 \description{
-A PlotSpec object holds all the info on how to create a model performance
-plot and what to do with it. It is tailored for \code{\link[=assess_model]{assess_model()}}. Its base object is a
-list containing:
+A PerfPlotSpec object holds all the info on how to assess how well a
+model filters high-risk patients. Its base object is a list. The core of the
+assessment is a scatter plot of two performance measures. Moreover, a PerfPlotSpec
+object holds the commands (usually bools) on whether do more assessments (that
+require considerably less specifications).
 }
