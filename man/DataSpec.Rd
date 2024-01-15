@@ -13,8 +13,8 @@ DataSpec(
   pheno_fname = "pheno.csv",
   cohort = NULL,
   patient_id_col = "patient_id",
-  pfs_col = "pfs_years",
-  progression_col = "progression",
+  time_to_event_col = "pfs_years",
+  event_col = "progression",
   ipi_col = "ipi",
   ipi_feat_cols = c(age = "age", stage = "ann_arbor_stage", ldh_ratio = "ldh_ratio",
     performance_status = "ecog_performance_status", n_extranodal_sites =
@@ -51,11 +51,11 @@ throw an error.}
 \item{patient_id_col}{string. The name of the column in the pheno data that holds
 the patient identifiers. Default is \code{"patient_id"}.}
 
-\item{pfs_col}{string. The name of the column in the pheno data that holds the
-progression-free survival (PFS) values. Default is \code{"pfs_years"}.}
+\item{time_to_event_col}{string. The name of the column in the pheno data that holds the
+time-to-event values. Default is \code{"pfs_years"}.}
 
-\item{progression_col}{string. The name of the column in the pheno data that holds
-the progression status encoded as 1 = progression, 0 = no progression. Default is
+\item{event_col}{string. The name of the column in the pheno data that holds
+the event status encoded as 1 = occurrence, 0 = censoring. Default is
 \code{"progression"}.}
 
 \item{ipi_col}{string. The name of the column in the pheno data that holds the

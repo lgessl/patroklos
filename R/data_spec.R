@@ -7,8 +7,8 @@ new_DataSpec <- function(
     pheno_fname,
     cohort,
     patient_id_col,
-    pfs_col,
-    progression_col,
+    time_to_event_col,
+    event_col,
     ipi_col,
     ipi_feat_cols,
     gene_id_col,
@@ -22,8 +22,8 @@ new_DataSpec <- function(
     stopifnot(is.character(pheno_fname))
     stopifnot(is.null(cohort) | is.character(cohort))
     stopifnot(is.character(patient_id_col))
-    stopifnot(is.character(pfs_col))
-    stopifnot(is.character(progression_col))
+    stopifnot(is.character(time_to_event_col))
+    stopifnot(is.character(event_col))
     stopifnot(is.character(ipi_col))
     stopifnot(is.character(ipi_feat_cols) | is.null(ipi_feat_cols))
     stopifnot(is.character(gene_id_col))
@@ -50,8 +50,8 @@ new_DataSpec <- function(
         "pheno_fname" = pheno_fname,
         "cohort" = cohort,
         "patient_id_col" = patient_id_col,
-        "pfs_col" = pfs_col,
-        "progression_col" = progression_col,
+        "time_to_event_col" = time_to_event_col,
+        "event_col" = event_col,
         "ipi_col" = ipi_col,
         "ipi_feat_cols" = ipi_feat_cols,
         "gene_id_col" = gene_id_col,
@@ -93,10 +93,10 @@ ipi_feat_cols_default <- c(
 #' throw an error.
 #' @param patient_id_col string. The name of the column in the pheno data that holds 
 #' the patient identifiers. Default is `"patient_id"`.
-#' @param pfs_col string. The name of the column in the pheno data that holds the 
-#' progression-free survival (PFS) values. Default is `"pfs_years"`.
-#' @param progression_col string. The name of the column in the pheno data that holds
-#' the progression status encoded as 1 = progression, 0 = no progression. Default is
+#' @param time_to_event_col string. The name of the column in the pheno data that holds the 
+#' time-to-event values. Default is `"pfs_years"`.
+#' @param event_col string. The name of the column in the pheno data that holds
+#' the event status encoded as 1 = occurrence, 0 = censoring. Default is
 #' `"progression"`.
 #' @param ipi_col string. The name of the column in the pheno data that holds the
 #' International Prognostic Index (IPI) values. Default is `"ipi"`.
@@ -128,8 +128,8 @@ DataSpec <- function(
     pheno_fname = "pheno.csv",
     cohort = NULL,
     patient_id_col = "patient_id",
-    pfs_col = "pfs_years",
-    progression_col = "progression",
+    time_to_event_col = "pfs_years",
+    event_col = "progression",
     ipi_col = "ipi",
     ipi_feat_cols = c(
         "age" = "age",
@@ -153,8 +153,8 @@ DataSpec <- function(
         pheno_fname = pheno_fname,
         cohort = cohort,
         patient_id_col = patient_id_col,
-        pfs_col = pfs_col,
-        progression_col = progression_col,
+        time_to_event_col = time_to_event_col,
+        event_col = event_col,
         ipi_col = ipi_col,
         ipi_feat_cols = ipi_feat_cols,
         gene_id_col = gene_id_col,
