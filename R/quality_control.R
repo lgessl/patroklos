@@ -1,4 +1,5 @@
-#' @title Quality control at the end of preparation step
+#' @title Quality control before handing over the predictor and response 
+#' matrix over to the model fitting function
 #' @description Check types of predictor and response matrix, their 
 #' consistency and availability.
 #' @param x A numeric matrix with dimnames holding predictors (as rows).
@@ -7,7 +8,7 @@
 #' `generate_response()`. `prepare()` and, in particular, `prepare_and_fit()`
 #' call this function.
 #' @export
-qc_prepare <- function(
+qc_prefit <- function(
     x,
     y
 ){
@@ -62,7 +63,8 @@ qc_preprocess <- function(
         directory <- data_spec$directory
         data_spec <- DataSpec(
             name = "default",
-            directory = directory
+            directory = directory,
+            train_prop = .7
         )
     }
 
@@ -72,8 +74,8 @@ qc_preprocess <- function(
     pheno_fname <- data_spec$pheno_fname
     gene_id_col <- data_spec$gene_id_col
     patient_id_col <- data_spec$patient_id_col
-    pfs_col <- data_spec$pfs_col
-    progression_col <- data_spec$progression_col
+    time_to_event_col <- data_spec$time_to_event_col
+    event_col <- data_spec$event_col
     ipi_col <- data_spec$ipi_col
 
     # Check if files exist
@@ -106,8 +108,8 @@ qc_preprocess <- function(
         tbl_name = "pheno_tbl",
         col_names = c(
             patient_id_col,
-            pfs_col,
-            progression_col,
+            time_to_event_col,
+            event_col,
             ipi_col
         )
     )
@@ -117,14 +119,14 @@ qc_preprocess <- function(
     if(!is.character(pheno_tbl[[patient_id_col]]) || !elements_unique(pheno_tbl[[patient_id_col]])){
         stop("Patient ids must be unique characters.")
     }
-    if(!is.numeric(pheno_tbl[[pfs_col]])){
+    if(!is.numeric(pheno_tbl[[time_to_event_col]])){
         stop("PFS values must be numeric and not contain missing values.")
     }
-    if(any(is.na(pheno_tbl[[pfs_col]]))){
+    if(any(is.na(pheno_tbl[[time_to_event_col]]))){
         warning("PFS values contain missing values.")
     }
-    if(!is.numeric(pheno_tbl[[progression_col]]) || 
-        !all(pheno_tbl[[progression_col]] %in% c(0, 1))){
+    if(!is.numeric(pheno_tbl[[event_col]]) || 
+        !all(pheno_tbl[[event_col]] %in% c(0, 1))){
         stop("Progression values must be numeric and either 1 (progression) or 0 (no progression).")
     }
     if(!is.numeric(pheno_tbl[[ipi_col]]) || !all(pheno_tbl[[ipi_col]] %in% c(0:5, NA))){

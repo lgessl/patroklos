@@ -16,7 +16,8 @@ test_that("qc_preprocess() works", {
   pheno_tbl <- data[["pheno_tbl"]]
   data_spec <- DataSpec(
     name = "mock",
-    directory = dir
+    directory = dir,
+    train_prop = .7
   )
 
   expect_silent(
