@@ -37,6 +37,17 @@ test_that("calculate_2d_metric() works", {
   expect_s3_class(perf_tbl, "tbl_df")
   expect_true(all(perf_tbl[["model"]] %in% c(model_spec$name, perf_plot_spec$benchmark)))
   expect_true(perf_tbl[, 1:4] |> as.matrix() |> is.numeric() |> all())
+
+  perf_plot_spec$benchmark <- NULL
+  expect_silent(
+    perf_plot_spec <- calculate_2d_metric(
+      actual = actual,
+      predicted = predicted,
+      benchmark = NULL,
+      perf_plot_spec = perf_plot_spec,
+      model_spec = model_spec
+    )
+  )
 })
 
 
@@ -67,6 +78,13 @@ test_that("plot_2d_metric() works", {
     model = sample(c("model", "bm"), n_row, replace = TRUE)
   )
 
+  expect_no_error(
+    plot_2d_metric(
+      perf_plot_spec = perf_plot_spec,
+      quiet = TRUE
+    )
+  )
+  perf_plot_spec$benchmark <- NULL
   expect_no_error(
     plot_2d_metric(
       perf_plot_spec = perf_plot_spec,
