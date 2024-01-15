@@ -13,41 +13,55 @@ test_that("assess_model() works", {
   )
   expr_mat <- data[["expr_mat"]]
   pheno_tbl <- data[["pheno_tbl"]]
+  pheno_tbl[["split_1"]] <- sample(
+    c("train", "test"),
+    size = n,
+    replace = TRUE
+  )
+  pheno_tbl[["split_2"]] <- pheno_tbl[["split_1"]]
 
   data_spec <- DataSpec(
-    name = "Mock et al. (2023)"
+    name = "Mock et al. (2023)",
+    directory = "mock",
+    train_prop = .66
   )
   model_spec_1 <- ModelSpec(
-    name = "cox-zerosum",
+    name = "cox",
+    directory = file.path(dir, "cox"),
     fitter = zeroSum::zeroSum,
+    split_index = 1:2,
+    time_cutoffs = 2.,
     optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE),
-    response_type = "survival_censored",
-    base_dir = dir
+    response_type = "survival_censored"
   )
   model_spec_2 <- ModelSpec(
-    name = "logistic-lasso",
-    fitter = glmnet::cv.glmnet,
+    name = "logistic",
+    directory = file.path(dir, "logistic"),
+    fitter = zeroSum::zeroSum,
+    split_index = 1,
+    time_cutoffs = 2.,
     optional_fitter_args = list(family = "binomial", alpha = 1, 
-      nfolds = n_fold, lambda = c(lambda, 2)),
-    response_type = "binary",
-    base_dir = dir
+      nFold = n_fold, lambda = lambda, zeroSum = FALSE),
+    response_type = "binary"
   )
   perf_plot_spec <- PerfPlotSpec(
     fname = file.path(dir, "perf.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
+    pivot_time_cutoff = 2.,
     benchmark = "ipi",
     show_plots = FALSE
   )
-  suppressWarnings({
+
+  for(model_spec in list(model_spec_1, model_spec_2)){
     prepare_and_fit(
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
       data_spec = data_spec,
-      model_spec = list(model_spec_1, model_spec_2)
+      model_spec = model_spec
     )
-  })
+  }
 
   expect_no_error(
       assess_model(
@@ -58,6 +72,7 @@ test_that("assess_model() works", {
       perf_plot_spec = perf_plot_spec
     )
   )
+  perf_plot_spec$benchmark <- NULL
   expect_no_error(assess_model(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,

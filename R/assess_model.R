@@ -12,7 +12,7 @@
 #' @param model_spec ModelSpec object. The model to be assessed. See the constructor
 #' `ModelSpec()` for details.
 #' @param perf_plot_spec PerfPlotSpec object. The specifications for the plot. See
-#' the constructor `PerfPlotSpec()` for details. The `pfs_leq` attribute of
+#' the constructor `PerfPlotSpec()` for details. The `pivot_time_cutoff` attribute of
 #' `perf_plot_spec` will override the same in `model_spec` if both are given.
 #' @param plots logical. Whether to generate plots; if false, still return the data 
 #' underlying the plots (see return). Default is `TRUE`.
@@ -23,82 +23,66 @@
 #' * `perf_plot_spec$benchmark`: The performance measures for the benchmark classifier
 #' with the same three variables.
 #' @details The assessment views every model as a binary classifier for high-risk (pfs <
-#' `pfs_leq`) versus low-risk (pfs >= `pfs_leq`) patients (where `pfs_leq` is determined
-#' as described above).
+#' `pivot_time_cutoff`) versus low-risk (pfs >= `pivot_time_cutoff`) patients (where 
+#' `pivot_time_cutoff` is determined as described above).
 assess_model <- function(
     expr_mat,
     pheno_tbl,
     data_spec,
     model_spec,
     perf_plot_spec,
-    plots = TRUE,
     quiet = FALSE
 ){
-    # Infer reasonable values for missing plot specs
-    if(!is.null(perf_plot_spec$pfs_leq)){
-        model_spec$pfs_leq <- perf_plot_spec$pfs_leq # plot spec overrides model spec
-    } else if(is.null(model_spec$pfs_leq)){
-            stop("You need to specify the `pfs_leq` atrribute in at least ",
-                "one of `data_spec` and `model_spec`.")
+    if(is.null(perf_plot_spec$pivot_time_cutoff)){
+        perf_plot_spec$pivot_time_cutoff <- data_spec$pivot_time_cutoff
+        if(is.null(perf_plot_spec$pivot_time_cutoff)){
+            stop("You need to specify the `pivot_time_cutoff` atrribute in at least ",
+                "one of `data_spec` and `perf_plot_spec`.")
+        }
     }
     if(is.null(perf_plot_spec$title)){
-        perf_plot_spec$title <- stringr::str_c(
-            data_spec$name, ", pfs < ", model_spec$pfs_leq
-        )
+        perf_plot_spec$title <- paste0(
+            data_spec$name, " ", data_spec$cohort, ", time cutoff ", 
+            perf_plot_spec$pivot_time_cutoff)
+    }
+    if(is.null(data_spec$cohort)){
+        data_spec$cohort <- "test"
     }
 
-    # Prepare, predict and calcualte performance metric
+    # Prepare, predict and calculate performance metric
     # (a) For model
-    pred_act <- prepare_and_predict(
+    prep <- prepare_and_predict(
         expr_mat = expr_mat,
         pheno_tbl = pheno_tbl,
         data_spec = data_spec,
         model_spec = model_spec,
-        lambda = perf_plot_spec$lambda
-    )
-    actual <- pred_act[["actual"]]
-    predicted <- pred_act[["predicted"]]
-    perf_plot_spec <- calculate_perf_metric(
-        predicted = predicted,
-        actual = actual,
+        lambda = perf_plot_spec$lambda,
         perf_plot_spec = perf_plot_spec
     )
-    perf_plot_spec$data[["model"]] <- model_spec$name
-
-    # (b) For benchmark (if given)
-    perf_tbl_bm <- NULL
-    if(!is.null(perf_plot_spec$benchmark)){
-        perf_plot_spec <- add_benchmark_perf_metric(
-            pheno_tbl = pheno_tbl,
-            data_spec = data_spec,
-            perf_plot_spec = perf_plot_spec,
-            model_spec = model_spec
-        )
-        perf_plot_spec$bm_data[["model"]] <- perf_plot_spec$benchmark
-    }
+    perf_plot_spec <- calculate_2d_metric(
+        actual = prep[["actual"]],
+        predicted = prep[["predicted"]],
+        perf_plot_spec = perf_plot_spec,
+        model_spec = model_spec,
+        benchmark = prep[["benchmark"]]
+    )
 
     # Plot
-    if(plots){
-        plot_perf_metric(
-            perf_plot_spec = perf_plot_spec,
-            quiet = quiet
+    plot_2d_metric(
+        perf_plot_spec = perf_plot_spec,
+        quiet = quiet
+    )
+
+    if(perf_plot_spec$scores_plot){
+        perf_plot_spec$title <- paste0(model_spec$name, " on ", perf_plot_spec$title)
+        perf_plot_spec$fname <- file.path(
+            dirname(perf_plot_spec$fname),
+            "scores.pdf"
         )
-
-        if(perf_plot_spec$scores_plot){
-            perf_plot_spec$title <- stringr::str_c(
-                data_spec$name, ", pfs < ", model_spec$pfs_leq
-            )
-            perf_plot_spec$fname <- file.path(
-                dirname(perf_plot_spec$fname),
-                "scores.pdf"
-            )
-            plot_scores(
-                predicted = predicted,
-                actual = actual,
-                perf_plot_spec = perf_plot_spec
-            )
-        }
+        plot_risk_scores(
+            predicted = prep[["predicted"]],
+            actual = prep[["actual"]],
+            perf_plot_spec = perf_plot_spec
+        )
     }
-
-    return(perf_plot_spec)
 }

@@ -10,7 +10,6 @@ assess_model(
   data_spec,
   model_spec,
   perf_plot_spec,
-  plots = TRUE,
   quiet = FALSE
 )
 }
@@ -28,13 +27,13 @@ constructor \code{DataSpec()} for details.}
 \code{ModelSpec()} for details.}
 
 \item{perf_plot_spec}{PerfPlotSpec object. The specifications for the plot. See
-the constructor \code{PerfPlotSpec()} for details. The \code{pfs_leq} attribute of
+the constructor \code{PerfPlotSpec()} for details. The \code{pivot_time_cutoff} attribute of
 \code{perf_plot_spec} will override the same in \code{model_spec} if both are given.}
+
+\item{quiet}{logical. Whether to suppress messages. Default is \code{FALSE}.}
 
 \item{plots}{logical. Whether to generate plots; if false, still return the data
 underlying the plots (see return). Default is \code{TRUE}.}
-
-\item{quiet}{logical. Whether to suppress messages. Default is \code{FALSE}.}
 }
 \value{
 A named list of two tibbles:
@@ -53,6 +52,6 @@ benchmark classifier (e.g. the International Prognostic Index (IPI) for DLBCL).
 }
 \details{
 The assessment views every model as a binary classifier for high-risk (pfs <
-\code{pfs_leq}) versus low-risk (pfs >= \code{pfs_leq}) patients (where \code{pfs_leq} is determined
-as described above).
+\code{pivot_time_cutoff}) versus low-risk (pfs >= \code{pivot_time_cutoff}) patients (where
+\code{pivot_time_cutoff} is determined as described above).
 }
