@@ -52,11 +52,5 @@ prepare <- function(
         data_spec = data_spec,
         model_spec = model_spec
     )
-    check_consistent_patient_ids(
-        stage = "after_generate_xy",
-        expr = x,
-        pheno = y
-    )
-
     return(list("x" = x, "y" = y))
 }

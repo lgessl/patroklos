@@ -29,6 +29,9 @@ constructor \code{ModelSpec()} for details.}
 to predict with. Technically, we will pass it to the \code{s} parameter of \code{predict()}
 method of the object returned by the \code{fitter} attribute of the \code{ModelSpec} object.
 See, e.g., \code{\link[glmnet:predict.cv.glmnet]{glmnet::predict.cv.glmnet()}} or \code{\link[zeroSum:predict.zeroSum]{zeroSum::predict.zeroSum()}}.}
+
+\item{perf_plot_spec}{PerfPlotSpec object. We only need the \code{benchmark} attribute
+to (optionally) provide the benchmark. Default is NULL, i.e. provide no benchmark.}
 }
 \value{
 A list holding:

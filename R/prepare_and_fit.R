@@ -65,14 +65,13 @@ prepare_and_fit <- function(
             x = x,
             y = y
         )
-        fit_obj <- do.call(
+        fits[[split_name]] <- do.call(
             model_spec$fitter, 
             args = c(
                 list("x" = x, "y" = y), 
                 model_spec$optional_fitter_args
             )
         )
-        fits[[split_name]] <- fit_obj
         message("\tFitted split ", i, " of ", length(model_spec$split_index))
     }
 
@@ -80,7 +79,7 @@ prepare_and_fit <- function(
 
     # Plots about fitting as a grid
     grDevices::pdf(file = file.path(directory, model_spec$plot_fname))
-    par(mfrow = c(ceiling((length(fits)-1)/model_spec$plot_ncols), model_spec$plot_ncols))
+    graphics::par(mfrow = c(ceiling((length(fits)-1)/model_spec$plot_ncols), model_spec$plot_ncols))
     for(i in model_spec$split_index){
         split_name <- paste0(data_spec$split_col_prefix, i)
         fit <- fits[[split_name]]

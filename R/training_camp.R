@@ -1,3 +1,9 @@
+#' @title Set up a training camp to fit models
+#' @description Given one data set and a list of models, fit all models for all 
+#' splits and time cutoffs. Store the models.
+#' @param data_spec DataSpec object. The data set to fit on.
+#' @param model_spec_list list of ModelSpec objects. The models to fit.
+#' @return NULL
 #' @export 
 training_camp <- function(
     data_spec,

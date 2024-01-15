@@ -1,3 +1,4 @@
 ^\.github$
 ^LICENSE\.md$
 ^lymphomaSurvivalPipeline\.code-workspace$
+^.vscode$

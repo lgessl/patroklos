@@ -11,6 +11,9 @@ ensure_splits(pheno_tbl, data_spec, model_spec_list)
 for details).}
 
 \item{data_spec}{A \code{DataSpec} object referring to \code{expr_tbl} and \code{pheno_tbl}.}
+
+\item{model_spec_list}{A list of \code{ModelSpec} objects. Ensure that every model
+gets the splits it needs.}
 }
 \value{
 \code{pheno_tbl} with all required splits.

@@ -32,9 +32,6 @@ the constructor \code{PerfPlotSpec()} for details. The \code{pivot_time_cutoff} 
 \code{perf_plot_spec} will override the same in \code{model_spec} if both are given.}
 
 \item{quiet}{logical. Whether to suppress messages. Default is \code{FALSE}.}
-
-\item{plots}{logical. Whether to generate plots; if false, still return the data
-underlying the plots (see return). Default is \code{TRUE}.}
 }
 \value{
 A PerfPlotSpec object. \code{perf_plot_spec} with one additional attribute named

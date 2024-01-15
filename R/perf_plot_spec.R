@@ -92,7 +92,7 @@ new_PerfPlotSpec <- function(
 #' evaluate. See [prepare_and_predict()] for details. Default is `"lambda.min"`.
 #' @param benchmark string. Column in the test pheno holding the numeric benchmark values.
 #' Default is `"ipi"` (international prognostic index for DLBCL).
-#' @param fellow_csv logical. If passed to [assess_multiple_models()], whether to also create a
+#' @param fellow_csv logical. If passed to [assessment_center()], whether to also create a
 #' csv file for every model-data pair. Default is `TRUE`.
 #' @param scores_plot logical. Display the ordered scores output by the model in a scatter 
 #' plot. Default is `TRUE`.  
@@ -180,7 +180,7 @@ infer_pps <- function(
     # Prepare for assess_model()
     this_pps <- perf_plot_spec
     this_pps$fname <- file.path(
-        basedir(model_spec$directory),
+        dirname(model_spec$directory),
         paste0(
             perf_plot_spec$x_metric, "_vs_", perf_plot_spec$y_metric, ".pdf"
         )
@@ -188,7 +188,7 @@ infer_pps <- function(
     if(data_spec$cohort == "test")
         this_pps$fname <- mirror_directory(
             filepath = this_pps$fname,
-            mirror = model_tree_mirror
+            mirror = perf_plot_spec$model_tree_mirror
         )
     this_pps$title <- paste0(
         data_spec$name, " ", data_spec$cohort, ", ",

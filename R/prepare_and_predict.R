@@ -14,6 +14,8 @@
 #' to predict with. Technically, we will pass it to the `s` parameter of `predict()`
 #' method of the object returned by the `fitter` attribute of the `ModelSpec` object.
 #' See, e.g., [glmnet::predict.cv.glmnet()] or [zeroSum::predict.zeroSum()].
+#' @param perf_plot_spec PerfPlotSpec object. We only need the `benchmark` attribute 
+#' to (optionally) provide the benchmark. Default is NULL, i.e. provide no benchmark. 
 #' @return A list holding:
 #' * `"predicted"`: a list of named numeric vectors, the scores output by the model for 
 #'  each split, sorted in decreasing order.
@@ -74,12 +76,12 @@ prepare_and_predict <- function(
 
         # Check what predict method did
         if(!is.numeric(predicted)){
-            stop("predict method for class ", class(fit_obj), " does not return a ", 
+            stop("predict method for class ", class(fit), " does not return a ", 
             "numeric matrix or vector")
         }
         if(is.matrix(predicted)){
             if(ncol(predicted) > 1L){
-                stop("predict method for class ", class(fit_obj), " returns a matrix ",
+                stop("predict method for class ", class(fit), " returns a matrix ",
                 "with more than one column")
             }
             predicted <- predicted[, 1]

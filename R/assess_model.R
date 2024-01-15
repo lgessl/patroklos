@@ -18,8 +18,6 @@
 #' @param perf_plot_spec PerfPlotSpec object. The specifications for the plot. See
 #' the constructor `PerfPlotSpec()` for details. The `pivot_time_cutoff` attribute of
 #' `perf_plot_spec` will override the same in `model_spec` if both are given.
-#' @param plots logical. Whether to generate plots; if false, still return the data 
-#' underlying the plots (see return). Default is `TRUE`.
 #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
 #' @return A PerfPlotSpec object. `perf_plot_spec` with one additional attribute named
 #' `data` holding the data underlying the plots.
@@ -48,6 +46,9 @@ assess_model <- function(
     if(is.null(data_spec$cohort)){
         data_spec$cohort <- "test"
     }
+    directory <- dirname(perf_plot_spec$fname)
+    if(!dir.exists(directory))
+        dir.create(directory, recursive = TRUE)
 
     # Prepare, predict and calculate performance metric
     # (a) For model

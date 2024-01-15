@@ -6,6 +6,8 @@
 #' @param pheno_tbl A tibble holding the pheno data (see `DataSpec()`
 #' for details).
 #' @param data_spec A `DataSpec` object referring to `expr_tbl` and `pheno_tbl`.
+#' @param model_spec_list A list of `ModelSpec` objects. Ensure that every model
+#' gets the splits it needs.
 #' @return `pheno_tbl` with all required splits.
 #' @export
 ensure_splits <- function(

@@ -1,4 +1,4 @@
-test_that("assess_multiple_models() works", {
+test_that("assessment_center() works", {
 
   set.seed(4352)
 
@@ -17,38 +17,41 @@ test_that("assess_multiple_models() works", {
     n_na_in_pheno = n_na_in_pheno,
     to_csv = data_dir
   )
-  data_spec <- DataSpec(name = "Mock et al. (2023)", directory = data_dir)
+  data_spec <- DataSpec(
+    name = "Mock et al. (2023)", 
+    directory = data_dir, 
+    train_prop = .7
+  )
 
   model_dir <- file.path(base_dir, "models")
   dir.create(model_dir)
   model_spec_1 <- ModelSpec(
     name = "cox-zerosum",
+    directory = file.path(model_dir, "cox"),
     fitter = zeroSum::zeroSum,
-    optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold, lambda = lambda),
+    split_index = 1:2,
+    time_cutoffs = 2.,
+    optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold, 
+      lambda = lambda, zeroSum = FALSE),
     response_type = "survival_censored",
-    include_from_continuous_pheno = NULL,
-    include_from_discrete_pheno = NULL,
-    save_dir = file.path(model_dir, "cox"),
-    pfs_leq = 2.,
     fit_fname = "model1.rds"
   )
   model_spec_2 <- ModelSpec(
     name = "binomial-zerosum",
+    directory = file.path(model_dir, "logistic"),
     fitter = zeroSum::zeroSum,
-    optional_fitter_args = list(family = "binomial", alpha = 1, nFold = n_fold, lambda = lambda),
+    optional_fitter_args = list(family = "binomial", alpha = 1, nFold = n_fold, 
+      lambda = lambda, zeroSum = FALSE),
+    split_index = 1,
+    time_cutoffs = c(1.5, 2),
     response_type = "binary",
     include_from_continuous_pheno = "continuous_var",
     include_from_discrete_pheno = "discrete_var",
-    save_dir = file.path(model_dir, "binomial"),
-    pfs_leq = 2.,
     fit_fname = "model2.rds"
   )
   model_spec_list <- list(model_spec_1, model_spec_2)
 
-  data <- read(data_spec)
-  prepare_and_fit(
-    expr_mat = data[["expr_mat"]],
-    pheno_tbl = data[["pheno_tbl"]],
+  training_camp(
     data_spec = data_spec,
     model_spec_list = model_spec_list
   )
@@ -58,28 +61,17 @@ test_that("assess_multiple_models() works", {
     fname = file.path(res_dir, "perf_plot.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
-    show_plots = FALSE
+    show_plots = FALSE,
+    smooth_method = "loess",
+    pivot_time_cutoff = 2.
   )
 
   expect_no_error(
-    assess_multiple_models(
-        data_spec_list = list(data_spec),
+    assessment_center(
         model_spec_list = model_spec_list,
-        perf_plot_spec = perf_plot_spec,
-        model_tree_mirror = c("models", "results")
+        data_spec = data_spec,
+        perf_plot_spec = perf_plot_spec
     )
   )
   perf_plot_spec$fname <- file.path(model_dir, "all.pdf")
-  expect_no_error(
-    assess_train_and_test(
-        model_spec_list = list(model_spec_1),
-        data_spec_train = data_spec,
-        data_spec_test = data_spec,
-        perf_plot_spec_train = perf_plot_spec,
-        model_tree_mirror = c("models", "results"),
-        single_plots = FALSE,
-        comparison_plot = FALSE,
-        quiet = TRUE
-    )
-  )
 })
