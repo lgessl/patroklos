@@ -44,7 +44,8 @@ generate_mock_data <- function(
     n_samples = 10,
     n_genes = 5,
     n_na_in_pheno = 3,
-    to_csv = NULL
+    to_csv = NULL,
+    split_index = 1:3
 ){
     # expression matrix
     expr_mat <- matrix(
@@ -70,6 +71,13 @@ generate_mock_data <- function(
     pheno_tbl[["continuous_var"]] <- rnorm(n_samples, 10, 10)
     pheno_tbl[["ipi"]] <- sample(1:5, size = n_samples, replace = TRUE)
     pheno_tbl[["ipi"]][1] <- NA
+    for(i in split_index){
+        pheno_tbl[[paste0("split_", i)]] <- sample(
+            c("train", "test"),
+            size = n_samples,
+            replace = TRUE
+        )
+    }
     # insert NAs
     na_rows <- sample(1:n_samples, n_na_in_pheno, replace = TRUE)
     na_cols <- sample(2:ncol(pheno_tbl), n_na_in_pheno, replace = TRUE)
@@ -101,12 +109,15 @@ apb <- function(
     for(i in 1:3){
         l[[i]] <- list()
         for(j in split_index){
+            # Simulate fluctuating availability
+            n_samples <- n_samples + sample(c(-1, 1), size = 1)
             if(i == 1){
                 l[[i]][[j]] <- sample(c(0, 1), n_samples, replace = TRUE)
             } else {
                 l[[i]][[j]] <- rnorm(n_samples)
             }
             names(l[[i]][[j]]) <- paste0("sample_", 1:n_samples)
+            l[[i]][[j]][sample(1:n_samples, 1)] <- NA
         }
     }
     names(l) <- c("actual", "predicted", "benchmark")
