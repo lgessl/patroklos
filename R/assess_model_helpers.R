@@ -85,7 +85,7 @@ plot_2d_metric <- function(
     quiet = FALSE
 ){
     # Extract
-    data <- perf_plot_spec$data
+    data <- perf_plot_spec$data |> dplyr::distinct()
     x_metric <- perf_plot_spec$x_metric
     y_metric <- perf_plot_spec$y_metric
     # Constraint data to range
