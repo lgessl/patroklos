@@ -9,9 +9,10 @@ test_that("split_dataset works", {
   pheno_tbl <- generate_mock_data(
     n_samples = n_samples,
     n_genes = n_genes,
-    n_na_in_pheno = 0
+    n_na_in_pheno = 0,
+    split_index = NULL
   )[["pheno_tbl"]]
-  pheno_tbl[["split_2"]] <- "test"
+  pheno_tbl[["split_2"]] <- "test" # One split already there
   data_spec <- DataSpec(
     name = "mock",
     directory = dir,
@@ -20,18 +21,21 @@ test_that("split_dataset works", {
   )
   model_spec_1 <- ModelSpec(
     name = "dummy1",
+    directory = dir,
     fitter = zeroSum::zeroSum,
     split_index = 1:2,
     time_cutoffs = 2
   )
   model_spec_2 <- ModelSpec(
     name = "dummy2",
+    directory = dir,
     fitter = zeroSum::zeroSum,
     split_index = 1,
     time_cutoffs = 2
   )
 
   for(pivot_time_cutoff in list(NULL, 2)){
+    data_spec$pivot_time_cutoff <- pivot_time_cutoff
     new_pheno_tbl <- ensure_splits(
       pheno_tbl = pheno_tbl,
       data_spec = data_spec,

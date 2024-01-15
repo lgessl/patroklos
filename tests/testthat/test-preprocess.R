@@ -8,7 +8,7 @@ test_that("discretize_ipi_features() works", {
     "ecog_performance_status" = sample(0:4, n_samples, replace = TRUE),
     "n_extranodal_sites" = sample(0:6, n_samples, replace = TRUE)
   )
-  data_spec <- DataSpec(name = "test")
+  data_spec <- DataSpec(name = "test", directory = "mock", train_prop = 0.8)
 
   pheno_tbl <- discretize_ipi_features(pheno_tbl, data_spec)
   

@@ -3,6 +3,7 @@ test_that("read function works correctly", {
   data_spec <- DataSpec(
     name = "Schmitz et al. (2018)",
     directory = "data/schmitz",
+    train_prop = .7,
     expr_fname = "expr1.csv",
     pheno_fname = "pheno1.csv",
     patient_id_col = "patient_id",

@@ -25,8 +25,8 @@ ensure_splits <- function(
     new_splits <- setdiff(wanted_splits, present_splits)
 
     # Extract from data_spec
-    time_col <- data_spec$pfs_col
-    event_col <- data_spec$progression_col
+    time_col <- data_spec$time_to_event_col
+    event_col <- data_spec$event_col
     pivot_time_cutoff <- data_spec$pivot_time_cutoff
     train_prop <- data_spec$train_prop
 
