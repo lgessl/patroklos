@@ -31,7 +31,7 @@ prepare_and_predict <- function(
     data_spec,
     model_spec,
     lambda,
-    benchmark = NULL
+    perf_plot_spec = NULL
 ){
     if(length(model_spec$time_cutoffs) > 1L){
         stop("Multiple time cutoffs are not supported")
@@ -47,7 +47,14 @@ prepare_and_predict <- function(
     model_spec$response_type <- "binary" # always evaluate for descretized response
     predicted_list <- list()
     actual_list <- list()
-    benchmark_list <- list()
+
+    benchmark <- NULL
+    benchmark_list <- NULL
+    if(!is.null(perf_plot_spec$benchmark)){
+        benchmark <- pheno_tbl[[perf_plot_spec$benchmark]]
+        names(benchmark) <- pheno_tbl[[data_spec$patient_id_col]]
+        benchmark_list <- list()
+    }
 
     for(i in model_spec$split_index){
         split_name <- paste0(data_spec$split_col_prefix, i)
@@ -80,11 +87,11 @@ prepare_and_predict <- function(
         if(is.null(names(predicted))){
             names(predicted) <- rownames(x_y[["x"]])
         }
-        predicted <- sort(predicted, decreasing = TRUE)
-        actual <- actual[names(predicted)]
+        
         predicted_list[[i]] <- predicted
         actual_list[[i]] <- actual
-        benchmark_list[[i]] <- pheno_tbl[[benchmark]][names(predicted)]
+        if(!is.null(benchmark))
+            benchmark_list[[i]] <- benchmark[names(actual)]
     }
 
     res <- list(

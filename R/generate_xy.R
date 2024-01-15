@@ -9,7 +9,8 @@
 #' `model_spec`). See the the constructor `DataSpec()` for details.
 #' @param model_spec ModelSpec S3 object. Specifications on the model to prepare for. 
 #' See the the constructor `ModelSpec()` for details.
-#' @return A numeric matrix with patients as rows and variables as columns.
+#' @return A named numeric matrix with patients as rows and variables as columns. No 
+#' `NA`s in it.
 #' @export
 generate_predictor <- function(
     expr_mat,
@@ -23,7 +24,7 @@ generate_predictor <- function(
     include_from_discrete_pheno <- model_spec$include_from_discrete_pheno
 
     x <- expr_mat
-    patient_ids <- rownames(expr_mat) # store for later
+    patient_ids <- rownames(expr_mat) # Store for later
     bind_continuous <- NULL
     bind_discrete <- NULL
 
@@ -34,7 +35,7 @@ generate_predictor <- function(
         data_spec = data_spec
     )
 
-    # continuous pheno first
+    # Continuous pheno first
     if(!is.null(include_from_continuous_pheno)){
         check_tbl_columns_exist(pheno_tbl, "pheno_tbl", include_from_continuous_pheno)
         bind_continuous <- pheno_tbl[, include_from_continuous_pheno, drop = FALSE] |> 
@@ -44,7 +45,7 @@ generate_predictor <- function(
         colnames(bind_continuous) <- colnames(bind_continuous) |> 
             stringr::str_c(model_spec$append_to_includes)
     }
-    # discrete pheno second
+    # Discrete pheno second
     if(!is.null(include_from_discrete_pheno)){
         check_tbl_columns_exist(pheno_tbl, "pheno_tbl", include_from_discrete_pheno)
         bind_discrete <- pheno_tbl[, include_from_discrete_pheno, drop = FALSE] |>
@@ -53,9 +54,12 @@ generate_predictor <- function(
             stringr::str_c(model_spec$append_to_includes)
     }
 
-    # combine into numeric matrix, the predictor matrix    
+    # Combine into numeric matrix, the predictor matrix    
     x <- x |> cbind(bind_continuous, bind_discrete)
     rownames(x) <- patient_ids
+    # Remove rows with NA (they are never useful)
+    x <- x[stats::complete.cases(x), ]
+
 
     return(x)
 }
@@ -70,7 +74,8 @@ generate_predictor <- function(
 #' the constructor `DataSpec()` for details.
 #' @param model_spec ModelSpec S3 object. Specifications on the model to prepare for.
 #' See the constructor `ModelSpec()` for details.
-#' @return Response matrix: a numeric matrix with patients as rows and variables as columns.
+#' @return Named response matrix: a numeric matrix with patients as rows and variables 
+#' as columns.
 #' @details If `model_spec$response_type == "binary"`, the response matrix will have one 
 #' column filled with 
 #' * `1` if progress is observed at a time <= `cutoff_time`,
@@ -84,8 +89,8 @@ generate_response <- function(
 ){
 
     # Extract
-    pfs_col <- data_spec$pfs_col
-    progression_col <- data_spec$progression_col
+    time_to_event_col <- data_spec$time_to_event_col
+    event_col <- data_spec$event_col
     patient_id_col <- data_spec$patient_id_col
     cutoff_time <- model_spec$time_cutoffs
     response_type <- model_spec$response_type
@@ -95,15 +100,15 @@ generate_response <- function(
 
     if(response_type == "binary"){
         # flag patients consored before cutoff_time as NA
-        na_bool <- (pheno_tbl[[pfs_col]] <= cutoff_time) & (pheno_tbl[[progression_col]] == 0)
-        y <- pheno_tbl[[pfs_col]] <= cutoff_time
+        na_bool <- (pheno_tbl[[time_to_event_col]] <= cutoff_time) & (pheno_tbl[[event_col]] == 0)
+        y <- pheno_tbl[[time_to_event_col]] <= cutoff_time
         y <- as.numeric(y)
         dim(y) <- c(length(y), 1)
         rownames(y) <- pheno_tbl[[patient_id_col]]
         colnames(y) <- stringr::str_c("cutoff_time_", round(cutoff_time, 1))
         y[na_bool, ] <- NA
     } else if(response_type == "survival_censored"){
-        y <- pheno_tbl[, c(pfs_col, progression_col)] |> as.matrix()
+        y <- pheno_tbl[, c(time_to_event_col, event_col)] |> as.matrix()
         rownames(y) <- pheno_tbl[[patient_id_col]]
         colnames(y) <- model_spec$response_colnames
     }

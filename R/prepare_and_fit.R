@@ -58,10 +58,17 @@ prepare_and_fit <- function(
             model_spec = split_ms,
             data_spec = data_spec
         )
+        x_y <- intersect_by_names(x_y[[1]], x_y[[2]], rm_na = TRUE)
+        x <- x_y[[1]]
+        y <- x_y[[2]]
+        qc_prefit(
+            x = x,
+            y = y
+        )
         fit_obj <- do.call(
             model_spec$fitter, 
             args = c(
-                list("x" = x_y[["x"]], "y" = x_y[["y"]]), 
+                list("x" = x, "y" = y), 
                 model_spec$optional_fitter_args
             )
         )

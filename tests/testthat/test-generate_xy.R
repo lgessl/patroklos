@@ -113,8 +113,8 @@ test_that("generate_response() works", {
     directory = "some_dir",
     train_prop = 0.8,
     patient_id_col = "patient",
-    pfs_col = "pfs",
-    progression_col = "prog"
+    time_to_event_col = "pfs",
+    event_col = "prog"
   )
   model_spec <- ModelSpec(
     name = "zerosum",

@@ -1,4 +1,4 @@
-test_that("Prepare() works",{
+test_that("prepare() works",{
 
   set.seed(4352)
 
@@ -16,7 +16,8 @@ test_that("Prepare() works",{
   data_spec <- DataSpec(
     name = "Mock et al. (2023)",
     directory = "some_dir",
-    train_prop = 0.8
+    train_prop = 0.8,
+    cohort = "train"
   )
   model_spec <- ModelSpec(
     name = "zerosum",
@@ -52,7 +53,7 @@ test_that("Prepare() works",{
   colnames(pheno_tbl)[1] <- "patient"
   colnames(pheno_tbl)[3] <- "pfs"
   data_spec$patient_id_col <- "patient"
-  data_spec$pfs_col <- "pfs"
+  data_spec$time_to_event_col <- "pfs"
   model_spec$pivot_time_cutoff <- 2.3
   expect_no_error(
     result <- prepare(

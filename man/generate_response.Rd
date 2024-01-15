@@ -17,7 +17,8 @@ the constructor \code{DataSpec()} for details.}
 See the constructor \code{ModelSpec()} for details.}
 }
 \value{
-Response matrix: a numeric matrix with patients as rows and variables as columns.
+Named response matrix: a numeric matrix with patients as rows and variables
+as columns.
 }
 \description{
 Generate the numeric response matrix from the pheno data for a

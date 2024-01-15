@@ -10,7 +10,7 @@ prepare_and_predict(
   data_spec,
   model_spec,
   lambda,
-  benchmark = NULL
+  perf_plot_spec = NULL
 )
 }
 \arguments{

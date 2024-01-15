@@ -20,7 +20,8 @@ columns.}
 See the the constructor \code{ModelSpec()} for details.}
 }
 \value{
-A numeric matrix with patients as rows and variables as columns.
+A named numeric matrix with patients as rows and variables as columns. No
+\code{NA}s in it.
 }
 \description{
 Generate the numeric predictor matrix from the expression and

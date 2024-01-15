@@ -38,6 +38,11 @@ test_that("prepare_and_fit", {
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL
   )
+  perf_plot_spec <- PerfPlotSpec(
+    "dummy.pdf",
+    "rpp",
+    "prec"
+  )
 
   prepare_and_fit(
       expr_mat = expr_mat,
@@ -53,7 +58,7 @@ test_that("prepare_and_fit", {
       data_spec = data_spec,
       model_spec = model_spec,
       lambda = "lambda.min",
-      benchmark = "ipi"
+      perf_plot_spec = perf_plot_spec
   ))
 
   expect_true(is.list(res))

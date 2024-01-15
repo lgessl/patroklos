@@ -33,11 +33,12 @@ prepare <- function(
 
     # Subset data to cohort
     split_colname <- paste0(data_spec$split_col_prefix, model_spec$split_index)
+    patient_id_col <- data_spec$patient_id_col
     if(!split_colname %in% colnames(pheno_tbl))
         stop("Column ", split_colname, " not found in pheno table.")
     cohort_bool <- pheno_tbl[[split_colname]] == data_spec$cohort
-    expr_mat <- expr_mat[cohort_bool, ]
     pheno_tbl <- pheno_tbl[cohort_bool, ]
+    expr_mat <- expr_mat[pheno_tbl[[patient_id_col]], ]
 
     x <- generate_predictor(
         expr_mat = expr_mat,
@@ -56,13 +57,6 @@ prepare <- function(
         expr = x,
         pheno = y
     )
-    x_y <- intersect_by_names(x, y, rm_na = TRUE)
-    x <- x_y[[1]]
-    y <- x_y[[2]]
 
-    qc_prepare(
-        x = x,
-        y = y
-    )
     return(list("x" = x, "y" = y))
 }
