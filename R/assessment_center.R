@@ -37,19 +37,19 @@ assessment_center <- function(
     pheno_tbl <- data[["pheno_tbl"]]
     perf_plot_spec$model_tree_mirror <- model_tree_mirror
 
-    message("##### Assessing on ", data_spec$name, " #####")
+    message("\nASSESSING ON ", data_spec$name)
     for(cohort in c("train", "test")){
-        if(!quiet) message("On ", cohort, " cohort")
+        if(!quiet) message("# On ", cohort, " cohort")
         data_spec$cohort <- cohort
         for(model_spec in model_spec_list){
-            if(!quiet) message("\t", model_spec$name)
+            if(!quiet) message("## ", model_spec$name)
             for(time_cutoff in model_spec$time_cutoffs){
                 this_pps <- infer_pps(
                     perf_plot_spec = perf_plot_spec,
                     model_spec = model_spec,
                     data_spec = data_spec
                 )
-                if(!quiet) message("\t\tAt time cutoff ", time_cutoff)
+                if(!quiet) message("### At time cutoff ", time_cutoff)
                 ms_cutoff <- at_time_cutoff(model_spec, time_cutoff)
                 this_pps <- assess_model(
                     expr_mat = expr_mat,
@@ -57,19 +57,30 @@ assessment_center <- function(
                     data_spec = data_spec,
                     model_spec = ms_cutoff,
                     perf_plot_spec = this_pps,
-                    quiet = quiet
+                    quiet = quiet,
+                    msg_prefix = "#### "
                 )
                 perf_tbls[[ms_cutoff$name]] <- this_pps$data
             }
         }
+        perf_plot_spec$data <- dplyr::bind_rows(perf_tbls)
+        if(cohort == "test")
+            perf_plot_spec$fname <- mirror_directory(
+                filepath = perf_plot_spec$fname,
+                mirror = perf_plot_spec$model_tree_mirror
+            )
+        if(is.null(perf_plot_spec$title))
+            perf_plot_spec$title <- paste0(
+                data_spec$name, " ", data_spec$cohort, ", ", data_spec$time_to_event_col,
+                " < ", perf_plot_spec$pivot_time_cutoff)
+        if(comparison_plot){
+            plot_2d_metric(
+                perf_plot_spec = perf_plot_spec,
+                quiet = TRUE
+            )
+            if(!quiet)
+                message("# Saving comparative performance plot to ", perf_plot_spec$fname)
+        }
     }
 
-    perf_plot_spec$data <- dplyr::bind_rows(perf_tbls)
-    if(comparison_plot){
-        plot_2d_metric(
-            perf_plot_spec = perf_plot_spec,
-            quiet = TRUE
-        )
-        message("Saving comparative performance plot to ", perf_plot_spec$fname)
-    }
 }
