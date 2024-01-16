@@ -10,25 +10,28 @@
 #' constructor `DataSpec()` for details.
 #' @param model_spec ModelSpec S3 object. Specifications on the model. See
 #' the the constructor `ModelSpec()` for details.
+#' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
+#' @param msg_prefix string. Prefix for messages. Default is `""`.
 #' @return A list of fit objects as returned by the `fit()` method of `model_spec`. 
 #' @export
 prepare_and_fit <- function(
     expr_mat,
     pheno_tbl,
     data_spec,
-    model_spec
+    model_spec,
+    quiet = FALSE,
+    msg_prefix = ""
 ){
     if(!inherits(model_spec, "ModelSpec"))
         stop("model_spec_list must be a list of ModelSpec objects")
     if(!inherits(data_spec, "DataSpec"))
         stop("data_spec must be a DataSpec object")
 
-    message(model_spec$name, " on ", data_spec$name, ": begin fitting")
     # Extract
     directory <- model_spec$directory
     # Ensure model directory exists
     if(!dir.exists(directory)){
-        message("\tCreating ", directory)
+        message(msg_prefix, "Creating ", directory)
         dir.create(directory, recursive = TRUE)
     }
     if(is.null(data_spec$cohort))
@@ -37,7 +40,7 @@ prepare_and_fit <- function(
     fits <- list()
     stored_fits_fname <- file.path(model_spec$directory, model_spec$fit_fname)
     if(file.exists(stored_fits_fname)){
-        message("Found stored fits")
+        if(!quiet) message(msg_prefix, "Found stored fits")
         fits <- readRDS(stored_fits_fname)
     }
     fits[["model_spec"]] <- model_spec
@@ -46,7 +49,7 @@ prepare_and_fit <- function(
     for(i in model_spec$split_index){
         split_name <- paste0(data_spec$split_col_prefix, i)
         if(split_name %in% names(fits)){
-            message("\tFound a fit for split ", i, ". Skipping")
+            message(msg_prefix, "Found a fit for split ", i, ". Skipping")
             next
         }
         split_ms <- model_spec
@@ -72,7 +75,7 @@ prepare_and_fit <- function(
                 model_spec$optional_fitter_args
             )
         )
-        message("\tFitted split ", i, " of ", length(model_spec$split_index))
+        message(msg_prefix, "Fitted split ", i, " of ", length(model_spec$split_index))
     }
 
     saveRDS(fits, stored_fits_fname)

@@ -23,13 +23,15 @@
 #' `data` holding the data underlying the plots.
 #' @details The PerfPlotSpec class is tailored for this function, so see its constructor 
 #' [`PerfPlotSpec()`] for details.
+#' @param msg_prefix string. Prefix for messages. Default is `""`.
 assess_model <- function(
     expr_mat,
     pheno_tbl,
     data_spec,
     model_spec,
     perf_plot_spec,
-    quiet = FALSE
+    quiet = FALSE,
+    msg_prefix = ""
 ){
     if(is.null(perf_plot_spec$pivot_time_cutoff)){
         perf_plot_spec$pivot_time_cutoff <- data_spec$pivot_time_cutoff
@@ -71,7 +73,8 @@ assess_model <- function(
     # Plot
     plot_2d_metric(
         perf_plot_spec = perf_plot_spec,
-        quiet = quiet
+        quiet = quiet,
+        msg_prefix = msg_prefix
     )
 
     if(perf_plot_spec$scores_plot){
@@ -84,7 +87,8 @@ assess_model <- function(
         plot_risk_scores(
             predicted = prep[["predicted"]],
             actual = prep[["actual"]],
-            perf_plot_spec = perf_plot_spec
+            perf_plot_spec = perf_plot_spec,
+            msg_prefix = msg_prefix
         )
     }
 
