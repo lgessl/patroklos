@@ -28,20 +28,30 @@ check_consistent_patient_ids <- function(
     patient_ids_pheno <- NULL
     # case 1: during preprocessing
     if(stage == "preprocessing"){
+        if(!is.data.frame(expr)) stop("`expr` must be a tibble")
+        if(!is.data.frame(pheno)) stop("`pheno` must be a tibble")
         patient_ids_expr <- colnames(expr)[-1]
         patient_ids_pheno <- pheno[[patient_id_col]]
     }
     # case 2: right before generate_predictor
     if(stage == "before_generate_predictor"){
+        if(!is.matrix(expr)) stop("`expr` must be a matrix")
+        if(!is.data.frame(pheno)) stop("`pheno` must be a tibble")
         patient_ids_expr <- rownames(expr)
         patient_ids_pheno <- pheno[[patient_id_col]]
     }
     # case 3: after generate_predictor and generate_response
     if(stage == "after_generate_xy"){
+        if(!is.matrix(expr)) stop("`expr` must be a matrix")
+        if(!is.matrix(pheno)) stop("`pheno` must be a matrix")
         patient_ids_expr <- rownames(expr)
         patient_ids_pheno <- rownames(pheno)
     }
 
+    if(is.null(patient_ids_expr))
+        stop("Expression data does not have sample ids")
+    if(is.null(patient_ids_pheno))
+        stop("Pheno data does not have sample ids")
     if(!identical(patient_ids_expr, patient_ids_pheno)){
         stop("Patient ids in expression and pheno data are not identical.")
     }
