@@ -19,6 +19,7 @@
 #' the constructor `PerfPlotSpec()` for details. The `pivot_time_cutoff` attribute of
 #' `perf_plot_spec` will override the same in `model_spec` if both are given.
 #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
+#' @param msg_prefix string. Prefix for messages. Default is `""`.
 #' @return A PerfPlotSpec object. `perf_plot_spec` with one additional attribute named
 #' `data` holding the data underlying the plots.
 #' @details The PerfPlotSpec class is tailored for this function, so see its constructor 

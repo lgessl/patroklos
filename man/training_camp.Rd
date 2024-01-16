@@ -4,12 +4,14 @@
 \alias{training_camp}
 \title{Set up a training camp to fit models}
 \usage{
-training_camp(data_spec, model_spec_list)
+training_camp(data_spec, model_spec_list, quiet = FALSE)
 }
 \arguments{
 \item{data_spec}{DataSpec object. The data set to fit on.}
 
 \item{model_spec_list}{list of ModelSpec objects. The models to fit.}
+
+\item{quiet}{logical. Whether to suppress messages. Default is \code{FALSE}.}
 }
 \description{
 Given one data set and a list of models, fit all models for all

@@ -4,7 +4,14 @@
 \alias{prepare_and_fit}
 \title{Prepare data, fit and store models across splits}
 \usage{
-prepare_and_fit(expr_mat, pheno_tbl, data_spec, model_spec)
+prepare_and_fit(
+  expr_mat,
+  pheno_tbl,
+  data_spec,
+  model_spec,
+  quiet = FALSE,
+  msg_prefix = ""
+)
 }
 \arguments{
 \item{expr_mat}{numeric matrix. The expression matrix with genes in rows and samples
@@ -17,6 +24,10 @@ constructor \code{DataSpec()} for details.}
 
 \item{model_spec}{ModelSpec S3 object. Specifications on the model. See
 the the constructor \code{ModelSpec()} for details.}
+
+\item{quiet}{logical. Whether to suppress messages. Default is \code{FALSE}.}
+
+\item{msg_prefix}{string. Prefix for messages. Default is \code{""}.}
 }
 \value{
 A list of fit objects as returned by the \code{fit()} method of \code{model_spec}.

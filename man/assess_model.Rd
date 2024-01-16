@@ -11,7 +11,8 @@ assess_model(
   data_spec,
   model_spec,
   perf_plot_spec,
-  quiet = FALSE
+  quiet = FALSE,
+  msg_prefix = ""
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ the constructor \code{PerfPlotSpec()} for details. The \code{pivot_time_cutoff} 
 \code{perf_plot_spec} will override the same in \code{model_spec} if both are given.}
 
 \item{quiet}{logical. Whether to suppress messages. Default is \code{FALSE}.}
+
+\item{msg_prefix}{string. Prefix for messages. Default is \code{""}.}
 }
 \value{
 A PerfPlotSpec object. \code{perf_plot_spec} with one additional attribute named
