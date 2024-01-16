@@ -133,18 +133,40 @@ test_that("generate_response() works", {
   )
   y_expected <- matrix(c(NA, 0, 0, 0), ncol = 1)
   rownames(y_expected) <- pheno_tbl[["patient"]]
-  colnames(y_expected) <- "cutoff_time_1.9"
+  colnames(y_expected) <- "time_cutoff_1.9"
   expect_equal(y, y_expected)
   expect_type(y, "double")
+
+  model_spec$time_cutoffs <- 3.5
+  y_expected[, 1] <- c(NA, 1, NA, 0)
+  colnames(y_expected) <- "time_cutoff_3.5"
+  y <- generate_response(
+    pheno_tbl = pheno_tbl,
+    data_spec = data_spec,
+    model_spec = model_spec
+  )
+  expect_equal(y, y_expected)
   
   # Test case 2: survival_censored response
   model_spec$response_type <- "survival_censored"
+  model_spec$time_cutoffs <- Inf
   y <- generate_response(
     pheno_tbl = pheno_tbl, 
     data_spec = data_spec,
     model_spec = model_spec
   )
-  expect_equal(rownames(y), as.character(pheno_tbl[["patient"]]))
-  expect_equal(colnames(y), model_spec$response_colnames)
-  expect_type(y, "double")
+  y_expected <- pheno_tbl[, c("pfs", "prog")] |> as.matrix()
+  rownames(y_expected) <- pheno_tbl[["patient"]]
+  colnames(y_expected) <- model_spec$response_colnames
+  expect_equal(y, y_expected)
+
+  model_spec$time_cutoffs <- 2.7
+  y <- generate_response(
+    pheno_tbl = pheno_tbl, 
+    data_spec = data_spec,
+    model_spec = model_spec
+  )
+  y_expected[c(3, 4), 1] <- model_spec$time_cutoffs
+  y_expected[c(3, 4), 2] <- 0
+  expect_equal(y, y_expected)
 })
