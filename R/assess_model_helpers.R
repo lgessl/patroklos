@@ -29,6 +29,9 @@ calculate_2d_metric <- function(
                 actual[[i]], 
                 rm_na = TRUE
             )
+            if(length(table(estimate_actual[[2]])) != 2){
+                stop("Actual values in split ", i, " are not binary")
+            }
             # Calculate performance measures
             rocr_prediction <- ROCR::prediction(
                 estimate_actual[[1]], 
@@ -82,7 +85,8 @@ calculate_2d_metric <- function(
 #' @importFrom rlang .data
 plot_2d_metric <- function(
     perf_plot_spec,
-    quiet = FALSE
+    quiet = FALSE,
+    msg_prefix = ""
 ){
     # Extract
     data <- perf_plot_spec$data |> dplyr::distinct()
@@ -152,7 +156,7 @@ plot_2d_metric <- function(
     }
 
     if(!quiet)
-        message("Saving 2D metric plot to ", perf_plot_spec$fname)
+        message(msg_prefix, "Saving 2D metric plot to ", perf_plot_spec$fname)
 
     ggplot2::ggsave(
         perf_plot_spec$fname, 
@@ -166,7 +170,7 @@ plot_2d_metric <- function(
     if(perf_plot_spec$fellow_csv){
         csv_fname <- stringr::str_replace(perf_plot_spec$fname, "\\..+", ".csv")
         if(!quiet)
-            message("Saving 2D metric table to ", csv_fname)
+            message(msg_prefix, "Saving 2D metric table to ", csv_fname)
         readr::write_csv(perf_plot_spec$data, csv_fname)
     }
 
@@ -180,7 +184,8 @@ plot_risk_scores <- function(
     actual,
     perf_plot_spec,
     ncol = 2,
-    quiet = FALSE
+    quiet = FALSE,
+    msg_prefix = ""
 ){
     # Get rid of NAs
     for(i in seq_along(predicted)){
@@ -229,7 +234,7 @@ plot_risk_scores <- function(
     }
 
     if(!quiet)
-        message("Saving scores plot to ", perf_plot_spec$fname)
+        message(msg_prefix, "Saving scores plot to ", perf_plot_spec$fname)
     ggplot2::ggsave(
         perf_plot_spec$fname, 
         plt, 
@@ -241,7 +246,7 @@ plot_risk_scores <- function(
     if(perf_plot_spec$fellow_csv){
         csv_fname <- stringr::str_replace(perf_plot_spec$fname, "\\..+", ".csv")
         if(!quiet)
-            message("Saving scores table to ", csv_fname)
+            message(msg_prefix, "Saving scores table to ", csv_fname)
         readr::write_csv(tbl, csv_fname)
     }
 
