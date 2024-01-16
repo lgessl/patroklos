@@ -42,7 +42,7 @@ generate_mock_files <- function(
 
 generate_mock_data <- function(
     n_samples = 10,
-    n_genes = 5,
+    n_genes = 2,
     n_na_in_pheno = 3,
     to_csv = NULL,
     split_index = 1:3
@@ -80,7 +80,7 @@ generate_mock_data <- function(
     }
     # insert NAs
     na_rows <- sample(1:n_samples, n_na_in_pheno, replace = TRUE)
-    na_cols <- sample(2:6, n_na_in_pheno, replace = TRUE)
+    na_cols <- sample(4:6, n_na_in_pheno, replace = TRUE)
     if(n_na_in_pheno > 0){
         for(i in 1:n_na_in_pheno){
             pheno_tbl[na_rows[i], na_cols[i]] <- NA
