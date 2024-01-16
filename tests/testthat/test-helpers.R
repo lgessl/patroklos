@@ -79,3 +79,21 @@ test_that("mirror_directory() works", {
     "exactly one element"
   )
 })
+
+test_that("create_data_partition() works", {
+
+  n <- 50
+  n_levels <- 3
+
+  outcome <- sample(1:n_levels, n, replace = TRUE)
+  outcome <- as.factor(outcome)
+
+  for(p in c(.2, .8)){
+    selected <- create_data_partition(outcome, p = p)
+    expect_true(is.numeric(selected))
+    expect_true(all(
+      length(selected) >= p*n - n_levels/2,
+      length(selected) <= p*n + n_levels/2
+    ))
+  }
+})
