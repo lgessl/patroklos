@@ -63,32 +63,3 @@ ensure_patients_match <- function(
     )
     return(res)
 }
-
-
-ensure_available <- function(
-    x,
-    y
-){
-    if(!is.matrix(x)){
-        stop("x must be a matrix.")
-    }
-    if(!is.matrix(y)){
-        stop("y must be a matrix.")
-    }
-    check_consistent_patient_ids(
-        stage = "after_generate_xy",
-        expr = x,
-        pheno = y
-    )
-    x_fully_available <- apply(x, 1, function(row) all(!is.na(row)))
-    y_fully_available <- apply(y, 1, function(row) all(!is.na(row)))
-    x_and_y_fully_available <- x_fully_available & y_fully_available
-
-    if(sum(x_and_y_fully_available) == 0){
-        stop("There will be no samples left after ensuring availability.")
-    }
-
-    x <- x[x_and_y_fully_available, , drop = FALSE]
-    y <- y[x_and_y_fully_available, , drop = FALSE]
-    return(list("x" = x, "y" = y))
-}

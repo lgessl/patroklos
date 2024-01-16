@@ -38,33 +38,3 @@ test_that("ensure_patients_match function works correctly", {
   # wrong input
   expect_error(ensure_patients_match(expr_tbl, pheno_tbl, "wrong_patient_id_col", gene_id_col))
 })
-
-
-test_that("ensure_available function works correctly", {
-
-  x <- matrix(1:9, nrow = 3)
-  rownames(x) <- c("patient1", "patient2", "patient3")
-  colnames(x) <- c("gene1", "gene2", "gene3")
-  y <- matrix(1:6, nrow = 3)
-  rownames(y) <- rownames(x)
-  colnames(y) <- c("pfs_years", "progression")
-
-  result <- ensure_available(x, y)
-  expect_equal(result[["x"]], x)
-  expect_equal(result[["y"]], y)
-
-  # missing values
-  x[1, 1] <- NA
-  y <- y[, 2, drop = FALSE]
-  y[3, 1] <- NA
-  result <- ensure_available(x, y)
-  expect_equal(rownames(result[["x"]]), rownames(x)[2])
-
-  # no data left after ensuring availability
-  x[2, 2] <- NA
-  expect_error(ensure_available(x, y))
-
-  # sample ids not consistent
-  rownames(x)[2] <- "nbc"
-  expect_error(ensure_available(x, y))
-})
