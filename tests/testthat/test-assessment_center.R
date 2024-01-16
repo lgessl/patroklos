@@ -2,8 +2,8 @@ test_that("assessment_center() works", {
 
   set.seed(4352)
 
-  n_samples <- 25
-  n_genes <- 5
+  n_samples <- 50
+  n_genes <- 2
   n_na_in_pheno <- 5
   n_fold <- 1
   lambda <- 1
@@ -11,7 +11,7 @@ test_that("assessment_center() works", {
   base_dir <- withr::local_tempdir("data")
   data_dir <- file.path(base_dir, "data/mock")
   dir.create(data_dir, recursive = TRUE)
-  generate_mock_data(
+  data <- generate_mock_data(
     n_samples = n_samples,
     n_genes = n_genes,
     n_na_in_pheno = n_na_in_pheno,
@@ -58,7 +58,7 @@ test_that("assessment_center() works", {
 
   res_dir <- file.path(base_dir, "results")
   perf_plot_spec <- PerfPlotSpec(
-    fname = file.path(res_dir, "perf_plot.pdf"),
+    fname = file.path(model_dir, "perf_plot.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
     show_plots = FALSE,
