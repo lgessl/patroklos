@@ -37,8 +37,10 @@ prepare <- function(
     if(!split_colname %in% colnames(pheno_tbl))
         stop("Column ", split_colname, " not found in pheno table.")
     cohort_bool <- pheno_tbl[[split_colname]] == data_spec$cohort
+    if(all(cohort_bool) || all(!cohort_bool))
+        stop("All patients are in the same cohort")
     pheno_tbl <- pheno_tbl[cohort_bool, ]
-    expr_mat <- expr_mat[pheno_tbl[[patient_id_col]], ]
+    expr_mat <- expr_mat[pheno_tbl[[patient_id_col]], , drop = FALSE]
 
     x <- generate_predictor(
         expr_mat = expr_mat,
@@ -52,5 +54,6 @@ prepare <- function(
         data_spec = data_spec,
         model_spec = model_spec
     )
+    
     return(list("x" = x, "y" = y))
 }
