@@ -58,8 +58,10 @@ generate_predictor <- function(
     x <- x |> cbind(bind_continuous, bind_discrete)
     rownames(x) <- patient_ids
     # Remove rows with NA (they are never useful)
-    x <- x[stats::complete.cases(x), ]
+    x <- x[stats::complete.cases(x), , drop = FALSE]
 
+    if(nrow(x) == 0)
+        stop("No samples left in predictor matrix after subsetting to cohort and removing NAs")
 
     return(x)
 }
