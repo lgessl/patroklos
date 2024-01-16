@@ -9,7 +9,6 @@
 #' @param model_spec_list A list of `ModelSpec` objects. Ensure that every model
 #' gets the splits it needs.
 #' @return `pheno_tbl` with all required splits.
-#' @export
 ensure_splits <- function(
     pheno_tbl,
     data_spec,

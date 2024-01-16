@@ -7,7 +7,6 @@
 #' @details Intended to be used after `generate_predictor()` and 
 #' `generate_response()`. `prepare()` and, in particular, `prepare_and_fit()`
 #' call this function.
-#' @export
 qc_prefit <- function(
     x,
     y

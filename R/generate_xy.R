@@ -11,7 +11,6 @@
 #' See the the constructor `ModelSpec()` for details.
 #' @return A named numeric matrix with patients as rows and variables as columns. No 
 #' `NA`s in it.
-#' @export
 generate_predictor <- function(
     expr_mat,
     pheno_tbl,
@@ -83,7 +82,6 @@ generate_predictor <- function(
 #' * `1` if progress is observed at a time <= `time_cutoff`,
 #' * `0` if progress or censoring is observed at a time > `time_cutoff`,
 #' * `NA` if censoring without progression is observed at a time <= `time_cutoff`.
-#' @export
 generate_response <- function(
     pheno_tbl,
     data_spec,

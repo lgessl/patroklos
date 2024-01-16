@@ -14,7 +14,6 @@
 #' @return A list with two numeric matrices, `x` and `y`. `x` is the predictor matrix, 
 #' `y` is the response matrix, both ready to for model fitting or predicting. Row names 
 #' match.
-#' @export
 prepare <- function(
     expr_mat,
     pheno_tbl,
