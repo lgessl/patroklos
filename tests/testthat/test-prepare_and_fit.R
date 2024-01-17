@@ -7,11 +7,13 @@ test_that("prepare_and_fit() works", {
   n_na_in_pheno <- 0
   n_fold <- 3
   lambda <- 1
+  split_index <- 1:20
 
   data <- generate_mock_data(
     n_samples = n_samples,
     n_genes = n_genes,
-    n_na_in_pheno = n_na_in_pheno
+    n_na_in_pheno = n_na_in_pheno,
+    split_index = split_index
   )
   expr_mat <- data[["expr_mat"]]
   pheno_tbl <- data[["pheno_tbl"]]
@@ -25,7 +27,6 @@ test_that("prepare_and_fit() works", {
   )
   dir <- withr::local_tempdir()
 
-  # Case 1: Fit all models specified
   model_spec <- ModelSpec(
     name = "cox-vanilla",
     directory = file.path(dir, "model1"),
@@ -50,7 +51,7 @@ test_that("prepare_and_fit() works", {
   )
   expect_equal(length(fits), 2)
 
-  model_spec$split_index <- 1:2
+  model_spec$split_index <- split_index
   expect_message(
     fits <- prepare_and_fit(
       expr_mat = expr_mat,
@@ -60,5 +61,5 @@ test_that("prepare_and_fit() works", {
     ),
     regexp = "Found stored"
   )
-  expect_equal(length(fits), 3)
+  expect_equal(length(fits), 21)
 })

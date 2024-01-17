@@ -13,6 +13,7 @@
 #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
 #' @param msg_prefix string. Prefix for messages. Default is `""`.
 #' @return A list of fit objects as returned by the `fit()` method of `model_spec`. 
+#' @importFrom graphics plot
 #' @export
 prepare_and_fit <- function(
     expr_mat,
@@ -82,7 +83,7 @@ prepare_and_fit <- function(
 
     # Plots about fitting as a grid
     grDevices::pdf(file = file.path(directory, model_spec$plot_fname))
-    graphics::par(mfrow = c(ceiling((length(fits)-1)/model_spec$plot_ncols), model_spec$plot_ncols))
+    graphics::par(mfrow = c(1, model_spec$plot_ncol))
     for(i in model_spec$split_index){
         split_name <- paste0(data_spec$split_col_prefix, i)
         fit <- fits[[split_name]]
