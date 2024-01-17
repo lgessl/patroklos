@@ -180,9 +180,10 @@ infer_pps <- function(
     # Prepare for assess_model()
     this_pps <- perf_plot_spec
     this_pps$fname <- file.path(
-        dirname(model_spec$directory),
+        model_spec$directory,
         paste0(
-            perf_plot_spec$x_metric, "_vs_", perf_plot_spec$y_metric, ".pdf"
+            perf_plot_spec$x_metric, "_vs_", perf_plot_spec$y_metric,
+            stringr::str_extract(perf_plot_spec$fname, "\\..+$")
         )
     )
     if(data_spec$cohort == "test")
