@@ -80,7 +80,7 @@ assess_model <- function(
 
     if(perf_plot_spec$scores_plot){
         pps_scores <- perf_plot_spec
-        pps_scores$title <- paste0(model_spec$name, " on ", perf_plot_spec$title)
+        pps_scores$title <- paste0(model_spec$name, " | ", perf_plot_spec$title)
         pps_scores$fname <- file.path(
             dirname(perf_plot_spec$fname),
             "scores.pdf"
@@ -88,7 +88,7 @@ assess_model <- function(
         plot_risk_scores(
             predicted = prep[["predicted"]],
             actual = prep[["actual"]],
-            perf_plot_spec = perf_plot_spec,
+            perf_plot_spec = pps_scores,
             msg_prefix = msg_prefix
         )
     }
