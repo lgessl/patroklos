@@ -44,13 +44,13 @@ assessment_center <- function(
         for(model_spec in model_spec_list){
             if(!quiet) message("## ", model_spec$name)
             for(time_cutoff in model_spec$time_cutoffs){
-                this_pps <- infer_pps(
-                    perf_plot_spec = perf_plot_spec,
-                    model_spec = model_spec,
-                    data_spec = data_spec
-                )
                 if(!quiet) message("### At time cutoff ", time_cutoff)
                 ms_cutoff <- at_time_cutoff(model_spec, time_cutoff)
+                this_pps <- infer_pps(
+                    perf_plot_spec = perf_plot_spec,
+                    model_spec = ms_cutoff,
+                    data_spec = data_spec
+                )
                 this_pps <- assess_model(
                     expr_mat = expr_mat,
                     pheno_tbl = pheno_tbl,
