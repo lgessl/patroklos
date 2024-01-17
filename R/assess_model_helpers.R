@@ -244,7 +244,7 @@ plot_risk_scores <- function(
     )
 
     if(perf_plot_spec$fellow_csv){
-        csv_fname <- stringr::str_replace(perf_plot_spec$fname, "\\..+", ".csv")
+        csv_fname <- stringr::str_replace(perf_plot_spec$fname, "\\..+$", ".csv")
         if(!quiet)
             message(msg_prefix, "Saving scores table to ", csv_fname)
         readr::write_csv(tbl, csv_fname)

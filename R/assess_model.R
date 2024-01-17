@@ -83,7 +83,7 @@ assess_model <- function(
         pps_scores$title <- paste0(model_spec$name, " | ", perf_plot_spec$title)
         pps_scores$fname <- file.path(
             dirname(perf_plot_spec$fname),
-            "scores.pdf"
+            paste0("scores", stringr::str_extract(perf_plot_spec$fname, "\\..+$"))
         )
         plot_risk_scores(
             predicted = prep[["predicted"]],
