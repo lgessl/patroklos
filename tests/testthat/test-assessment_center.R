@@ -63,7 +63,9 @@ test_that("assessment_center() works", {
     y_metric = "prec",
     show_plots = FALSE,
     smooth_method = "loess",
-    pivot_time_cutoff = 2.
+    pivot_time_cutoff = 2.,
+    fellow_csv = TRUE,
+    scores_plot = TRUE
   )
 
   expect_no_error(
@@ -73,5 +75,8 @@ test_that("assessment_center() works", {
         perf_plot_spec = perf_plot_spec
     )
   )
-  perf_plot_spec$fname <- file.path(model_dir, "all.pdf")
+  expect_true(file.exists(perf_plot_spec$fname))
+  expect_true(file.exists(file.path(model_dir, "logistic/1-5/rpp_vs_prec.pdf")))
+  expect_true(file.exists(file.path(res_dir, "logistic/2/scores.pdf")))
+  expect_true(file.exists(file.path(res_dir, "cox/2/rpp_vs_prec.csv")))
 })
