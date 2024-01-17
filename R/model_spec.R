@@ -165,13 +165,15 @@ at_time_cutoff <- function(
     model_spec,
     time_cutoff
 ){
+    if(!time_cutoff %in% model_spec$time_cutoffs){
+        stop("time_cutoff must be one of model_spec$time_cutoffs")
+    }
     ms_cutoff <- model_spec # Rely on copy-on-modify
-    cutoff_time <- time_cutoff
-    ms_cutoff$name <- paste0(model_spec$name, "@", cutoff_time)
-    ms_cutoff$time_cutoffs <- cutoff_time
+    ms_cutoff$name <- paste0(model_spec$name, "@", time_cutoff)
+    ms_cutoff$time_cutoffs <- time_cutoff
     ms_cutoff$directory <- file.path(
         model_spec$directory, 
-        stringr::str_replace(as.character(cutoff_time), "\\.", "-")
+        stringr::str_replace(as.character(time_cutoff), "\\.", "-")
     )
     return(ms_cutoff)
 }
