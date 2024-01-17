@@ -40,7 +40,7 @@ ensure_splits <- function(
             risk[pheno_tbl[[time_col]] >= pivot_time_cutoff] <- "low"
             risk <- as.factor(risk)
             train_index <- create_data_partition(risk, p = train_prop)
-        } else{
+        } else {
             n_train <- round(nrow(pheno_tbl) * train_prop)
             train_index <- sample(1:nrow(pheno_tbl), n_train, replace = FALSE)
         }
