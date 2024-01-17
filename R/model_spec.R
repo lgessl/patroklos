@@ -15,6 +15,7 @@ new_ModelSpec <- function(
     create_directory,
     plot_fname,
     plot_ncols,
+    plot_title_line,
     fit_fname
 ){
     stopifnot(is.character(name))
@@ -31,6 +32,7 @@ new_ModelSpec <- function(
     stopifnot(is.numeric(time_cutoffs) || is.null(time_cutoffs))
     stopifnot(is.character(plot_fname))
     stopifnot(is.numeric(plot_ncols))
+    stopifnot(is.numeric(plot_title_line) || is.null(plot_title_line))
     stopifnot(is.character(fit_fname))
 
     model_spec_list <- list(
@@ -49,6 +51,7 @@ new_ModelSpec <- function(
         "create_directory" = create_directory,
         "plot_fname" = plot_fname,
         "plot_ncols" = plot_ncols,
+        "plot_title_line" = plot_title_line,
         "fit_fname" = fit_fname
     )
     return(structure(model_spec_list, class = "ModelSpec"))
@@ -101,6 +104,9 @@ new_ModelSpec <- function(
 #' @param plot_fname string. Store the plot resulting from `plot(fit_obj)` in `directory`
 #' under this name. Default is `"training_error.pdf"`.
 #' @param plot_ncols integer. The number of columns in the plot. Default is `2`.
+#' @param plot_title_line numeric or NULL. Pass this as the `line` argument to [`graphics::title()`] 
+#' after calling `plot(fit_obj)`. This is the distance (in inches) between the title text and 
+#' the upper limit of the figure. Default is `2.5`.
 #' @param fit_fname string. The name of the model-fits file inside `directory`.
 #' Default is `"fit_obj.rds"`.
 #' @return A ModelSpec S3 object.
@@ -127,6 +133,7 @@ ModelSpec <- function(
     create_directory = TRUE,
     plot_fname = "training_error.pdf",
     plot_ncols = 2,
+    plot_title_line = 2.5,
     fit_fname = "fit_obj.rds"
 ){
     response_type <- match.arg(response_type)
@@ -147,6 +154,7 @@ ModelSpec <- function(
         create_directory = create_directory,
         plot_fname = plot_fname,
         plot_ncols = plot_ncols,
+        plot_title_line = plot_title_line,
         fit_fname = fit_fname
     )
     return(model_spec)

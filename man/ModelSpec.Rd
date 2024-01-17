@@ -19,6 +19,7 @@ ModelSpec(
   create_directory = TRUE,
   plot_fname = "training_error.pdf",
   plot_ncols = 2,
+  plot_title_line = 2.5,
   fit_fname = "fit_obj.rds"
 )
 }
@@ -83,6 +84,10 @@ Default is \code{TRUE}.}
 under this name. Default is \code{"training_error.pdf"}.}
 
 \item{plot_ncols}{integer. The number of columns in the plot. Default is \code{2}.}
+
+\item{plot_title_line}{numeric or NULL. Pass this as the \code{line} argument to \code{\link[graphics:title]{graphics::title()}}
+after calling \code{plot(fit_obj)}. This is the distance (in inches) between the title text and
+the upper limit of the figure. Default is \code{2.5}.}
 
 \item{fit_fname}{string. The name of the model-fits file inside \code{directory}.
 Default is \code{"fit_obj.rds"}.}

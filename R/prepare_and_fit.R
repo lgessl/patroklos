@@ -88,7 +88,7 @@ prepare_and_fit <- function(
         split_name <- paste0(data_spec$split_col_prefix, i)
         fit <- fits[[split_name]]
         plot(fit)
-        graphics::title(main = paste0("Split ", i))
+        graphics::title(main = paste0("Split ", i), line = model_spec$plot_title_line)
     }
     grDevices::dev.off()
 
