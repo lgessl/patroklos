@@ -41,13 +41,14 @@ assessment_center <- function(
     for(cohort in c("train", "test")){
         if(!quiet) message("# On ", cohort, " cohort")
         data_spec$cohort <- cohort
+        cohort_pps <- perf_plot_spec
         for(model_spec in model_spec_list){
             if(!quiet) message("## ", model_spec$name)
             for(time_cutoff in model_spec$time_cutoffs){
                 if(!quiet) message("### At time cutoff ", time_cutoff)
                 ms_cutoff <- at_time_cutoff(model_spec, time_cutoff)
                 this_pps <- infer_pps(
-                    perf_plot_spec = perf_plot_spec,
+                    perf_plot_spec = cohort_pps,
                     model_spec = ms_cutoff,
                     data_spec = data_spec
                 )
@@ -63,24 +64,26 @@ assessment_center <- function(
                 perf_tbls[[ms_cutoff$name]] <- this_pps$data
             }
         }
-        perf_plot_spec$data <- dplyr::bind_rows(perf_tbls)
+        cohort_pps$data <- dplyr::bind_rows(perf_tbls)
         if(cohort == "test")
-            perf_plot_spec$fname <- mirror_directory(
-                filepath = perf_plot_spec$fname,
-                mirror = perf_plot_spec$model_tree_mirror
+            cohort_pps$fname <- mirror_directory(
+                filepath = cohort_pps$fname,
+                mirror = cohort_pps$model_tree_mirror
             )
-        if(is.null(perf_plot_spec$title))
-            perf_plot_spec$title <- paste0(
+        if(is.null(cohort_pps$title))
+            cohort_pps$title <- paste0(
                 data_spec$name, " ", data_spec$cohort, ", ", data_spec$time_to_event_col,
-                " < ", perf_plot_spec$pivot_time_cutoff)
+                " < ", cohort_pps$pivot_time_cutoff
+            )
         if(comparison_plot){
             plot_2d_metric(
-                perf_plot_spec = perf_plot_spec,
+                perf_plot_spec = cohort_pps,
                 quiet = TRUE
             )
             if(!quiet)
-                message("# Saving comparative performance plot to ", perf_plot_spec$fname)
+                message("# Saving comparative performance plot to ", cohort_pps$fname)
         }
+
     }
 
 }
