@@ -30,8 +30,12 @@ to predict with. Technically, we will pass it to the \code{s} parameter of \code
 method of the object returned by the \code{fitter} attribute of the \code{ModelSpec} object.
 See, e.g., \code{\link[glmnet:predict.cv.glmnet]{glmnet::predict.cv.glmnet()}} or \code{\link[zeroSum:predict.zeroSum]{zeroSum::predict.zeroSum()}}.}
 
-\item{perf_plot_spec}{PerfPlotSpec object. We only need the \code{benchmark} attribute
-to (optionally) provide the benchmark. Default is NULL, i.e. provide no benchmark.}
+\item{perf_plot_spec}{PerfPlotSpec object. If provided, we use its
+\itemize{
+\item \code{benchmark} attribute to provide the benchmark,
+\item \code{pivot_time_cutoff} to provide the actual sample risks by overwriting
+\code{model_spec$time_cutoffs}
+}}
 }
 \value{
 A list holding:

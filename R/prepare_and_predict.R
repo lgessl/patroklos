@@ -14,8 +14,10 @@
 #' to predict with. Technically, we will pass it to the `s` parameter of `predict()`
 #' method of the object returned by the `fitter` attribute of the `ModelSpec` object.
 #' See, e.g., [glmnet::predict.cv.glmnet()] or [zeroSum::predict.zeroSum()].
-#' @param perf_plot_spec PerfPlotSpec object. We only need the `benchmark` attribute 
-#' to (optionally) provide the benchmark. Default is NULL, i.e. provide no benchmark. 
+#' @param perf_plot_spec PerfPlotSpec object. If provided, we use its 
+#' * `benchmark` attribute to provide the benchmark,
+#' * `pivot_time_cutoff` to provide the actual sample risks by overwriting 
+#'  `model_spec$time_cutoffs`
 #' @return A list holding:
 #' * `"predicted"`: a list of named numeric vectors, the scores output by the model for 
 #'  each split, sorted in decreasing order.
@@ -57,6 +59,8 @@ prepare_and_predict <- function(
         names(benchmark) <- pheno_tbl[[data_spec$patient_id_col]]
         benchmark_list <- list()
     }
+    if(!is.null(perf_plot_spec$pivot_time_cutoff))
+        model_spec$time_cutoffs <- perf_plot_spec$pivot_time_cutoff
 
     for(i in model_spec$split_index){
         split_name <- paste0(data_spec$split_col_prefix, i)
