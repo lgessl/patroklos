@@ -89,6 +89,7 @@ assess_model <- function(
             predicted = prep[["predicted"]],
             actual = prep[["actual"]],
             perf_plot_spec = pps_scores,
+            ncol = model_spec$plot_ncols,
             msg_prefix = msg_prefix
         )
     }

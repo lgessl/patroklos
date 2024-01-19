@@ -209,6 +209,11 @@ plot_risk_scores <- function(
     )
     tbl[["split"]] <- paste0("Split ", tbl[["split"]])
 
+    n_split <- sum(!sapply(predicted, is.null))
+    nrow <- ceiling(n_split/ncol)
+    perf_plot_spec$height <- nrow * perf_plot_spec$height
+    perf_plot_spec$width <- ncol * perf_plot_spec$width
+
     plt <- ggplot2::ggplot(
         tbl,
         ggplot2::aes(
@@ -219,7 +224,8 @@ plot_risk_scores <- function(
         ) +
         ggplot2::facet_wrap(
             facets = ggplot2::vars(.data[["split"]]),
-            ncol = ncol
+            ncol = ncol,
+            scales = "free"
         ) +
         ggplot2::geom_point() +
         ggplot2::labs(
