@@ -109,6 +109,7 @@ test_that("plot_risk_scores() works", {
     x_metric = "rank",
     y_metric = "scores",
     title = "this title",
+    fellow_csv = TRUE,
     show_plots = FALSE
   )
 
