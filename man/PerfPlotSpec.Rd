@@ -21,6 +21,8 @@ PerfPlotSpec(
   ylim = c(-Inf, Inf),
   smooth_method = NULL,
   smooth_benchmark = FALSE,
+  scale_x = "identity",
+  scale_y = "identity",
   alpha = 0.5,
   width = 7,
   height = 4,
@@ -77,6 +79,10 @@ If \code{NULL}, no smoothing. Else we pass \code{smooth_method} as the \code{met
 
 \item{smooth_benchmark}{logical. Whether to also smooth the benchmark data. Default is
 \code{FALSE}.}
+
+\item{scale_x, scale_y}{string or transformation object (see \code{\link[scales:new_transform]{scales::trans_new}} for the
+latter). The scale of the axes, we will pass them to the \code{x} and \code{y} parameter of
+\code{\link[ggplot2:coord_trans]{ggplot2::coord_trans()}}, respectively. Default is \code{"identity"}.}
 
 \item{alpha}{numeric in [0, 1]. The alpha value for the points and lines in the
 plot.}

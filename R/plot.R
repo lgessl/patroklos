@@ -36,6 +36,10 @@ plot_2d_metric <- function(
             title = perf_plot_spec$title, 
             x = perf_plot_spec$x_lab, 
             y = perf_plot_spec$y_lab
+        ) +
+        ggplot2::coord_trans(
+            x = perf_plot_spec$scale_x, 
+            y = perf_plot_spec$scale_y
         )
     if(!is.null(perf_plot_spec$benchmark) && !is.null(bm_data)){
         bm_alpha <- ifelse(

@@ -15,6 +15,8 @@ new_PerfPlotSpec <- function(
     ylim,
     smooth_method,
     smooth_benchmark,
+    scale_x,
+    scale_y,
     alpha,
     colors,
     width,
@@ -61,6 +63,8 @@ new_PerfPlotSpec <- function(
         "ylim" = ylim,
         "smooth_method" = smooth_method,
         "smooth_benchmark" = smooth_benchmark,
+        "scale_x" = scale_x,
+        "scale_y" = scale_y,
         "alpha" = alpha,
         "colors" = colors,
         "width" = width,
@@ -109,6 +113,9 @@ new_PerfPlotSpec <- function(
 #' [ggplot2::geom_smooth()]. Default is `"loess"`.
 #' @param smooth_benchmark logical. Whether to also smooth the benchmark data. Default is
 #' `FALSE`.
+#' @param scale_x,scale_y string or transformation object (see [`scales::trans_new`] for the 
+#' latter). The scale of the axes, we will pass them to the `x` and `y` parameter of 
+#' [`ggplot2::coord_trans()`], respectively. Default is `"identity"`.
 #' @param alpha numeric in \[0, 1\]. The alpha value for the points and lines in the 
 #' plot.
 #' @param width numeric. The width of the plot in `units`. Default is `7`.
@@ -135,6 +142,8 @@ PerfPlotSpec <- function(
     ylim = c(-Inf, Inf),
     smooth_method = NULL,
     smooth_benchmark = FALSE,
+    scale_x = "identity",
+    scale_y = "identity",
     alpha = 0.5,
     width = 7,
     height = 4,
@@ -166,6 +175,8 @@ PerfPlotSpec <- function(
         ylim = ylim,
         smooth_method = smooth_method,
         smooth_benchmark = smooth_benchmark,
+        scale_x = scale_x,
+        scale_y = scale_y,
         alpha = alpha,
         width = width,
         height = height,
