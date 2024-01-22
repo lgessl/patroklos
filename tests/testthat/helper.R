@@ -61,14 +61,16 @@ generate_mock_data <- function(
 
 apb <- function(
     n_samples,
-    split_index
+    split_index,
+    fluctuating_availability = TRUE
 ){
     l <- list()
     for(i in 1:3){
         l[[i]] <- list()
         for(j in split_index){
             # Simulate fluctuating availability
-            n_samples <- n_samples + sample(c(-1, 1), size = 1)
+            if(fluctuating_availability)
+                n_samples <- n_samples + sample(c(-1, 1), size = 1)
             if(i == 1){
                 l[[i]][[j]] <- sample(c(0, 1), n_samples, replace = TRUE)
             } else {
