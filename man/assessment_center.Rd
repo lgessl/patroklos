@@ -8,6 +8,7 @@ assessment_center(
   model_spec_list,
   data_spec,
   perf_plot_spec,
+  cohorts = c("train", "test"),
   model_tree_mirror = c("models", "results"),
   comparison_plot = TRUE,
   quiet = FALSE
@@ -20,6 +21,9 @@ assessment_center(
 
 \item{perf_plot_spec}{PerfPlotSpec object. Specify the final comparison plot.
 We derive the \code{PerfPlotSpec} for the single plots in a reasonable way from it.}
+
+\item{cohorts}{character vector, a subset of \code{c("train", "test")}. Assess on these
+cohorts. Default is \code{c("train", "test")}.}
 
 \item{model_tree_mirror}{character vector of lengtgh 2. This answers the question
 where to store the generated assessment files.

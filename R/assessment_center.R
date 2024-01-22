@@ -10,6 +10,8 @@
 #' @param data_spec DataSpec object. Assess on this data set.
 #' @param perf_plot_spec PerfPlotSpec object. Specify the final comparison plot. 
 #' We derive the `PerfPlotSpec` for the single plots in a reasonable way from it.
+#' @param cohorts character vector, a subset of `c("train", "test")`. Assess on these
+#' cohorts. Default is `c("train", "test")`.
 #' @param model_tree_mirror character vector of lengtgh 2. This answers the question 
 #' where to store the generated assessment files.
 #' * For the train cohort, it is the model directory (where the fit lies as an rds 
@@ -26,10 +28,13 @@ assessment_center <- function(
     model_spec_list,
     data_spec,
     perf_plot_spec,
+    cohorts = c("train", "test"),
     model_tree_mirror = c("models", "results"),
     comparison_plot = TRUE,
     quiet = FALSE
 ){
+    cohorts <- match.arg(cohorts, several.ok = TRUE)
+
     perf_tbls <- list()
 
     data <- read(data_spec)

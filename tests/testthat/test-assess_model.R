@@ -46,7 +46,7 @@ test_that("assess_model() works", {
     response_type = "binary"
   )
   perf_plot_spec <- PerfPlotSpec(
-    fname = file.path(dir, "perf.pdf"),
+    fname = file.path(dir, "rpp.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
     pivot_time_cutoff = 2.,
@@ -63,21 +63,25 @@ test_that("assess_model() works", {
     )
   }
 
-  expect_no_error(
-      assess_model(
-      expr_mat = expr_mat,
-      pheno_tbl = pheno_tbl,
-      data_spec = data_spec,
-      model_spec = model_spec_1,
-      perf_plot_spec = perf_plot_spec
-    )
-  )
+  tbl <- assess_model(
+    expr_mat = expr_mat,
+    pheno_tbl = pheno_tbl,
+    data_spec = data_spec,
+    model_spec = model_spec_1,
+    perf_plot_spec = perf_plot_spec
+  )$data
+  expect_s3_class(tbl, "tbl_df")
+
+  
   perf_plot_spec$benchmark <- NULL
-  expect_no_error(assess_model(
+  perf_plot_spec$directory <- file.path(dir, "logrank.pdf")
+  perf_plot_spec$y_metric <- "logrank"
+  tbl <- assess_model(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
     data_spec = data_spec,
     model_spec = model_spec_2,
     perf_plot_spec = perf_plot_spec
-  ))
+  )$data
+  expect_equal(names(tbl), c("rpp", "logrank", "cutoff", "split", "model"))
 })

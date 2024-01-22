@@ -68,15 +68,24 @@ test_that("assessment_center() works", {
     scores_plot = TRUE
   )
 
-  expect_no_error(
-    assessment_center(
-        model_spec_list = model_spec_list,
-        data_spec = data_spec,
-        perf_plot_spec = perf_plot_spec
-    )
+  assessment_center(
+      model_spec_list = model_spec_list,
+      data_spec = data_spec,
+      perf_plot_spec = perf_plot_spec
   )
   expect_true(file.exists(perf_plot_spec$fname))
   expect_true(file.exists(file.path(model_dir, "logistic/1-5/rpp_vs_prec.pdf")))
   expect_true(file.exists(file.path(res_dir, "logistic/2/scores.pdf")))
   expect_true(file.exists(file.path(res_dir, "cox/2/rpp_vs_prec.csv")))
+
+  perf_plot_spec$y_metric <- "logrank"
+  perf_plot_spec$fname <- file.path(model_dir, "logrank.pdf")
+  perf_plot_spec$benchmark <- NULL
+  perf_plot_spec$scores_plot <- FALSE
+  assessment_center(
+    model_spec_list = model_spec_list,
+    data_spec = data_spec,
+    perf_plot_spec = perf_plot_spec,
+    comparison_plot = FALSE
+  )
 })

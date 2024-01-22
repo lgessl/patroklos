@@ -36,8 +36,12 @@ All measures that can be passed to the \code{x.measure} parameter of \code{\link
 valid.}
 
 \item{y_metric}{string. The name of the performance measure to be plotted on the y-axis.
-All measures that can be passed to the \code{measure} parameter of \code{\link[ROCR:performance]{ROCR::performance()}} are
-valid.}
+\itemize{
+\item All measures that can be passed to the \code{measure} parameter of \code{\link[ROCR:performance]{ROCR::performance()}} are
+valid.
+\item \code{"logrank"} for the p-values of a logrank test. In this case, \code{x_metric} must be
+\code{"prevalence"} or \code{"rpp"}.
+}}
 
 \item{pivot_time_cutoff}{numeric. Time-to-event threshold that divides samples into a
 high/low-risk (time to event below/above \code{pivot_time_cutoff}) group. Model performance

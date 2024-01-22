@@ -68,7 +68,9 @@ assess_model <- function(
         predicted = prep[["predicted"]],
         perf_plot_spec = perf_plot_spec,
         model_spec = model_spec,
-        benchmark = prep[["benchmark"]]
+        benchmark = prep[["benchmark"]],
+        pheno_tbl = pheno_tbl,
+        data_spec = data_spec
     )
 
     # Plot

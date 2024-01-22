@@ -81,8 +81,10 @@ new_PerfPlotSpec <- function(
 #' All measures that can be passed to the `x.measure` parameter of [ROCR::performance()] are
 #' valid.
 #' @param y_metric string. The name of the performance measure to be plotted on the y-axis.
-#' All measures that can be passed to the `measure` parameter of [ROCR::performance()] are
+#' * All measures that can be passed to the `measure` parameter of [ROCR::performance()] are
 #' valid.
+#' * `"logrank"` for the p-values of a logrank test. In this case, `x_metric` must be
+#' `"prevalence"` or `"rpp"`.
 #' @param pivot_time_cutoff numeric. Time-to-event threshold that divides samples into a
 #' high/low-risk (time to event below/above `pivot_time_cutoff`) group. Model performance
 #' will be measured in terms of how well it can separate these two groups as a binary
@@ -144,6 +146,10 @@ PerfPlotSpec <- function(
     }
     if(is.null(y_lab)){
         y_lab <- y_metric
+    }
+    if(y_metric == "logrank"){
+        if(!any(stringr::str_detect(c("prevalence", "rpp"), x_metric)))
+            stop("For `y_metric` = 'logrank', `x_metric` must be 'prevalence' or 'rpp'.")
     }
     perf_plot_spec <- new_PerfPlotSpec(
         fname = fname,
