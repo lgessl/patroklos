@@ -65,7 +65,7 @@ create_data_partition <- function(
 
 
 # For two matrices or two vectors, intersect the (row)names and return the
-# correspnnding subset of both matrices or vectors. Additonally, you can
+# corresponding ordered subset of both matrices or vectors. Additonally, you can
 # remove values (rows) with NA 
 intersect_by_names <- function(
     a,
@@ -81,7 +81,7 @@ intersect_by_names <- function(
             a <- a[complete_rows_a, , drop = FALSE]
             b <- b[complete_rows_b, , drop = FALSE]
         }
-        intersect_names <- intersect(rownames(a), rownames(b))
+        intersect_names <- intersect(rownames(a), rownames(b)) |> sort()
         if(length(intersect_names) == 0){
             stop("intersect_by_names(): no common row names")
         }
