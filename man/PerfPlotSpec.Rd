@@ -23,6 +23,9 @@ PerfPlotSpec(
   smooth_benchmark = FALSE,
   scale_x = "identity",
   scale_y = "identity",
+  vline = NULL,
+  hline = NULL,
+  text = NULL,
   alpha = 0.5,
   width = 7,
   height = 4,
@@ -83,6 +86,13 @@ If \code{NULL}, no smoothing. Else we pass \code{smooth_method} as the \code{met
 \item{scale_x, scale_y}{string or transformation object (see \code{\link[scales:new_transform]{scales::trans_new}} for the
 latter). The scale of the axes, we will pass them to the \code{x} and \code{y} parameter of
 \code{\link[ggplot2:coord_trans]{ggplot2::coord_trans()}}, respectively. Default is \code{"identity"}.}
+
+\item{vline, hline}{list or NULL. Vertical/horizontal lines to be added to the plot. A list
+holding the arguments to pass to \code{\link[ggplot2:geom_abline]{ggplot2::geom_vline()}} and \code{\link[ggplot2:geom_abline]{ggplot2::geom_hline()}},
+respectively. Default is \code{NULL}.}
+
+\item{text}{list or NULL. Text label added to the plot. A list holding the arguments to
+pass to \code{\link[ggplot2:geom_text]{ggplot2::geom_text()}}. Default is \code{NULL}.}
 
 \item{alpha}{numeric in [0, 1]. The alpha value for the points and lines in the
 plot.}

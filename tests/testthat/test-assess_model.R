@@ -51,7 +51,9 @@ test_that("assess_model() works", {
     y_metric = "prec",
     pivot_time_cutoff = 2.,
     benchmark = "ipi",
-    show_plots = TRUE
+    show_plots = FALSE,
+    text = list(ggplot2::aes(x = .5, y = .5, label = "this text"), 
+      color = "red", angle = 45)
   )
 
   for(model_spec in list(model_spec_1, model_spec_2)){

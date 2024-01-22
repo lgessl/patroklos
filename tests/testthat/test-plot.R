@@ -12,14 +12,16 @@ test_that("plot_2d_metric() works", {
     y_metric = "prec",
     pivot_time_cutoff = 2.,
     benchmark = "bm",
-    show_plots = FALSE,
+    show_plots = TRUE,
     title = "this title",
     x_lab = "this x lab",
     y_lab = "that y lab",
     xlim = c(0, .9),
     smooth_method = "loess",
     smooth_benchmark = TRUE,
-    scale_x = "log10"
+    scale_x = "log10",
+    hline = list(yintercept = 0.5, linetype = "dashed"),
+    text = list(ggplot2::aes(x = 0.5, y = 0.5, label = "this text"))
   )
   perf_plot_spec$data <- tibble::tibble(
     rpp = runif(n_row),
@@ -34,6 +36,9 @@ test_that("plot_2d_metric() works", {
     )
   )
   perf_plot_spec$benchmark <- NULL
+  perf_plot_spec$hline <- NULL
+  perf_plot_spec$text <- NULL
+  perf_plot_spec$vline <- list(xintercept = 0.5, color = "blue")
   expect_no_error(
     plot_2d_metric(
       perf_plot_spec = perf_plot_spec,

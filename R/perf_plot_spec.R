@@ -17,6 +17,9 @@ new_PerfPlotSpec <- function(
     smooth_benchmark,
     scale_x,
     scale_y,
+    hline,
+    vline,
+    text,
     alpha,
     colors,
     width,
@@ -40,6 +43,9 @@ new_PerfPlotSpec <- function(
     stopifnot(is.character(smooth_method) || is.null(smooth_method) ||
         is.function(smooth_method))
     stopifnot(is.logical(smooth_benchmark))
+    stopifnot(is.null(hline) || is.list(hline))
+    stopifnot(is.null(vline) || is.list(vline))
+    stopifnot(is.null(text) || is.list(text))
     stopifnot(is.numeric(alpha) && alpha >= 0 && alpha <= 1)
     stopifnot(is.character(colors) || is.null(colors))
     stopifnot(is.numeric(width) && width > 0)
@@ -65,6 +71,9 @@ new_PerfPlotSpec <- function(
         "smooth_benchmark" = smooth_benchmark,
         "scale_x" = scale_x,
         "scale_y" = scale_y,
+        "hline" = hline,
+        "vline" = vline,
+        "text" = text,
         "alpha" = alpha,
         "colors" = colors,
         "width" = width,
@@ -116,6 +125,11 @@ new_PerfPlotSpec <- function(
 #' @param scale_x,scale_y string or transformation object (see [`scales::trans_new`] for the 
 #' latter). The scale of the axes, we will pass them to the `x` and `y` parameter of 
 #' [`ggplot2::coord_trans()`], respectively. Default is `"identity"`.
+#' @param vline,hline list or NULL. Vertical/horizontal lines to be added to the plot. A list
+#' holding the arguments to pass to [`ggplot2::geom_vline()`] and [`ggplot2::geom_hline()`],
+#' respectively. Default is `NULL`.
+#' @param text list or NULL. Text label added to the plot. A list holding the arguments to
+#' pass to [`ggplot2::geom_text()`]. Default is `NULL`. 
 #' @param alpha numeric in \[0, 1\]. The alpha value for the points and lines in the 
 #' plot.
 #' @param width numeric. The width of the plot in `units`. Default is `7`.
@@ -144,6 +158,9 @@ PerfPlotSpec <- function(
     smooth_benchmark = FALSE,
     scale_x = "identity",
     scale_y = "identity",
+    vline = NULL,
+    hline = NULL,
+    text = NULL,
     alpha = 0.5,
     width = 7,
     height = 4,
@@ -177,6 +194,9 @@ PerfPlotSpec <- function(
         smooth_benchmark = smooth_benchmark,
         scale_x = scale_x,
         scale_y = scale_y,
+        vline = vline,
+        hline = hline,
+        text = text,
         alpha = alpha,
         width = width,
         height = height,
