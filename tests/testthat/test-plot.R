@@ -18,7 +18,8 @@ test_that("plot_2d_metric() works", {
     y_lab = "that y lab",
     xlim = c(0, .9),
     smooth_method = "loess",
-    smooth_benchmark = TRUE
+    smooth_benchmark = TRUE,
+    scale_x = "log10"
   )
   perf_plot_spec$data <- tibble::tibble(
     rpp = runif(n_row),

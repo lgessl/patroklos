@@ -79,6 +79,7 @@ test_that("assessment_center() works", {
   expect_true(file.exists(file.path(res_dir, "cox/2/rpp_vs_prec.csv")))
 
   perf_plot_spec$y_metric <- "logrank"
+  perf_plot_spec$scale_y <- "log10"
   perf_plot_spec$fname <- file.path(model_dir, "logrank.pdf")
   perf_plot_spec$benchmark <- NULL
   perf_plot_spec$scores_plot <- FALSE

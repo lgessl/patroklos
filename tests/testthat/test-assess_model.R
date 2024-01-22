@@ -51,7 +51,7 @@ test_that("assess_model() works", {
     y_metric = "prec",
     pivot_time_cutoff = 2.,
     benchmark = "ipi",
-    show_plots = FALSE
+    show_plots = TRUE
   )
 
   for(model_spec in list(model_spec_1, model_spec_2)){
@@ -73,9 +73,10 @@ test_that("assess_model() works", {
   expect_s3_class(tbl, "tbl_df")
 
   
-  perf_plot_spec$benchmark <- NULL
+  perf_plot_spec$benchmark <- "ipi"
   perf_plot_spec$directory <- file.path(dir, "logrank.pdf")
   perf_plot_spec$y_metric <- "logrank"
+  perf_plot_spec$scale_y <- "log10"
   tbl <- assess_model(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
