@@ -63,6 +63,40 @@ test_that("calculate_2d_metric() works", {
 })
 
 
+test_that("binprop_ci() works", {
+
+  set.seed(143)
+
+  n_samples <- 10
+  n_extra <- 2
+  gamma <- .85
+
+  estimate <- rnorm(n_samples)
+  actual <- sample(c(0, 1), n_samples + n_extra, replace = TRUE)
+  names(estimate) <- paste0("s", sample(n_samples))
+  names(actual) <- paste0("s", sample(length(actual)))
+  actual[1] <- NA
+
+  tbl_low <- binprop_ci(
+    estimate = estimate,
+    actual = actual,
+    confidence_level = gamma,
+    y_metric = "ci_boundary",
+    x_metric = "prevalence",
+    lower_boundary = TRUE
+  )
+  tbl_high <- binprop_ci(
+    estimate = estimate,
+    actual = actual,
+    confidence_level = gamma,
+    y_metric = "ci_boundary",
+    x_metric = "prevalence",
+    lower_boundary = FALSE
+  )
+  expect_true(all(tbl_low[, 1] <= tbl_high[, 1]))
+})
+
+
 test_that("metric_with_rocr() works", {
 
   set.seed(354)
@@ -83,7 +117,7 @@ test_that("metric_with_rocr() works", {
     y_metric = "prec"
   )
   expect_s3_class(tbl, "tbl_df")
-  expect_equal(names(tbl), c("rpp", "prec", "cutoff"))
+  expect_equal(ncol(tbl), 3)
 })
 
 
@@ -118,6 +152,6 @@ test_that("logrank_metric() works", {
     x_metric = "my_x"
   )
   expect_s3_class(tbl, "tbl_df")
-  expect_equal(names(tbl), c("my_x", "my_y", "cutoff"))
+  expect_equal(ncol(tbl), 3)
   expect_equal(nrow(tbl), length(estimate) - 1 - n_na_in_estimate)
 })

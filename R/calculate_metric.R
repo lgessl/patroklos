@@ -40,6 +40,11 @@ calculate_2d_metric <- function(
                     y_metric = perf_plot_spec$y_metric
                 )
             }
+            names(tbl) <- c(
+                perf_plot_spec$x_metric, 
+                perf_plot_spec$y_metric, 
+                "cutoff"
+            )
             tbl[["split"]] <- i
             tbl[["model"]] <- estimate_name       
             tbl_list <- c(tbl_list, list(tbl))
@@ -52,6 +57,50 @@ calculate_2d_metric <- function(
     perf_plot_spec$data <- tbl
 
     return(perf_plot_spec)
+}
+
+
+binprop_ci <- function(
+    estimate,
+    actual,
+    confidence_level = 0.95,
+    y_metric = "ci_boundary",
+    x_metric = "prevalence",
+    lower_boundary = TRUE
+){
+    estimate_actual <- intersect_by_names(
+        estimate, 
+        actual, 
+        rm_na = TRUE
+    )
+    estimate <- estimate_actual[[1]]
+    actual <- estimate_actual[[2]]
+    cutoffs <- estimate[estimate > min(estimate)] |> unique() |> sort()
+    prevalence <- numeric(length(cutoffs))
+    ci_boundary <- numeric(length(cutoffs))
+
+    binprop_ci_core <- function(
+        cutoff
+    ){
+        positive <- ifelse(estimate >= cutoff, 1, 0)
+        prevalence <- mean(positive)
+        htest <- stats::binom.test(
+            x = sum(positive * actual),
+            n = sum(positive),
+            conf.level = confidence_level
+        )
+        ci_boundary <- ifelse(lower_boundary, htest$conf.int[1], htest$conf.int[2])
+        c("prevalence" = prevalence, "ci_boundary" = ci_boundary)
+    }
+    mat <- sapply(cutoffs, binprop_ci_core)
+
+    # Store them in a tibble
+    tbl <- tibble::tibble(
+        mat["prevalence", ],
+        mat["ci_boundary", ],
+        cutoffs
+    )
+    return(tbl)
 }
 
 
@@ -81,11 +130,6 @@ metric_with_rocr <- function(
         rocr_perf@x.values[[1]],
         rocr_perf@y.values[[1]],
         rocr_perf@alpha.values[[1]]
-    )
-    names(tbl) <- c(
-        x_metric, 
-        y_metric,
-        "cutoff"
     )
     return(tbl)
 }
@@ -133,11 +177,6 @@ logrank_metric <- function(
         prevalence,
         logrank_p,
         cutoffs
-    )
-    names(tbl) <- c(
-        x_metric, 
-        y_metric,
-        "cutoff"
     )
     return(tbl)
 }
