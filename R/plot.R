@@ -44,7 +44,7 @@ plot_2d_metric <- function(
     if(!is.null(perf_plot_spec$vline))
         plt <- plt + do.call(ggplot2::geom_vline, perf_plot_spec$vline)
     if(!is.null(perf_plot_spec$text))
-        plt <- plt + do.call(ggplot2::geom_text, perf_plot_spec$text)
+        plt <- plt + do.call(ggplot2::geom_label, perf_plot_spec$text)
     if(!is.null(perf_plot_spec$benchmark) && !is.null(bm_data)){
         bm_alpha <- ifelse(
             perf_plot_spec$smooth_benchmark, 

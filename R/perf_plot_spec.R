@@ -123,13 +123,14 @@ new_PerfPlotSpec <- function(
 #' @param smooth_benchmark logical. Whether to also smooth the benchmark data. Default is
 #' `FALSE`.
 #' @param scale_x,scale_y string or transformation object (see [`scales::trans_new`] for the 
-#' latter). The scale of the axes, we will pass them to the `x` and `y` parameter of 
-#' [`ggplot2::coord_trans()`], respectively. Default is `"identity"`.
+#' latter). The scale of the axes, we will pass them to the `trans` paramter of 
+#' [`ggplot2::scale_x_continuous()`], [`ggplot2::scale_y_continuous()], respectively. 
+#' Default is `"identity"`.
 #' @param vline,hline list or NULL. Vertical/horizontal lines to be added to the plot. A list
 #' holding the arguments to pass to [`ggplot2::geom_vline()`] and [`ggplot2::geom_hline()`],
 #' respectively. Default is `NULL`.
 #' @param text list or NULL. Text label added to the plot. A list holding the arguments to
-#' pass to [`ggplot2::geom_text()`]. Default is `NULL`. 
+#' pass to [`ggplot2::geom_label()`]. Default is `NULL`. 
 #' @param alpha numeric in \[0, 1\]. The alpha value for the points and lines in the 
 #' plot.
 #' @param width numeric. The width of the plot in `units`. Default is `7`.
