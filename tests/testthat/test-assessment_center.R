@@ -65,7 +65,9 @@ test_that("assessment_center() works", {
     smooth_method = "loess",
     pivot_time_cutoff = 2.,
     fellow_csv = TRUE,
-    scores_plot = TRUE
+    scores_plot = TRUE,
+    text = list(ggplot2::aes(x = .5, y = .5, label = "hello"), 
+      color = "red", angle = 90),
   )
 
   assessment_center(
@@ -82,11 +84,13 @@ test_that("assessment_center() works", {
   perf_plot_spec$scale_y <- "log10"
   perf_plot_spec$fname <- file.path(model_dir, "logrank.pdf")
   perf_plot_spec$benchmark <- NULL
+  perf_plot_spec$text <- NULL
   perf_plot_spec$scores_plot <- FALSE
   assessment_center(
     model_spec_list = model_spec_list,
     data_spec = data_spec,
     perf_plot_spec = perf_plot_spec,
-    comparison_plot = FALSE
+    comparison_plot = FALSE,
+    cohorts = "test"
   )
 })

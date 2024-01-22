@@ -43,7 +43,7 @@ assessment_center <- function(
     perf_plot_spec$model_tree_mirror <- model_tree_mirror
 
     message("\nASSESSING ON ", data_spec$name)
-    for(cohort in c("train", "test")){
+    for(cohort in cohorts){
         if(!quiet) message("# On ", cohort, " cohort")
         data_spec$cohort <- cohort
         cohort_pps <- perf_plot_spec
