@@ -32,7 +32,7 @@ new_PerfPlotSpec <- function(
     stopifnot(is.character(y_metric))
     stopifnot(is.null(pivot_time_cutoff) || is.numeric(pivot_time_cutoff))
     stopifnot(is.character(lambda) || is.numeric(lambda))
-    stopifnot(is.character(benchmark))
+    stopifnot(is.character(benchmark) || is.null(benchmark))
     stopifnot(is.numeric(ci_level) && ci_level >= 0 && ci_level <= 1)
     stopifnot(is.logical(fellow_csv))
     stopifnot(is.logical(scores_plot))
@@ -151,7 +151,7 @@ PerfPlotSpec <- function(
     y_metric,
     pivot_time_cutoff = NULL,
     lambda = "lambda.min",
-    benchmark = "ipi",
+    benchmark = NULL,
     ci_level = 0.95,
     fellow_csv = FALSE,
     scores_plot = FALSE,
