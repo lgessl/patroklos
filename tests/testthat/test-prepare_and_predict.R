@@ -39,9 +39,10 @@ test_that("prepare_and_fit", {
     include_from_discrete_pheno = NULL
   )
   perf_plot_spec <- PerfPlotSpec(
-    "dummy.pdf",
-    "rpp",
-    "prec"
+    fname = "dummy.pdf",
+    x_metric = "rpp",
+    y_metric = "prec",
+    benchmark = "ipi"
   )
 
   prepare_and_fit(
@@ -52,14 +53,14 @@ test_that("prepare_and_fit", {
   )
 
   data_spec$cohort <- "test"
-  expect_silent(res <- prepare_and_predict(
+  res <- prepare_and_predict(
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
       data_spec = data_spec,
       model_spec = model_spec,
       lambda = "lambda.min",
       perf_plot_spec = perf_plot_spec
-  ))
+  )
 
   expect_true(is.list(res))
   expect_equal(length(res), 3)

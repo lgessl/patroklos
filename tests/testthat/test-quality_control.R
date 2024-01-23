@@ -20,20 +20,16 @@ test_that("qc_preprocess() works", {
     train_prop = .7
   )
 
-  expect_silent(
-    qc_preprocess(
-      expr_tbl = expr_tbl,
-      pheno_tbl = pheno_tbl,
-      data_spec = data_spec
-    )
+  qc_preprocess(
+    expr_tbl = expr_tbl,
+    pheno_tbl = pheno_tbl,
+    data_spec = data_spec
   )
-  expect_silent(
-    qc_preprocess(
-      expr_tbl = expr_tbl,
-      pheno_tbl = pheno_tbl,
-      data_spec = data_spec,
-      check_default = TRUE
-    )
+  qc_preprocess(
+    expr_tbl = expr_tbl,
+    pheno_tbl = pheno_tbl,
+    data_spec = data_spec,
+    check_default = TRUE
   )
 
   data_spec$expr_fname <- "nonexistent.csv"

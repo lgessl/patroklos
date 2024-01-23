@@ -41,13 +41,11 @@ test_that("prepare() works",{
 
   model_spec$response_type <- "binary"
   model_spec$include_from_continuous_pheno <- NULL
-  expect_no_error(
-    result <- prepare(
-      expr_mat = expr_mat,
-      pheno_tbl = pheno_tbl,
-      data_spec = data_spec,
-      model_spec = model_spec
-    )
+  result <- prepare(
+    expr_mat = expr_mat,
+    pheno_tbl = pheno_tbl,
+    data_spec = data_spec,
+    model_spec = model_spec
   )
 
   colnames(pheno_tbl)[1] <- "patient"
@@ -55,12 +53,10 @@ test_that("prepare() works",{
   data_spec$patient_id_col <- "patient"
   data_spec$time_to_event_col <- "pfs"
   model_spec$pivot_time_cutoff <- 2.3
-  expect_no_error(
-    result <- prepare(
-      expr_mat = expr_mat,
-      pheno_tbl = pheno_tbl,
-      data_spec = data_spec,
-      model_spec = model_spec
-    )
+  result <- prepare(
+    expr_mat = expr_mat,
+    pheno_tbl = pheno_tbl,
+    data_spec = data_spec,
+    model_spec = model_spec
   )
 })

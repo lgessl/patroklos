@@ -20,7 +20,8 @@ test_that("calculate_2d_metric() works", {
   perf_plot_spec <- PerfPlotSpec(
     fname = "test.pdf",
     x_metric = "rpp",
-    y_metric = "prec"
+    y_metric = "prec",
+    benchmark = "ipi"
   )
   pheno_tbl <- generate_mock_data(
     n_samples = n_samples,
