@@ -10,7 +10,8 @@ PerfPlotSpec(
   y_metric,
   pivot_time_cutoff = NULL,
   lambda = "lambda.min",
-  benchmark = "ipi",
+  benchmark = NULL,
+  ci_level = 0.95,
   fellow_csv = FALSE,
   scores_plot = FALSE,
   show_plots = FALSE,
@@ -59,6 +60,9 @@ evaluate. See \code{\link[=prepare_and_predict]{prepare_and_predict()}} for deta
 
 \item{benchmark}{string. Column in the test pheno holding the numeric benchmark values.
 Default is \code{"ipi"} (international prognostic index for DLBCL).}
+
+\item{ci_level}{numeric in [0, 1]. The level used to calculate confidence intervals.
+Default is \code{0.95}.}
 
 \item{fellow_csv}{logical. If passed to \code{\link[=assessment_center]{assessment_center()}}, whether to also create a
 csv file for every model-data pair. Default is \code{TRUE}.}
