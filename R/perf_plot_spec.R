@@ -5,6 +5,7 @@ new_PerfPlotSpec <- function(
     pivot_time_cutoff,
     lambda,
     benchmark,
+    ci_level,
     fellow_csv,
     scores_plot,
     show_plots,
@@ -32,6 +33,7 @@ new_PerfPlotSpec <- function(
     stopifnot(is.null(pivot_time_cutoff) || is.numeric(pivot_time_cutoff))
     stopifnot(is.character(lambda) || is.numeric(lambda))
     stopifnot(is.character(benchmark))
+    stopifnot(is.numeric(ci_level) && ci_level >= 0 && ci_level <= 1)
     stopifnot(is.logical(fellow_csv))
     stopifnot(is.logical(scores_plot))
     stopifnot(is.logical(show_plots))
@@ -59,6 +61,7 @@ new_PerfPlotSpec <- function(
         "pivot_time_cutoff" = pivot_time_cutoff,
         "lambda" = lambda,
         "benchmark" = benchmark,
+        "ci_level" = ci_level,
         "fellow_csv" = fellow_csv,
         "scores_plot" = scores_plot,
         "show_plots" = show_plots,
@@ -107,6 +110,8 @@ new_PerfPlotSpec <- function(
 #' evaluate. See [prepare_and_predict()] for details. Default is `"lambda.min"`.
 #' @param benchmark string. Column in the test pheno holding the numeric benchmark values.
 #' Default is `"ipi"` (international prognostic index for DLBCL).
+#' @param ci_level numeric in \[0, 1\]. The level used to calculate confidence intervals.
+#' Default is `0.95`.
 #' @param fellow_csv logical. If passed to [assessment_center()], whether to also create a
 #' csv file for every model-data pair. Default is `TRUE`.
 #' @param scores_plot logical. Display the ordered scores output by the model in a scatter 
@@ -147,6 +152,7 @@ PerfPlotSpec <- function(
     pivot_time_cutoff = NULL,
     lambda = "lambda.min",
     benchmark = "ipi",
+    ci_level = 0.95,
     fellow_csv = FALSE,
     scores_plot = FALSE,
     show_plots = FALSE,
@@ -185,6 +191,7 @@ PerfPlotSpec <- function(
         pivot_time_cutoff = pivot_time_cutoff,
         lambda = lambda,
         benchmark = benchmark,
+        ci_level = ci_level,
         fellow_csv = fellow_csv,
         scores_plot = scores_plot,
         x_lab = x_lab,
