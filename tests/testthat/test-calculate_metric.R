@@ -33,14 +33,12 @@ test_that("calculate_2d_metric() works", {
     train_prop = .66
   )
 
-  expect_silent(
-    perf_plot_spec <- calculate_2d_metric(
-      actual = actual,
-      predicted = predicted,
-      benchmark = benchmark,
-      perf_plot_spec = perf_plot_spec,
-      model_spec = model_spec
-    )
+  perf_plot_spec <- calculate_2d_metric(
+    actual = actual,
+    predicted = predicted,
+    benchmark = benchmark,
+    perf_plot_spec = perf_plot_spec,
+    model_spec = model_spec
   )
   perf_tbl <- perf_plot_spec$data
   expect_equal(names(perf_tbl), c("rpp", "prec", "cutoff", "split", "model"))
@@ -49,21 +47,31 @@ test_that("calculate_2d_metric() works", {
   expect_true(perf_tbl[, 1:4] |> as.matrix() |> is.numeric() |> all())
 
   perf_plot_spec$y_metric <- "logrank"
-  expect_silent(
-    perf_plot_spec <- calculate_2d_metric(
-      actual = actual,
-      predicted = predicted,
-      perf_plot_spec = perf_plot_spec,
-      model_spec = model_spec,
-      benchmark = benchmark,
-      pheno_tbl = pheno_tbl,
-      data_spec = data_spec
-    )
+  perf_plot_spec <- calculate_2d_metric(
+    actual = actual,
+    predicted = predicted,
+    perf_plot_spec = perf_plot_spec,
+    model_spec = model_spec,
+    benchmark = benchmark,
+    pheno_tbl = pheno_tbl,
+    data_spec = data_spec
+  )
+
+  perf_plot_spec$y_metric <- "precision_ci"
+  perf_plot_spec$ci_level <- .95
+  perf_plot_spec <- calculate_2d_metric(
+    actual = actual,
+    predicted = predicted,
+    perf_plot_spec = perf_plot_spec,
+    model_spec = model_spec,
+    benchmark = benchmark,
+    pheno_tbl = pheno_tbl,
+    data_spec = data_spec
   )
 })
 
 
-test_that("binprop_ci() works", {
+test_that("precision_ci() works", {
 
   set.seed(143)
 
@@ -77,7 +85,7 @@ test_that("binprop_ci() works", {
   names(actual) <- paste0("s", sample(length(actual)))
   actual[1] <- NA
 
-  tbl_low <- binprop_ci(
+  tbl_low <- precision_ci(
     estimate = estimate,
     actual = actual,
     confidence_level = gamma,
@@ -85,7 +93,7 @@ test_that("binprop_ci() works", {
     x_metric = "prevalence",
     lower_boundary = TRUE
   )
-  tbl_high <- binprop_ci(
+  tbl_high <- precision_ci(
     estimate = estimate,
     actual = actual,
     confidence_level = gamma,

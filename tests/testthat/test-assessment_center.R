@@ -73,13 +73,14 @@ test_that("assessment_center() works", {
   assessment_center(
       model_spec_list = model_spec_list,
       data_spec = data_spec,
-      perf_plot_spec = perf_plot_spec
+      perf_plot_spec = perf_plot_spec,
+      cohort = c("train", "test")
   )
   expect_true(file.exists(perf_plot_spec$fname))
-  expect_true(file.exists(file.path(model_dir, "logistic/1-5/rpp_vs_prec.pdf")))
   expect_true(file.exists(file.path(res_dir, "logistic/2/scores.pdf")))
   expect_true(file.exists(file.path(res_dir, "cox/2/rpp_vs_prec.csv")))
 
+  model_spec_1$split_index <- 1
   perf_plot_spec$y_metric <- "logrank"
   perf_plot_spec$scale_y <- "log10"
   perf_plot_spec$fname <- file.path(model_dir, "logrank.pdf")
@@ -87,10 +88,24 @@ test_that("assessment_center() works", {
   perf_plot_spec$text <- NULL
   perf_plot_spec$scores_plot <- FALSE
   assessment_center(
-    model_spec_list = model_spec_list,
+    model_spec_list = list(model_spec_1),
     data_spec = data_spec,
     perf_plot_spec = perf_plot_spec,
     comparison_plot = FALSE,
     cohorts = "test"
   )
+
+  model_spec_2$time_cutoffs <- 1.5
+  perf_plot_spec$y_metric <- "precision_ci"
+  perf_plot_spec$ci_level <- .95
+  perf_plot_spec$fname <- file.path(model_dir, "precision_ci.pdf")
+  perf_plot_spec$benchmark <- "ipi"
+  assessment_center(
+    model_spec_list = list(model_spec_2),
+    data_spec = data_spec,
+    perf_plot_spec = perf_plot_spec,
+    comparison_plot = TRUE,
+    cohorts = "train"
+  )
+  expect_true(file.exists(file.path(model_dir, "logistic/1-5/rpp_vs_precision_ci.pdf")))
 })

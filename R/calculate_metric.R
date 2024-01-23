@@ -32,6 +32,16 @@ calculate_2d_metric <- function(
                     y_metric = perf_plot_spec$y_metric,
                     x_metric = perf_plot_spec$x_metric
                 )
+            } else if(perf_plot_spec$y_metric == "precision_ci"){
+                lower_boundary <- estimate_name == model_spec$name
+                tbl <- precision_ci(
+                    estimate = estimate[[i]],
+                    actual = actual[[i]],
+                    confidence_level = perf_plot_spec$ci_level,
+                    y_metric = perf_plot_spec$y_metric,
+                    x_metric = perf_plot_spec$x_metric,
+                    lower_boundary = lower_boundary
+                )
             } else {
                 tbl <- metric_with_rocr(
                     estimate = estimate[[i]],
@@ -60,7 +70,7 @@ calculate_2d_metric <- function(
 }
 
 
-binprop_ci <- function(
+precision_ci <- function(
     estimate,
     actual,
     confidence_level = 0.95,
@@ -76,10 +86,8 @@ binprop_ci <- function(
     estimate <- estimate_actual[[1]]
     actual <- estimate_actual[[2]]
     cutoffs <- estimate[estimate > min(estimate)] |> unique() |> sort()
-    prevalence <- numeric(length(cutoffs))
-    ci_boundary <- numeric(length(cutoffs))
 
-    binprop_ci_core <- function(
+    precision_ci_core <- function(
         cutoff
     ){
         positive <- ifelse(estimate >= cutoff, 1, 0)
@@ -92,7 +100,11 @@ binprop_ci <- function(
         ci_boundary <- ifelse(lower_boundary, htest$conf.int[1], htest$conf.int[2])
         c("prevalence" = prevalence, "ci_boundary" = ci_boundary)
     }
-    mat <- sapply(cutoffs, binprop_ci_core)
+    mat <- sapply(cutoffs, precision_ci_core)
+    if(!is.matrix(mat)){
+        mat <- matrix(nrow = 2, ncol = 0)
+        rownames(mat) <- c("prevalence", "ci_boundary")
+    }
 
     # Store them in a tibble
     tbl <- tibble::tibble(

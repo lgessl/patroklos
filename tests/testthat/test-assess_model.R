@@ -87,4 +87,19 @@ test_that("assess_model() works", {
     perf_plot_spec = perf_plot_spec
   )$data
   expect_equal(names(tbl), c("rpp", "logrank", "cutoff", "split", "model"))
+
+  perf_plot_spec$y_metric <- "precision_ci"
+  perf_plot_spec$ci_level <- .95
+  perf_plot_spec$directory <- file.path(dir, "precision_ci.pdf")
+  perf_plot_spec$scale_y <- "identity"
+  perf_plot_spec$title <- "Lower precision CI boundary (upper for ipi)"
+  perf_plot_spec$show_plots <- FALSE
+  tbl <- assess_model(
+    expr_mat = expr_mat,
+    pheno_tbl = pheno_tbl,
+    data_spec = data_spec,
+    model_spec = model_spec_2,
+    perf_plot_spec = perf_plot_spec
+  )$data
+  expect_equal(names(tbl), c("rpp", "precision_ci", "cutoff", "split", "model"))
 })
