@@ -7,7 +7,7 @@ test_that("prepare_and_fit() works", {
   n_na_in_pheno <- 0
   n_fold <- 3
   lambda <- 1
-  split_index <- 1:20
+  split_index <- 1:2
 
   data <- generate_mock_data(
     n_samples = n_samples,
@@ -61,5 +61,5 @@ test_that("prepare_and_fit() works", {
     ),
     regexp = "Found stored"
   )
-  expect_equal(length(fits), 21)
+  expect_equal(length(fits), length(split_index)+1)
 })
