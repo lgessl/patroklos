@@ -176,18 +176,24 @@ logrank_metric <- function(
     if(!identical(names(time), names(event)) || !identical(names(time), names(estimate)))
         stop("Names of `time`, `event`, and `estimate` must be identical")
 
-    for(i in seq_along(cutoffs)){
-        cutoff <- cutoffs[i]
+    logrank_core <- function(
+        cutoff
+    ){
         groups <- ifelse(estimate >= cutoff, 1, 0)
-        prevalence[i] <- mean(groups)
-        res <- survival::survdiff(
+        prevalence <- mean(groups)
+        pval <- survival::survdiff(
             survival::Surv(time = time, event = event) ~ groups
-        )
-        logrank_p[i] <- res[["pvalue"]]
+        )[["pvalue"]]
+        c("prevalence" = prevalence, "pval" = pval)
+    }
+    mat <- sapply(cutoffs, logrank_core)
+    if(!is.matrix(mat)){
+        mat <- matrix(nrow = 2, ncol = 0)
+        rownames(mat) <- c("prevalence", "pval")
     }
     tbl <- tibble::tibble(
-        prevalence,
-        logrank_p,
+        mat["prevalence", ],
+        mat["pval", ],
         cutoffs
     )
     return(tbl)
