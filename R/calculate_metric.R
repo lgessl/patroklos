@@ -100,8 +100,8 @@ precision_ci <- function(
         ci_boundary <- ifelse(lower_boundary, htest$conf.int[1], htest$conf.int[2])
         c("prevalence" = prevalence, "ci_boundary" = ci_boundary)
     }
-    mat <- sapply(cutoffs, precision_ci_core)
-    if(!is.matrix(mat)){
+    mat <- vapply(cutoffs, precision_ci_core, numeric(2))
+    if(ncol(mat) == 0){
         mat <- matrix(nrow = 2, ncol = 0)
         rownames(mat) <- c("prevalence", "ci_boundary")
     }
@@ -186,8 +186,8 @@ logrank_metric <- function(
         )[["pvalue"]]
         c("prevalence" = prevalence, "pval" = pval)
     }
-    mat <- sapply(cutoffs, logrank_core)
-    if(!is.matrix(mat)){
+    mat <- vapply(cutoffs, logrank_core, numeric(2))
+    if(ncol(mat) == 0){
         mat <- matrix(nrow = 2, ncol = 0)
         rownames(mat) <- c("prevalence", "pval")
     }
