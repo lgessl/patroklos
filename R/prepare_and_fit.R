@@ -50,7 +50,8 @@ prepare_and_fit <- function(
     for(i in model_spec$split_index){
         split_name <- paste0(data_spec$split_col_prefix, i)
         if(split_name %in% names(fits)){
-            message(msg_prefix, "Found a fit for split ", i, ". Skipping")
+            if(!quiet)
+                message(msg_prefix, "Found a fit for split ", i, ". Skipping")
             next
         }
         split_ms <- model_spec
@@ -76,7 +77,9 @@ prepare_and_fit <- function(
                 model_spec$optional_fitter_args
             )
         )
-        message(msg_prefix, "Fitted split ", i, " of ", length(model_spec$split_index))
+        if(!quiet)
+            message(msg_prefix, "Fitted split ", i, " of ", 
+                length(model_spec$split_index), " (", Sys.time(), ")")
     }
 
     saveRDS(fits, stored_fits_fname)
