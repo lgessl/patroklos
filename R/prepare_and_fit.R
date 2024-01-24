@@ -79,7 +79,8 @@ prepare_and_fit <- function(
         )
         if(!quiet)
             message(msg_prefix, "Fitted split ", i, " of ", 
-                length(model_spec$split_index), " (", Sys.time(), ")")
+                length(model_spec$split_index), " (", 
+                round(Sys.time(), units = "secs"), ")")
     }
 
     saveRDS(fits, stored_fits_fname)
