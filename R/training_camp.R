@@ -26,7 +26,7 @@ training_camp <- function(
     )
 
     if(!quiet) message("\nTRAINING CAMP ON ", data_spec$name, ": opens at ", 
-        round(Sys.time(), units = "secs"))
+        round.POSIXt(Sys.time(), units = "secs"))
     for(i in seq_along(model_spec_list)){
         model_spec <- model_spec_list[[i]]
         if(!quiet) message("# ", model_spec$name)
@@ -35,7 +35,7 @@ training_camp <- function(
         }
         for(time_cutoff in model_spec$time_cutoffs){
             if(!quiet) message("## At time cutoff ", time_cutoff, 
-                " (", round(Sys.time(), units = "secs"), ")")
+                " (", round.POSIXt(Sys.time(), units = "secs"), ")")
             ms_cutoff <- at_time_cutoff(model_spec, time_cutoff)
             prepare_and_fit(
                 expr_mat = expr_mat,
@@ -47,5 +47,5 @@ training_camp <- function(
             )
         }
     }
-    if(!quiet) message("Training camp closes at ", round(Sys.time(), units = "secs"))
+    if(!quiet) message("Training camp closes at ", round.POSIXt(Sys.time(), units = "secs"))
 }
