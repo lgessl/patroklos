@@ -20,7 +20,8 @@ test_that("assessment_center() works", {
   data_spec <- DataSpec(
     name = "Mock et al. (2023)", 
     directory = data_dir, 
-    train_prop = .7
+    train_prop = .7,
+    benchmark_col = "ipi"
   )
 
   model_dir <- file.path(base_dir, "models")

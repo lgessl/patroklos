@@ -9,8 +9,7 @@ new_DataSpec <- function(
     patient_id_col,
     time_to_event_col,
     event_col,
-    ipi_col,
-    ipi_feat_cols,
+    benchmark_col,
     gene_id_col,
     split_col_prefix
 ){
@@ -20,26 +19,13 @@ new_DataSpec <- function(
     stopifnot(is.numeric(pivot_time_cutoff))
     stopifnot(is.character(expr_fname))
     stopifnot(is.character(pheno_fname))
-    stopifnot(is.null(cohort) | is.character(cohort))
+    stopifnot(is.null(cohort) || is.character(cohort))
     stopifnot(is.character(patient_id_col))
     stopifnot(is.character(time_to_event_col))
     stopifnot(is.character(event_col))
-    stopifnot(is.character(ipi_col))
-    stopifnot(is.character(ipi_feat_cols) | is.null(ipi_feat_cols))
+    stopifnot(is.character(benchmark_col) || is.null(benchmark_col))
     stopifnot(is.character(gene_id_col))
     stopifnot(is.character(split_col_prefix))
-
-    # More complex checks for ipi_feat_cols
-    if(is.character(ipi_feat_cols)){
-        if(is.null(names(ipi_feat_cols))){
-            stop("ipi_feat_cols must be a named character vector.")
-        }
-        ipi_feat_names <- names(ipi_feat_cols_default)
-        if(any(names(ipi_feat_cols) != ipi_feat_names)){
-            stop("ipi_feat_cols must be a character vector with the following names: ",
-                paste0(ipi_feat_names, collapse = ", "))
-        }
-    }
 
     data_spec_list <- list(
         "name" = name,
@@ -52,23 +38,12 @@ new_DataSpec <- function(
         "patient_id_col" = patient_id_col,
         "time_to_event_col" = time_to_event_col,
         "event_col" = event_col,
-        "ipi_col" = ipi_col,
-        "ipi_feat_cols" = ipi_feat_cols,
+        "benchmark_col" = benchmark_col,
         "gene_id_col" = gene_id_col,
         "split_col_prefix" = split_col_prefix
     )
     return(structure(data_spec_list, class = "DataSpec")) 
 }
-
-
-# For below helper 
-ipi_feat_cols_default <- c(
-    "age" = "age",
-    "stage" = "ann_arbor_stage",
-    "ldh_ratio" = "ldh_ratio",
-    "performance_status" = "ecog_performance_status",
-    "n_extranodal_sites" = "n_extranodal_sites"
-)
 
 
 #' @title Construct a DataSpec S3 object
@@ -87,7 +62,7 @@ ipi_feat_cols_default <- c(
 #' Default is `"expr.csv"`. See details for the expected format.
 #' @param pheno_fname string. The name of the pheno data csv inside `directory`.
 #' Default is `"pheno.csv"`. See details for the expected format.
-#' @param cohort string in `c("train", "test")` or NULL. The cohort, train or test, to 
+#' @param cohort string in `c("train", "test")` or `NULL`. The cohort, train or test, to 
 #' prepare the data for. If NULL, the default, some functions will set it themselves
 #' (e.g. `training_camp()` to `"train"`, `assess_model()` to `"test"`), others will
 #' throw an error.
@@ -98,18 +73,14 @@ ipi_feat_cols_default <- c(
 #' @param event_col string. The name of the column in the pheno data that holds
 #' the event status encoded as 1 = occurrence, 0 = censoring. Default is
 #' `"progression"`.
-#' @param ipi_col string. The name of the column in the pheno data that holds the
-#' International Prognostic Index (IPI) values. Default is `"ipi"`.
-#' @param ipi_feat_cols named character vector of length 5 or `NULL`. The names of the 
-#' *five* features in the pheno data needed to compute the IPI. If NULL, no information 
-#' about the IPI features is provided, e.g. because they are not in the pheno data. For 
-#' the default, see Usage.
-#' @param gene_id_col string. The name of the column in the expression data that holds
-#' the gene identifiers. Default is `"gene_id"`.
 #' @param split_col_prefix string. Column-name prefix for those columns holding splits into 
 #' train and test cohort. Some of these columns may be present in the pheno data already,
 #' others will be added during the training process if required. Default is `"split_"`, 
 #' i.e., split columns are named `"split_1"`, `"split_2"`, etc.
+#' @param benchmark_col string or `NULL`. The name of the column in the pheno data that 
+#' holds the benchmark risk score (like the IPI). Default is `NULL`.
+#' @param gene_id_col string. The name of the column in the expression data that holds
+#' the gene identifiers. Default is `"gene_id"`.
 #' @return A DataSpec object.
 #' @details The pheno csv file holds the samples as rows (with *unique* sample ids in the
 #' first column called `patient_id_col`), the variables as columns. The expr csv file 
@@ -129,17 +100,10 @@ DataSpec <- function(
     cohort = NULL,
     patient_id_col = "patient_id",
     time_to_event_col = "pfs_years",
+    split_col_prefix = "split_",
     event_col = "progression",
-    ipi_col = "ipi",
-    ipi_feat_cols = c(
-        "age" = "age",
-        "stage" = "ann_arbor_stage",
-        "ldh_ratio" = "ldh_ratio",
-        "performance_status" = "ecog_performance_status",
-        "n_extranodal_sites" = "n_extranodal_sites"
-    ),
-    gene_id_col = "gene_id",
-    split_col_prefix = "split_"
+    benchmark_col = NULL,
+    gene_id_col = "gene_id"
 ){
     if(!is.null(cohort)){
         cohort <- match.arg(cohort, c("train", "test"))
@@ -155,8 +119,7 @@ DataSpec <- function(
         patient_id_col = patient_id_col,
         time_to_event_col = time_to_event_col,
         event_col = event_col,
-        ipi_col = ipi_col,
-        ipi_feat_cols = ipi_feat_cols,
+        benchmark_col = benchmark_col,
         gene_id_col = gene_id_col,
         split_col_prefix = split_col_prefix
     )

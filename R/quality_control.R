@@ -75,7 +75,7 @@ qc_preprocess <- function(
     patient_id_col <- data_spec$patient_id_col
     time_to_event_col <- data_spec$time_to_event_col
     event_col <- data_spec$event_col
-    ipi_col <- data_spec$ipi_col
+    benchmark_col <- data_spec$benchmark_col
 
     # Check if files exist
     expr_fname <- file.path(directory, expr_fname)
@@ -109,7 +109,7 @@ qc_preprocess <- function(
             patient_id_col,
             time_to_event_col,
             event_col,
-            ipi_col
+            benchmark_col
         )
     )
     if(names(pheno_tbl)[1] != patient_id_col){
@@ -128,8 +128,11 @@ qc_preprocess <- function(
         !all(pheno_tbl[[event_col]] %in% c(0, 1))){
         stop("Progression values must be numeric and either 1 (progression) or 0 (no progression).")
     }
-    if(!is.numeric(pheno_tbl[[ipi_col]]) || !all(pheno_tbl[[ipi_col]] %in% c(0:5, NA))){
-        stop("IPI values must be numeric values in 0:5")
+    if(!is.null(benchmark_col) && 
+        stringr::str_detect(benchmark_col, stringr::regex("ipi", ignore_case = TRUE))){
+        if(!is.numeric(pheno_tbl[[benchmark_col]]) || !all(pheno_tbl[[benchmark_col]] %in% c(0:5, NA))){
+            stop("IPI values must be numeric values in 0:5")
+        }
     }
 
     # Both

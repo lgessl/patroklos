@@ -14,13 +14,10 @@ DataSpec(
   cohort = NULL,
   patient_id_col = "patient_id",
   time_to_event_col = "pfs_years",
+  split_col_prefix = "split_",
   event_col = "progression",
-  ipi_col = "ipi",
-  ipi_feat_cols = c(age = "age", stage = "ann_arbor_stage", ldh_ratio = "ldh_ratio",
-    performance_status = "ecog_performance_status", n_extranodal_sites =
-    "n_extranodal_sites"),
-  gene_id_col = "gene_id",
-  split_col_prefix = "split_"
+  benchmark_col = NULL,
+  gene_id_col = "gene_id"
 )
 }
 \arguments{
@@ -43,7 +40,7 @@ Default is \code{"expr.csv"}. See details for the expected format.}
 \item{pheno_fname}{string. The name of the pheno data csv inside \code{directory}.
 Default is \code{"pheno.csv"}. See details for the expected format.}
 
-\item{cohort}{string in \code{c("train", "test")} or NULL. The cohort, train or test, to
+\item{cohort}{string in \code{c("train", "test")} or \code{NULL}. The cohort, train or test, to
 prepare the data for. If NULL, the default, some functions will set it themselves
 (e.g. \code{training_camp()} to \code{"train"}, \code{assess_model()} to \code{"test"}), others will
 throw an error.}
@@ -54,25 +51,20 @@ the patient identifiers. Default is \code{"patient_id"}.}
 \item{time_to_event_col}{string. The name of the column in the pheno data that holds the
 time-to-event values. Default is \code{"pfs_years"}.}
 
-\item{event_col}{string. The name of the column in the pheno data that holds
-the event status encoded as 1 = occurrence, 0 = censoring. Default is
-\code{"progression"}.}
-
-\item{ipi_col}{string. The name of the column in the pheno data that holds the
-International Prognostic Index (IPI) values. Default is \code{"ipi"}.}
-
-\item{ipi_feat_cols}{named character vector of length 5 or \code{NULL}. The names of the
-\emph{five} features in the pheno data needed to compute the IPI. If NULL, no information
-about the IPI features is provided, e.g. because they are not in the pheno data. For
-the default, see Usage.}
-
-\item{gene_id_col}{string. The name of the column in the expression data that holds
-the gene identifiers. Default is \code{"gene_id"}.}
-
 \item{split_col_prefix}{string. Column-name prefix for those columns holding splits into
 train and test cohort. Some of these columns may be present in the pheno data already,
 others will be added during the training process if required. Default is \code{"split_"},
 i.e., split columns are named \code{"split_1"}, \code{"split_2"}, etc.}
+
+\item{event_col}{string. The name of the column in the pheno data that holds
+the event status encoded as 1 = occurrence, 0 = censoring. Default is
+\code{"progression"}.}
+
+\item{benchmark_col}{string or \code{NULL}. The name of the column in the pheno data that
+holds the benchmark risk score (like the IPI). Default is \code{NULL}.}
+
+\item{gene_id_col}{string. The name of the column in the expression data that holds
+the gene identifiers. Default is \code{"gene_id"}.}
 }
 \value{
 A DataSpec object.

@@ -17,7 +17,8 @@ test_that("qc_preprocess() works", {
   data_spec <- DataSpec(
     name = "mock",
     directory = dir,
-    train_prop = .7
+    train_prop = .7,
+    
   )
 
   qc_preprocess(
