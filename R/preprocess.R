@@ -132,7 +132,7 @@ write_data_info <- function(
 
     jsonlite::write_json(info_list, filename, auto_unbox = TRUE, pretty = TRUE,
         dataframe = "columns")
-    return(jsonlite::toJSON(info_list, auto_unbox = TRUE, pretty = TRUE, 
+    invisible(jsonlite::toJSON(info_list, auto_unbox = TRUE, pretty = TRUE, 
         dataframe = "columns"))
 }
 
