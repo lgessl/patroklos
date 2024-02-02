@@ -2,8 +2,8 @@
 % Please edit documentation in R/assess_model.R
 \name{assess_model}
 \alias{assess_model}
-\title{Assess a model on a single data set in terms how well it filters
-high-risk patients}
+\title{Assess a model on a single data set in terms how well it filters high-risk
+samples}
 \usage{
 assess_model(
   expr_mat,

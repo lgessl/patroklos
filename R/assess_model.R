@@ -1,5 +1,5 @@
-#' @title Assess a model on a single data set in terms how well it filters 
-#' high-risk patients
+#' @title Assess a model on a single data set in terms how well it filters high-risk
+#' samples
 #' @description Given a data set and a model, assess how well the model can filter
 #' high-risk patients. This includes: 
 #' 1. A 2D scatter plot of two performance metrics, namely the `x_metric` and `y_metric`
