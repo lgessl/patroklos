@@ -48,7 +48,7 @@ discretize_tbl_cols <- function(
 #' If the file already exists, the automatically inferable info into the file. If the 
 #' file is not present yet, create a sceleton, write the the info one can automtically 
 #' infer from the data into the json. You can then fill the empty fields in by writing 
-#' the json by hand.
+#' the json by hand. Manullay alrady filled out info will not be overwritten.
 #' @param filename string. The path to the JSON file.
 #' @param pheno_tbl tibble. The pheno data. Its format needs to comply with `data_spec` 
 #' below.
@@ -63,8 +63,10 @@ write_data_info <- function(
     expr_tbl,
     data_spec
 ){
+    found_file <- FALSE
     if(file.exists(filename)){
         info_list <- jsonlite::read_json(filename)
+        found_file <- TRUE
     } else {
         info_list <- list(
             "publication" = list(
@@ -113,14 +115,20 @@ write_data_info <- function(
     benchmark_list <- list(
         "name" = data_spec$benchmark_col,
         "reference" = "",
-        "precision vs. prevalence" = prec_from_scores(
+        "performance" = prec_from_scores(
             pheno_tbl, 
             data_spec
         )
     )
     info_list[["data"]][["pheno data"]] <- pheno_data_list
-    info_list[["data"]][["expression data"]] <- expr_data_list
-    info_list[["data"]][["benchmark"]] <- benchmark_list
+    if(!found_file){
+        info_list[["data"]][["expression data"]] <- expr_data_list
+        info_list[["data"]][["benchmark"]] <- benchmark_list
+    } else {
+        info_list[["data"]][["expression data"]][["number of genes"]] <- 
+            expr_data_list[["number of genes"]]
+        info_list[["data"]][["benchmark"]][c(1, 3)] <- benchmark_list[c(1, 3)]
+    }
 
     jsonlite::write_json(info_list, filename, auto_unbox = TRUE, pretty = TRUE,
         dataframe = "columns")

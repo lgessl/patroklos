@@ -130,8 +130,10 @@ test_that("write_data_info() works", {
   )
   # write into json manually
   info_list <- jsonlite::read_json(filename)
-  info_list[["publication"]][["title"]] <- "this week"
-  jsonlite::write_json(info_list, filename)
+  info_list[["data"]][["expression data"]][["technology"]] <- "rnaseq"
+  info_list[["data"]][["benchmark"]][["reference"]] <- "cpp"
+  jsonlite::write_json(info_list, filename, auto_unbox = TRUE, pretty = TRUE,
+    dataframe = "columns")
   info_json <- write_data_info(
     filename = filename,
     pheno_tbl = pheno_tbl,
@@ -140,11 +142,12 @@ test_that("write_data_info() works", {
   )
   info_list <- jsonlite::read_json(filename)
 
-  expect_equal(info_list[["publication"]][["title"]][[1]], "this week")
+  expect_equal(info_list[["data"]][["expression data"]][["technology"]][[1]], "rnaseq")
+  expect_equal(info_list[["data"]][["benchmark"]][["reference"]][[1]], "cpp")
   expect_equal(length(info_list), 2)
   expect_false(is.null(info_list[["data"]]))
   expect_false(is.null(info_list[["data"]][["pheno data"]]))
   expect_false(is.null(info_list[["data"]][["expression data"]]))
   expect_false(is.null(info_list[["data"]][["benchmark"]]))
-  expect_false(is.null(info_list[["data"]][["benchmark"]][["precision vs. prevalence"]]))
+  expect_false(is.null(info_list[["data"]][["benchmark"]][["performance"]]))
 })

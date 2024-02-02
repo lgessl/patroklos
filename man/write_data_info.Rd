@@ -25,5 +25,5 @@ Automatically generate info about the data and write it to a JSON file.
 If the file already exists, the automatically inferable info into the file. If the
 file is not present yet, create a sceleton, write the the info one can automtically
 infer from the data into the json. You can then fill the empty fields in by writing
-the json by hand.
+the json by hand. Manullay alrady filled out info will not be overwritten.
 }
