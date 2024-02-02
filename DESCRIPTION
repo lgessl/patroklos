@@ -28,6 +28,7 @@ Imports:
     rlang (>= 1.1.2),
     stats (>= 4.0.0),
     sloop(>= 1.0.1),
-    survival(>= 3.5.5)
+    survival(>= 3.5.5),
+    jsonlite(>= 1.8.8)
 Remotes: rehbergT/zeroSum/zeroSum
 Config/testthat/edition: 3

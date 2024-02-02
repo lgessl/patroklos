@@ -143,6 +143,8 @@ metric_with_rocr <- function(
         rocr_perf@y.values[[1]],
         rocr_perf@alpha.values[[1]]
     )
+    any_row_na <- apply(tbl, 1, function(x) any(is.na(x)))
+    tbl <- tbl[!any_row_na, ]
     return(tbl)
 }
 
