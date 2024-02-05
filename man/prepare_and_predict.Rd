@@ -10,7 +10,7 @@ prepare_and_predict(
   data_spec,
   model_spec,
   lambda,
-  perf_plot_spec = NULL
+  ass_2d_spec = NULL
 )
 }
 \arguments{
@@ -30,7 +30,7 @@ to predict with. Technically, we will pass it to the \code{s} parameter of \code
 method of the object returned by the \code{fitter} attribute of the \code{ModelSpec} object.
 See, e.g., \code{\link[glmnet:predict.cv.glmnet]{glmnet::predict.cv.glmnet()}} or \code{\link[zeroSum:predict.zeroSum]{zeroSum::predict.zeroSum()}}.}
 
-\item{perf_plot_spec}{PerfPlotSpec object. If provided, we use its
+\item{ass_2d_spec}{Ass2dSpec object. If provided, we use its
 \itemize{
 \item \code{benchmark} attribute to provide the benchmark,
 \item \code{pivot_time_cutoff} to provide the actual sample risks by overwriting
@@ -54,5 +54,5 @@ For every split, the names of all three vectors match.
 Given an expression matrix and a pheno tibble, prepare the data for a
 certain model and predict with this model. Do this for all splits into training and
 test cohort. As with \verb{[prepare_and_fit()]}, we do not support multiple time cutoffs
-at this step; this is \verb{[assessment_center()]}'s job.
+at this step; this is \verb{[assess_2d_center()]}'s job.
 }

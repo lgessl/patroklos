@@ -2,7 +2,7 @@
 #' @description Given an expression matrix and a pheno tibble, prepare the data for a
 #' certain model and predict with this model. Do this for all splits into training and
 #' test cohort. As with `[prepare_and_fit()]`, we do not support multiple time cutoffs
-#' at this step; this is `[assessment_center()]`'s job.
+#' at this step; this is `[assess_2d_center()]`'s job.
 #' @param expr_mat numeric matrix. The expression matrix with genes in rows and samples
 #' in columns.
 #' @param pheno_tbl tibble. The pheno data with samples in rows and variables in columns.
@@ -14,7 +14,7 @@
 #' to predict with. Technically, we will pass it to the `s` parameter of `predict()`
 #' method of the object returned by the `fitter` attribute of the `ModelSpec` object.
 #' See, e.g., [glmnet::predict.cv.glmnet()] or [zeroSum::predict.zeroSum()].
-#' @param perf_plot_spec PerfPlotSpec object. If provided, we use its 
+#' @param ass_2d_spec Ass2dSpec object. If provided, we use its 
 #' * `benchmark` attribute to provide the benchmark,
 #' * `pivot_time_cutoff` to provide the actual sample risks by overwriting 
 #'  `model_spec$time_cutoffs`
@@ -35,7 +35,7 @@ prepare_and_predict <- function(
     data_spec,
     model_spec,
     lambda,
-    perf_plot_spec = NULL
+    ass_2d_spec = NULL
 ){
     if(length(model_spec$time_cutoffs) > 1L){
         stop("Multiple time cutoffs are not supported")
@@ -54,13 +54,13 @@ prepare_and_predict <- function(
 
     benchmark <- NULL
     benchmark_list <- NULL
-    if(!is.null(perf_plot_spec$benchmark)){
-        benchmark <- pheno_tbl[[perf_plot_spec$benchmark]]
+    if(!is.null(ass_2d_spec$benchmark)){
+        benchmark <- pheno_tbl[[ass_2d_spec$benchmark]]
         names(benchmark) <- pheno_tbl[[data_spec$patient_id_col]]
         benchmark_list <- list()
     }
-    if(!is.null(perf_plot_spec$pivot_time_cutoff))
-        model_spec$time_cutoffs <- perf_plot_spec$pivot_time_cutoff
+    if(!is.null(ass_2d_spec$pivot_time_cutoff))
+        model_spec$time_cutoffs <- ass_2d_spec$pivot_time_cutoff
 
     for(i in model_spec$split_index){
         split_name <- paste0(data_spec$split_col_prefix, i)

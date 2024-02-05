@@ -4,12 +4,12 @@
 #' * cohort (train and test),
 #' * model and
 #' * time cutoff this model specifies,
-#' call [`assess_model()`]. In addition, plot `x_metric` vs. `y_metric` attribute
-#' of `PerfPlotSpec` for all models in a sinlge plot ("comparison plot").
+#' call [`assess_2d()`]. In addition, plot `x_metric` vs. `y_metric` attribute
+#' of `Ass2dSpec` for all models in a sinlge plot ("comparison plot").
 #' @param model_spec_list list of ModelSpec objects. Assess these models.
 #' @param data_spec DataSpec object. Assess on this data set.
-#' @param perf_plot_spec PerfPlotSpec object. Specify the final comparison plot. 
-#' We derive the `PerfPlotSpec` for the single plots in a reasonable way from it.
+#' @param ass_2d_spec Ass2dSpec object. Specify the final comparison plot. 
+#' We derive the `Ass2dSpec` for the single plots in a reasonable way from it.
 #' @param cohorts character vector, a subset of `c("train", "test")`. Assess on these
 #' cohorts. Default is `c("train", "test")`.
 #' @param model_tree_mirror character vector of lengtgh 2. This answers the question 
@@ -24,10 +24,10 @@
 #' plot. Default is `TRUE`.
 #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
 #' @export
-assessment_center <- function(
+assess_2d_center <- function(
     model_spec_list,
     data_spec,
-    perf_plot_spec,
+    ass_2d_spec,
     cohorts = c("train", "test"),
     model_tree_mirror = c("models", "results"),
     comparison_plot = TRUE,
@@ -40,29 +40,29 @@ assessment_center <- function(
     data <- read(data_spec)
     expr_mat <- data[["expr_mat"]]
     pheno_tbl <- data[["pheno_tbl"]]
-    perf_plot_spec$model_tree_mirror <- model_tree_mirror
+    ass_2d_spec$model_tree_mirror <- model_tree_mirror
 
     message("\nASSESSING ON ", data_spec$name)
     for(cohort in cohorts){
         if(!quiet) message("# On ", cohort, " cohort")
         data_spec$cohort <- cohort
-        cohort_pps <- perf_plot_spec
+        cohort_pps <- ass_2d_spec
         for(model_spec in model_spec_list){
             if(!quiet) message("## ", model_spec$name)
             for(time_cutoff in model_spec$time_cutoffs){
                 if(!quiet) message("### At time cutoff ", time_cutoff)
                 ms_cutoff <- at_time_cutoff(model_spec, time_cutoff)
                 this_pps <- infer_pps(
-                    perf_plot_spec = cohort_pps,
+                    ass_2d_spec = cohort_pps,
                     model_spec = ms_cutoff,
                     data_spec = data_spec
                 )
-                this_pps <- assess_model(
+                this_pps <- assess_2d(
                     expr_mat = expr_mat,
                     pheno_tbl = pheno_tbl,
                     data_spec = data_spec,
                     model_spec = ms_cutoff,
-                    perf_plot_spec = this_pps,
+                    ass_2d_spec = this_pps,
                     quiet = quiet,
                     msg_prefix = "#### "
                 )
@@ -82,7 +82,7 @@ assessment_center <- function(
             )
         if(comparison_plot){
             plot_2d_metric(
-                perf_plot_spec = cohort_pps,
+                ass_2d_spec = cohort_pps,
                 quiet = TRUE
             )
             if(!quiet)

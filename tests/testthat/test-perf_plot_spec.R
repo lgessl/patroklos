@@ -1,15 +1,15 @@
 test_that("infer_pps() works", {
 
   mirror <- c("models", "results")
-  perf_plot_spec <- PerfPlotSpec(
-    fname = "perf_plot_spec.png",
+  ass_2d_spec <- Ass2dSpec(
+    fname = "ass_2d_spec.png",
     x_metric = "x",
     y_metric = "y",
     pivot_time_cutoff = 2.,
     benchmark = "benchmark",
     fellow_csv = TRUE
   )
-  perf_plot_spec$model_tree_mirror <- mirror
+  ass_2d_spec$model_tree_mirror <- mirror
   data_spec <- DataSpec(
     name = "mock",
     directory = "data/mock",
@@ -25,7 +25,7 @@ test_that("infer_pps() works", {
   )
 
   auto_pps <- infer_pps(
-    perf_plot_spec = perf_plot_spec,
+    ass_2d_spec = ass_2d_spec,
     model_spec = model_spec,
     data_spec = data_spec
   )
@@ -40,7 +40,7 @@ test_that("infer_pps() works", {
 
   data_spec$cohort <- "test"
   auto_pps <- infer_pps(
-    perf_plot_spec = perf_plot_spec,
+    ass_2d_spec = ass_2d_spec,
     model_spec = model_spec,
     data_spec = data_spec
   )

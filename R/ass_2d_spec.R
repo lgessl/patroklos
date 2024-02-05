@@ -1,4 +1,4 @@
-new_PerfPlotSpec <- function(
+new_Ass2dSpec <- function(
     fname,
     x_metric,
     y_metric,
@@ -54,7 +54,7 @@ new_PerfPlotSpec <- function(
     stopifnot(is.numeric(height) && height > 0)
     stopifnot(is.character(units))
 
-    perf_plot_spec_list <- list(
+    ass_2d_spec_list <- list(
         "fname" = fname,
         "x_metric" = x_metric,
         "y_metric" = y_metric,
@@ -83,13 +83,13 @@ new_PerfPlotSpec <- function(
         "height" = height,
         "units" = units
     )
-    return(structure(perf_plot_spec_list, class = "PerfPlotSpec"))
+    return(structure(ass_2d_spec_list, class = "Ass2dSpec"))
 }
 
-#' @title Create a PerfPlotSpec object
-#' @description A PerfPlotSpec object holds all the info on how to assess how well a 
+#' @title Create a Ass2dSpec object
+#' @description A Ass2dSpec object holds all the info on how to assess how well a 
 #' model filters high-risk patients. Its base object is a list. The core of the 
-#' assessment is a scatter plot of two performance measures. Moreover, a PerfPlotSpec
+#' assessment is a scatter plot of two performance measures. Moreover, a Ass2dSpec
 #' object holds the commands (usually bools) on whether do more assessments (that 
 #' require considerably less specifications).
 #' @param fname string. The name of the file to save the plot to.
@@ -112,7 +112,7 @@ new_PerfPlotSpec <- function(
 #' Default is `"ipi"` (international prognostic index for DLBCL).
 #' @param ci_level numeric in \[0, 1\]. The level used to calculate confidence intervals.
 #' Default is `0.95`.
-#' @param fellow_csv logical. If passed to [assessment_center()], whether to also create a
+#' @param fellow_csv logical. If passed to [assess_2d_center()], whether to also create a
 #' csv file for every model-data pair. Default is `TRUE`.
 #' @param scores_plot logical. Display the ordered scores output by the model in a scatter 
 #' plot. Default is `TRUE`.  
@@ -143,9 +143,9 @@ new_PerfPlotSpec <- function(
 #' @param colors character vector. The colors to be used for the different models.
 #' Default is `NULL`, which means that the default colors of `ggplot2` will be used.
 #' @param units string. The units of `width` and `height`. Default is `"in"` (inches).
-#' @return A PlotSpec S3 object.
+#' @return A Ass2dSpec S3 object.
 #' @export
-PerfPlotSpec <- function(
+Ass2dSpec <- function(
     fname,
     x_metric,
     y_metric,
@@ -184,7 +184,7 @@ PerfPlotSpec <- function(
         if(!any(stringr::str_detect(c("prevalence", "rpp"), x_metric)))
             stop("For `y_metric` = 'logrank', `x_metric` must be 'prevalence' or 'rpp'.")
     }
-    perf_plot_spec <- new_PerfPlotSpec(
+    ass_2d_spec <- new_Ass2dSpec(
         fname = fname,
         x_metric = x_metric,
         y_metric = y_metric,
@@ -213,28 +213,28 @@ PerfPlotSpec <- function(
         colors = colors,
         show_plots = show_plots
     )
-    return(perf_plot_spec)
+    return(ass_2d_spec)
 }
 
 
 infer_pps <- function(
-    perf_plot_spec,
+    ass_2d_spec,
     model_spec,
     data_spec
 ){
-    # Prepare for assess_model()
-    this_pps <- perf_plot_spec
+    # Prepare for assess_2d()
+    this_pps <- ass_2d_spec
     this_pps$fname <- file.path(
         model_spec$directory,
         paste0(
-            perf_plot_spec$x_metric, "_vs_", perf_plot_spec$y_metric,
-            stringr::str_extract(perf_plot_spec$fname, "\\..+$")
+            ass_2d_spec$x_metric, "_vs_", ass_2d_spec$y_metric,
+            stringr::str_extract(ass_2d_spec$fname, "\\..+$")
         )
     )
     if(data_spec$cohort == "test")
         this_pps$fname <- mirror_directory(
             filepath = this_pps$fname,
-            mirror = perf_plot_spec$model_tree_mirror
+            mirror = ass_2d_spec$model_tree_mirror
         )
     this_pps$title <- paste0(
         data_spec$name, " ", data_spec$cohort, ", ",

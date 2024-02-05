@@ -1,4 +1,4 @@
-test_that("assess_model() works", {
+test_that("assess_2d() works", {
   
   set.seed(132)
   n <- 20
@@ -45,7 +45,7 @@ test_that("assess_model() works", {
       nFold = n_fold, lambda = lambda, zeroSum = FALSE),
     response_type = "binary"
   )
-  perf_plot_spec <- PerfPlotSpec(
+  ass_2d_spec <- Ass2dSpec(
     fname = file.path(dir, "rpp.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
@@ -65,41 +65,41 @@ test_that("assess_model() works", {
     )
   }
 
-  tbl <- assess_model(
+  tbl <- assess_2d(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
     data_spec = data_spec,
     model_spec = model_spec_1,
-    perf_plot_spec = perf_plot_spec
+    ass_2d_spec = ass_2d_spec
   )$data
   expect_s3_class(tbl, "tbl_df")
 
   
-  perf_plot_spec$benchmark <- "ipi"
-  perf_plot_spec$directory <- file.path(dir, "logrank.pdf")
-  perf_plot_spec$y_metric <- "logrank"
-  perf_plot_spec$scale_y <- "log10"
-  tbl <- assess_model(
+  ass_2d_spec$benchmark <- "ipi"
+  ass_2d_spec$directory <- file.path(dir, "logrank.pdf")
+  ass_2d_spec$y_metric <- "logrank"
+  ass_2d_spec$scale_y <- "log10"
+  tbl <- assess_2d(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
     data_spec = data_spec,
     model_spec = model_spec_2,
-    perf_plot_spec = perf_plot_spec
+    ass_2d_spec = ass_2d_spec
   )$data
   expect_equal(names(tbl), c("rpp", "logrank", "cutoff", "split", "model"))
 
-  perf_plot_spec$y_metric <- "precision_ci"
-  perf_plot_spec$ci_level <- .95
-  perf_plot_spec$directory <- file.path(dir, "precision_ci.pdf")
-  perf_plot_spec$scale_y <- "identity"
-  perf_plot_spec$title <- "Lower precision CI boundary (upper for ipi)"
-  perf_plot_spec$show_plots <- FALSE
-  tbl <- assess_model(
+  ass_2d_spec$y_metric <- "precision_ci"
+  ass_2d_spec$ci_level <- .95
+  ass_2d_spec$directory <- file.path(dir, "precision_ci.pdf")
+  ass_2d_spec$scale_y <- "identity"
+  ass_2d_spec$title <- "Lower precision CI boundary (upper for ipi)"
+  ass_2d_spec$show_plots <- FALSE
+  tbl <- assess_2d(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
     data_spec = data_spec,
     model_spec = model_spec_2,
-    perf_plot_spec = perf_plot_spec
+    ass_2d_spec = ass_2d_spec
   )$data
   expect_equal(names(tbl), c("rpp", "precision_ci", "cutoff", "split", "model"))
 })

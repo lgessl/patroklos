@@ -1,26 +1,26 @@
 #' @importFrom rlang .data
 plot_2d_metric <- function(
-    perf_plot_spec,
+    ass_2d_spec,
     quiet = FALSE,
     msg_prefix = ""
 ){
     # Extract
-    data <- perf_plot_spec$data |> dplyr::distinct()
-    x_metric <- perf_plot_spec$x_metric
-    y_metric <- perf_plot_spec$y_metric
+    data <- ass_2d_spec$data |> dplyr::distinct()
+    x_metric <- ass_2d_spec$x_metric
+    y_metric <- ass_2d_spec$y_metric
     # Constraint data to range
     data <- data[
-        data[[x_metric]] >= perf_plot_spec$xlim[1] &
-        data[[x_metric]] <= perf_plot_spec$xlim[2],
+        data[[x_metric]] >= ass_2d_spec$xlim[1] &
+        data[[x_metric]] <= ass_2d_spec$xlim[2],
     ]
     data <- data[
-        data[[y_metric]] >= perf_plot_spec$ylim[1] &
-        data[[y_metric]] <= perf_plot_spec$ylim[2],
+        data[[y_metric]] >= ass_2d_spec$ylim[1] &
+        data[[y_metric]] <= ass_2d_spec$ylim[2],
     ]
     bm_data <- NULL
-    if(!is.null(perf_plot_spec$benchmark)){
-        bm_data <- data[data[["model"]] == perf_plot_spec$benchmark, ]
-        data <- data[data[["model"]] != perf_plot_spec$benchmark, ]
+    if(!is.null(ass_2d_spec$benchmark)){
+        bm_data <- data[data[["model"]] == ass_2d_spec$benchmark, ]
+        data <- data[data[["model"]] != ass_2d_spec$benchmark, ]
     }
 
     plt <- ggplot2::ggplot(
@@ -31,24 +31,24 @@ plot_2d_metric <- function(
             color = .data[["model"]]
             )
         ) +
-        ggplot2::geom_point(alpha = perf_plot_spec$alpha) +
+        ggplot2::geom_point(alpha = ass_2d_spec$alpha) +
         ggplot2::labs(
-            title = perf_plot_spec$title, 
-            x = perf_plot_spec$x_lab, 
-            y = perf_plot_spec$y_lab
+            title = ass_2d_spec$title, 
+            x = ass_2d_spec$x_lab, 
+            y = ass_2d_spec$y_lab
         ) +
-        ggplot2::scale_x_continuous(trans = perf_plot_spec$scale_x) + 
-        ggplot2::scale_y_continuous(trans = perf_plot_spec$scale_y)
-    if(!is.null(perf_plot_spec$hline))
-        plt <- plt + do.call(ggplot2::geom_hline, perf_plot_spec$hline)
-    if(!is.null(perf_plot_spec$vline))
-        plt <- plt + do.call(ggplot2::geom_vline, perf_plot_spec$vline)
-    if(!is.null(perf_plot_spec$text))
-        plt <- plt + do.call(ggplot2::geom_label, perf_plot_spec$text)
-    if(!is.null(perf_plot_spec$benchmark) && !is.null(bm_data)){
+        ggplot2::scale_x_continuous(trans = ass_2d_spec$scale_x) + 
+        ggplot2::scale_y_continuous(trans = ass_2d_spec$scale_y)
+    if(!is.null(ass_2d_spec$hline))
+        plt <- plt + do.call(ggplot2::geom_hline, ass_2d_spec$hline)
+    if(!is.null(ass_2d_spec$vline))
+        plt <- plt + do.call(ggplot2::geom_vline, ass_2d_spec$vline)
+    if(!is.null(ass_2d_spec$text))
+        plt <- plt + do.call(ggplot2::geom_label, ass_2d_spec$text)
+    if(!is.null(ass_2d_spec$benchmark) && !is.null(bm_data)){
         bm_alpha <- ifelse(
-            perf_plot_spec$smooth_benchmark, 
-            perf_plot_spec$alpha,
+            ass_2d_spec$smooth_benchmark, 
+            ass_2d_spec$alpha,
             1.
         )
         plt <- plt + ggplot2::geom_point(
@@ -56,46 +56,46 @@ plot_2d_metric <- function(
             alpha = bm_alpha
         )
     }
-    if(!is.null(perf_plot_spec$colors)){
-        plt <- plt + ggplot2::scale_color_manual(values = perf_plot_spec$colors)
+    if(!is.null(ass_2d_spec$colors)){
+        plt <- plt + ggplot2::scale_color_manual(values = ass_2d_spec$colors)
     }
-    if(!is.null(perf_plot_spec$smooth_method)){
+    if(!is.null(ass_2d_spec$smooth_method)){
         plt <- plt + ggplot2::geom_smooth(
-            method = perf_plot_spec$smooth_method,
+            method = ass_2d_spec$smooth_method,
             se = FALSE,
             formula = y ~ x
         )
-        if(perf_plot_spec$smooth_benchmark && !is.null(bm_data)){
+        if(ass_2d_spec$smooth_benchmark && !is.null(bm_data)){
             plt <- plt + ggplot2::geom_smooth(
                 data = bm_data,
-                method = perf_plot_spec$smooth_method,
+                method = ass_2d_spec$smooth_method,
                 se = FALSE,
                 formula = y ~ x
             )
         }
     }
 
-    if(perf_plot_spec$show_plots){
+    if(ass_2d_spec$show_plots){
         print(plt)
     }
 
     if(!quiet)
-        message(msg_prefix, "Saving 2D metric plot to ", perf_plot_spec$fname)
+        message(msg_prefix, "Saving 2D metric plot to ", ass_2d_spec$fname)
 
     ggplot2::ggsave(
-        perf_plot_spec$fname, 
+        ass_2d_spec$fname, 
         plt, 
-        width = perf_plot_spec$width, 
-        height = perf_plot_spec$height, 
-        units = perf_plot_spec$units
+        width = ass_2d_spec$width, 
+        height = ass_2d_spec$height, 
+        units = ass_2d_spec$units
     )
 
     # Save to csv (if wanted)
-    if(perf_plot_spec$fellow_csv){
-        csv_fname <- stringr::str_replace(perf_plot_spec$fname, "\\..+", ".csv")
+    if(ass_2d_spec$fellow_csv){
+        csv_fname <- stringr::str_replace(ass_2d_spec$fname, "\\..+", ".csv")
         if(!quiet)
             message(msg_prefix, "Saving 2D metric table to ", csv_fname)
-        readr::write_csv(perf_plot_spec$data, csv_fname)
+        readr::write_csv(ass_2d_spec$data, csv_fname)
     }
 
     return(plt)
@@ -106,7 +106,7 @@ plot_2d_metric <- function(
 plot_risk_scores <- function(
     predicted,
     actual,
-    perf_plot_spec,
+    ass_2d_spec,
     ncol = 2,
     quiet = FALSE,
     msg_prefix = ""
@@ -135,8 +135,8 @@ plot_risk_scores <- function(
 
     n_split <- sum(!sapply(predicted, is.null))
     nrow <- ceiling(n_split/ncol)
-    perf_plot_spec$height <- nrow * perf_plot_spec$height
-    perf_plot_spec$width <- ncol * perf_plot_spec$width
+    ass_2d_spec$height <- nrow * ass_2d_spec$height
+    ass_2d_spec$width <- ncol * ass_2d_spec$width
 
     plt <- ggplot2::ggplot(
         tbl,
@@ -153,28 +153,28 @@ plot_risk_scores <- function(
         ) +
         ggplot2::geom_point() +
         ggplot2::labs(
-            title = perf_plot_spec$title
+            title = ass_2d_spec$title
         )
-    if(!is.null(perf_plot_spec$colors)){
-        plt <- plt + ggplot2::scale_color_manual(values = perf_plot_spec$colors)
+    if(!is.null(ass_2d_spec$colors)){
+        plt <- plt + ggplot2::scale_color_manual(values = ass_2d_spec$colors)
     }
 
-    if(perf_plot_spec$show_plots){
+    if(ass_2d_spec$show_plots){
         print(plt)
     }
 
     if(!quiet)
-        message(msg_prefix, "Saving scores plot to ", perf_plot_spec$fname)
+        message(msg_prefix, "Saving scores plot to ", ass_2d_spec$fname)
     ggplot2::ggsave(
-        perf_plot_spec$fname, 
+        ass_2d_spec$fname, 
         plt, 
-        width = perf_plot_spec$width, 
-        height = perf_plot_spec$height, 
-        units = perf_plot_spec$units
+        width = ass_2d_spec$width, 
+        height = ass_2d_spec$height, 
+        units = ass_2d_spec$units
     )
 
-    if(perf_plot_spec$fellow_csv){
-        csv_fname <- stringr::str_replace(perf_plot_spec$fname, "\\..+$", ".csv")
+    if(ass_2d_spec$fellow_csv){
+        csv_fname <- stringr::str_replace(ass_2d_spec$fname, "\\..+$", ".csv")
         if(!quiet)
             message(msg_prefix, "Saving scores table to ", csv_fname)
         readr::write_csv(tbl, csv_fname)

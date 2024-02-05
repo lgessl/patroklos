@@ -64,7 +64,7 @@ new_DataSpec <- function(
 #' Default is `"pheno.csv"`. See details for the expected format.
 #' @param cohort string in `c("train", "test")` or `NULL`. The cohort, train or test, to 
 #' prepare the data for. If NULL, the default, some functions will set it themselves
-#' (e.g. `training_camp()` to `"train"`, `assess_model()` to `"test"`), others will
+#' (e.g. `training_camp()` to `"train"`, `assess_2d()` to `"test"`), others will
 #' throw an error.
 #' @param patient_id_col string. The name of the column in the pheno data that holds 
 #' the patient identifiers. Default is `"patient_id"`.

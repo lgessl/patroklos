@@ -1,4 +1,4 @@
-test_that("assessment_center() works", {
+test_that("assess_2d_center() works", {
 
   set.seed(4352)
 
@@ -58,7 +58,7 @@ test_that("assessment_center() works", {
   )
 
   res_dir <- file.path(base_dir, "results")
-  perf_plot_spec <- PerfPlotSpec(
+  ass_2d_spec <- Ass2dSpec(
     fname = file.path(model_dir, "perf_plot.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
@@ -71,40 +71,40 @@ test_that("assessment_center() works", {
       color = "red", angle = 90),
   )
 
-  assessment_center(
+  assess_2d_center(
       model_spec_list = model_spec_list,
       data_spec = data_spec,
-      perf_plot_spec = perf_plot_spec,
+      ass_2d_spec = ass_2d_spec,
       cohort = c("train", "test")
   )
-  expect_true(file.exists(perf_plot_spec$fname))
+  expect_true(file.exists(ass_2d_spec$fname))
   expect_true(file.exists(file.path(res_dir, "logistic/2/scores.pdf")))
   expect_true(file.exists(file.path(res_dir, "cox/2/rpp_vs_prec.csv")))
 
   model_spec_1$split_index <- 1
-  perf_plot_spec$y_metric <- "logrank"
-  perf_plot_spec$scale_y <- "log10"
-  perf_plot_spec$fname <- file.path(model_dir, "logrank.pdf")
-  perf_plot_spec$benchmark <- NULL
-  perf_plot_spec$text <- NULL
-  perf_plot_spec$scores_plot <- FALSE
-  assessment_center(
+  ass_2d_spec$y_metric <- "logrank"
+  ass_2d_spec$scale_y <- "log10"
+  ass_2d_spec$fname <- file.path(model_dir, "logrank.pdf")
+  ass_2d_spec$benchmark <- NULL
+  ass_2d_spec$text <- NULL
+  ass_2d_spec$scores_plot <- FALSE
+  assess_2d_center(
     model_spec_list = list(model_spec_1),
     data_spec = data_spec,
-    perf_plot_spec = perf_plot_spec,
+    ass_2d_spec = ass_2d_spec,
     comparison_plot = FALSE,
     cohorts = "test"
   )
 
   model_spec_2$time_cutoffs <- 1.5
-  perf_plot_spec$y_metric <- "precision_ci"
-  perf_plot_spec$ci_level <- .95
-  perf_plot_spec$fname <- file.path(model_dir, "precision_ci.pdf")
-  perf_plot_spec$benchmark <- "ipi"
-  assessment_center(
+  ass_2d_spec$y_metric <- "precision_ci"
+  ass_2d_spec$ci_level <- .95
+  ass_2d_spec$fname <- file.path(model_dir, "precision_ci.pdf")
+  ass_2d_spec$benchmark <- "ipi"
+  assess_2d_center(
     model_spec_list = list(model_spec_2),
     data_spec = data_spec,
-    perf_plot_spec = perf_plot_spec,
+    ass_2d_spec = ass_2d_spec,
     comparison_plot = TRUE,
     cohorts = "train"
   )

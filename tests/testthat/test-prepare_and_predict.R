@@ -38,7 +38,7 @@ test_that("prepare_and_fit", {
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL
   )
-  perf_plot_spec <- PerfPlotSpec(
+  ass_2d_spec <- Ass2dSpec(
     fname = "dummy.pdf",
     x_metric = "rpp",
     y_metric = "prec",
@@ -59,7 +59,7 @@ test_that("prepare_and_fit", {
       data_spec = data_spec,
       model_spec = model_spec,
       lambda = "lambda.min",
-      perf_plot_spec = perf_plot_spec
+      ass_2d_spec = ass_2d_spec
   )
 
   expect_true(is.list(res))

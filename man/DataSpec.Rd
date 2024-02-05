@@ -42,7 +42,7 @@ Default is \code{"pheno.csv"}. See details for the expected format.}
 
 \item{cohort}{string in \code{c("train", "test")} or \code{NULL}. The cohort, train or test, to
 prepare the data for. If NULL, the default, some functions will set it themselves
-(e.g. \code{training_camp()} to \code{"train"}, \code{assess_model()} to \code{"test"}), others will
+(e.g. \code{training_camp()} to \code{"train"}, \code{assess_2d()} to \code{"test"}), others will
 throw an error.}
 
 \item{patient_id_col}{string. The name of the column in the pheno data that holds

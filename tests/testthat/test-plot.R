@@ -6,7 +6,7 @@ test_that("plot_2d_metric() works", {
   n_row <- 30
 
   dir <- withr::local_tempdir()
-  perf_plot_spec <- PerfPlotSpec(
+  ass_2d_spec <- Ass2dSpec(
     fname = file.path(dir, "test.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
@@ -23,7 +23,7 @@ test_that("plot_2d_metric() works", {
     hline = list(yintercept = 0.5, linetype = "dashed"),
     text = list(ggplot2::aes(x = 0.5, y = 0.5, label = "this text"))
   )
-  perf_plot_spec$data <- tibble::tibble(
+  ass_2d_spec$data <- tibble::tibble(
     rpp = runif(n_row),
     prec = runif(n_row),
     model = sample(c("model", "bm"), n_row, replace = TRUE)
@@ -31,17 +31,17 @@ test_that("plot_2d_metric() works", {
 
   expect_no_error(
     plot_2d_metric(
-      perf_plot_spec = perf_plot_spec,
+      ass_2d_spec = ass_2d_spec,
       quiet = TRUE
     )
   )
-  perf_plot_spec$benchmark <- NULL
-  perf_plot_spec$hline <- NULL
-  perf_plot_spec$text <- NULL
-  perf_plot_spec$vline <- list(xintercept = 0.5, color = "blue")
+  ass_2d_spec$benchmark <- NULL
+  ass_2d_spec$hline <- NULL
+  ass_2d_spec$text <- NULL
+  ass_2d_spec$vline <- list(xintercept = 0.5, color = "blue")
   expect_no_error(
     plot_2d_metric(
-      perf_plot_spec = perf_plot_spec,
+      ass_2d_spec = ass_2d_spec,
       quiet = TRUE
     )
   )
@@ -59,7 +59,7 @@ test_that("plot_risk_scores() works", {
   actual <- l[[1]]
   predicted <- l[[2]]
   dir <- withr::local_tempdir()
-  perf_plot_spec <- PerfPlotSpec(
+  ass_2d_spec <- Ass2dSpec(
     fname = file.path(dir, "scores.pdf"),
     x_metric = "rank",
     y_metric = "scores",
@@ -72,7 +72,7 @@ test_that("plot_risk_scores() works", {
     plot_risk_scores(
       predicted = predicted,
       actual = actual,
-      perf_plot_spec = perf_plot_spec,
+      ass_2d_spec = ass_2d_spec,
       quiet = TRUE
     )
   )

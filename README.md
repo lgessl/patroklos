@@ -29,7 +29,7 @@ Using the lymphomaSurvivalPipeline means minimal coding effort for you since it 
 
 - a data set (like the names of certain columns/features): `DataSpec`,
 - a model (like the fitter function, which features to add to the predictor variables from the pheno data): `ModelSpec`, and
-- a plot assessing a model's performance (e.g. that you want to plot the rate of positive predictions against the precision): `PerfPlotSpec`.
+- a plot assessing a model's performance (e.g. that you want to plot the rate of positive predictions against the precision): `Ass2dSpec`.
 
 ## Read the docs
 

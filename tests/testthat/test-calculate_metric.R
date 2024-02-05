@@ -17,7 +17,7 @@ test_that("calculate_2d_metric() works", {
     split_index = split_index,
     time_cutoffs = 2.
   )
-  perf_plot_spec <- PerfPlotSpec(
+  ass_2d_spec <- Ass2dSpec(
     fname = "test.pdf",
     x_metric = "rpp",
     y_metric = "prec",
@@ -34,36 +34,36 @@ test_that("calculate_2d_metric() works", {
     train_prop = .66
   )
 
-  perf_plot_spec <- calculate_2d_metric(
+  ass_2d_spec <- calculate_2d_metric(
     actual = actual,
     predicted = predicted,
     benchmark = benchmark,
-    perf_plot_spec = perf_plot_spec,
+    ass_2d_spec = ass_2d_spec,
     model_spec = model_spec
   )
-  perf_tbl <- perf_plot_spec$data
+  perf_tbl <- ass_2d_spec$data
   expect_equal(names(perf_tbl), c("rpp", "prec", "cutoff", "split", "model"))
   expect_s3_class(perf_tbl, "tbl_df")
-  expect_true(all(perf_tbl[["model"]] %in% c(model_spec$name, perf_plot_spec$benchmark)))
+  expect_true(all(perf_tbl[["model"]] %in% c(model_spec$name, ass_2d_spec$benchmark)))
   expect_true(perf_tbl[, 1:4] |> as.matrix() |> is.numeric() |> all())
 
-  perf_plot_spec$y_metric <- "logrank"
-  perf_plot_spec <- calculate_2d_metric(
+  ass_2d_spec$y_metric <- "logrank"
+  ass_2d_spec <- calculate_2d_metric(
     actual = actual,
     predicted = predicted,
-    perf_plot_spec = perf_plot_spec,
+    ass_2d_spec = ass_2d_spec,
     model_spec = model_spec,
     benchmark = benchmark,
     pheno_tbl = pheno_tbl,
     data_spec = data_spec
   )
 
-  perf_plot_spec$y_metric <- "precision_ci"
-  perf_plot_spec$ci_level <- .95
-  perf_plot_spec <- calculate_2d_metric(
+  ass_2d_spec$y_metric <- "precision_ci"
+  ass_2d_spec$ci_level <- .95
+  ass_2d_spec <- calculate_2d_metric(
     actual = actual,
     predicted = predicted,
-    perf_plot_spec = perf_plot_spec,
+    ass_2d_spec = ass_2d_spec,
     model_spec = model_spec,
     benchmark = benchmark,
     pheno_tbl = pheno_tbl,
