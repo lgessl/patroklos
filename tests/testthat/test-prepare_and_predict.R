@@ -54,12 +54,13 @@ test_that("prepare_and_fit", {
 
   data_spec$cohort <- "test"
   res <- prepare_and_predict(
-      expr_mat = expr_mat,
-      pheno_tbl = pheno_tbl,
-      data_spec = data_spec,
-      model_spec = model_spec,
-      lambda = "lambda.min",
-      ass_2d_spec = ass_2d_spec
+    expr_mat = expr_mat,
+    pheno_tbl = pheno_tbl,
+    data_spec = data_spec,
+    model_spec = model_spec,
+    lambda = "lambda.min",
+    pivot_time_cutoff = 2,
+    benchmark_col = "ipi"
   )
 
   expect_true(is.list(res))

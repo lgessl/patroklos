@@ -3,7 +3,7 @@
 \name{assess_2d}
 \alias{assess_2d}
 \title{Assess a model on a single data set in terms how well it filters high-risk
-samples}
+samples in a 2d plot}
 \usage{
 assess_2d(
   expr_mat,

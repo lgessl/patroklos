@@ -1,5 +1,5 @@
 #' @title Assess a model on a single data set in terms how well it filters high-risk
-#' samples
+#' samples in a 2d plot
 #' @description Given a data set and a model, assess how well the model can filter
 #' high-risk patients. This includes: 
 #' 1. A 2D scatter plot of two performance metrics, namely the `x_metric` and `y_metric`
@@ -61,7 +61,8 @@ assess_2d <- function(
         data_spec = data_spec,
         model_spec = model_spec,
         lambda = ass_2d_spec$lambda,
-        ass_2d_spec = ass_2d_spec
+        pivot_time_cutoff = ass_2d_spec$pivot_time_cutoff,
+        benchmark_col = ass_2d_spec$benchmark
     )
     ass_2d_spec <- calculate_2d_metric(
         actual = prep[["actual"]],

@@ -10,7 +10,8 @@ prepare_and_predict(
   data_spec,
   model_spec,
   lambda,
-  ass_2d_spec = NULL
+  pivot_time_cutoff,
+  benchmark_col = NULL
 )
 }
 \arguments{
@@ -26,22 +27,22 @@ constructor \code{DataSpec()} for details.}
 constructor \code{ModelSpec()} for details.}
 
 \item{lambda}{string or numeric. The lambda regularization parameter of the model
-to predict with. Technically, we will pass it to the \code{s} parameter of \code{predict()}
+to predict with. Technically, we will pass it to the \code{s} parameter of the \code{predict()}
 method of the object returned by the \code{fitter} attribute of the \code{ModelSpec} object.
 See, e.g., \code{\link[glmnet:predict.cv.glmnet]{glmnet::predict.cv.glmnet()}} or \code{\link[zeroSum:predict.zeroSum]{zeroSum::predict.zeroSum()}}.}
 
-\item{ass_2d_spec}{Ass2dSpec object. If provided, we use its
-\itemize{
-\item \code{benchmark} attribute to provide the benchmark,
-\item \code{pivot_time_cutoff} to provide the actual sample risks by overwriting
-\code{model_spec$time_cutoffs}
-}}
+\item{pivot_time_cutoff}{numeric. Time-to-event threshold that divides samples into a
+high/low-risk (time to event below/above \code{pivot_time_cutoff}) group. See return value
+below.}
+
+\item{benchmark_col}{string or NULL. Column in the pheno tibble holding the numeric
+benchmark values. If NULL, no benchmark is provided.}
 }
 \value{
 A list holding:
 \itemize{
 \item \code{"predicted"}: a list of named numeric vectors, the scores output by the model for
-each split, sorted in decreasing order.
+each split (split index corresponding to list index).
 \item "actual": a list of named numeric vectors, for each split the actual values of
 whether time to event was above or below \code{model_spec$time_cutoffs}, encoded as 1
 ("high risk") and 0 ("low risk"), respectively.
@@ -52,7 +53,8 @@ For every split, the names of all three vectors match.
 }
 \description{
 Given an expression matrix and a pheno tibble, prepare the data for a
-certain model and predict with this model. Do this for all splits into training and
-test cohort. As with \verb{[prepare_and_fit()]}, we do not support multiple time cutoffs
-at this step; this is \verb{[assess_2d_center()]}'s job.
+certain model and predict with this model, provide the actual and optionally the
+benchmark values. Do this for all splits into training and test cohort. As with
+\verb{[prepare_and_fit()]}, we do not support multiple time cutoffs at this step; this
+is \verb{[assess_2d_center()]}'s job.
 }

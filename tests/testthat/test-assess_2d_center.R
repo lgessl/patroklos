@@ -72,10 +72,10 @@ test_that("assess_2d_center() works", {
   )
 
   assess_2d_center(
-      model_spec_list = model_spec_list,
-      data_spec = data_spec,
-      ass_2d_spec = ass_2d_spec,
-      cohort = c("train", "test")
+    model_spec_list = model_spec_list,
+    data_spec = data_spec,
+    ass_2d_spec = ass_2d_spec,
+    cohort = c("train", "test")
   )
   expect_true(file.exists(ass_2d_spec$fname))
   expect_true(file.exists(file.path(res_dir, "logistic/2/scores.pdf")))
