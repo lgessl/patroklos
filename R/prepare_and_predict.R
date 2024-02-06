@@ -40,9 +40,10 @@ prepare_and_predict <- function(
     pivot_time_cutoff,
     benchmark_col = NULL
 ){
-    if(length(model_spec$time_cutoffs) > 1L){
+    if(length(model_spec$time_cutoffs) > 1L)
         stop("Multiple time cutoffs are not supported")
-    }
+    if(is.null(data_spec$cohort)) # Usually predict for new test data
+        data_spec$cohort <- "test"
 
     # Retrieve model
     fit_path <- file.path(model_spec$directory, model_spec$fit_fname)
@@ -51,7 +52,7 @@ prepare_and_predict <- function(
     }
     fits <- readRDS(file.path(model_spec$directory, model_spec$fit_fname))
 
-    model_spec$response_type <- "binary" # always evaluate for descretized response
+    model_spec$response_type <- "binary" # Always evaluate for descretized response
     predicted_list <- vector("list", length(model_spec$split_index))
     actual_list <- vector("list", length(model_spec$split_index))
 

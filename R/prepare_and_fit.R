@@ -27,7 +27,8 @@ prepare_and_fit <- function(
         stop("model_spec_list must be a list of ModelSpec objects")
     if(!inherits(data_spec, "DataSpec"))
         stop("data_spec must be a DataSpec object")
-
+    if(is.null(data_spec$cohort)) # Usually fit to train data
+        data_spec$cohort <- "train"
     # Extract
     directory <- model_spec$directory
     # Ensure model directory exists
