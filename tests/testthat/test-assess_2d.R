@@ -61,7 +61,8 @@ test_that("assess_2d() works", {
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
       data_spec = data_spec,
-      model_spec = model_spec
+      model_spec = model_spec,
+      quiet = TRUE
     )
   }
 
@@ -70,7 +71,8 @@ test_that("assess_2d() works", {
     pheno_tbl = pheno_tbl,
     data_spec = data_spec,
     model_spec = model_spec_1,
-    ass_spec_2d = ass_spec_2d
+    ass_spec_2d = ass_spec_2d,
+    quiet = TRUE
   )$data
   expect_s3_class(tbl, "tbl_df")
 
@@ -84,7 +86,8 @@ test_that("assess_2d() works", {
     pheno_tbl = pheno_tbl,
     data_spec = data_spec,
     model_spec = model_spec_2,
-    ass_spec_2d = ass_spec_2d
+    ass_spec_2d = ass_spec_2d,
+    quiet = TRUE
   )$data
   expect_equal(names(tbl), c("rpp", "logrank", "cutoff", "split", "model"))
 
@@ -99,7 +102,8 @@ test_that("assess_2d() works", {
     pheno_tbl = pheno_tbl,
     data_spec = data_spec,
     model_spec = model_spec_2,
-    ass_spec_2d = ass_spec_2d
+    ass_spec_2d = ass_spec_2d,
+    quiet = TRUE
   )$data
   expect_equal(names(tbl), c("rpp", "precision_ci", "cutoff", "split", "model"))
 })

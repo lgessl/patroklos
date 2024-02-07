@@ -49,7 +49,8 @@ test_that("prepare_and_fit", {
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
       data_spec = data_spec,
-      model_spec = model_spec
+      model_spec = model_spec,
+      quiet = TRUE
   )
 
   data_spec$cohort <- "test"

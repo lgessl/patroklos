@@ -38,7 +38,8 @@ test_that("training_camp() works", {
   expect_no_error(
     training_camp(
       data_spec = data_spec,
-      model_spec_list = list(model_spec_1, model_spec_2)
+      model_spec_list = list(model_spec_1, model_spec_2),
+      quiet = TRUE
     )
   )
 })

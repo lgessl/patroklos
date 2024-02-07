@@ -33,8 +33,9 @@ prepare_and_fit <- function(
     directory <- model_spec$directory
     # Ensure model directory exists
     if(!dir.exists(directory)){
-        message(msg_prefix, "Creating ", directory)
         dir.create(directory, recursive = TRUE)
+        if(!quiet)
+            message(msg_prefix, "Creating ", directory)
     }
     if(is.null(data_spec$cohort))
         data_spec$cohort <- "train"

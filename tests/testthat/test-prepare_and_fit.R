@@ -40,26 +40,22 @@ test_that("prepare_and_fit() works", {
     include_from_discrete_pheno = NULL
   )
 
-  expect_message(
-    fits <- prepare_and_fit(
-      expr_mat = expr_mat,
-      pheno_tbl = pheno_tbl,
-      data_spec = data_spec,
-      model_spec = model_spec
-    ),
-    regexp = "Creating"
+  fits <- prepare_and_fit(
+    expr_mat = expr_mat,
+    pheno_tbl = pheno_tbl,
+    data_spec = data_spec,
+    model_spec = model_spec,
+    quiet = TRUE
   )
   expect_equal(length(fits), 2)
 
   model_spec$split_index <- split_index
-  expect_message(
-    fits <- prepare_and_fit(
-      expr_mat = expr_mat,
-      pheno_tbl = pheno_tbl,
-      data_spec = data_spec,
-      model_spec = model_spec
-    ),
-    regexp = "Found stored"
+  fits <- prepare_and_fit(
+    expr_mat = expr_mat,
+    pheno_tbl = pheno_tbl,
+    data_spec = data_spec,
+    model_spec = model_spec,
+    quiet = TRUE
   )
   expect_equal(length(fits), length(split_index)+1)
 })

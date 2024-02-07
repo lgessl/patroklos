@@ -54,7 +54,8 @@ test_that("assess_2d_center() works", {
 
   training_camp(
     data_spec = data_spec,
-    model_spec_list = model_spec_list
+    model_spec_list = model_spec_list,
+    quiet = TRUE
   )
 
   res_dir <- file.path(base_dir, "results")
@@ -75,7 +76,8 @@ test_that("assess_2d_center() works", {
     model_spec_list = model_spec_list,
     data_spec = data_spec,
     ass_spec_2d = ass_spec_2d,
-    cohort = c("train", "test")
+    cohort = c("train", "test"),
+    quiet = TRUE
   )
   expect_true(file.exists(ass_spec_2d$file))
   expect_true(file.exists(file.path(res_dir, "logistic/2/scores.pdf")))
@@ -93,7 +95,8 @@ test_that("assess_2d_center() works", {
     data_spec = data_spec,
     ass_spec_2d = ass_spec_2d,
     comparison_plot = FALSE,
-    cohorts = "test"
+    cohorts = "test",
+    quiet = TRUE
   )
 
   model_spec_2$time_cutoffs <- 1.5
@@ -106,7 +109,8 @@ test_that("assess_2d_center() works", {
     data_spec = data_spec,
     ass_spec_2d = ass_spec_2d,
     comparison_plot = TRUE,
-    cohorts = "train"
+    cohorts = "train",
+    quiet = TRUE
   )
   expect_true(file.exists(file.path(model_dir, "logistic/1-5/rpp_vs_precision_ci.pdf")))
 })

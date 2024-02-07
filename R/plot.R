@@ -107,8 +107,8 @@ plot_risk_scores <- function(
     predicted,
     actual,
     ass_spec_2d,
+    quiet,
     ncol = 2,
-    quiet = FALSE,
     msg_prefix = ""
 ){
     # Get rid of NAs

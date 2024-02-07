@@ -10,7 +10,7 @@
 #' the patient identifiers.
 #' @param gene_id_col string. The name of the column in `expr` that holds the
 #' gene identifiers.
-#' @param verbose logical. Whether to print messages. Default is `FALSE`.
+#' @param quiet logical. Whether to print messages. Default is `FALSE`.
 #' @return A list with two tibbles named `expr` and `pheno`. Matching and sorted
 #' expression and pheno data, i.e. the vectors of patient identifiers are 
 #' identical.
@@ -20,7 +20,7 @@ ensure_patients_match <- function(
     pheno_tbl,
     patient_id_col = "patient_id",
     gene_id_col = "gene_id",
-    verbose = TRUE
+    quiet = FALSE
 ){
     if(!is.data.frame(expr_tbl)){
         stop("expr_tbl must inherit from `data.frame`.")
@@ -32,14 +32,14 @@ ensure_patients_match <- function(
     check_tbl_columns_exist(expr_tbl, "expr_tbl", gene_id_col)
 
     if(colnames(expr_tbl)[1] != gene_id_col){
-        if(verbose){
+        if(!quiet){
         message("Moving ", gene_id_col, " column to first column")
         }
         expr_tbl <- expr_tbl |> 
             dplyr::relocate(dplyr::all_of(gene_id_col))
     }
 
-    if(verbose){
+    if(!quiet){
         message(nrow(pheno_tbl), " samples in pheno before matching.\n",
             ncol(expr_tbl) - 1, " samples in expr before matching.")
     }
@@ -54,7 +54,7 @@ ensure_patients_match <- function(
     pheno_tbl <- pheno_tbl[pheno_tbl[[patient_id_col]] %in% intersect_ids, ]
     pheno_tbl <- pheno_tbl[order(pheno_tbl[[patient_id_col]]), ]
 
-    if(verbose){
+    if(!quiet){
         message(nrow(pheno_tbl), " samples after matching.")
     }
     res <- list(

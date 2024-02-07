@@ -92,6 +92,7 @@ assess_2d <- function(
             predicted = prep[["predicted"]],
             actual = prep[["actual"]],
             ass_spec_2d = pps_scores,
+            quiet = quiet,
             ncol = model_spec$plot_ncols,
             msg_prefix = msg_prefix
         )

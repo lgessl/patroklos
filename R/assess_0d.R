@@ -3,7 +3,7 @@ assess_0d <- function(
     pheno_tbl,
     data_spec,
     model_spec,
-    ass_0d_spec,
+    ass_spec_0d,
     quiet = FALSE,
     msg_prefix = ""
 ){
@@ -12,17 +12,17 @@ assess_0d <- function(
         pheno_tbl = pheno_tbl,
         data_spec = data_spec,
         model_spec = model_spec,
-        lambda = ass_0d_spec$lambda,
-        pivot_time_cutoff = ass_0d_spec$pivot_time_cutoff,
-        benchmark_col = ass_0d_spec$benchmark
+        lambda = ass_spec_0d$lambda,
+        pivot_time_cutoff = ass_spec_0d$pivot_time_cutoff,
+        benchmark_col = ass_spec_0d$benchmark
     )
     core <- function(i){
         predicted <- prep[["predicted"]][[i]]
         actual <- prep[["actual"]][[i]]
-        available <- !is.na(predicted) & !is.na(actual)
-        do.call(ass_0d_spec$metric, list(
-            "predicted" =  predicted[available],
-            "actual" = actual[available]
+        pa <- intersect_by_names(predicted, actual, rm_na = TRUE)
+        do.call(ass_spec_0d$metric, list(
+            "predicted" =  pa[[1]],
+            "actual" = pa[[2]]
             )
         )
     }
@@ -32,7 +32,7 @@ assess_0d <- function(
 
 
 get_auc <- function(
-    predicted, 
+    predicted,
     actual
 ){
     pred_obj <- ROCR::prediction(predictions = predicted, labels = actual)

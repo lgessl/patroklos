@@ -16,7 +16,8 @@ AssSpec0d <- function(
         "metric" = metric,
         "pivot_time_cutoff" = pivot_time_cutoff,
         "lambda" = lambda,
-        "benchmark" = benchmark
+        "benchmark" = benchmark,
+        "file" = file
     )
     return(structure(ass_spec_0d, class = "AssSpec0d"))
 }

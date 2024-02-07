@@ -42,7 +42,7 @@ assess_2d_center <- function(
     pheno_tbl <- data[["pheno_tbl"]]
     ass_spec_2d$model_tree_mirror <- model_tree_mirror
 
-    message("\nASSESSING ON ", data_spec$name)
+    if(!quiet) message("\nASSESSING ON ", data_spec$name)
     for(cohort in cohorts){
         if(!quiet) message("# On ", cohort, " cohort")
         data_spec$cohort <- cohort
