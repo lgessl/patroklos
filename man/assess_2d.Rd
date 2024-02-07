@@ -10,7 +10,7 @@ assess_2d(
   pheno_tbl,
   data_spec,
   model_spec,
-  ass_2d_spec,
+  ass_spec_2d,
   quiet = FALSE,
   msg_prefix = ""
 )
@@ -28,16 +28,16 @@ constructor \code{DataSpec()} for details.}
 \item{model_spec}{ModelSpec object. The model to be assessed. See the constructor
 \code{ModelSpec()} for details.}
 
-\item{ass_2d_spec}{Ass2dSpec object. The specifications for the plot. See
-the constructor \code{Ass2dSpec()} for details. The \code{pivot_time_cutoff} attribute of
-\code{ass_2d_spec} will override the same in \code{model_spec} if both are given.}
+\item{ass_spec_2d}{AssSpec2d object. The specifications for the plot. See
+the constructor \code{AssSpec2d()} for details. The \code{pivot_time_cutoff} attribute of
+\code{ass_spec_2d} will override the same in \code{model_spec} if both are given.}
 
 \item{quiet}{logical. Whether to suppress messages. Default is \code{FALSE}.}
 
 \item{msg_prefix}{string. Prefix for messages. Default is \code{""}.}
 }
 \value{
-A Ass2dSpec object. \code{ass_2d_spec} with one additional attribute named
+A AssSpec2d object. \code{ass_spec_2d} with one additional attribute named
 \code{data} holding the data underlying the plots.
 }
 \description{
@@ -45,13 +45,13 @@ Given a data set and a model, assess how well the model can filter
 high-risk patients. This includes:
 \enumerate{
 \item A 2D scatter plot of two performance metrics, namely the \code{x_metric} and \code{y_metric}
-attributes of \code{ass_2d_spec}.
+attributes of \code{ass_spec_2d}.
 \item A plot of the risk scores of the model.
 Supports multiple splits into train and test cohorts, but not multiple time cutoffs
 or multiple models. For the this, see \code{\link[=assess_2d_center]{assess_2d_center()}}.
 }
 }
 \details{
-The Ass2dSpec class is tailored for this function, so see its constructor
-\code{\link[=Ass2dSpec]{Ass2dSpec()}} for details.
+The AssSpec2d class is tailored for this function, so see its constructor
+\code{\link[=AssSpec2d]{AssSpec2d()}} for details.
 }

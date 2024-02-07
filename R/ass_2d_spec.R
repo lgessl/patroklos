@@ -1,4 +1,4 @@
-new_Ass2dSpec <- function(
+new_AssSpec2d <- function(
     file,
     x_metric,
     y_metric,
@@ -54,7 +54,7 @@ new_Ass2dSpec <- function(
     stopifnot(is.numeric(height) && height > 0)
     stopifnot(is.character(units))
 
-    ass_2d_spec_list <- list(
+    ass_spec_2d_list <- list(
         "file" = file,
         "x_metric" = x_metric,
         "y_metric" = y_metric,
@@ -83,13 +83,13 @@ new_Ass2dSpec <- function(
         "height" = height,
         "units" = units
     )
-    return(structure(ass_2d_spec_list, class = "Ass2dSpec"))
+    return(structure(ass_spec_2d_list, class = "AssSpec2d"))
 }
 
-#' @title Create a Ass2dSpec object
-#' @description A Ass2dSpec object holds all the info on how to assess how well a 
+#' @title Create a AssSpec2d object
+#' @description A AssSpec2d object holds all the info on how to assess how well a 
 #' model filters high-risk patients. Its base object is a list. The core of the 
-#' assessment is a scatter plot of two performance measures. Moreover, a Ass2dSpec
+#' assessment is a scatter plot of two performance measures. Moreover, a AssSpec2d
 #' object holds the commands (usually bools) on whether do more assessments (that 
 #' require considerably less specifications).
 #' @param file string. The name of the file to save the plot to.
@@ -143,9 +143,9 @@ new_Ass2dSpec <- function(
 #' @param colors character vector. The colors to be used for the different models.
 #' Default is `NULL`, which means that the default colors of `ggplot2` will be used.
 #' @param units string. The units of `width` and `height`. Default is `"in"` (inches).
-#' @return A Ass2dSpec S3 object.
+#' @return A AssSpec2d S3 object.
 #' @export
-Ass2dSpec <- function(
+AssSpec2d <- function(
     file,
     x_metric,
     y_metric,
@@ -184,7 +184,7 @@ Ass2dSpec <- function(
         if(!any(stringr::str_detect(c("prevalence", "rpp"), x_metric)))
             stop("For `y_metric` = 'logrank', `x_metric` must be 'prevalence' or 'rpp'.")
     }
-    ass_2d_spec <- new_Ass2dSpec(
+    ass_spec_2d <- new_AssSpec2d(
         file = file,
         x_metric = x_metric,
         y_metric = y_metric,
@@ -213,28 +213,28 @@ Ass2dSpec <- function(
         colors = colors,
         show_plots = show_plots
     )
-    return(ass_2d_spec)
+    return(ass_spec_2d)
 }
 
 
-infer_pps <- function(
-    ass_2d_spec,
+infer_as2 <- function(
+    ass_spec_2d,
     model_spec,
     data_spec
 ){
     # Prepare for assess_2d()
-    this_pps <- ass_2d_spec
+    this_pps <- ass_spec_2d
     this_pps$file <- file.path(
         model_spec$directory,
         paste0(
-            ass_2d_spec$x_metric, "_vs_", ass_2d_spec$y_metric,
-            stringr::str_extract(ass_2d_spec$file, "\\..+$")
+            ass_spec_2d$x_metric, "_vs_", ass_spec_2d$y_metric,
+            stringr::str_extract(ass_spec_2d$file, "\\..+$")
         )
     )
     if(data_spec$cohort == "test")
         this_pps$file <- mirror_directory(
             filepath = this_pps$file,
-            mirror = ass_2d_spec$model_tree_mirror
+            mirror = ass_spec_2d$model_tree_mirror
         )
     this_pps$title <- paste0(
         data_spec$name, " ", data_spec$cohort, ", ",

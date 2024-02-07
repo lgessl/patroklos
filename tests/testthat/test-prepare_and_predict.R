@@ -38,7 +38,7 @@ test_that("prepare_and_fit", {
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL
   )
-  ass_2d_spec <- Ass2dSpec(
+  ass_spec_2d <- AssSpec2d(
     file = "dummy.pdf",
     x_metric = "rpp",
     y_metric = "prec",

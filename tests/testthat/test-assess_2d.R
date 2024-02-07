@@ -45,7 +45,7 @@ test_that("assess_2d() works", {
       nFold = n_fold, lambda = lambda, zeroSum = FALSE),
     response_type = "binary"
   )
-  ass_2d_spec <- Ass2dSpec(
+  ass_spec_2d <- AssSpec2d(
     file = file.path(dir, "rpp.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
@@ -70,36 +70,36 @@ test_that("assess_2d() works", {
     pheno_tbl = pheno_tbl,
     data_spec = data_spec,
     model_spec = model_spec_1,
-    ass_2d_spec = ass_2d_spec
+    ass_spec_2d = ass_spec_2d
   )$data
   expect_s3_class(tbl, "tbl_df")
 
   
-  ass_2d_spec$benchmark <- "ipi"
-  ass_2d_spec$directory <- file.path(dir, "logrank.pdf")
-  ass_2d_spec$y_metric <- "logrank"
-  ass_2d_spec$scale_y <- "log10"
+  ass_spec_2d$benchmark <- "ipi"
+  ass_spec_2d$directory <- file.path(dir, "logrank.pdf")
+  ass_spec_2d$y_metric <- "logrank"
+  ass_spec_2d$scale_y <- "log10"
   tbl <- assess_2d(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
     data_spec = data_spec,
     model_spec = model_spec_2,
-    ass_2d_spec = ass_2d_spec
+    ass_spec_2d = ass_spec_2d
   )$data
   expect_equal(names(tbl), c("rpp", "logrank", "cutoff", "split", "model"))
 
-  ass_2d_spec$y_metric <- "precision_ci"
-  ass_2d_spec$ci_level <- .95
-  ass_2d_spec$directory <- file.path(dir, "precision_ci.pdf")
-  ass_2d_spec$scale_y <- "identity"
-  ass_2d_spec$title <- "Lower precision CI boundary (upper for ipi)"
-  ass_2d_spec$show_plots <- FALSE
+  ass_spec_2d$y_metric <- "precision_ci"
+  ass_spec_2d$ci_level <- .95
+  ass_spec_2d$directory <- file.path(dir, "precision_ci.pdf")
+  ass_spec_2d$scale_y <- "identity"
+  ass_spec_2d$title <- "Lower precision CI boundary (upper for ipi)"
+  ass_spec_2d$show_plots <- FALSE
   tbl <- assess_2d(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
     data_spec = data_spec,
     model_spec = model_spec_2,
-    ass_2d_spec = ass_2d_spec
+    ass_spec_2d = ass_spec_2d
   )$data
   expect_equal(names(tbl), c("rpp", "precision_ci", "cutoff", "split", "model"))
 })

@@ -32,7 +32,7 @@ test_that("assess_0d() works", {
             lambda = lambda, zeroSum = FALSE),
         response_type = "binary"
     )
-    ass_0d_spec <- Ass0dSpec(
+    ass_spec_0d <- AssSpec0d(
         metric = "get_auc",
         pivot_time_cutoff = 2
     )
@@ -44,7 +44,7 @@ test_that("assess_0d() works", {
         pheno_tbl = pheno_tbl,
         data_spec = data_spec,
         model_spec = model_spec,
-        ass_0d_spec = ass_0d_spec
+        ass_spec_0d = ass_spec_0d
     )
     expect_true(is.numeric(auc))
     expect_equal(length(auc), length(split_index))

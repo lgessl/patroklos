@@ -5,7 +5,7 @@
 \title{Assess multiple models on a single data set}
 \usage{
 assess_2d_center(
-  ass_2d_spec,
+  ass_spec_2d,
   model_spec_list,
   data_spec,
   cohorts = c("train", "test"),
@@ -15,8 +15,8 @@ assess_2d_center(
 )
 }
 \arguments{
-\item{ass_2d_spec}{Ass2dSpec object. Specify the final comparison plot.
-We derive the \code{Ass2dSpec} for the single plots in a reasonable way from it.}
+\item{ass_spec_2d}{AssSpec2d object. Specify the final comparison plot.
+We derive the \code{AssSpec2d} for the single plots in a reasonable way from it.}
 
 \item{model_spec_list}{list of ModelSpec objects. Assess these models.}
 
@@ -49,6 +49,6 @@ For every
 \item model and
 \item time cutoff this model specifies,
 call \code{\link[=assess_2d]{assess_2d()}}. In addition, plot \code{x_metric} vs. \code{y_metric} attribute
-of \code{Ass2dSpec} for all models in a sinlge plot ("comparison plot").
+of \code{AssSpec2d} for all models in a sinlge plot ("comparison plot").
 }
 }
