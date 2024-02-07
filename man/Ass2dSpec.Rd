@@ -5,7 +5,7 @@
 \title{Create a Ass2dSpec object}
 \usage{
 Ass2dSpec(
-  fname,
+  file,
   x_metric,
   y_metric,
   pivot_time_cutoff = NULL,
@@ -35,7 +35,7 @@ Ass2dSpec(
 )
 }
 \arguments{
-\item{fname}{string. The name of the file to save the plot to.}
+\item{file}{string. The name of the file to save the plot to.}
 
 \item{x_metric}{string. The name of the performance measure to be plotted on the x-axis.
 All measures that can be passed to the \code{x.measure} parameter of \code{\link[ROCR:performance]{ROCR::performance()}} are

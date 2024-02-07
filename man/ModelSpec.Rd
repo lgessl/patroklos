@@ -17,10 +17,10 @@ ModelSpec(
   include_from_discrete_pheno = NULL,
   append_to_includes = "++",
   create_directory = TRUE,
-  plot_fname = "training_error.pdf",
+  plot_file = "training_error.pdf",
   plot_ncols = 2,
   plot_title_line = 2.5,
-  fit_fname = "fit_obj.rds"
+  fit_file = "fit_obj.rds"
 )
 }
 \arguments{
@@ -80,7 +80,7 @@ data when adding them to the predictor matrix. Default is \code{"++"}.}
 \item{create_directory}{logical. Whether to create \code{directory} if it does not exist, yet.
 Default is \code{TRUE}.}
 
-\item{plot_fname}{string. Store the plot resulting from \code{plot(fit_obj)} in \code{directory}
+\item{plot_file}{string. Store the plot resulting from \code{plot(fit_obj)} in \code{directory}
 under this name. Default is \code{"training_error.pdf"}.}
 
 \item{plot_ncols}{integer. The number of columns in the plot. Default is \code{2}.}
@@ -89,7 +89,7 @@ under this name. Default is \code{"training_error.pdf"}.}
 after calling \code{plot(fit_obj)}. This is the distance (in inches) between the title text and
 the upper limit of the figure. Default is \code{2.5}.}
 
-\item{fit_fname}{string. The name of the model-fits file inside \code{directory}.
+\item{fit_file}{string. The name of the model-fits file inside \code{directory}.
 Default is \code{"fit_obj.rds"}.}
 }
 \value{

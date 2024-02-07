@@ -9,8 +9,8 @@ DataSpec(
   directory,
   train_prop,
   pivot_time_cutoff = 2,
-  expr_fname = "expr.csv",
-  pheno_fname = "pheno.csv",
+  expr_file = "expr.csv",
+  pheno_file = "pheno.csv",
   cohort = NULL,
   patient_id_col = "patient_id",
   time_to_event_col = "pfs_years",
@@ -34,10 +34,10 @@ for splitting the data into the train and test cohort: If a numeric in (0, 1), p
 the the proportion of individuals below and above \code{time_cutoff} in both cohorts. Default
 is \code{NULL}, i.e. no further constraints on splitting.}
 
-\item{expr_fname}{string. The name of the expression csv file inside \code{directory}.
+\item{expr_file}{string. The name of the expression csv file inside \code{directory}.
 Default is \code{"expr.csv"}. See details for the expected format.}
 
-\item{pheno_fname}{string. The name of the pheno data csv inside \code{directory}.
+\item{pheno_file}{string. The name of the pheno data csv inside \code{directory}.
 Default is \code{"pheno.csv"}. See details for the expected format.}
 
 \item{cohort}{string in \code{c("train", "test")} or \code{NULL}. The cohort, train or test, to
