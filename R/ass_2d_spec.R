@@ -1,5 +1,5 @@
 new_Ass2dSpec <- function(
-    fname,
+    file,
     x_metric,
     y_metric,
     pivot_time_cutoff,
@@ -27,7 +27,7 @@ new_Ass2dSpec <- function(
     height,
     units
 ){
-    stopifnot(is.character(fname))
+    stopifnot(is.character(file))
     stopifnot(is.character(x_metric))
     stopifnot(is.character(y_metric))
     stopifnot(is.null(pivot_time_cutoff) || is.numeric(pivot_time_cutoff))
@@ -55,7 +55,7 @@ new_Ass2dSpec <- function(
     stopifnot(is.character(units))
 
     ass_2d_spec_list <- list(
-        "fname" = fname,
+        "file" = file,
         "x_metric" = x_metric,
         "y_metric" = y_metric,
         "pivot_time_cutoff" = pivot_time_cutoff,
@@ -92,7 +92,7 @@ new_Ass2dSpec <- function(
 #' assessment is a scatter plot of two performance measures. Moreover, a Ass2dSpec
 #' object holds the commands (usually bools) on whether do more assessments (that 
 #' require considerably less specifications).
-#' @param fname string. The name of the file to save the plot to.
+#' @param file string. The name of the file to save the plot to.
 #' @param x_metric string. The name of the performance measure to be plotted on the x-axis.
 #' All measures that can be passed to the `x.measure` parameter of [ROCR::performance()] are
 #' valid.
@@ -146,7 +146,7 @@ new_Ass2dSpec <- function(
 #' @return A Ass2dSpec S3 object.
 #' @export
 Ass2dSpec <- function(
-    fname,
+    file,
     x_metric,
     y_metric,
     pivot_time_cutoff = NULL,
@@ -185,7 +185,7 @@ Ass2dSpec <- function(
             stop("For `y_metric` = 'logrank', `x_metric` must be 'prevalence' or 'rpp'.")
     }
     ass_2d_spec <- new_Ass2dSpec(
-        fname = fname,
+        file = file,
         x_metric = x_metric,
         y_metric = y_metric,
         pivot_time_cutoff = pivot_time_cutoff,
@@ -224,16 +224,16 @@ infer_pps <- function(
 ){
     # Prepare for assess_2d()
     this_pps <- ass_2d_spec
-    this_pps$fname <- file.path(
+    this_pps$file <- file.path(
         model_spec$directory,
         paste0(
             ass_2d_spec$x_metric, "_vs_", ass_2d_spec$y_metric,
-            stringr::str_extract(ass_2d_spec$fname, "\\..+$")
+            stringr::str_extract(ass_2d_spec$file, "\\..+$")
         )
     )
     if(data_spec$cohort == "test")
-        this_pps$fname <- mirror_directory(
-            filepath = this_pps$fname,
+        this_pps$file <- mirror_directory(
+            filepath = this_pps$file,
             mirror = ass_2d_spec$model_tree_mirror
         )
     this_pps$title <- paste0(

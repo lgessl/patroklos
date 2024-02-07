@@ -33,7 +33,7 @@ test_that("qc_preprocess() works", {
     check_default = TRUE
   )
 
-  data_spec$expr_fname <- "nonexistent.csv"
+  data_spec$expr_file <- "nonexistent.csv"
   expect_error(
     qc_preprocess(
       expr_tbl = expr_tbl,
@@ -42,7 +42,7 @@ test_that("qc_preprocess() works", {
     ),
     regexp = "Expression file"
   )
-  data_spec$expr_fname <- "expr.csv"
+  data_spec$expr_file <- "expr.csv"
 
   pheno_tbl[["progression"]][1] <- 2
   expect_error(

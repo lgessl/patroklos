@@ -13,10 +13,10 @@ new_ModelSpec <- function(
     pheno_regexp,
     directory,
     create_directory,
-    plot_fname,
+    plot_file,
     plot_ncols,
     plot_title_line,
-    fit_fname
+    fit_file
 ){
     stopifnot(is.character(name))
     check_fitter(fitter, optional_fitter_args)
@@ -30,10 +30,10 @@ new_ModelSpec <- function(
     stopifnot(is.character(directory))
     stopifnot(is.logical(create_directory))
     stopifnot(is.numeric(time_cutoffs) || is.null(time_cutoffs))
-    stopifnot(is.character(plot_fname))
+    stopifnot(is.character(plot_file))
     stopifnot(is.numeric(plot_ncols))
     stopifnot(is.numeric(plot_title_line) || is.null(plot_title_line))
-    stopifnot(is.character(fit_fname))
+    stopifnot(is.character(fit_file))
 
     model_spec_list <- list(
         "name" = name,
@@ -49,10 +49,10 @@ new_ModelSpec <- function(
         "time_cutoffs" = time_cutoffs,
         "directory" = directory,
         "create_directory" = create_directory,
-        "plot_fname" = plot_fname,
+        "plot_file" = plot_file,
         "plot_ncols" = plot_ncols,
         "plot_title_line" = plot_title_line,
-        "fit_fname" = fit_fname
+        "fit_file" = fit_file
     )
     return(structure(model_spec_list, class = "ModelSpec"))
 }
@@ -101,13 +101,13 @@ new_ModelSpec <- function(
 #' data when adding them to the predictor matrix. Default is `"++"`.
 #' @param create_directory logical. Whether to create `directory` if it does not exist, yet. 
 #' Default is `TRUE`.
-#' @param plot_fname string. Store the plot resulting from `plot(fit_obj)` in `directory`
+#' @param plot_file string. Store the plot resulting from `plot(fit_obj)` in `directory`
 #' under this name. Default is `"training_error.pdf"`.
 #' @param plot_ncols integer. The number of columns in the plot. Default is `2`.
 #' @param plot_title_line numeric or NULL. Pass this as the `line` argument to [`graphics::title()`] 
 #' after calling `plot(fit_obj)`. This is the distance (in inches) between the title text and 
 #' the upper limit of the figure. Default is `2.5`.
-#' @param fit_fname string. The name of the model-fits file inside `directory`.
+#' @param fit_file string. The name of the model-fits file inside `directory`.
 #' Default is `"fit_obj.rds"`.
 #' @return A ModelSpec S3 object.
 #' @details Strictly speaking, one `ModelSpec` instance holds the instructions to fit
@@ -131,10 +131,10 @@ ModelSpec <- function(
     include_from_discrete_pheno = NULL,
     append_to_includes = "++",
     create_directory = TRUE,
-    plot_fname = "training_error.pdf",
+    plot_file = "training_error.pdf",
     plot_ncols = 2,
     plot_title_line = 2.5,
-    fit_fname = "fit_obj.rds"
+    fit_file = "fit_obj.rds"
 ){
     response_type <- match.arg(response_type)
     stopifnot(all(time_cutoffs >= 0))
@@ -152,10 +152,10 @@ ModelSpec <- function(
         append_to_includes = append_to_includes,
         directory = directory,
         create_directory = create_directory,
-        plot_fname = plot_fname,
+        plot_file = plot_file,
         plot_ncols = plot_ncols,
         plot_title_line = plot_title_line,
-        fit_fname = fit_fname
+        fit_file = fit_file
     )
     return(model_spec)
 }

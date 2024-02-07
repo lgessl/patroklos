@@ -39,7 +39,7 @@ test_that("prepare_and_fit", {
     include_from_discrete_pheno = NULL
   )
   ass_2d_spec <- Ass2dSpec(
-    fname = "dummy.pdf",
+    file = "dummy.pdf",
     x_metric = "rpp",
     y_metric = "prec",
     benchmark = "ipi"

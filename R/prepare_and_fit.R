@@ -40,10 +40,10 @@ prepare_and_fit <- function(
         data_spec$cohort <- "train"
     # Set up list holding fits
     fits <- list()
-    stored_fits_fname <- file.path(model_spec$directory, model_spec$fit_fname)
-    if(file.exists(stored_fits_fname)){
+    stored_fits_file <- file.path(model_spec$directory, model_spec$fit_file)
+    if(file.exists(stored_fits_file)){
         if(!quiet) message(msg_prefix, "Found stored fits")
-        fits <- readRDS(stored_fits_fname)
+        fits <- readRDS(stored_fits_file)
     }
     fits[["model_spec"]] <- model_spec
     
@@ -84,10 +84,10 @@ prepare_and_fit <- function(
                 round.POSIXt(Sys.time(), units = "secs"), ")")
     }
 
-    saveRDS(fits, stored_fits_fname)
+    saveRDS(fits, stored_fits_file)
 
     # Plots about fitting as a grid
-    grDevices::pdf(file = file.path(directory, model_spec$plot_fname))
+    grDevices::pdf(file = file.path(directory, model_spec$plot_file))
     graphics::par(mfrow = c(1, model_spec$plot_ncol))
     for(i in model_spec$split_index){
         split_name <- paste0(data_spec$split_col_prefix, i)

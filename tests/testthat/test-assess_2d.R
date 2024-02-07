@@ -46,7 +46,7 @@ test_that("assess_2d() works", {
     response_type = "binary"
   )
   ass_2d_spec <- Ass2dSpec(
-    fname = file.path(dir, "rpp.pdf"),
+    file = file.path(dir, "rpp.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
     pivot_time_cutoff = 2.,

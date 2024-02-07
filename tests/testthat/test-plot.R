@@ -7,7 +7,7 @@ test_that("plot_2d_metric() works", {
 
   dir <- withr::local_tempdir()
   ass_2d_spec <- Ass2dSpec(
-    fname = file.path(dir, "test.pdf"),
+    file = file.path(dir, "test.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
     pivot_time_cutoff = 2.,
@@ -60,7 +60,7 @@ test_that("plot_risk_scores() works", {
   predicted <- l[[2]]
   dir <- withr::local_tempdir()
   ass_2d_spec <- Ass2dSpec(
-    fname = file.path(dir, "scores.pdf"),
+    file = file.path(dir, "scores.pdf"),
     x_metric = "rank",
     y_metric = "scores",
     title = "this title",

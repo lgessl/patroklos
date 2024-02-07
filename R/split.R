@@ -52,8 +52,8 @@ ensure_splits <- function(
 
     # Write back to pheno csv
     if(length(new_splits) > 0){
-        pheno_fname <- file.path(data_spec$directory, data_spec$pheno_fname)
-        readr::write_csv(pheno_tbl, pheno_fname)
+        pheno_file <- file.path(data_spec$directory, data_spec$pheno_file)
+        readr::write_csv(pheno_tbl, pheno_file)
     }
     
     return(pheno_tbl)

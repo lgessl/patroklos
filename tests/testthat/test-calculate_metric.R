@@ -18,7 +18,7 @@ test_that("calculate_2d_metric() works", {
     time_cutoffs = 2.
   )
   ass_2d_spec <- Ass2dSpec(
-    fname = "test.pdf",
+    file = "test.pdf",
     x_metric = "rpp",
     y_metric = "prec",
     benchmark = "ipi"

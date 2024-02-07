@@ -35,7 +35,7 @@ test_that("assess_2d_center() works", {
     optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE),
     response_type = "survival_censored",
-    fit_fname = "model1.rds"
+    fit_file = "model1.rds"
   )
   model_spec_2 <- ModelSpec(
     name = "binomial-zerosum",
@@ -48,7 +48,7 @@ test_that("assess_2d_center() works", {
     response_type = "binary",
     include_from_continuous_pheno = "continuous_var",
     include_from_discrete_pheno = "discrete_var",
-    fit_fname = "model2.rds"
+    fit_file = "model2.rds"
   )
   model_spec_list <- list(model_spec_1, model_spec_2)
 
@@ -59,7 +59,7 @@ test_that("assess_2d_center() works", {
 
   res_dir <- file.path(base_dir, "results")
   ass_2d_spec <- Ass2dSpec(
-    fname = file.path(model_dir, "perf_plot.pdf"),
+    file = file.path(model_dir, "perf_plot.pdf"),
     x_metric = "rpp",
     y_metric = "prec",
     show_plots = FALSE,
@@ -77,14 +77,14 @@ test_that("assess_2d_center() works", {
     ass_2d_spec = ass_2d_spec,
     cohort = c("train", "test")
   )
-  expect_true(file.exists(ass_2d_spec$fname))
+  expect_true(file.exists(ass_2d_spec$file))
   expect_true(file.exists(file.path(res_dir, "logistic/2/scores.pdf")))
   expect_true(file.exists(file.path(res_dir, "cox/2/rpp_vs_prec.csv")))
 
   model_spec_1$split_index <- 1
   ass_2d_spec$y_metric <- "logrank"
   ass_2d_spec$scale_y <- "log10"
-  ass_2d_spec$fname <- file.path(model_dir, "logrank.pdf")
+  ass_2d_spec$file <- file.path(model_dir, "logrank.pdf")
   ass_2d_spec$benchmark <- NULL
   ass_2d_spec$text <- NULL
   ass_2d_spec$scores_plot <- FALSE
@@ -99,7 +99,7 @@ test_that("assess_2d_center() works", {
   model_spec_2$time_cutoffs <- 1.5
   ass_2d_spec$y_metric <- "precision_ci"
   ass_2d_spec$ci_level <- .95
-  ass_2d_spec$fname <- file.path(model_dir, "precision_ci.pdf")
+  ass_2d_spec$file <- file.path(model_dir, "precision_ci.pdf")
   ass_2d_spec$benchmark <- "ipi"
   assess_2d_center(
     model_spec_list = list(model_spec_2),

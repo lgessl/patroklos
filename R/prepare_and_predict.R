@@ -46,11 +46,11 @@ prepare_and_predict <- function(
         data_spec$cohort <- "test"
 
     # Retrieve model
-    fit_path <- file.path(model_spec$directory, model_spec$fit_fname)
+    fit_path <- file.path(model_spec$directory, model_spec$fit_file)
     if(!file.exists(fit_path)){
         stop("Model object does not exist at ", fit_path)
     }
-    fits <- readRDS(file.path(model_spec$directory, model_spec$fit_fname))
+    fits <- readRDS(file.path(model_spec$directory, model_spec$fit_file))
 
     model_spec$response_type <- "binary" # Always evaluate for descretized response
     predicted_list <- vector("list", length(model_spec$split_index))

@@ -71,8 +71,8 @@ assess_2d_center <- function(
         }
         cohort_pps$data <- dplyr::bind_rows(perf_tbls)
         if(cohort == "test")
-            cohort_pps$fname <- mirror_directory(
-                filepath = cohort_pps$fname,
+            cohort_pps$file <- mirror_directory(
+                filepath = cohort_pps$file,
                 mirror = cohort_pps$model_tree_mirror
             )
         if(is.null(cohort_pps$title))
@@ -86,7 +86,7 @@ assess_2d_center <- function(
                 quiet = TRUE
             )
             if(!quiet)
-                message("# Saving comparative performance plot to ", cohort_pps$fname)
+                message("# Saving comparative performance plot to ", cohort_pps$file)
         }
 
     }

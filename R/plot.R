@@ -80,10 +80,10 @@ plot_2d_metric <- function(
     }
 
     if(!quiet)
-        message(msg_prefix, "Saving 2D metric plot to ", ass_2d_spec$fname)
+        message(msg_prefix, "Saving 2D metric plot to ", ass_2d_spec$file)
 
     ggplot2::ggsave(
-        ass_2d_spec$fname, 
+        ass_2d_spec$file, 
         plt, 
         width = ass_2d_spec$width, 
         height = ass_2d_spec$height, 
@@ -92,10 +92,10 @@ plot_2d_metric <- function(
 
     # Save to csv (if wanted)
     if(ass_2d_spec$fellow_csv){
-        csv_fname <- stringr::str_replace(ass_2d_spec$fname, "\\..+", ".csv")
+        csv_file <- stringr::str_replace(ass_2d_spec$file, "\\..+", ".csv")
         if(!quiet)
-            message(msg_prefix, "Saving 2D metric table to ", csv_fname)
-        readr::write_csv(ass_2d_spec$data, csv_fname)
+            message(msg_prefix, "Saving 2D metric table to ", csv_file)
+        readr::write_csv(ass_2d_spec$data, csv_file)
     }
 
     return(plt)
@@ -164,9 +164,9 @@ plot_risk_scores <- function(
     }
 
     if(!quiet)
-        message(msg_prefix, "Saving scores plot to ", ass_2d_spec$fname)
+        message(msg_prefix, "Saving scores plot to ", ass_2d_spec$file)
     ggplot2::ggsave(
-        ass_2d_spec$fname, 
+        ass_2d_spec$file, 
         plt, 
         width = ass_2d_spec$width, 
         height = ass_2d_spec$height, 
@@ -174,10 +174,10 @@ plot_risk_scores <- function(
     )
 
     if(ass_2d_spec$fellow_csv){
-        csv_fname <- stringr::str_replace(ass_2d_spec$fname, "\\..+$", ".csv")
+        csv_file <- stringr::str_replace(ass_2d_spec$file, "\\..+$", ".csv")
         if(!quiet)
-            message(msg_prefix, "Saving scores table to ", csv_fname)
-        readr::write_csv(tbl, csv_fname)
+            message(msg_prefix, "Saving scores table to ", csv_file)
+        readr::write_csv(tbl, csv_file)
     }
 
     return(tbl)

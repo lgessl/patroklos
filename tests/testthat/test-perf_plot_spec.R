@@ -2,7 +2,7 @@ test_that("infer_pps() works", {
 
   mirror <- c("models", "results")
   ass_2d_spec <- Ass2dSpec(
-    fname = "ass_2d_spec.png",
+    file = "ass_2d_spec.png",
     x_metric = "x",
     y_metric = "y",
     pivot_time_cutoff = 2.,
@@ -30,7 +30,7 @@ test_that("infer_pps() works", {
     data_spec = data_spec
   )
   expect_equal(
-    auto_pps$fname,
+    auto_pps$file,
     "models/cox/x_vs_y.png"
   )
   expect_equal(
@@ -45,7 +45,7 @@ test_that("infer_pps() works", {
     data_spec = data_spec
   )
   expect_equal(
-    auto_pps$fname,
+    auto_pps$file,
     "results/cox/x_vs_y.png"
   )
   expect_equal(

@@ -15,8 +15,8 @@ test_that("read function works correctly", {
     name = "mock",
     directory = dir,
     train_prop = .7,
-    expr_fname = "expr.csv",
-    pheno_fname = "pheno.csv",
+    expr_file = "expr.csv",
+    pheno_file = "pheno.csv",
     patient_id_col = "patient_id",
     gene_id_col = "gene_id"
   )

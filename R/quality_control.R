@@ -69,8 +69,8 @@ qc_preprocess <- function(
 
     # Extract
     directory <- data_spec$directory
-    expr_fname <- data_spec$expr_fname
-    pheno_fname <- data_spec$pheno_fname
+    expr_file <- data_spec$expr_file
+    pheno_file <- data_spec$pheno_file
     gene_id_col <- data_spec$gene_id_col
     patient_id_col <- data_spec$patient_id_col
     time_to_event_col <- data_spec$time_to_event_col
@@ -78,13 +78,13 @@ qc_preprocess <- function(
     benchmark_col <- data_spec$benchmark_col
 
     # Check if files exist
-    expr_fname <- file.path(directory, expr_fname)
-    pheno_fname <- file.path(directory, pheno_fname)
-    if(!file.exists(expr_fname)){
-        stop("Expression file ", expr_fname, " does not exist.")
+    expr_file <- file.path(directory, expr_file)
+    pheno_file <- file.path(directory, pheno_file)
+    if(!file.exists(expr_file)){
+        stop("Expression file ", expr_file, " does not exist.")
     }
-    if(!file.exists(pheno_fname)){
-        stop("Pheno file ", pheno_fname, " does not exist.")
+    if(!file.exists(pheno_file)){
+        stop("Pheno file ", pheno_file, " does not exist.")
     }
 
     # Expression tibble

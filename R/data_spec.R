@@ -3,8 +3,8 @@ new_DataSpec <- function(
     directory,
     train_prop,
     pivot_time_cutoff,
-    expr_fname,
-    pheno_fname,
+    expr_file,
+    pheno_file,
     cohort,
     patient_id_col,
     time_to_event_col,
@@ -17,8 +17,8 @@ new_DataSpec <- function(
     stopifnot(is.character(directory))
     stopifnot(is.numeric(train_prop))
     stopifnot(is.numeric(pivot_time_cutoff))
-    stopifnot(is.character(expr_fname))
-    stopifnot(is.character(pheno_fname))
+    stopifnot(is.character(expr_file))
+    stopifnot(is.character(pheno_file))
     stopifnot(is.null(cohort) || is.character(cohort))
     stopifnot(is.character(patient_id_col))
     stopifnot(is.character(time_to_event_col))
@@ -32,8 +32,8 @@ new_DataSpec <- function(
         "directory" = directory,
         "train_prop" = train_prop,
         "pivot_time_cutoff" = pivot_time_cutoff,
-        "expr_fname" = expr_fname,
-        "pheno_fname" = pheno_fname,
+        "expr_file" = expr_file,
+        "pheno_file" = pheno_file,
         "cohort" = cohort,
         "patient_id_col" = patient_id_col,
         "time_to_event_col" = time_to_event_col,
@@ -58,9 +58,9 @@ new_DataSpec <- function(
 #' for splitting the data into the train and test cohort: If a numeric in (0, 1), preserve 
 #' the the proportion of individuals below and above `time_cutoff` in both cohorts. Default 
 #' is `NULL`, i.e. no further constraints on splitting.
-#' @param expr_fname string. The name of the expression csv file inside `directory`.
+#' @param expr_file string. The name of the expression csv file inside `directory`.
 #' Default is `"expr.csv"`. See details for the expected format.
-#' @param pheno_fname string. The name of the pheno data csv inside `directory`.
+#' @param pheno_file string. The name of the pheno data csv inside `directory`.
 #' Default is `"pheno.csv"`. See details for the expected format.
 #' @param cohort string in `c("train", "test")` or `NULL`. The cohort, train or test, to 
 #' prepare the data for. If NULL, the default, some functions will set it themselves
@@ -95,8 +95,8 @@ DataSpec <- function(
     directory,
     train_prop,
     pivot_time_cutoff = 2.0,
-    expr_fname = "expr.csv",
-    pheno_fname = "pheno.csv",
+    expr_file = "expr.csv",
+    pheno_file = "pheno.csv",
     cohort = NULL,
     patient_id_col = "patient_id",
     time_to_event_col = "pfs_years",
@@ -113,8 +113,8 @@ DataSpec <- function(
         directory = directory,
         train_prop = train_prop,
         pivot_time_cutoff = pivot_time_cutoff,
-        expr_fname = expr_fname,
-        pheno_fname = pheno_fname,
+        expr_file = expr_file,
+        pheno_file = pheno_file,
         cohort = cohort,
         patient_id_col = patient_id_col,
         time_to_event_col = time_to_event_col,

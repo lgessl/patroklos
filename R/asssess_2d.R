@@ -49,7 +49,7 @@ assess_2d <- function(
     if(is.null(data_spec$cohort)){
         data_spec$cohort <- "test"
     }
-    directory <- dirname(ass_2d_spec$fname)
+    directory <- dirname(ass_2d_spec$file)
     if(!dir.exists(directory))
         dir.create(directory, recursive = TRUE)
 
@@ -84,9 +84,9 @@ assess_2d <- function(
     if(ass_2d_spec$scores_plot){
         pps_scores <- ass_2d_spec
         pps_scores$title <- paste0(model_spec$name, " | ", ass_2d_spec$title)
-        pps_scores$fname <- file.path(
-            dirname(ass_2d_spec$fname),
-            paste0("scores", stringr::str_extract(ass_2d_spec$fname, "\\..+$"))
+        pps_scores$file <- file.path(
+            dirname(ass_2d_spec$file),
+            paste0("scores", stringr::str_extract(ass_2d_spec$file, "\\..+$"))
         )
         plot_risk_scores(
             predicted = prep[["predicted"]],
