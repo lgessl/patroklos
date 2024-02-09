@@ -1,8 +1,22 @@
+#' @title Assess multiple models on a single data set with one single value
+#' @description Map every model to a 0-dim metric (a single real number) and store 
+#' these metrics together with some more analytics across the splits in a sorted 
+#' tibble. At the core, we call `[assess_0d()]`.
+#' @inheritParams assess_2d_center
+#' @param ass_spec_0d AssSpec0d S3 object. See the constructor [`AssSpec0d()`] for more 
+#' details.
+#' @param model_tree_mirror character vector of length 2. If you want to store the 
+#' resulting tibbles, get the test-cohort tibble's file name by mirroring 
+#' `ass_spec_0d$file` according to `model_tree_mirror` (see [`mirror_directory()`]).
+#' @return A tibble. Every row holds the metric (and more analysis across the splits 
+#' like standard deviation, minimum, maximum value) for one model in `model_spec_list` 
+#' and every time cutoff specified for this model.
+#' @export
 assess_0d_center <- function(
     ass_spec_0d,
     data_spec,
     model_spec_list,
-    cohorts = c("train", "test"),
+    cohorts = c("test", "train"),
     model_tree_mirror = c("models", "results"),
     quiet = FALSE
 ){
@@ -47,13 +61,14 @@ assess_0d_center <- function(
         data_spec$cohort <- cohort
         tbl_list <- lapply(seq_along(model_spec_list), core)
         res_tbl <- dplyr::bind_rows(tbl_list)
+        res_tbl <- res_tbl[order(res_tbl[["mean"]]), ]
         res_tbl_list[[cohort]] <- res_tbl
+        file <- ass_spec_0d$file
         if(cohort == "test")
-            ass_spec_0d$file <- mirror_directory(
-                filepath = ass_spec_0d$file,
+            file <- mirror_directory(
+                filepath = file,
                 mirror = model_tree_mirror
             )
-        file <- ass_spec_0d$file
         if(!is.null(file)){
             if(!dir.exists(dirname(file)))
                 dir.create(dirname(file))

@@ -2,13 +2,13 @@
 % Please edit documentation in R/assess_2d_center.R
 \name{assess_2d_center}
 \alias{assess_2d_center}
-\title{Assess multiple models on a single data set}
+\title{Assess multiple models on a single data set in 2D plot}
 \usage{
 assess_2d_center(
   ass_spec_2d,
   model_spec_list,
   data_spec,
-  cohorts = c("train", "test"),
+  cohorts = c("test", "train"),
   model_tree_mirror = c("models", "results"),
   comparison_plot = TRUE,
   quiet = FALSE

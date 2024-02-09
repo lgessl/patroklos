@@ -3,6 +3,8 @@
 export(AssSpec2d)
 export(DataSpec)
 export(ModelSpec)
+export(assess_0d)
+export(assess_0d_center)
 export(assess_2d_center)
 export(discretize_tbl_cols)
 export(ensure_patients_match)

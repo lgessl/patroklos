@@ -1,3 +1,13 @@
+#' @title Assess a model on a single data set with 0-dim
+#' @description Map every model to a 0-dim metric (a single real number) and store 
+#' these metrics together with some more analytics across the splits in a sorted 
+#' tibble. The ground truth is time to event less or equal a cutoff.
+#' @inheritParams assess_2d
+#' @param ass_spec_0d AssSpec0d S3 object. The specifications for the 0-dim metric. 
+#' See the constructor [`AssSpec0d()`] for details.
+#' @return numeric vector. For every split index the desired metric.
+#' @details The AssSpec0d S3 class is tailored for this function.
+#' @export
 assess_0d <- function(
     expr_mat,
     pheno_tbl,

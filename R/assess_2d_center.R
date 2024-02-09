@@ -1,4 +1,4 @@
-#' @title Assess multiple models on a single data set
+#' @title Assess multiple models on a single data set in 2D plot
 #' @description Assess the performance of multiple models on a single data set. 
 #' For every 
 #' * cohort (train and test),
@@ -28,7 +28,7 @@ assess_2d_center <- function(
     ass_spec_2d,
     model_spec_list,
     data_spec,
-    cohorts = c("train", "test"),
+    cohorts = c("test", "train"),
     model_tree_mirror = c("models", "results"),
     comparison_plot = TRUE,
     quiet = FALSE
@@ -40,55 +40,53 @@ assess_2d_center <- function(
     data <- read(data_spec)
     expr_mat <- data[["expr_mat"]]
     pheno_tbl <- data[["pheno_tbl"]]
-    ass_spec_2d$model_tree_mirror <- model_tree_mirror
+    ass_spec_2d$model_tree_mirror <- model_tree_mirror # for infer_as2()
 
     if(!quiet) message("\nASSESSING ON ", data_spec$name)
     for(cohort in cohorts){
         if(!quiet) message("# On ", cohort, " cohort")
         data_spec$cohort <- cohort
-        cohort_pps <- ass_spec_2d
+        cohort_as2 <- ass_spec_2d
         for(model_spec in model_spec_list){
             if(!quiet) message("## ", model_spec$name)
             for(time_cutoff in model_spec$time_cutoffs){
                 if(!quiet) message("### At time cutoff ", time_cutoff)
                 ms_cutoff <- at_time_cutoff(model_spec, time_cutoff)
-                this_pps <- infer_as2(
-                    ass_spec_2d = cohort_pps,
+                this_as2 <- infer_as2(
+                    ass_spec_2d = cohort_as2,
                     model_spec = ms_cutoff,
                     data_spec = data_spec
                 )
-                this_pps <- assess_2d(
+                this_as2 <- assess_2d(
                     expr_mat = expr_mat,
                     pheno_tbl = pheno_tbl,
                     data_spec = data_spec,
                     model_spec = ms_cutoff,
-                    ass_spec_2d = this_pps,
+                    ass_spec_2d = this_as2,
                     quiet = quiet,
                     msg_prefix = "#### "
                 )
-                perf_tbls[[ms_cutoff$name]] <- this_pps$data
+                perf_tbls[[ms_cutoff$name]] <- this_as2$data
             }
         }
-        cohort_pps$data <- dplyr::bind_rows(perf_tbls)
+        cohort_as2$data <- dplyr::bind_rows(perf_tbls)
         if(cohort == "test")
-            cohort_pps$file <- mirror_directory(
-                filepath = cohort_pps$file,
-                mirror = cohort_pps$model_tree_mirror
+            cohort_as2$file <- mirror_directory(
+                filepath = ass_spec_2d$file,
+                mirror = model_tree_mirror
             )
-        if(is.null(cohort_pps$title))
-            cohort_pps$title <- paste0(
+        if(is.null(cohort_as2$title))
+            cohort_as2$title <- paste0(
                 data_spec$name, " ", data_spec$cohort, ", ", data_spec$time_to_event_col,
-                " < ", cohort_pps$pivot_time_cutoff
+                " < ", cohort_as2$pivot_time_cutoff
             )
         if(comparison_plot){
             plot_2d_metric(
-                ass_spec_2d = cohort_pps,
+                ass_spec_2d = cohort_as2,
                 quiet = TRUE
             )
             if(!quiet)
-                message("# Saving comparative performance plot to ", cohort_pps$file)
+                message("# Saving comparative performance plot to ", cohort_as2$file)
         }
-
     }
-
 }
