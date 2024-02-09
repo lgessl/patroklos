@@ -38,7 +38,7 @@ the results are not saved. If you supply an AssSpec0d object to \code{assess_0d_
 specify the path for the \emph{train} cohort.}
 }
 \value{
-An AssSpec0d S3 object
+An AssSpec0d S3 object.
 }
 \description{
 An S3 class specifying how to assess with a 0-dim metric (like AUC)

@@ -8,7 +8,8 @@
 #' @param file string. The name of the csv file to save the results to. If `NULL`,
 #' the results are not saved. If you supply an AssSpec0d object to `assess_0d_center()`,
 #' specify the path for the *train* cohort.
-#' @return An AssSpec0d S3 object
+#' @return An AssSpec0d S3 object.
+#' @export
 AssSpec0d <- function(
     metric,
     pivot_time_cutoff,
