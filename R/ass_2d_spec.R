@@ -143,7 +143,7 @@ new_AssSpec2d <- function(
 #' @param colors character vector. The colors to be used for the different models.
 #' Default is `NULL`, which means that the default colors of `ggplot2` will be used.
 #' @param units string. The units of `width` and `height`. Default is `"in"` (inches).
-#' @return A AssSpec2d S3 object.
+#' @return An AssSpec2d S3 object.
 #' @export
 AssSpec2d <- function(
     file,
@@ -232,7 +232,7 @@ infer_as2 <- function(
         )
     )
     if(data_spec$cohort == "test")
-        this_pps$file <- mirror_directory(
+        this_pps$file <- mirror_path(
             filepath = this_pps$file,
             mirror = ass_spec_2d$model_tree_mirror
         )

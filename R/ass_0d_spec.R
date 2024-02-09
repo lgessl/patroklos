@@ -1,3 +1,14 @@
+#' @title An S3 class specifying how to assess with a 0-dim metric (like AUC)
+#' @inheritParams AssSpec2d
+#' @param metric character. Name of the function used to calculate the metric. It must 
+#' take two numeric vectors of the same length as arguments: 
+#' 1. `predicted`, the predictions by a model, higher values indicate a more positive 
+#' prediction,
+#' 2. `actual`, the true values with the positive class coded as 1, the negative one as 0. 
+#' @param file string. The name of the csv file to save the results to. If `NULL`,
+#' the results are not saved. If you supply an AssSpec0d object to `assess_0d_center()`,
+#' specify the path for the *train* cohort.
+#' @return An AssSpec0d S3 object
 AssSpec0d <- function(
     metric,
     pivot_time_cutoff,

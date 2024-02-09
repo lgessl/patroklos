@@ -26,7 +26,7 @@ cohorts. Default is \code{c("train", "test")}.}
 
 \item{model_tree_mirror}{character vector of length 2. If you want to store the
 resulting tibbles, get the test-cohort tibble's file name by mirroring
-\code{ass_spec_0d$file} according to \code{model_tree_mirror} (see \code{\link[=mirror_directory]{mirror_directory()}}).}
+\code{ass_spec_0d$file} according to \code{model_tree_mirror} (see \code{\link[=mirror_path]{mirror_path()}}).}
 
 \item{quiet}{logical. Whether to suppress messages. Default is \code{FALSE}.}
 }

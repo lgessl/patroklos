@@ -71,7 +71,7 @@ assess_2d_center <- function(
         }
         cohort_as2$data <- dplyr::bind_rows(perf_tbls)
         if(cohort == "test")
-            cohort_as2$file <- mirror_directory(
+            cohort_as2$file <- mirror_path(
                 filepath = ass_spec_2d$file,
                 mirror = model_tree_mirror
             )

@@ -111,7 +111,7 @@ Default is \code{NULL}, which means that the default colors of \code{ggplot2} wi
 \item{units}{string. The units of \code{width} and \code{height}. Default is \code{"in"} (inches).}
 }
 \value{
-A AssSpec2d S3 object.
+An AssSpec2d S3 object.
 }
 \description{
 A AssSpec2d object holds all the info on how to assess how well a

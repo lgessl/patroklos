@@ -7,7 +7,7 @@
 #' details.
 #' @param model_tree_mirror character vector of length 2. If you want to store the 
 #' resulting tibbles, get the test-cohort tibble's file name by mirroring 
-#' `ass_spec_0d$file` according to `model_tree_mirror` (see [`mirror_directory()`]).
+#' `ass_spec_0d$file` according to `model_tree_mirror` (see [`mirror_path()`]).
 #' @return A tibble. Every row holds the metric (and more analysis across the splits 
 #' like standard deviation, minimum, maximum value) for one model in `model_spec_list` 
 #' and every time cutoff specified for this model.
@@ -65,7 +65,7 @@ assess_0d_center <- function(
         res_tbl_list[[cohort]] <- res_tbl
         file <- ass_spec_0d$file
         if(cohort == "test")
-            file <- mirror_directory(
+            file <- mirror_path(
                 filepath = file,
                 mirror = model_tree_mirror
             )
