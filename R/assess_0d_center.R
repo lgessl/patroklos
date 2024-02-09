@@ -21,6 +21,7 @@ assess_0d_center <- function(
     quiet = FALSE
 ){
     cohorts <- match.arg(cohorts, several.ok = TRUE)
+    digits <- ass_spec_0d$round_digits
     data <- read(data_spec)
     
     core <- function(i){
@@ -48,10 +49,10 @@ assess_0d_center <- function(
                 model_spec = ms_cutoff,
                 ass_spec_0d = ass_spec_0d
             )
-            res_tbl[j, 4] <- mean(metric)
-            res_tbl[j, 5] <- stats::sd(metric)
-            res_tbl[j, 6] <- min(metric)
-            res_tbl[j, 7] <- max(metric)
+            res_tbl[j, 4] <- round(mean(metric), digits = digits) 
+            res_tbl[j, 5] <- round(stats::sd(metric), digits = digits)
+            res_tbl[j, 6] <- round(min(metric), digits = digits)
+            res_tbl[j, 7] <- round(max(metric), digits = digits)
         }
         res_tbl
     }
@@ -61,7 +62,7 @@ assess_0d_center <- function(
         data_spec$cohort <- cohort
         tbl_list <- lapply(seq_along(model_spec_list), core)
         res_tbl <- dplyr::bind_rows(tbl_list)
-        res_tbl <- res_tbl[order(res_tbl[["mean"]]), ]
+        res_tbl <- res_tbl[order(-res_tbl[["mean"]]), ]
         res_tbl_list[[cohort]] <- res_tbl
         file <- ass_spec_0d$file
         if(cohort == "test")

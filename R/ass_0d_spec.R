@@ -8,6 +8,7 @@
 #' @param file string. The name of the csv file to save the results to. If `NULL`,
 #' the results are not saved. If you supply an AssSpec0d object to `assess_0d_center()`,
 #' specify the path for the *train* cohort.
+#' @param round_digits numeric. The number of digits to round the results to. Default is `3`.
 #' @return An AssSpec0d S3 object.
 #' @export
 AssSpec0d <- function(
@@ -15,7 +16,8 @@ AssSpec0d <- function(
     pivot_time_cutoff,
     lambda = "lambda.min",
     benchmark = NULL,
-    file = NULL
+    file = NULL,
+    round_digits = 3
 ){
     stopifnot(is.character(metric))
     stopifnot(is.numeric(pivot_time_cutoff))
@@ -23,13 +25,15 @@ AssSpec0d <- function(
     stopifnot(is.character(lambda) || is.numeric(lambda))
     stopifnot(is.null(benchmark) || is.character(benchmark))
     stopifnot(is.null(file) || is.character(file))
+    stopifnot(is.numeric(round_digits) && round_digits >= 0)
 
     ass_spec_0d <- list(
         "metric" = metric,
         "pivot_time_cutoff" = pivot_time_cutoff,
         "lambda" = lambda,
         "benchmark" = benchmark,
-        "file" = file
+        "file" = file,
+        "round_digits" = round_digits
     )
     return(structure(ass_spec_0d, class = "AssSpec0d"))
 }

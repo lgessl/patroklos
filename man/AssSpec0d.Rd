@@ -9,7 +9,8 @@ AssSpec0d(
   pivot_time_cutoff,
   lambda = "lambda.min",
   benchmark = NULL,
-  file = NULL
+  file = NULL,
+  round_digits = 3
 )
 }
 \arguments{
@@ -36,6 +37,8 @@ Default is \code{"ipi"} (international prognostic index for DLBCL).}
 \item{file}{string. The name of the csv file to save the results to. If \code{NULL},
 the results are not saved. If you supply an AssSpec0d object to \code{assess_0d_center()},
 specify the path for the \emph{train} cohort.}
+
+\item{round_digits}{numeric. The number of digits to round the results to. Default is \code{3}.}
 }
 \value{
 An AssSpec0d S3 object.
