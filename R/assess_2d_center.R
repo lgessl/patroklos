@@ -46,14 +46,13 @@ assess_2d_center <- function(
     for(cohort in cohorts){
         if(!quiet) message("# On ", cohort, " cohort")
         data_spec$cohort <- cohort
-        cohort_as2 <- ass_spec_2d
         for(model_spec in model_spec_list){
             if(!quiet) message("## ", model_spec$name)
             for(time_cutoff in model_spec$time_cutoffs){
                 if(!quiet) message("### At time cutoff ", time_cutoff)
                 ms_cutoff <- at_time_cutoff(model_spec, time_cutoff)
                 this_as2 <- infer_as2(
-                    ass_spec_2d = cohort_as2,
+                    ass_spec_2d = ass_spec_2d,
                     model_spec = ms_cutoff,
                     data_spec = data_spec
                 )
@@ -69,6 +68,7 @@ assess_2d_center <- function(
                 perf_tbls[[ms_cutoff$name]] <- this_as2$data
             }
         }
+        cohort_as2 <- ass_spec_2d
         cohort_as2$data <- dplyr::bind_rows(perf_tbls)
         if(cohort == "test")
             cohort_as2$file <- mirror_path(
