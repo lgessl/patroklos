@@ -65,12 +65,12 @@ assess_0d_center <- function(
         res_tbl <- res_tbl[order(-res_tbl[["mean"]]), ]
         res_tbl_list[[cohort]] <- res_tbl
         file <- ass_spec_0d$file
-        if(cohort == "test")
-            file <- mirror_path(
-                filepath = file,
-                mirror = model_tree_mirror
-            )
         if(!is.null(file)){
+            if(cohort == "test")
+                file <- mirror_path(
+                    filepath = file,
+                    mirror = model_tree_mirror
+                )
             if(!dir.exists(dirname(file)))
                 dir.create(dirname(file))
             readr::write_csv(res_tbl, file = file)
