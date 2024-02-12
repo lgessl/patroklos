@@ -51,6 +51,7 @@ test_that("assess_2d() works", {
     y_metric = "prec",
     pivot_time_cutoff = 2.,
     benchmark = "ipi",
+    smooth_se = TRUE,
     show_plots = FALSE,
     text = list(ggplot2::aes(x = .5, y = .5, label = "this text"), 
       color = "red", angle = 45)

@@ -12,13 +12,14 @@ test_that("plot_2d_metric() works", {
     y_metric = "prec",
     pivot_time_cutoff = 2.,
     benchmark = "bm",
-    show_plots = FALSE,
+    show_plots = TRUE,
     title = "this title",
     x_lab = "this x lab",
     y_lab = "that y lab",
     xlim = c(0, .9),
     smooth_method = "loess",
     smooth_benchmark = TRUE,
+    smooth_se = TRUE,
     scale_x = "log10",
     hline = list(yintercept = 0.5, linetype = "dashed"),
     text = list(ggplot2::aes(x = 0.5, y = 0.5, label = "this text"))
@@ -26,6 +27,7 @@ test_that("plot_2d_metric() works", {
   ass_spec_2d$data <- tibble::tibble(
     rpp = runif(n_row),
     prec = runif(n_row),
+    cutoff = sample(0:5, n_row, replace = TRUE),
     model = sample(c("model", "bm"), n_row, replace = TRUE)
   )
 

@@ -51,8 +51,9 @@ plot_2d_metric <- function(
             ass_spec_2d$alpha,
             1.
         )
-        plt <- plt + ggplot2::geom_point(
+        plt <- plt + ggplot2::geom_text(
             data = bm_data,
+            mapping = ggplot2::aes(label = .data[["cutoff"]]),
             alpha = bm_alpha
         )
     }
@@ -62,14 +63,14 @@ plot_2d_metric <- function(
     if(!is.null(ass_spec_2d$smooth_method)){
         plt <- plt + ggplot2::geom_smooth(
             method = ass_spec_2d$smooth_method,
-            se = FALSE,
+            se = ass_spec_2d$smooth_se,
             formula = y ~ x
         )
         if(ass_spec_2d$smooth_benchmark && !is.null(bm_data)){
             plt <- plt + ggplot2::geom_smooth(
                 data = bm_data,
                 method = ass_spec_2d$smooth_method,
-                se = FALSE,
+                se = ass_spec_2d$smooth_se,
                 formula = y ~ x
             )
         }

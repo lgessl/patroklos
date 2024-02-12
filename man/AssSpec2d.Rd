@@ -22,6 +22,7 @@ AssSpec2d(
   ylim = c(-Inf, Inf),
   smooth_method = NULL,
   smooth_benchmark = FALSE,
+  smooth_se = FALSE,
   scale_x = "identity",
   scale_y = "identity",
   vline = NULL,
@@ -86,6 +87,8 @@ If \code{NULL}, no smoothing. Else we pass \code{smooth_method} as the \code{met
 
 \item{smooth_benchmark}{logical. Whether to also smooth the benchmark data. Default is
 \code{FALSE}.}
+
+\item{smooth_se}{logical. Whether to add standard error bands to the smoothed lines.}
 
 \item{scale_x, scale_y}{string or transformation object (see \code{\link[scales:new_transform]{scales::trans_new}} for the
 latter). The scale of the axes, we will pass them to the \code{trans} paramter of

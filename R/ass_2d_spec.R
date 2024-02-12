@@ -16,6 +16,7 @@ new_AssSpec2d <- function(
     ylim,
     smooth_method,
     smooth_benchmark,
+    smooth_se,
     scale_x,
     scale_y,
     hline,
@@ -45,6 +46,7 @@ new_AssSpec2d <- function(
     stopifnot(is.character(smooth_method) || is.null(smooth_method) ||
         is.function(smooth_method))
     stopifnot(is.logical(smooth_benchmark))
+    stopifnot(is.logical(smooth_se))
     stopifnot(is.null(hline) || is.list(hline))
     stopifnot(is.null(vline) || is.list(vline))
     stopifnot(is.null(text) || is.list(text))
@@ -72,6 +74,7 @@ new_AssSpec2d <- function(
         "ylim" = ylim,
         "smooth_method" = smooth_method,
         "smooth_benchmark" = smooth_benchmark,
+        "smooth_se" = smooth_se,
         "scale_x" = scale_x,
         "scale_y" = scale_y,
         "hline" = hline,
@@ -124,9 +127,10 @@ new_AssSpec2d <- function(
 #' `c(-Inf, Inf)`, i.e. no contraints.
 #' @param smooth_method string or function. Smooth method to plot an additional smoothed graph.
 #' If `NULL`, no smoothing. Else we pass `smooth_method` as the `method` parameter to
-#' [ggplot2::geom_smooth()]. Default is `"loess"`.
+#' [`ggplot2::geom_smooth()`]. Default is `"loess"`.
 #' @param smooth_benchmark logical. Whether to also smooth the benchmark data. Default is
 #' `FALSE`.
+#' @param smooth_se logical. Whether to add standard error bands to the smoothed lines.
 #' @param scale_x,scale_y string or transformation object (see [`scales::trans_new`] for the 
 #' latter). The scale of the axes, we will pass them to the `trans` paramter of 
 #' [`ggplot2::scale_x_continuous()`], [`ggplot2::scale_y_continuous()], respectively. 
@@ -163,6 +167,7 @@ AssSpec2d <- function(
     ylim = c(-Inf, Inf),
     smooth_method = NULL,
     smooth_benchmark = FALSE,
+    smooth_se = FALSE,
     scale_x = "identity",
     scale_y = "identity",
     vline = NULL,
@@ -200,6 +205,7 @@ AssSpec2d <- function(
         ylim = ylim,
         smooth_method = smooth_method,
         smooth_benchmark = smooth_benchmark,
+        smooth_se = smooth_se,
         scale_x = scale_x,
         scale_y = scale_y,
         vline = vline,
@@ -223,8 +229,8 @@ infer_as2 <- function(
     data_spec
 ){
     # Prepare for assess_2d()
-    this_pps <- ass_spec_2d
-    this_pps$file <- file.path(
+    this_as2 <- ass_spec_2d
+    this_as2$file <- file.path(
         model_spec$directory,
         paste0(
             ass_spec_2d$x_metric, "_vs_", ass_spec_2d$y_metric,
@@ -232,13 +238,14 @@ infer_as2 <- function(
         )
     )
     if(data_spec$cohort == "test")
-        this_pps$file <- mirror_path(
-            filepath = this_pps$file,
+        this_as2$file <- mirror_path(
+            filepath = this_as2$file,
             mirror = ass_spec_2d$model_tree_mirror
         )
-    this_pps$title <- paste0(
+    this_as2$title <- paste0(
         data_spec$name, " ", data_spec$cohort, ", ",
-        data_spec$time_to_event_col, " < ", this_pps$pivot_time_cutoff
+        data_spec$time_to_event_col, " < ", this_as2$pivot_time_cutoff
     )
-    return(this_pps)
+    this_as2$smooth_se <- TRUE
+    return(this_as2)
 }
