@@ -91,7 +91,7 @@ test_that("assess_2d_center() works", {
   ass_spec_2d$text <- NULL
   ass_spec_2d$scores_plot <- FALSE
   assess_2d_center(
-    model_spec_list = list(model_spec_1),
+    model_spec_list = model_spec_list,
     data_spec = data_spec,
     ass_spec_2d = ass_spec_2d,
     comparison_plot = FALSE,
