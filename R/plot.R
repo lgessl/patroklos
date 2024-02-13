@@ -10,7 +10,7 @@ plot_2d_metric <- function(
     if(!is.null(ass_spec_2d$benchmark)){
         model_levels <- unique(data[["model"]])
         model_levels <- sort(model_levels[model_levels != ass_spec_2d$benchmark])
-        model_levels <- c(model_levels, ass_spec_2d$benchmark)
+        model_levels <- c(ass_spec_2d$benchmark, model_levels)
         data[["model"]] <- factor(data[["model"]], levels = model_levels)
     }
     x_metric <- ass_spec_2d$x_metric
