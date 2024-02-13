@@ -11,7 +11,7 @@ test_that("plot_2d_metric() works", {
     y_metric = "prec",
     pivot_time_cutoff = 2.,
     benchmark = "bm",
-    show_plots = TRUE,
+    show_plots = FALSE,
     title = "this title",
     x_lab = "this x lab",
     y_lab = "that y lab",

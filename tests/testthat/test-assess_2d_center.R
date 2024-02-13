@@ -66,6 +66,7 @@ test_that("assess_2d_center() works", {
     show_plots = FALSE,
     smooth_method = "loess",
     pivot_time_cutoff = 2.,
+    benchmark = "ipi",
     fellow_csv = TRUE,
     scores_plot = TRUE,
     text = list(ggplot2::aes(x = .5, y = .5, label = "hello"), 
