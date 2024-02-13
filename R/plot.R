@@ -43,8 +43,8 @@ plot_2d_metric <- function(
         plt <- plt + do.call(ggplot2::geom_hline, ass_spec_2d$hline)
     if(!is.null(ass_spec_2d$vline))
         plt <- plt + do.call(ggplot2::geom_vline, ass_spec_2d$vline)
-    if(!is.null(ass_spec_2d$text))
-        plt <- plt + do.call(ggplot2::geom_label, ass_spec_2d$text)
+    if(!is.null(ass_spec_2d[["text"]]))
+        plt <- plt + do.call(ggplot2::geom_label, ass_spec_2d[["text"]])
     if(!is.null(ass_spec_2d$benchmark) && !is.null(bm_data)){
         bm_alpha <- ifelse(
             ass_spec_2d$smooth_benchmark, 
@@ -54,7 +54,8 @@ plot_2d_metric <- function(
         plt <- plt + ggplot2::geom_text(
             data = bm_data,
             mapping = ggplot2::aes(label = .data[["cutoff"]]),
-            alpha = bm_alpha
+            alpha = bm_alpha,
+            size = ass_spec_2d$text_size
         )
     }
     if(!is.null(ass_spec_2d$colors)){

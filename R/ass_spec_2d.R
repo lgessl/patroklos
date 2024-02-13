@@ -1,94 +1,3 @@
-new_AssSpec2d <- function(
-    file,
-    x_metric,
-    y_metric,
-    pivot_time_cutoff,
-    lambda,
-    benchmark,
-    ci_level,
-    fellow_csv,
-    scores_plot,
-    show_plots,
-    title,
-    x_lab,
-    y_lab,
-    xlim,
-    ylim,
-    smooth_method,
-    smooth_benchmark,
-    smooth_se,
-    scale_x,
-    scale_y,
-    hline,
-    vline,
-    text,
-    alpha,
-    colors,
-    width,
-    height,
-    units
-){
-    stopifnot(is.character(file))
-    stopifnot(is.character(x_metric))
-    stopifnot(is.character(y_metric))
-    stopifnot(is.null(pivot_time_cutoff) || is.numeric(pivot_time_cutoff))
-    stopifnot(is.character(lambda) || is.numeric(lambda))
-    stopifnot(is.character(benchmark) || is.null(benchmark))
-    stopifnot(is.numeric(ci_level) && ci_level >= 0 && ci_level <= 1)
-    stopifnot(is.logical(fellow_csv))
-    stopifnot(is.logical(scores_plot))
-    stopifnot(is.logical(show_plots))
-    stopifnot(is.character(title) || is.null(title))
-    stopifnot(is.character(x_lab))
-    stopifnot(is.character(y_lab))
-    stopifnot(is.numeric(xlim) || is.null(xlim))
-    stopifnot(is.numeric(ylim) || is.null(ylim))
-    stopifnot(is.character(smooth_method) || is.null(smooth_method) ||
-        is.function(smooth_method))
-    stopifnot(is.logical(smooth_benchmark))
-    stopifnot(is.logical(smooth_se))
-    stopifnot(is.null(hline) || is.list(hline))
-    stopifnot(is.null(vline) || is.list(vline))
-    stopifnot(is.null(text) || is.list(text))
-    stopifnot(is.numeric(alpha) && alpha >= 0 && alpha <= 1)
-    stopifnot(is.character(colors) || is.null(colors))
-    stopifnot(is.numeric(width) && width > 0)
-    stopifnot(is.numeric(height) && height > 0)
-    stopifnot(is.character(units))
-
-    ass_spec_2d_list <- list(
-        "file" = file,
-        "x_metric" = x_metric,
-        "y_metric" = y_metric,
-        "pivot_time_cutoff" = pivot_time_cutoff,
-        "lambda" = lambda,
-        "benchmark" = benchmark,
-        "ci_level" = ci_level,
-        "fellow_csv" = fellow_csv,
-        "scores_plot" = scores_plot,
-        "show_plots" = show_plots,
-        "title" = title,
-        "x_lab" = x_lab,
-        "y_lab" = y_lab,
-        "xlim" = xlim,
-        "ylim" = ylim,
-        "smooth_method" = smooth_method,
-        "smooth_benchmark" = smooth_benchmark,
-        "smooth_se" = smooth_se,
-        "scale_x" = scale_x,
-        "scale_y" = scale_y,
-        "hline" = hline,
-        "vline" = vline,
-        "text" = text,
-        "alpha" = alpha,
-        "colors" = colors,
-        "width" = width,
-        "height" = height,
-        "units" = units
-    )
-    return(structure(ass_spec_2d_list, class = "AssSpec2d"))
-}
-
 #' @title Create a AssSpec2d object
 #' @description A AssSpec2d object holds all the info on how to assess how well a 
 #' model filters high-risk patients. Its base object is a list. The core of the 
@@ -138,6 +47,8 @@ new_AssSpec2d <- function(
 #' @param vline,hline list or NULL. Vertical/horizontal lines to be added to the plot. A list
 #' holding the arguments to pass to [`ggplot2::geom_vline()`] and [`ggplot2::geom_hline()`],
 #' respectively. Default is `NULL`.
+#' @param text_size numeric. The size of text added inside the plot in mm. Default is 
+#' `2.5`. See \code{vignette("ggplot2-specs", package = "ggplot2")} for more details.
 #' @param text list or NULL. Text label added to the plot. A list holding the arguments to
 #' pass to [`ggplot2::geom_label()`]. Default is `NULL`. 
 #' @param alpha numeric in \[0, 1\]. The alpha value for the points and lines in the 
@@ -172,6 +83,7 @@ AssSpec2d <- function(
     scale_y = "identity",
     vline = NULL,
     hline = NULL,
+    text_size = 2.5,
     text = NULL,
     alpha = 0.5,
     width = 7,
@@ -189,37 +101,67 @@ AssSpec2d <- function(
         if(!any(stringr::str_detect(c("prevalence", "rpp"), x_metric)))
             stop("For `y_metric` = 'logrank', `x_metric` must be 'prevalence' or 'rpp'.")
     }
-    ass_spec_2d <- new_AssSpec2d(
-        file = file,
-        x_metric = x_metric,
-        y_metric = y_metric,
-        pivot_time_cutoff = pivot_time_cutoff,
-        lambda = lambda,
-        benchmark = benchmark,
-        ci_level = ci_level,
-        fellow_csv = fellow_csv,
-        scores_plot = scores_plot,
-        x_lab = x_lab,
-        y_lab = y_lab,
-        xlim = xlim,
-        ylim = ylim,
-        smooth_method = smooth_method,
-        smooth_benchmark = smooth_benchmark,
-        smooth_se = smooth_se,
-        scale_x = scale_x,
-        scale_y = scale_y,
-        vline = vline,
-        hline = hline,
-        text = text,
-        alpha = alpha,
-        width = width,
-        height = height,
-        units = units,
-        title = title,
-        colors = colors,
-        show_plots = show_plots
+    stopifnot(is.character(file))
+    stopifnot(is.character(x_metric))
+    stopifnot(is.character(y_metric))
+    stopifnot(is.null(pivot_time_cutoff) || is.numeric(pivot_time_cutoff))
+    stopifnot(is.character(lambda) || is.numeric(lambda))
+    stopifnot(is.character(benchmark) || is.null(benchmark))
+    stopifnot(is.numeric(ci_level) && ci_level >= 0 && ci_level <= 1)
+    stopifnot(is.logical(fellow_csv))
+    stopifnot(is.logical(scores_plot))
+    stopifnot(is.logical(show_plots))
+    stopifnot(is.character(title) || is.null(title))
+    stopifnot(is.character(x_lab))
+    stopifnot(is.character(y_lab))
+    stopifnot(is.numeric(xlim) || is.null(xlim))
+    stopifnot(is.numeric(ylim) || is.null(ylim))
+    stopifnot(is.character(smooth_method) || is.null(smooth_method) ||
+        is.function(smooth_method))
+    stopifnot(is.logical(smooth_benchmark))
+    stopifnot(is.logical(smooth_se))
+    stopifnot(is.null(hline) || is.list(hline))
+    stopifnot(is.null(vline) || is.list(vline))
+    stopifnot(is.numeric(text_size) && text_size > 0)
+    stopifnot(is.null(text) || is.list(text))
+    stopifnot(is.numeric(alpha) && alpha >= 0 && alpha <= 1)
+    stopifnot(is.character(colors) || is.null(colors))
+    stopifnot(is.numeric(width) && width > 0)
+    stopifnot(is.numeric(height) && height > 0)
+    stopifnot(is.character(units))
+
+    ass_spec_2d <- list(
+        "file" = file,
+        "x_metric" = x_metric,
+        "y_metric" = y_metric,
+        "pivot_time_cutoff" = pivot_time_cutoff,
+        "lambda" = lambda,
+        "benchmark" = benchmark,
+        "ci_level" = ci_level,
+        "fellow_csv" = fellow_csv,
+        "scores_plot" = scores_plot,
+        "show_plots" = show_plots,
+        "title" = title,
+        "x_lab" = x_lab,
+        "y_lab" = y_lab,
+        "xlim" = xlim,
+        "ylim" = ylim,
+        "smooth_method" = smooth_method,
+        "smooth_benchmark" = smooth_benchmark,
+        "smooth_se" = smooth_se,
+        "scale_x" = scale_x,
+        "scale_y" = scale_y,
+        "hline" = hline,
+        "vline" = vline,
+        "text_size" = text_size,
+        "text" = text,
+        "alpha" = alpha,
+        "colors" = colors,
+        "width" = width,
+        "height" = height,
+        "units" = units
     )
-    return(ass_spec_2d)
+    return(structure(ass_spec_2d, class = "AssSpec2d"))
 }
 
 

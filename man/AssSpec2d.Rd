@@ -27,6 +27,7 @@ AssSpec2d(
   scale_y = "identity",
   vline = NULL,
   hline = NULL,
+  text_size = 2.5,
   text = NULL,
   alpha = 0.5,
   width = 7,
@@ -97,6 +98,9 @@ latter). The scale of the axes, we will pass them to the \code{trans} paramter o
 \item{vline, hline}{list or NULL. Vertical/horizontal lines to be added to the plot. A list
 holding the arguments to pass to \code{\link[ggplot2:geom_abline]{ggplot2::geom_vline()}} and \code{\link[ggplot2:geom_abline]{ggplot2::geom_hline()}},
 respectively. Default is \code{NULL}.}
+
+\item{text_size}{numeric. The size of text added inside the plot in mm. Default is
+\code{2.5}. See \code{vignette("ggplot2-specs", package = "ggplot2")} for more details.}
 
 \item{text}{list or NULL. Text label added to the plot. A list holding the arguments to
 pass to \code{\link[ggplot2:geom_text]{ggplot2::geom_label()}}. Default is \code{NULL}.}

@@ -1,4 +1,3 @@
-
 test_that("plot_2d_metric() works", {
 
   set.seed(134)
