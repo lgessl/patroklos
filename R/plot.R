@@ -16,6 +16,7 @@ plot_2d_metric <- function(
     x_metric <- ass_spec_2d$x_metric
     y_metric <- ass_spec_2d$y_metric
     # Constraint data to range
+    full_data <- data
     data <- data[
         data[[x_metric]] >= ass_spec_2d$xlim[1] &
         data[[x_metric]] <= ass_spec_2d$xlim[2],
@@ -29,15 +30,28 @@ plot_2d_metric <- function(
         bm_data <- data[data[["model"]] == ass_spec_2d$benchmark, ]
         data <- data[data[["model"]] != ass_spec_2d$benchmark, ]
     }
-
     plt <- ggplot2::ggplot(
         data = data,
         mapping = ggplot2::aes(
             x = .data[[x_metric]], 
             y = .data[[y_metric]], 
             color = .data[["model"]]
-            )
-        ) +
+        )
+    )
+    if(!is.null(ass_spec_2d$benchmark) && !is.null(bm_data)){
+        bm_alpha <- ifelse(
+            ass_spec_2d$smooth_benchmark, 
+            ass_spec_2d$alpha,
+            1.
+        )
+        plt <- plt + ggplot2::geom_text(
+            data = bm_data,
+            mapping = ggplot2::aes(label = .data[["cutoff"]]),
+            alpha = bm_alpha,
+            size = ass_spec_2d$text_size
+        )
+    }
+    plt <- plt +
         ggplot2::geom_point(alpha = ass_spec_2d$alpha) +
         ggplot2::labs(
             title = ass_spec_2d$title, 
@@ -52,19 +66,6 @@ plot_2d_metric <- function(
         plt <- plt + do.call(ggplot2::geom_vline, ass_spec_2d$vline)
     if(!is.null(ass_spec_2d[["text"]]))
         plt <- plt + do.call(ggplot2::geom_label, ass_spec_2d[["text"]])
-    if(!is.null(ass_spec_2d$benchmark) && !is.null(bm_data)){
-        bm_alpha <- ifelse(
-            ass_spec_2d$smooth_benchmark, 
-            ass_spec_2d$alpha,
-            1.
-        )
-        plt <- plt + ggplot2::geom_text(
-            data = bm_data,
-            mapping = ggplot2::aes(label = .data[["cutoff"]]),
-            alpha = bm_alpha,
-            size = ass_spec_2d$text_size
-        )
-    }
     if(!is.null(ass_spec_2d$colors)){
         plt <- plt + ggplot2::scale_color_manual(values = ass_spec_2d$colors)
     }

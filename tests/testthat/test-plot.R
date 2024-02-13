@@ -2,7 +2,7 @@ test_that("plot_2d_metric() works", {
 
   set.seed(134)
 
-  n_row <- 30
+  n_row <- 50
 
   dir <- withr::local_tempdir()
   ass_spec_2d <- AssSpec2d(
@@ -18,16 +18,17 @@ test_that("plot_2d_metric() works", {
     xlim = c(0, .9),
     smooth_method = "loess",
     smooth_benchmark = TRUE,
-    smooth_se = TRUE,
-    scale_x = "log10",
+    smooth_se = FALSE,
+    scale_x = "identity",
     hline = list(yintercept = 0.5, linetype = "dashed"),
-    text = list(ggplot2::aes(x = 0.5, y = 0.5, label = "this text"))
+    text = list(ggplot2::aes(x = 0.5, y = 0.5, label = "this text")),
+    colors = c("black", "blue", "yellow", "red")
   )
   ass_spec_2d$data <- tibble::tibble(
     rpp = runif(n_row),
     prec = runif(n_row),
     cutoff = sample(0:5, n_row, replace = TRUE),
-    model = sample(c("model", "bm"), n_row, replace = TRUE)
+    model = sample(c("model1", "model2", "bm"), n_row, replace = TRUE)
   )
 
   expect_no_error(
