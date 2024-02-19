@@ -7,6 +7,7 @@
 #' `expr` holds the expression data, with patient ids as row names and gene ids as
 #' column names. I.e., we transpose the expression data. `pheno` holds the pheno data, 
 #' with the patient ids in the first column `patient_id_col`.
+#' @export
 read <- function(
     data_spec
 ){
