@@ -14,7 +14,7 @@
 #' @param lambda string or numeric. The lambda regularization parameter of the model
 #' to predict with. Technically, we will pass it to the `s` parameter of the `predict()`
 #' method of the object returned by the `fitter` attribute of the `ModelSpec` object.
-#' See, e.g., [glmnet::predict.cv.glmnet()] or [zeroSum::predict.zeroSum()].
+#' See, e.g., [zeroSum::predict.zeroSum()].
 #' @param pivot_time_cutoff numeric. Time-to-event threshold that divides samples into a
 #' high/low-risk (time to event below/above `pivot_time_cutoff`) group. See return value 
 #' below.

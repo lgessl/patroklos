@@ -29,7 +29,7 @@ constructor \code{ModelSpec()} for details.}
 \item{lambda}{string or numeric. The lambda regularization parameter of the model
 to predict with. Technically, we will pass it to the \code{s} parameter of the \code{predict()}
 method of the object returned by the \code{fitter} attribute of the \code{ModelSpec} object.
-See, e.g., \code{\link[glmnet:predict.cv.glmnet]{glmnet::predict.cv.glmnet()}} or \code{\link[zeroSum:predict.zeroSum]{zeroSum::predict.zeroSum()}}.}
+See, e.g., \code{\link[zeroSum:predict.zeroSum]{zeroSum::predict.zeroSum()}}.}
 
 \item{pivot_time_cutoff}{numeric. Time-to-event threshold that divides samples into a
 high/low-risk (time to event below/above \code{pivot_time_cutoff}) group. See return value

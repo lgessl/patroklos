@@ -25,6 +25,7 @@
 #' @details The AssSpec2d class is tailored for this function, so see its constructor 
 #' [`AssSpec2d()`] for details.
 #' @param msg_prefix string. Prefix for messages. Default is `""`.
+#' @export
 assess_2d <- function(
     expr_mat,
     pheno_tbl,
