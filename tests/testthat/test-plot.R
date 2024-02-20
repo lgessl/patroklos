@@ -22,7 +22,9 @@ test_that("plot_2d_metric() works", {
     scale_x = "identity",
     hline = list(yintercept = 0.5, linetype = "dashed"),
     text = list(ggplot2::aes(x = 0.5, y = 0.5, label = "this text")),
-    colors = c("black", "blue", "yellow", "red")
+    colors = c("black", "blue", "yellow", "red"),
+    theme = ggplot2::theme_dark() + 
+      ggplot2::theme(plot.background = ggplot2::element_rect(grDevices::rgb(1, 1, 1, .98)))
   )
   ass_spec_2d$data <- tibble::tibble(
     rpp = runif(n_row),

@@ -84,13 +84,9 @@ plot_2d_metric <- function(
             )
         }
     }
-    plt <- plt + ggplot2::theme(
-        plot.background = ggplot2::element_rect(fill = ass_spec_2d$plot_background)
-    )
+    if(!is.null(ass_spec_2d$theme)) plt <- plt + ass_spec_2d$theme
 
-    if(ass_spec_2d$show_plots){
-        print(plt)
-    }
+    if(ass_spec_2d$show_plots) print(plt)
 
     if(!quiet)
         message(msg_prefix, "Saving 2D metric plot to ", ass_spec_2d$file)

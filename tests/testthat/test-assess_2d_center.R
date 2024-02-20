@@ -71,6 +71,8 @@ test_that("assess_2d_center() works", {
     scores_plot = TRUE,
     text = list(ggplot2::aes(x = .5, y = .5, label = "hello"), 
       color = "red", angle = 90),
+    theme = ggplot2::theme_minimal() + 
+      ggplot2::theme(plot.background = ggplot2::element_rect(fill = "red"))
   )
 
   assess_2d_center(

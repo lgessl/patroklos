@@ -57,9 +57,9 @@
 #' @param height numeric. The height of the plot in `units`. Default is `4`.
 #' @param colors character vector. The colors to be used for the different models.
 #' Default is `NULL`, which means that the default colors of `ggplot2` will be used.
-#' @param plot_background character. The background color of the plot passed to 
-#' `plot.background` in [`ggplot2::theme()`]. Default is `grDevices::rgb(1, 1, 1, 0.98)`, 
-#' the background color of the metropolis theme light.
+#' @param theme S3 object inheriting from `"theme"` and `"gg"` (typically the return value of 
+#' [`ggplot2::theme()`] or a complete ggplot2 theme like [`ggplot2::theme_light()`]). 
+#' The theme of the plot. Default is `NULL`, which means the default theme of ggplot2.
 #' @param units string. The units of `width` and `height`. Default is `"in"` (inches).
 #' @return An AssSpec2d S3 object.
 #' @export
@@ -92,7 +92,7 @@ AssSpec2d <- function(
     width = 7,
     height = 4,
     colors = NULL,
-    plot_background = grDevices::rgb(1, 1, 1, 0.98),
+    theme = NULL,
     units = "in"
 ){
     if(is.null(x_lab)){
@@ -132,7 +132,7 @@ AssSpec2d <- function(
     stopifnot(is.character(colors) || is.null(colors))
     stopifnot(is.numeric(width) && width > 0)
     stopifnot(is.numeric(height) && height > 0)
-    stopifnot(is.character(plot_background))
+    stopifnot((inherits(theme, "theme") && inherits(theme, "gg")) || is.null(theme))
     stopifnot(is.character(units))
 
     ass_spec_2d <- list(
@@ -164,7 +164,7 @@ AssSpec2d <- function(
         "colors" = colors,
         "width" = width,
         "height" = height,
-        "plot_background" = plot_background,
+        "theme" = theme,
         "units" = units
     )
     return(structure(ass_spec_2d, class = "AssSpec2d"))
