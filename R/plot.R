@@ -84,6 +84,9 @@ plot_2d_metric <- function(
             )
         }
     }
+    plt <- plt + ggplot2::theme(
+        plot.background = ggplot2::element_rect(fill = ass_spec_2d$plot_background)
+    )
 
     if(ass_spec_2d$show_plots){
         print(plt)

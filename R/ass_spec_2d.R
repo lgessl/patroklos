@@ -1,5 +1,5 @@
-#' @title Create a AssSpec2d object
-#' @description A AssSpec2d object holds all the info on how to assess how well a 
+#' @title Create an AssSpec2d object
+#' @description An AssSpec2d object holds all the info on how to assess how well a 
 #' model filters high-risk patients. Its base object is a list. The core of the 
 #' assessment is a scatter plot of two performance measures. Moreover, a AssSpec2d
 #' object holds the commands (usually bools) on whether do more assessments (that 
@@ -57,6 +57,9 @@
 #' @param height numeric. The height of the plot in `units`. Default is `4`.
 #' @param colors character vector. The colors to be used for the different models.
 #' Default is `NULL`, which means that the default colors of `ggplot2` will be used.
+#' @param plot_background character. The background color of the plot passed to 
+#' `plot.background` in [`ggplot2::theme()`]. Default is `grDevices::rgb(1, 1, 1, 0.98)`, 
+#' the background color of the metropolis theme light.
 #' @param units string. The units of `width` and `height`. Default is `"in"` (inches).
 #' @return An AssSpec2d S3 object.
 #' @export
@@ -89,6 +92,7 @@ AssSpec2d <- function(
     width = 7,
     height = 4,
     colors = NULL,
+    plot_background = grDevices::rgb(1, 1, 1, 0.98),
     units = "in"
 ){
     if(is.null(x_lab)){
@@ -128,6 +132,7 @@ AssSpec2d <- function(
     stopifnot(is.character(colors) || is.null(colors))
     stopifnot(is.numeric(width) && width > 0)
     stopifnot(is.numeric(height) && height > 0)
+    stopifnot(is.character(plot_background))
     stopifnot(is.character(units))
 
     ass_spec_2d <- list(
@@ -159,6 +164,7 @@ AssSpec2d <- function(
         "colors" = colors,
         "width" = width,
         "height" = height,
+        "plot_background" = plot_background,
         "units" = units
     )
     return(structure(ass_spec_2d, class = "AssSpec2d"))

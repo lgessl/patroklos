@@ -2,7 +2,7 @@
 % Please edit documentation in R/ass_spec_2d.R
 \name{AssSpec2d}
 \alias{AssSpec2d}
-\title{Create a AssSpec2d object}
+\title{Create an AssSpec2d object}
 \usage{
 AssSpec2d(
   file,
@@ -33,6 +33,7 @@ AssSpec2d(
   width = 7,
   height = 4,
   colors = NULL,
+  plot_background = grDevices::rgb(1, 1, 1, 0.98),
   units = "in"
 )
 }
@@ -115,13 +116,17 @@ plot.}
 \item{colors}{character vector. The colors to be used for the different models.
 Default is \code{NULL}, which means that the default colors of \code{ggplot2} will be used.}
 
+\item{plot_background}{character. The background color of the plot passed to
+\code{plot.background} in \code{\link[ggplot2:theme]{ggplot2::theme()}}. Default is \code{grDevices::rgb(1, 1, 1, 0.98)},
+the background color of the metropolis theme light.}
+
 \item{units}{string. The units of \code{width} and \code{height}. Default is \code{"in"} (inches).}
 }
 \value{
 An AssSpec2d S3 object.
 }
 \description{
-A AssSpec2d object holds all the info on how to assess how well a
+An AssSpec2d object holds all the info on how to assess how well a
 model filters high-risk patients. Its base object is a list. The core of the
 assessment is a scatter plot of two performance measures. Moreover, a AssSpec2d
 object holds the commands (usually bools) on whether do more assessments (that
