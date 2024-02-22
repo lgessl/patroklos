@@ -70,17 +70,17 @@ assess_2d_center <- function(
         }
         cohort_as2 <- ass_spec_2d
         cohort_as2$data <- dplyr::bind_rows(perf_tbls)
-        if(cohort == "test")
-            cohort_as2$file <- mirror_path(
-                filepath = ass_spec_2d$file,
-                mirror = model_tree_mirror
-            )
-        if(is.null(cohort_as2$title))
-            cohort_as2$title <- paste0(
-                data_spec$name, " ", data_spec$cohort, ", ", data_spec$time_to_event_col,
-                " < ", cohort_as2$pivot_time_cutoff
-            )
         if(comparison_plot){
+            if(cohort == "test")
+                cohort_as2$file <- mirror_path(
+                    filepath = ass_spec_2d$file,
+                    mirror = model_tree_mirror
+                )
+            if(is.null(cohort_as2$title))
+                cohort_as2$title <- paste0(
+                    data_spec$name, " ", data_spec$cohort, ", ", data_spec$time_to_event_col,
+                    " < ", cohort_as2$pivot_time_cutoff
+                )
             plot_2d_metric(
                 ass_spec_2d = cohort_as2,
                 quiet = TRUE
