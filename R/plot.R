@@ -30,6 +30,10 @@ plot_2d_metric <- function(
         bm_data <- data[data[["model"]] == ass_spec_2d$benchmark, ]
         data <- data[data[["model"]] != ass_spec_2d$benchmark, ]
     }
+    # One font family for all text
+    font_family <- ass_spec_2d$theme$text$family
+    if(is.null(font_family)) font_family <- ""
+ 
     plt <- ggplot2::ggplot(
         data = data,
         mapping = ggplot2::aes(
@@ -44,14 +48,12 @@ plot_2d_metric <- function(
             ass_spec_2d$alpha,
             1.
         )
-        family <- ass_spec_2d$theme$text$family
-        if(is.null(family)) family <- ""
         plt <- plt + ggplot2::geom_text(
             data = bm_data,
             mapping = ggplot2::aes(label = .data[["cutoff"]]),
             alpha = bm_alpha,
             size = ass_spec_2d$text_size,
-            family = family
+            family = font_family
         )
     }
     plt <- plt +
@@ -67,8 +69,10 @@ plot_2d_metric <- function(
         plt <- plt + do.call(ggplot2::geom_hline, ass_spec_2d$hline)
     if(!is.null(ass_spec_2d$vline))
         plt <- plt + do.call(ggplot2::geom_vline, ass_spec_2d$vline)
-    if(!is.null(ass_spec_2d[["text"]]))
+    if(!is.null(ass_spec_2d[["text"]])){
+        ass_spec_2d[["text"]][["family"]] <- font_family
         plt <- plt + do.call(ggplot2::geom_label, ass_spec_2d[["text"]])
+    }
     if(!is.null(ass_spec_2d$colors)){
         plt <- plt + ggplot2::scale_color_manual(values = ass_spec_2d$colors)
     }
