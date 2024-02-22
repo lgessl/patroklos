@@ -34,7 +34,8 @@ AssSpec2d(
   height = 4,
   colors = NULL,
   theme = NULL,
-  units = "in"
+  units = "in",
+  dpi = 300
 )
 }
 \arguments{
@@ -121,6 +122,8 @@ Default is \code{NULL}, which means that the default colors of \code{ggplot2} wi
 The theme of the plot. Default is \code{NULL}, which means the default theme of ggplot2.}
 
 \item{units}{string. The units of \code{width} and \code{height}. Default is \code{"in"} (inches).}
+
+\item{dpi}{numeric. Plot resolution in dots per inch. Default is \code{300}.}
 }
 \value{
 An AssSpec2d S3 object.

@@ -96,7 +96,8 @@ plot_2d_metric <- function(
         plt, 
         width = ass_spec_2d$width, 
         height = ass_spec_2d$height, 
-        units = ass_spec_2d$units
+        units = ass_spec_2d$units,
+        dpi = ass_spec_2d$dpi
     )
 
     # Save to csv (if wanted)

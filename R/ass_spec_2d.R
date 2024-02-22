@@ -61,6 +61,7 @@
 #' [`ggplot2::theme()`] or a complete ggplot2 theme like [`ggplot2::theme_light()`]). 
 #' The theme of the plot. Default is `NULL`, which means the default theme of ggplot2.
 #' @param units string. The units of `width` and `height`. Default is `"in"` (inches).
+#' @param dpi numeric. Plot resolution in dots per inch. Default is `300`.
 #' @return An AssSpec2d S3 object.
 #' @export
 AssSpec2d <- function(
@@ -93,7 +94,8 @@ AssSpec2d <- function(
     height = 4,
     colors = NULL,
     theme = NULL,
-    units = "in"
+    units = "in",
+    dpi = 300
 ){
     if(is.null(x_lab)){
         x_lab <- x_metric
@@ -134,6 +136,7 @@ AssSpec2d <- function(
     stopifnot(is.numeric(height) && height > 0)
     stopifnot((inherits(theme, "theme") && inherits(theme, "gg")) || is.null(theme))
     stopifnot(is.character(units))
+    stopifnot(is.numeric(dpi) && dpi > 0)
 
     ass_spec_2d <- list(
         "file" = file,
@@ -165,7 +168,8 @@ AssSpec2d <- function(
         "width" = width,
         "height" = height,
         "theme" = theme,
-        "units" = units
+        "units" = units,
+        "dpi" = dpi
     )
     return(structure(ass_spec_2d, class = "AssSpec2d"))
 }

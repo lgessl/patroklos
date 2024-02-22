@@ -60,7 +60,7 @@ test_that("assess_2d_center() works", {
 
   res_dir <- file.path(base_dir, "results")
   ass_spec_2d <- AssSpec2d(
-    file = file.path(model_dir, "perf_plot.pdf"),
+    file = file.path(model_dir, "perf_plot.jpeg"),
     x_metric = "rpp",
     y_metric = "prec",
     show_plots = FALSE,
@@ -72,7 +72,8 @@ test_that("assess_2d_center() works", {
     text = list(ggplot2::aes(x = .5, y = .5, label = "hello"), 
       color = "red", angle = 90),
     theme = ggplot2::theme_minimal() + 
-      ggplot2::theme(plot.background = ggplot2::element_rect(fill = "red"))
+      ggplot2::theme(plot.background = ggplot2::element_rect(fill = "red")),
+    dpi = 250
   )
 
   assess_2d_center(
@@ -83,13 +84,13 @@ test_that("assess_2d_center() works", {
     quiet = TRUE
   )
   expect_true(file.exists(ass_spec_2d$file))
-  expect_true(file.exists(file.path(res_dir, "logistic/2/scores.pdf")))
+  expect_true(file.exists(file.path(res_dir, "logistic/2/scores.jpeg")))
   expect_true(file.exists(file.path(res_dir, "cox/2/rpp_vs_prec.csv")))
 
   model_spec_1$split_index <- 1
   ass_spec_2d$y_metric <- "logrank"
   ass_spec_2d$scale_y <- "log10"
-  ass_spec_2d$file <- file.path(model_dir, "logrank.pdf")
+  ass_spec_2d$file <- file.path(model_dir, "logrank.jpeg")
   ass_spec_2d$benchmark <- NULL
   ass_spec_2d$text <- NULL
   ass_spec_2d$scores_plot <- FALSE
@@ -105,7 +106,7 @@ test_that("assess_2d_center() works", {
   model_spec_2$time_cutoffs <- 1.5
   ass_spec_2d$y_metric <- "precision_ci"
   ass_spec_2d$ci_level <- .95
-  ass_spec_2d$file <- file.path(model_dir, "precision_ci.pdf")
+  ass_spec_2d$file <- file.path(model_dir, "precision_ci.jpeg")
   ass_spec_2d$benchmark <- "ipi"
   assess_2d_center(
     model_spec_list = list(model_spec_2),
@@ -115,5 +116,5 @@ test_that("assess_2d_center() works", {
     cohorts = "train",
     quiet = TRUE
   )
-  expect_true(file.exists(file.path(model_dir, "logistic/1-5/rpp_vs_precision_ci.pdf")))
+  expect_true(file.exists(file.path(model_dir, "logistic/1-5/rpp_vs_precision_ci.jpeg")))
 })

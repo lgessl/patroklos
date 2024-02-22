@@ -46,7 +46,7 @@ test_that("assess_2d() works", {
     response_type = "binary"
   )
   ass_spec_2d <- AssSpec2d(
-    file = file.path(dir, "rpp.pdf"),
+    file = file.path(dir, "rpp.jpeg"),
     x_metric = "rpp",
     y_metric = "prec",
     pivot_time_cutoff = 2.,
@@ -54,7 +54,8 @@ test_that("assess_2d() works", {
     smooth_se = TRUE,
     show_plots = FALSE,
     text = list(ggplot2::aes(x = .5, y = .5, label = "this text"), 
-      color = "red", angle = 45)
+     color = "red", angle = 45),
+    dpi = 250
   )
 
   for(model_spec in list(model_spec_1, model_spec_2)){
@@ -79,7 +80,7 @@ test_that("assess_2d() works", {
 
   
   ass_spec_2d$benchmark <- "ipi"
-  ass_spec_2d$directory <- file.path(dir, "logrank.pdf")
+  ass_spec_2d$directory <- file.path(dir, "logrank.jpeg")
   ass_spec_2d$y_metric <- "logrank"
   ass_spec_2d$scale_y <- "log10"
   tbl <- assess_2d(
@@ -94,7 +95,7 @@ test_that("assess_2d() works", {
 
   ass_spec_2d$y_metric <- "precision_ci"
   ass_spec_2d$ci_level <- .95
-  ass_spec_2d$directory <- file.path(dir, "precision_ci.pdf")
+  ass_spec_2d$directory <- file.path(dir, "precision_ci.jpeg")
   ass_spec_2d$scale_y <- "identity"
   ass_spec_2d$title <- "Lower precision CI boundary (upper for ipi)"
   ass_spec_2d$show_plots <- FALSE

@@ -6,7 +6,7 @@ test_that("plot_2d_metric() works", {
 
   dir <- withr::local_tempdir()
   ass_spec_2d <- AssSpec2d(
-    file = file.path(dir, "test.pdf"),
+    file = file.path(dir, "test.jpeg"),
     x_metric = "rpp",
     y_metric = "prec",
     pivot_time_cutoff = 2.,
@@ -24,7 +24,8 @@ test_that("plot_2d_metric() works", {
     text = list(ggplot2::aes(x = 0.5, y = 0.5, label = "this text")),
     colors = c("black", "blue", "yellow", "red"),
     theme = ggplot2::theme_dark() + 
-      ggplot2::theme(plot.background = ggplot2::element_rect(grDevices::rgb(1, 1, 1, .98)))
+      ggplot2::theme(plot.background = ggplot2::element_rect(grDevices::rgb(1, 1, 1, .98))),
+    dpi = 200
   )
   ass_spec_2d$data <- tibble::tibble(
     rpp = runif(n_row),
@@ -64,12 +65,13 @@ test_that("plot_risk_scores() works", {
   predicted <- l[[2]]
   dir <- withr::local_tempdir()
   ass_spec_2d <- AssSpec2d(
-    file = file.path(dir, "scores.pdf"),
+    file = file.path(dir, "scores.jpeg"),
     x_metric = "rank",
     y_metric = "scores",
     title = "this title",
     fellow_csv = TRUE,
-    show_plots = FALSE
+    show_plots = FALSE,
+    dpi = 250
   )
 
   expect_no_error(
@@ -81,7 +83,7 @@ test_that("plot_risk_scores() works", {
     )
   )
   expect_true(all(
-    file.exists(file.path(dir, "scores.pdf")),
+    file.exists(file.path(dir, "scores.jpeg")),
     file.exists(file.path(dir, "scores.csv"))
   ))
 })
