@@ -44,11 +44,14 @@ plot_2d_metric <- function(
             ass_spec_2d$alpha,
             1.
         )
+        family <- ass_spec_2d$theme$text$family
+        if(is.null(family)) family <- ""
         plt <- plt + ggplot2::geom_text(
             data = bm_data,
             mapping = ggplot2::aes(label = .data[["cutoff"]]),
             alpha = bm_alpha,
-            size = ass_spec_2d$text_size
+            size = ass_spec_2d$text_size,
+            family = family
         )
     }
     plt <- plt +

@@ -55,7 +55,10 @@ test_that("assess_2d() works", {
     show_plots = FALSE,
     text = list(ggplot2::aes(x = .5, y = .5, label = "this text"), 
      color = "red", angle = 45),
-    dpi = 250
+    dpi = 250,
+    theme = ggplot2::theme(
+      text = ggplot2::element_text(family = "Courier")
+    )
   )
 
   for(model_spec in list(model_spec_1, model_spec_2)){
