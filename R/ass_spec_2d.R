@@ -198,6 +198,5 @@ infer_as2 <- function(
         data_spec$name, " ", data_spec$cohort, ", ",
         data_spec$time_to_event_col, " < ", this_as2$pivot_time_cutoff
     )
-    this_as2$smooth_se <- TRUE
     return(this_as2)
 }
