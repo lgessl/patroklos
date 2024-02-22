@@ -19,49 +19,48 @@
 #' classifier. Default is NULL, in which case the `pivot_time_cutoff` of an accompanying
 #' DataSpec is used.
 #' @param lambda numeric or string. The lambda regularization parameter of the model to
-#' evaluate. See [prepare_and_predict()] for details. Default is `"lambda.min"`.
+#' evaluate. See [prepare_and_predict()] for details.
 #' @param benchmark string. Column in the test pheno holding the numeric benchmark values.
 #' Default is `"ipi"` (international prognostic index for DLBCL).
 #' @param ci_level numeric in \[0, 1\]. The level used to calculate confidence intervals.
-#' Default is `0.95`.
 #' @param fellow_csv logical. If passed to [assess_2d_center()], whether to also create a
-#' csv file for every model-data pair. Default is `TRUE`.
+#' csv file for every model-data pair.
 #' @param scores_plot logical. Display the ordered scores output by the model in a scatter 
-#' plot. Default is `TRUE`.  
+#' plot.
 #' @param show_plots logical. Whether to show the plots after creation in an interactive 
-#' graphics device. Default is `FALSE`. 
-#' @param title string. The title of the plot. Default is `NULL`.
+#' graphics device.
+#' @param title string. The title of the plot. Default is `NULL`, i.e. no title.
 #' @param x_lab,y_lab string. Axis labels. Default is `x_metric` and `y_metric`, respectively.
 #' @param xlim,ylim numeric vector of length 2. The limits for both axes. Default is
-#' `c(-Inf, Inf)`, i.e. no contraints.
+#' no contraints.
 #' @param smooth_method string or function. Smooth method to plot an additional smoothed graph.
-#' If `NULL`, no smoothing. Else we pass `smooth_method` as the `method` parameter to
-#' [`ggplot2::geom_smooth()`]. Default is `"loess"`.
-#' @param smooth_benchmark logical. Whether to also smooth the benchmark data. Default is
-#' `FALSE`.
+#' If `NULL` (the default), no smoothing. Else we pass `smooth_method` as the `method` 
+#' parameter to [`ggplot2::geom_smooth()`].
+#' @param smooth_benchmark logical. Whether to also smooth the benchmark data.
 #' @param smooth_se logical. Whether to add standard error bands to the smoothed lines.
 #' @param scale_x,scale_y string or transformation object (see [`scales::trans_new`] for the 
 #' latter). The scale of the axes, we will pass them to the `trans` paramter of 
-#' [`ggplot2::scale_x_continuous()`], [`ggplot2::scale_y_continuous()], respectively. 
-#' Default is `"identity"`.
+#' [`ggplot2::scale_x_continuous()`], [`ggplot2::scale_y_continuous()`], respectively. 
 #' @param vline,hline list or NULL. Vertical/horizontal lines to be added to the plot. A list
 #' holding the arguments to pass to [`ggplot2::geom_vline()`] and [`ggplot2::geom_hline()`],
-#' respectively. Default is `NULL`.
-#' @param text_size numeric. The size of text added inside the plot in mm. Default is 
-#' `2.5`. See \code{vignette("ggplot2-specs", package = "ggplot2")} for more details.
+#' respectively. Default is `NULL`, no line.
+#' @param text_size numeric. The size of text passed to the `size` parameter of 
+#' `ggplot2::geom_text()`. The reason this attribute exists is you might want to have text 
+#' size different the global text size of the plot. See \code{vignette("ggplot2-specs", 
+#' package = "ggplot2")} for more details.
 #' @param text list or NULL. Text label added to the plot. A list holding the arguments to
-#' pass to [`ggplot2::geom_label()`]. Default is `NULL`. 
+#' pass to [`ggplot2::geom_label()`]. Default is `NULL`, no text at all.
 #' @param alpha numeric in \[0, 1\]. The alpha value for the points and lines in the 
 #' plot.
-#' @param width numeric. The width of the plot in `units`. Default is `7`.
-#' @param height numeric. The height of the plot in `units`. Default is `4`.
+#' @param width numeric. The width of the plot in `units`.
+#' @param height numeric. The height of the plot in `units`.
 #' @param colors character vector. The colors to be used for the different models.
 #' Default is `NULL`, which means that the default colors of `ggplot2` will be used.
 #' @param theme S3 object inheriting from `"theme"` and `"gg"` (typically the return value of 
 #' [`ggplot2::theme()`] or a complete ggplot2 theme like [`ggplot2::theme_light()`]). 
 #' The theme of the plot. Default is `NULL`, which means the default theme of ggplot2.
 #' @param units string. The units of `width` and `height`. Default is `"in"` (inches).
-#' @param dpi numeric. Plot resolution in dots per inch. Default is `300`.
+#' @param dpi numeric. Plot resolution in dots per inch.
 #' @return An AssSpec2d S3 object.
 #' @export
 AssSpec2d <- function(
@@ -120,7 +119,8 @@ AssSpec2d <- function(
     stopifnot(is.character(title) || is.null(title))
     stopifnot(is.character(x_lab))
     stopifnot(is.character(y_lab))
-    stopifnot(is.numeric(xlim) || is.null(xlim))
+    stopifnot(is.numeric(xlim) || is.null(xlim) || 
+        xlim[1] >= xlim[2] || ylim[1] >= ylim[2])
     stopifnot(is.numeric(ylim) || is.null(ylim))
     stopifnot(is.character(smooth_method) || is.null(smooth_method) ||
         is.function(smooth_method))

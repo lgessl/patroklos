@@ -29,7 +29,7 @@ classifier. Default is NULL, in which case the \code{pivot_time_cutoff} of an ac
 DataSpec is used.}
 
 \item{lambda}{numeric or string. The lambda regularization parameter of the model to
-evaluate. See \code{\link[=prepare_and_predict]{prepare_and_predict()}} for details. Default is \code{"lambda.min"}.}
+evaluate. See \code{\link[=prepare_and_predict]{prepare_and_predict()}} for details.}
 
 \item{benchmark}{string. Column in the test pheno holding the numeric benchmark values.
 Default is \code{"ipi"} (international prognostic index for DLBCL).}

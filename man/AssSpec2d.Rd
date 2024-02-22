@@ -60,59 +60,59 @@ classifier. Default is NULL, in which case the \code{pivot_time_cutoff} of an ac
 DataSpec is used.}
 
 \item{lambda}{numeric or string. The lambda regularization parameter of the model to
-evaluate. See \code{\link[=prepare_and_predict]{prepare_and_predict()}} for details. Default is \code{"lambda.min"}.}
+evaluate. See \code{\link[=prepare_and_predict]{prepare_and_predict()}} for details.}
 
 \item{benchmark}{string. Column in the test pheno holding the numeric benchmark values.
 Default is \code{"ipi"} (international prognostic index for DLBCL).}
 
-\item{ci_level}{numeric in [0, 1]. The level used to calculate confidence intervals.
-Default is \code{0.95}.}
+\item{ci_level}{numeric in [0, 1]. The level used to calculate confidence intervals.}
 
 \item{fellow_csv}{logical. If passed to \code{\link[=assess_2d_center]{assess_2d_center()}}, whether to also create a
-csv file for every model-data pair. Default is \code{TRUE}.}
+csv file for every model-data pair.}
 
 \item{scores_plot}{logical. Display the ordered scores output by the model in a scatter
-plot. Default is \code{TRUE}.}
+plot.}
 
 \item{show_plots}{logical. Whether to show the plots after creation in an interactive
-graphics device. Default is \code{FALSE}.}
+graphics device.}
 
-\item{title}{string. The title of the plot. Default is \code{NULL}.}
+\item{title}{string. The title of the plot. Default is \code{NULL}, i.e. no title.}
 
 \item{x_lab, y_lab}{string. Axis labels. Default is \code{x_metric} and \code{y_metric}, respectively.}
 
 \item{xlim, ylim}{numeric vector of length 2. The limits for both axes. Default is
-\code{c(-Inf, Inf)}, i.e. no contraints.}
+no contraints.}
 
 \item{smooth_method}{string or function. Smooth method to plot an additional smoothed graph.
-If \code{NULL}, no smoothing. Else we pass \code{smooth_method} as the \code{method} parameter to
-\code{\link[ggplot2:geom_smooth]{ggplot2::geom_smooth()}}. Default is \code{"loess"}.}
+If \code{NULL} (the default), no smoothing. Else we pass \code{smooth_method} as the \code{method}
+parameter to \code{\link[ggplot2:geom_smooth]{ggplot2::geom_smooth()}}.}
 
-\item{smooth_benchmark}{logical. Whether to also smooth the benchmark data. Default is
-\code{FALSE}.}
+\item{smooth_benchmark}{logical. Whether to also smooth the benchmark data.}
 
 \item{smooth_se}{logical. Whether to add standard error bands to the smoothed lines.}
 
 \item{scale_x, scale_y}{string or transformation object (see \code{\link[scales:new_transform]{scales::trans_new}} for the
 latter). The scale of the axes, we will pass them to the \code{trans} paramter of
-\code{\link[ggplot2:scale_continuous]{ggplot2::scale_x_continuous()}}, [\verb{ggplot2::scale_y_continuous()], respectively.  Default is }"identity"`.}
+\code{\link[ggplot2:scale_continuous]{ggplot2::scale_x_continuous()}}, \code{\link[ggplot2:scale_continuous]{ggplot2::scale_y_continuous()}}, respectively.}
 
 \item{vline, hline}{list or NULL. Vertical/horizontal lines to be added to the plot. A list
 holding the arguments to pass to \code{\link[ggplot2:geom_abline]{ggplot2::geom_vline()}} and \code{\link[ggplot2:geom_abline]{ggplot2::geom_hline()}},
-respectively. Default is \code{NULL}.}
+respectively. Default is \code{NULL}, no line.}
 
-\item{text_size}{numeric. The size of text added inside the plot in mm. Default is
-\code{2.5}. See \code{vignette("ggplot2-specs", package = "ggplot2")} for more details.}
+\item{text_size}{numeric. The size of text passed to the \code{size} parameter of
+\code{ggplot2::geom_text()}. The reason this attribute exists is you might want to have text
+size different the global text size of the plot. See \code{vignette("ggplot2-specs", 
+package = "ggplot2")} for more details.}
 
 \item{text}{list or NULL. Text label added to the plot. A list holding the arguments to
-pass to \code{\link[ggplot2:geom_text]{ggplot2::geom_label()}}. Default is \code{NULL}.}
+pass to \code{\link[ggplot2:geom_text]{ggplot2::geom_label()}}. Default is \code{NULL}, no text at all.}
 
 \item{alpha}{numeric in [0, 1]. The alpha value for the points and lines in the
 plot.}
 
-\item{width}{numeric. The width of the plot in \code{units}. Default is \code{7}.}
+\item{width}{numeric. The width of the plot in \code{units}.}
 
-\item{height}{numeric. The height of the plot in \code{units}. Default is \code{4}.}
+\item{height}{numeric. The height of the plot in \code{units}.}
 
 \item{colors}{character vector. The colors to be used for the different models.
 Default is \code{NULL}, which means that the default colors of \code{ggplot2} will be used.}
@@ -123,7 +123,7 @@ The theme of the plot. Default is \code{NULL}, which means the default theme of 
 
 \item{units}{string. The units of \code{width} and \code{height}. Default is \code{"in"} (inches).}
 
-\item{dpi}{numeric. Plot resolution in dots per inch. Default is \code{300}.}
+\item{dpi}{numeric. Plot resolution in dots per inch.}
 }
 \value{
 An AssSpec2d S3 object.
