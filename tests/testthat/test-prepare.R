@@ -13,13 +13,13 @@ test_that("prepare() works",{
   )
   expr_mat <- data[["expr_mat"]]
   pheno_tbl <- data[["pheno_tbl"]]
-  data_spec <- DataSpec(
+  data <- DataSpec(
     name = "Mock et al. (2023)",
     directory = "some_dir",
     train_prop = 0.8,
     cohort = "train"
   )
-  model_spec <- ModelSpec(
+  model <- ModelSpec(
     name = "zerosum",
     directory = "some_dir",
     fitter = zeroSum::zeroSum,
@@ -34,29 +34,29 @@ test_that("prepare() works",{
     result <- prepare(
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
-      data_spec = data_spec,
-      model_spec = model_spec
+      data = data,
+      model = model
     )
   )
 
-  model_spec$response_type <- "binary"
-  model_spec$include_from_continuous_pheno <- NULL
+  model$response_type <- "binary"
+  model$include_from_continuous_pheno <- NULL
   result <- prepare(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
-    data_spec = data_spec,
-    model_spec = model_spec
+    data = data,
+    model = model
   )
 
   colnames(pheno_tbl)[1] <- "patient"
   colnames(pheno_tbl)[3] <- "pfs"
-  data_spec$patient_id_col <- "patient"
-  data_spec$time_to_event_col <- "pfs"
-  model_spec$pivot_time_cutoff <- 2.3
+  data$patient_id_col <- "patient"
+  data$time_to_event_col <- "pfs"
+  model$pivot_time_cutoff <- 2.3
   result <- prepare(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
-    data_spec = data_spec,
-    model_spec = model_spec
+    data = data,
+    model = model
   )
 })

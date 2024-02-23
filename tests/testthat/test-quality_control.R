@@ -14,7 +14,7 @@ test_that("qc_preprocess() works", {
   )
   expr_tbl <- data[["expr_tbl"]]
   pheno_tbl <- data[["pheno_tbl"]]
-  data_spec <- DataSpec(
+  data <- DataSpec(
     name = "mock",
     directory = dir,
     train_prop = .7,
@@ -24,32 +24,32 @@ test_that("qc_preprocess() works", {
   qc_preprocess(
     expr_tbl = expr_tbl,
     pheno_tbl = pheno_tbl,
-    data_spec = data_spec
+    data = data
   )
   qc_preprocess(
     expr_tbl = expr_tbl,
     pheno_tbl = pheno_tbl,
-    data_spec = data_spec,
+    data = data,
     check_default = TRUE
   )
 
-  data_spec$expr_file <- "nonexistent.csv"
+  data$expr_file <- "nonexistent.csv"
   expect_error(
     qc_preprocess(
       expr_tbl = expr_tbl,
       pheno_tbl = pheno_tbl,
-      data_spec = data_spec
+      data = data
     ),
     regexp = "Expression file"
   )
-  data_spec$expr_file <- "expr.csv"
+  data$expr_file <- "expr.csv"
 
   pheno_tbl[["progression"]][1] <- 2
   expect_error(
     qc_preprocess(
       expr_tbl = expr_tbl,
       pheno_tbl = pheno_tbl,
-      data_spec = data_spec
+      data = data
     ),
     regexp = "either 1"
   )
@@ -60,7 +60,7 @@ test_that("qc_preprocess() works", {
     qc_preprocess(
       expr_tbl = expr_tbl,
       pheno_tbl = pheno_tbl,
-      data_spec = data_spec
+      data = data
     ),
     regexp = "Patient ids"
   )
@@ -71,7 +71,7 @@ test_that("qc_preprocess() works", {
     qc_preprocess(
       expr_tbl = expr_tbl,
       pheno_tbl = pheno_tbl,
-      data_spec = data_spec
+      data = data
     ),
     regexp = "missing values"
   )
@@ -82,7 +82,7 @@ test_that("qc_preprocess() works", {
     qc_preprocess(
       expr_tbl = expr_tbl,
       pheno_tbl = pheno_tbl,
-      data_spec = data_spec
+      data = data
     ),
     regexp = "numeric"
   )
@@ -93,7 +93,7 @@ test_that("qc_preprocess() works", {
     qc_preprocess(
       expr_tbl = expr_tbl,
       pheno_tbl = pheno_tbl,
-      data_spec = data_spec
+      data = data
     ),
     regexp = "missing values"
   )
@@ -104,7 +104,7 @@ test_that("qc_preprocess() works", {
     qc_preprocess(
       expr_tbl = expr_tbl,
       pheno_tbl = pheno_tbl,
-      data_spec = data_spec
+      data = data
     ),
     regexp = "First column"
   )

@@ -12,7 +12,7 @@ test_that("discretize_ipi_features() works", {
   )
   col_names <- colnames(pheno_tbl)
   pheno_tbl[["mock_col"]] <- rnorm(n_samples, 0, 1)
-  data_spec <- DataSpec(
+  data <- DataSpec(
     name = "test", 
     directory = "mock", 
     train_prop = 0.8
@@ -72,7 +72,7 @@ test_that("prec_from_scores() works", {
   risk_scores <- runif(n_samples, 0, 1)
   names(risk_scores) <- sample(pheno_tbl[["patient"]])
   names(risk_scores)[1] <- "patient_x"
-  data_spec <- DataSpec(
+  data <- DataSpec(
     name = "test", 
     directory = "mock", 
     train_prop = 0.8,
@@ -84,12 +84,12 @@ test_that("prec_from_scores() works", {
 
   tbl1 <- prec_from_scores(
     pheno_tbl = pheno_tbl,
-    data_spec = data_spec,
+    data = data,
     risk_scores = risk_scores
   )
   tbl2 <- prec_from_scores(
     pheno_tbl = pheno_tbl,
-    data_spec = data_spec
+    data = data
   )
   expect_equal(ncol(tbl1), 3)
   expect_equal(colnames(tbl2), c("IPI >=", "rpp", "prec"))
@@ -111,7 +111,7 @@ test_that("write_data_info() works", {
   names(risk_scores) <- sample(pheno_tbl[["patient"]])
   names(risk_scores)[1] <- "patient_x"
   expr_tbl <- tibble::tibble(1:n_genes)
-  data_spec <- DataSpec(
+  data <- DataSpec(
     name = "test", 
     directory = "mock", 
     train_prop = 0.8,
@@ -126,7 +126,7 @@ test_that("write_data_info() works", {
     filename = filename,
     pheno_tbl = pheno_tbl,
     expr_tbl = expr_tbl,
-    data_spec = data_spec
+    data = data
   )
   # write into json manually
   info_list <- jsonlite::read_json(filename)
@@ -138,7 +138,7 @@ test_that("write_data_info() works", {
     filename = filename,
     pheno_tbl = pheno_tbl,
     expr_tbl = expr_tbl,
-    data_spec = data_spec
+    data = data
   )
   info_list <- jsonlite::read_json(filename)
 

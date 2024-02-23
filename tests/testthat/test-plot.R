@@ -5,7 +5,7 @@ test_that("plot_2d_metric() works", {
   n_row <- 50
 
   dir <- withr::local_tempdir()
-  ass_spec_2d <- AssSpec2d(
+  ass2d <- AssSpec2d(
     file = file.path(dir, "test.jpeg"),
     x_metric = "rpp",
     y_metric = "prec",
@@ -30,7 +30,7 @@ test_that("plot_2d_metric() works", {
         ),
     dpi = 200
   )
-  ass_spec_2d$data <- tibble::tibble(
+  ass2d$data <- tibble::tibble(
     rpp = runif(n_row),
     prec = runif(n_row),
     cutoff = sample(0:5, n_row, replace = TRUE),
@@ -39,17 +39,17 @@ test_that("plot_2d_metric() works", {
 
   expect_no_error(
     plot_2d_metric(
-      ass_spec_2d = ass_spec_2d,
+      ass2d = ass2d,
       quiet = TRUE
     )
   )
-  ass_spec_2d$benchmark <- NULL
-  ass_spec_2d$hline <- NULL
-  ass_spec_2d$text <- NULL
-  ass_spec_2d$vline <- list(xintercept = 0.5, color = "blue")
+  ass2d$benchmark <- NULL
+  ass2d$hline <- NULL
+  ass2d$text <- NULL
+  ass2d$vline <- list(xintercept = 0.5, color = "blue")
   expect_no_error(
     plot_2d_metric(
-      ass_spec_2d = ass_spec_2d,
+      ass2d = ass2d,
       quiet = TRUE
     )
   )
@@ -67,7 +67,7 @@ test_that("plot_risk_scores() works", {
   actual <- l[[1]]
   predicted <- l[[2]]
   dir <- withr::local_tempdir()
-  ass_spec_2d <- AssSpec2d(
+  ass2d <- AssSpec2d(
     file = file.path(dir, "scores.jpeg"),
     x_metric = "rank",
     y_metric = "scores",
@@ -81,7 +81,7 @@ test_that("plot_risk_scores() works", {
     plot_risk_scores(
       predicted = predicted,
       actual = actual,
-      ass_spec_2d = ass_spec_2d,
+      ass2d = ass2d,
       quiet = TRUE
     )
   )

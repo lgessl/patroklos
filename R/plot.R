@@ -1,37 +1,37 @@
 #' @importFrom rlang .data
 plot_2d_metric <- function(
-    ass_spec_2d,
+    ass2d,
     quiet = FALSE,
     msg_prefix = ""
 ){
     # Extract
-    data <- ass_spec_2d$data |> dplyr::distinct()
+    data <- ass2d$data |> dplyr::distinct()
     # For legend order: bechmark last
-    if(!is.null(ass_spec_2d$benchmark)){
+    if(!is.null(ass2d$benchmark)){
         model_levels <- unique(data[["model"]])
-        model_levels <- sort(model_levels[model_levels != ass_spec_2d$benchmark])
-        model_levels <- c(ass_spec_2d$benchmark, model_levels)
+        model_levels <- sort(model_levels[model_levels != ass2d$benchmark])
+        model_levels <- c(ass2d$benchmark, model_levels)
         data[["model"]] <- factor(data[["model"]], levels = model_levels)
     }
-    x_metric <- ass_spec_2d$x_metric
-    y_metric <- ass_spec_2d$y_metric
+    x_metric <- ass2d$x_metric
+    y_metric <- ass2d$y_metric
     # Constraint data to range
     full_data <- data
     data <- data[
-        data[[x_metric]] >= ass_spec_2d$xlim[1] &
-        data[[x_metric]] <= ass_spec_2d$xlim[2],
+        data[[x_metric]] >= ass2d$xlim[1] &
+        data[[x_metric]] <= ass2d$xlim[2],
     ]
     data <- data[
-        data[[y_metric]] >= ass_spec_2d$ylim[1] &
-        data[[y_metric]] <= ass_spec_2d$ylim[2],
+        data[[y_metric]] >= ass2d$ylim[1] &
+        data[[y_metric]] <= ass2d$ylim[2],
     ]
     bm_data <- NULL
-    if(!is.null(ass_spec_2d$benchmark)){
-        bm_data <- data[data[["model"]] == ass_spec_2d$benchmark, ]
-        data <- data[data[["model"]] != ass_spec_2d$benchmark, ]
+    if(!is.null(ass2d$benchmark)){
+        bm_data <- data[data[["model"]] == ass2d$benchmark, ]
+        data <- data[data[["model"]] != ass2d$benchmark, ]
     }
     # One font family for all text
-    font_family <- ass_spec_2d$theme$text$family
+    font_family <- ass2d$theme$text$family
     if(is.null(font_family)) font_family <- ""
  
     plt <- ggplot2::ggplot(
@@ -42,77 +42,77 @@ plot_2d_metric <- function(
             color = .data[["model"]]
         )
     )
-    if(!is.null(ass_spec_2d$benchmark) && !is.null(bm_data)){
+    if(!is.null(ass2d$benchmark) && !is.null(bm_data)){
         bm_alpha <- ifelse(
-            ass_spec_2d$smooth_benchmark, 
-            ass_spec_2d$alpha,
+            ass2d$smooth_benchmark, 
+            ass2d$alpha,
             1.
         )
         plt <- plt + ggplot2::geom_text(
             data = bm_data,
             mapping = ggplot2::aes(label = .data[["cutoff"]]),
             alpha = bm_alpha,
-            size = ass_spec_2d$text_size,
+            size = ass2d$text_size,
             family = font_family
         )
     }
     plt <- plt +
-        ggplot2::geom_point(alpha = ass_spec_2d$alpha) +
+        ggplot2::geom_point(alpha = ass2d$alpha) +
         ggplot2::labs(
-            title = ass_spec_2d$title, 
-            x = ass_spec_2d$x_lab, 
-            y = ass_spec_2d$y_lab
+            title = ass2d$title, 
+            x = ass2d$x_lab, 
+            y = ass2d$y_lab
         ) +
-        ggplot2::scale_x_continuous(trans = ass_spec_2d$scale_x) + 
-        ggplot2::scale_y_continuous(trans = ass_spec_2d$scale_y)
-    if(!is.null(ass_spec_2d$hline))
-        plt <- plt + do.call(ggplot2::geom_hline, ass_spec_2d$hline)
-    if(!is.null(ass_spec_2d$vline))
-        plt <- plt + do.call(ggplot2::geom_vline, ass_spec_2d$vline)
-    if(!is.null(ass_spec_2d[["text"]])){
-        ass_spec_2d[["text"]][["family"]] <- font_family
-        plt <- plt + do.call(ggplot2::geom_label, ass_spec_2d[["text"]])
+        ggplot2::scale_x_continuous(trans = ass2d$scale_x) + 
+        ggplot2::scale_y_continuous(trans = ass2d$scale_y)
+    if(!is.null(ass2d$hline))
+        plt <- plt + do.call(ggplot2::geom_hline, ass2d$hline)
+    if(!is.null(ass2d$vline))
+        plt <- plt + do.call(ggplot2::geom_vline, ass2d$vline)
+    if(!is.null(ass2d[["text"]])){
+        ass2d[["text"]][["family"]] <- font_family
+        plt <- plt + do.call(ggplot2::geom_label, ass2d[["text"]])
     }
-    if(!is.null(ass_spec_2d$colors)){
-        plt <- plt + ggplot2::scale_color_manual(values = ass_spec_2d$colors)
+    if(!is.null(ass2d$colors)){
+        plt <- plt + ggplot2::scale_color_manual(values = ass2d$colors)
     }
-    if(!is.null(ass_spec_2d$smooth_method)){
+    if(!is.null(ass2d$smooth_method)){
         plt <- plt + ggplot2::geom_smooth(
-            method = ass_spec_2d$smooth_method,
-            se = ass_spec_2d$smooth_se,
+            method = ass2d$smooth_method,
+            se = ass2d$smooth_se,
             formula = y ~ x
         )
-        if(ass_spec_2d$smooth_benchmark && !is.null(bm_data)){
+        if(ass2d$smooth_benchmark && !is.null(bm_data)){
             plt <- plt + ggplot2::geom_smooth(
                 data = bm_data,
-                method = ass_spec_2d$smooth_method,
-                se = ass_spec_2d$smooth_se,
+                method = ass2d$smooth_method,
+                se = ass2d$smooth_se,
                 formula = y ~ x
             )
         }
     }
-    if(!is.null(ass_spec_2d$theme)) plt <- plt + ass_spec_2d$theme
+    if(!is.null(ass2d$theme)) plt <- plt + ass2d$theme
 
-    if(ass_spec_2d$show_plots) print(plt)
+    if(ass2d$show_plots) print(plt)
 
     if(!quiet)
-        message(msg_prefix, "Saving 2D metric plot to ", ass_spec_2d$file)
+        message(msg_prefix, "Saving 2D metric plot to ", ass2d$file)
 
     ggplot2::ggsave(
-        ass_spec_2d$file, 
+        ass2d$file, 
         plt, 
-        width = ass_spec_2d$width, 
-        height = ass_spec_2d$height, 
-        units = ass_spec_2d$units,
-        dpi = ass_spec_2d$dpi
+        width = ass2d$width, 
+        height = ass2d$height, 
+        units = ass2d$units,
+        dpi = ass2d$dpi
     )
 
     # Save to csv (if wanted)
-    if(ass_spec_2d$fellow_csv){
-        csv_file <- stringr::str_replace(ass_spec_2d$file, "\\..+", ".csv")
+    if(ass2d$fellow_csv){
+        csv_file <- stringr::str_replace(ass2d$file, "\\..+", ".csv")
         if(!quiet)
             message(msg_prefix, "Saving 2D metric table to ", csv_file)
-        readr::write_csv(ass_spec_2d$data, csv_file)
+        readr::write_csv(ass2d$data, csv_file)
     }
 
     return(plt)
@@ -123,7 +123,7 @@ plot_2d_metric <- function(
 plot_risk_scores <- function(
     predicted,
     actual,
-    ass_spec_2d,
+    ass2d,
     quiet,
     ncol = 2,
     msg_prefix = ""
@@ -152,8 +152,8 @@ plot_risk_scores <- function(
 
     n_split <- sum(!sapply(predicted, is.null))
     nrow <- ceiling(n_split/ncol)
-    ass_spec_2d$height <- nrow * ass_spec_2d$height
-    ass_spec_2d$width <- ncol * ass_spec_2d$width
+    ass2d$height <- nrow * ass2d$height
+    ass2d$width <- ncol * ass2d$width
 
     plt <- ggplot2::ggplot(
         tbl,
@@ -170,28 +170,28 @@ plot_risk_scores <- function(
         ) +
         ggplot2::geom_point() +
         ggplot2::labs(
-            title = ass_spec_2d$title
+            title = ass2d$title
         )
-    if(!is.null(ass_spec_2d$colors)){
-        plt <- plt + ggplot2::scale_color_manual(values = ass_spec_2d$colors)
+    if(!is.null(ass2d$colors)){
+        plt <- plt + ggplot2::scale_color_manual(values = ass2d$colors)
     }
 
-    if(ass_spec_2d$show_plots){
+    if(ass2d$show_plots){
         print(plt)
     }
 
     if(!quiet)
-        message(msg_prefix, "Saving scores plot to ", ass_spec_2d$file)
+        message(msg_prefix, "Saving scores plot to ", ass2d$file)
     ggplot2::ggsave(
-        ass_spec_2d$file, 
+        ass2d$file, 
         plt, 
-        width = ass_spec_2d$width, 
-        height = ass_spec_2d$height, 
-        units = ass_spec_2d$units
+        width = ass2d$width, 
+        height = ass2d$height, 
+        units = ass2d$units
     )
 
-    if(ass_spec_2d$fellow_csv){
-        csv_file <- stringr::str_replace(ass_spec_2d$file, "\\..+$", ".csv")
+    if(ass2d$fellow_csv){
+        csv_file <- stringr::str_replace(ass2d$file, "\\..+$", ".csv")
         if(!quiet)
             message(msg_prefix, "Saving scores table to ", csv_file)
         readr::write_csv(tbl, csv_file)

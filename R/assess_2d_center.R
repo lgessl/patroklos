@@ -6,9 +6,9 @@
 #' * time cutoff this model specifies,
 #' call [`assess_2d()`]. In addition, plot `x_metric` vs. `y_metric` attribute
 #' of `AssSpec2d` for all models in a sinlge plot ("comparison plot").
-#' @param model_spec_list list of ModelSpec objects. Assess these models.
-#' @param data_spec DataSpec object. Assess on this data set.
-#' @param ass_spec_2d AssSpec2d object. Specify the final comparison plot. 
+#' @param model_list list of ModelSpec objects. Assess these models.
+#' @param data DataSpec object. Assess on this data set.
+#' @param ass2d AssSpec2d object. Specify the final comparison plot. 
 #' We derive the `AssSpec2d` for the single plots in a reasonable way from it.
 #' @param cohorts character vector, a subset of `c("train", "test")`. Assess on these
 #' cohorts. Default is `c("train", "test")`.
@@ -25,9 +25,9 @@
 #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
 #' @export
 assess_2d_center <- function(
-    ass_spec_2d,
-    model_spec_list,
-    data_spec,
+    ass2d,
+    model_list,
+    data,
     cohorts = c("test", "train"),
     model_tree_mirror = c("models", "results"),
     comparison_plot = TRUE,
@@ -37,52 +37,49 @@ assess_2d_center <- function(
 
     perf_tbls <- list()
 
-    data <- read(data_spec)
+    data <- read(data)
     expr_mat <- data[["expr_mat"]]
     pheno_tbl <- data[["pheno_tbl"]]
-    ass_spec_2d$model_tree_mirror <- model_tree_mirror # for infer_as2()
 
-    if(!quiet) message("\nASSESSING ON ", data_spec$name)
+    if(!quiet) message("\nASSESSING ON ", data$name)
     for(cohort in cohorts){
         if(!quiet) message("# On ", cohort, " cohort")
-        data_spec$cohort <- cohort
-        for(model_spec in model_spec_list){
-            if(!quiet) message("## ", model_spec$name)
-            for(time_cutoff in model_spec$time_cutoffs){
+        data$cohort <- cohort
+        for(model in model_list){
+            if(!quiet) message("## ", model$name)
+            for(time_cutoff in model$time_cutoffs){
                 if(!quiet) message("### At time cutoff ", time_cutoff)
-                ms_cutoff <- at_time_cutoff(model_spec, time_cutoff)
-                this_as2 <- infer_as2(
-                    ass_spec_2d = ass_spec_2d,
-                    model_spec = ms_cutoff,
-                    data_spec = data_spec
+                model_cutoff <- at_time_cutoff(model, time_cutoff)
+                this_as2 <- self$infer(
+                    ass2d = ass2d,
+                    model = model_cutoff,
+                    data = data,
+                    model_tree_mirror = model_tree_mirror
                 )
-                this_as2 <- assess_2d(
-                    expr_mat = expr_mat,
-                    pheno_tbl = pheno_tbl,
-                    data_spec = data_spec,
-                    model_spec = ms_cutoff,
-                    ass_spec_2d = this_as2,
+                this_as2$assess(
+                    data = data,
+                    model = model_cutoff,
                     quiet = quiet,
                     msg_prefix = "#### "
                 )
-                perf_tbls[[ms_cutoff$name]] <- this_as2$data
+                perf_tbls[[model_cutoff$name]] <- this_as2$data
             }
         }
-        cohort_as2 <- ass_spec_2d
+        cohort_as2 <- ass2d
         cohort_as2$data <- dplyr::bind_rows(perf_tbls)
         if(comparison_plot){
             if(cohort == "test")
                 cohort_as2$file <- mirror_path(
-                    filepath = ass_spec_2d$file,
+                    filepath = ass2d$file,
                     mirror = model_tree_mirror
                 )
             if(is.null(cohort_as2$title))
                 cohort_as2$title <- paste0(
-                    data_spec$name, " ", data_spec$cohort, ", ", data_spec$time_to_event_col,
+                    data$name, " ", data$cohort, ", ", data$time_to_event_col,
                     " < ", cohort_as2$pivot_time_cutoff
                 )
             plot_2d_metric(
-                ass_spec_2d = cohort_as2,
+                ass2d = cohort_as2,
                 quiet = TRUE
             )
             if(!quiet)

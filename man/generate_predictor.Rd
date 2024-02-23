@@ -4,7 +4,7 @@
 \alias{generate_predictor}
 \title{Generate the predictor matrix in a model-specific way}
 \usage{
-generate_predictor(expr_mat, pheno_tbl, data_spec, model_spec)
+generate_predictor(expr_mat, pheno_tbl, data, model)
 }
 \arguments{
 \item{expr_mat}{numeric matrix. The expression data, with patients as rows
@@ -13,10 +13,10 @@ and genes as columns.}
 \item{pheno_tbl}{tibble. The pheno data, with patients as rows and variables as
 columns.}
 
-\item{data_spec}{DataSpec S3 object. Specifications on the data (\code{expr_mat} and
-\code{model_spec}). See the the constructor \code{DataSpec()} for details.}
+\item{data}{DataSpec S3 object. Specifications on the data (\code{expr_mat} and
+\code{model}). See the the constructor \code{DataSpec()} for details.}
 
-\item{model_spec}{ModelSpec S3 object. Specifications on the model to prepare for.
+\item{model}{ModelSpec S3 object. Specifications on the model to prepare for.
 See the the constructor \code{ModelSpec()} for details.}
 }
 \value{

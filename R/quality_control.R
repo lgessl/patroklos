@@ -45,22 +45,22 @@ qc_prefit <- function(
 #' for details).
 #' @param pheno_tbl A tibble holding the pheno data (see `DataSpec()`
 #' for details).
-#' @param data_spec A `DataSpec` object referring to `expr_tbl` and `pheno_tbl`.
+#' @param data A `DataSpec` object referring to `expr_tbl` and `pheno_tbl`.
 #' @param check_default logical. If `TRUE`, check if all default arguments of
-#' `DataSpec()` apply (i.e., replace `data_spec` with a `DataSpec()` except for 
-#' the `directory` attribute). Default is `FALSE`, in which case we use `data_spec`.
+#' `DataSpec()` apply (i.e., replace `data` with a `DataSpec()` except for 
+#' the `directory` attribute). Default is `FALSE`, in which case we use `data`.
 #' @details Intended to be used at the end of preprocessing and before applying
 #' `split_data()`.
 #' @export
 qc_preprocess <- function(
     expr_tbl,
     pheno_tbl,
-    data_spec,
+    data,
     check_default = FALSE
 ){
     if(check_default){
-        directory <- data_spec$directory
-        data_spec <- DataSpec(
+        directory <- data$directory
+        data <- DataSpec(
             name = "default",
             directory = directory,
             train_prop = .7
@@ -68,14 +68,14 @@ qc_preprocess <- function(
     }
 
     # Extract
-    directory <- data_spec$directory
-    expr_file <- data_spec$expr_file
-    pheno_file <- data_spec$pheno_file
-    gene_id_col <- data_spec$gene_id_col
-    patient_id_col <- data_spec$patient_id_col
-    time_to_event_col <- data_spec$time_to_event_col
-    event_col <- data_spec$event_col
-    benchmark_col <- data_spec$benchmark_col
+    directory <- data$directory
+    expr_file <- data$expr_file
+    pheno_file <- data$pheno_file
+    gene_id_col <- data$gene_id_col
+    patient_id_col <- data$patient_id_col
+    time_to_event_col <- data$time_to_event_col
+    event_col <- data$event_col
+    benchmark_col <- data$benchmark_col
 
     # Check if files exist
     expr_file <- file.path(directory, expr_file)
@@ -140,6 +140,6 @@ qc_preprocess <- function(
         stage = "preprocessing",
         expr = expr_tbl,
         pheno = pheno_tbl,
-        data_spec = data_spec
+        data = data
     )
 }

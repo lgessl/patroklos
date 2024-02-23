@@ -1,4 +1,4 @@
-test_that("assess_0d() works", {
+test_that("AssScalar_assess() works", {
 
     set.seed(342)
     n_samples <- 50
@@ -17,12 +17,12 @@ test_that("assess_0d() works", {
     expr_mat <- data[["expr_mat"]]
     pheno_tbl <- data[["pheno_tbl"]]
 
-    data_spec <- DataSpec(
+    data <- DataSpec(
         name = "mock",
         directory = "mock",
         train_prop = .66
     )
-    model_spec <- ModelSpec(
+    model <- ModelSpec(
         name = "logistic",
         directory = model_dir,
         fitter = zeroSum::zeroSum,
@@ -32,19 +32,19 @@ test_that("assess_0d() works", {
             lambda = lambda, zeroSum = FALSE),
         response_type = "binary"
     )
-    ass_spec_0d <- AssSpec0d(
+    ass_scalar <- AssScalar(
         metric = "get_auc",
         pivot_time_cutoff = 2
     )
 
-    prepare_and_fit(expr_mat, pheno_tbl, data_spec, model_spec, quiet = TRUE)
+    prepare_and_fit(expr_mat, pheno_tbl, data, model, quiet = TRUE)
 
-    auc <- assess_0d(
+    auc <- AssScalar_assess(
         expr_mat = expr_mat,
         pheno_tbl = pheno_tbl,
-        data_spec = data_spec,
-        model_spec = model_spec,
-        ass_spec_0d = ass_spec_0d
+        data = data,
+        model = model,
+        ass_scalar = ass_scalar
     )
     expect_true(is.numeric(auc))
     expect_equal(length(auc), length(split_index))

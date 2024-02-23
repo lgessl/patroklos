@@ -10,14 +10,14 @@ test_that("calculate_2d_metric() works", {
   predicted <- l[[2]]
   benchmark <- l[[3]]
   
-  model_spec <- ModelSpec(
+  model <- ModelSpec(
     name = "mock model",
     directory = "mock",
     fitter = zeroSum::zeroSum,
     split_index = split_index,
     time_cutoffs = 2.
   )
-  ass_spec_2d <- AssSpec2d(
+  ass2d <- AssSpec2d(
     file = "test.pdf",
     x_metric = "rpp",
     y_metric = "prec",
@@ -28,46 +28,46 @@ test_that("calculate_2d_metric() works", {
     n_genes = 2,
     n_na_in_pheno = 0
   )[["pheno_tbl"]]
-  data_spec <- DataSpec(
+  data <- DataSpec(
     name = "mock data",
     directory = "mock",
     train_prop = .66
   )
 
-  ass_spec_2d <- calculate_2d_metric(
+  ass2d <- calculate_2d_metric(
     actual = actual,
     predicted = predicted,
     benchmark = benchmark,
-    ass_spec_2d = ass_spec_2d,
-    model_spec = model_spec
+    ass2d = ass2d,
+    model = model
   )
-  perf_tbl <- ass_spec_2d$data
+  perf_tbl <- ass2d$data
   expect_equal(names(perf_tbl), c("rpp", "prec", "cutoff", "split", "model"))
   expect_s3_class(perf_tbl, "tbl_df")
-  expect_true(all(perf_tbl[["model"]] %in% c(model_spec$name, ass_spec_2d$benchmark)))
+  expect_true(all(perf_tbl[["model"]] %in% c(model$name, ass2d$benchmark)))
   expect_true(perf_tbl[, 1:4] |> as.matrix() |> is.numeric() |> all())
 
-  ass_spec_2d$y_metric <- "logrank"
-  ass_spec_2d <- calculate_2d_metric(
+  ass2d$y_metric <- "logrank"
+  ass2d <- calculate_2d_metric(
     actual = actual,
     predicted = predicted,
-    ass_spec_2d = ass_spec_2d,
-    model_spec = model_spec,
+    ass2d = ass2d,
+    model = model,
     benchmark = benchmark,
     pheno_tbl = pheno_tbl,
-    data_spec = data_spec
+    data = data
   )
 
-  ass_spec_2d$y_metric <- "precision_ci"
-  ass_spec_2d$ci_level <- .95
-  ass_spec_2d <- calculate_2d_metric(
+  ass2d$y_metric <- "precision_ci"
+  ass2d$ci_level <- .95
+  ass2d <- calculate_2d_metric(
     actual = actual,
     predicted = predicted,
-    ass_spec_2d = ass_spec_2d,
-    model_spec = model_spec,
+    ass2d = ass2d,
+    model = model,
     benchmark = benchmark,
     pheno_tbl = pheno_tbl,
-    data_spec = data_spec
+    data = data
   )
 })
 
@@ -143,7 +143,7 @@ test_that("logrank_metric() works", {
     n_genes = 2,
     n_na_in_pheno = 0
   )[["pheno_tbl"]]
-  data_spec <- DataSpec(
+  data <- DataSpec(
     name = "mock",
     directory = "mock",
     train_prop = .66
@@ -156,7 +156,7 @@ test_that("logrank_metric() works", {
   tbl <- logrank_metric(
     estimate = estimate,
     pheno_tbl = pheno_tbl,
-    data_spec = data_spec,
+    data = data,
     y_metric = "my_y",
     x_metric = "my_x"
   )

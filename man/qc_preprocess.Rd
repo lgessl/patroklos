@@ -4,7 +4,7 @@
 \alias{qc_preprocess}
 \title{Quality control at the end of preprocessing step}
 \usage{
-qc_preprocess(expr_tbl, pheno_tbl, data_spec, check_default = FALSE)
+qc_preprocess(expr_tbl, pheno_tbl, data, check_default = FALSE)
 }
 \arguments{
 \item{expr_tbl}{A tibble holding the expression data (see \code{DataSpec()}
@@ -13,11 +13,11 @@ for details).}
 \item{pheno_tbl}{A tibble holding the pheno data (see \code{DataSpec()}
 for details).}
 
-\item{data_spec}{A \code{DataSpec} object referring to \code{expr_tbl} and \code{pheno_tbl}.}
+\item{data}{A \code{DataSpec} object referring to \code{expr_tbl} and \code{pheno_tbl}.}
 
 \item{check_default}{logical. If \code{TRUE}, check if all default arguments of
-\code{DataSpec()} apply (i.e., replace \code{data_spec} with a \code{DataSpec()} except for
-the \code{directory} attribute). Default is \code{FALSE}, in which case we use \code{data_spec}.}
+\code{DataSpec()} apply (i.e., replace \code{data} with a \code{DataSpec()} except for
+the \code{directory} attribute). Default is \code{FALSE}, in which case we use \code{data}.}
 }
 \description{
 Check if the expression and pheno tibble have the format

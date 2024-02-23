@@ -5,13 +5,13 @@
 \title{To every \code{ModelSpec} in a list of \code{ModelSpec}s, prepend a fixed directory to the
 \code{directory} attribute}
 \usage{
-prepend_to_directory(model_spec_list, dir)
+prepend_to_directory(model_list, dir)
 }
 \arguments{
-\item{model_spec_list}{list of \code{ModelSpec}s.}
+\item{model_list}{list of \code{ModelSpec}s.}
 
 \item{dir}{string. The directory to prepend to the \code{directory} attribute of all
-\code{ModelSpec}s in \code{model_spec_list}.}
+\code{ModelSpec}s in \code{model_list}.}
 }
 \value{
 A list of \code{ModelSpec}s, with \code{dir} prepended to the \code{directory} attribute.

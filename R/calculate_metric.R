@@ -1,58 +1,58 @@
 calculate_2d_metric <- function(
     actual,
     predicted,
-    ass_spec_2d,
-    model_spec,
+    ass2d,
+    model,
     benchmark = NULL,
     pheno_tbl = NULL,
-    data_spec = NULL
+    data = NULL
 ){
-    if(xor(is.null(benchmark), is.null(ass_spec_2d$benchmark))){
-        stop("`ass_spec_2d$benchmark` and `benchmark` must be both NULL or both ",
+    if(xor(is.null(benchmark), is.null(ass2d$benchmark))){
+        stop("`ass2d$benchmark` and `benchmark` must be both NULL or both ",
             "not NULL")
     }
     # Prepare for loop
     tbl_list <- list()
     estimate_list <- list()
-    estimate_list[[model_spec$name]] <- predicted
+    estimate_list[[model$name]] <- predicted
     if(!is.null(benchmark)){
-        estimate_list[[ass_spec_2d$benchmark]] <- benchmark
+        estimate_list[[ass2d$benchmark]] <- benchmark
     }
 
-    for(i in model_spec$split_index){
+    for(i in model$split_index){
         for(estimate_name in names(estimate_list)){
             estimate <- estimate_list[[estimate_name]]
             if(length(table(actual[[i]])) != 2)
                 stop("Actual values in split ", i, " are not binary")
-            if(ass_spec_2d$y_metric == "logrank"){
+            if(ass2d$y_metric == "logrank"){
                 tbl <- logrank_metric(
                     estimate = estimate[[i]],
                     pheno_tbl = pheno_tbl,
-                    data_spec = data_spec,
-                    y_metric = ass_spec_2d$y_metric,
-                    x_metric = ass_spec_2d$x_metric
+                    data = data,
+                    y_metric = ass2d$y_metric,
+                    x_metric = ass2d$x_metric
                 )
-            } else if(ass_spec_2d$y_metric == "precision_ci"){
-                lower_boundary <- estimate_name == model_spec$name
+            } else if(ass2d$y_metric == "precision_ci"){
+                lower_boundary <- estimate_name == model$name
                 tbl <- precision_ci(
                     estimate = estimate[[i]],
                     actual = actual[[i]],
-                    confidence_level = ass_spec_2d$ci_level,
-                    y_metric = ass_spec_2d$y_metric,
-                    x_metric = ass_spec_2d$x_metric,
+                    confidence_level = ass2d$ci_level,
+                    y_metric = ass2d$y_metric,
+                    x_metric = ass2d$x_metric,
                     lower_boundary = lower_boundary
                 )
             } else {
                 tbl <- metric_with_rocr(
                     estimate = estimate[[i]],
                     actual = actual[[i]],
-                    x_metric = ass_spec_2d$x_metric,
-                    y_metric = ass_spec_2d$y_metric
+                    x_metric = ass2d$x_metric,
+                    y_metric = ass2d$y_metric
                 )
             }
             names(tbl) <- c(
-                ass_spec_2d$x_metric, 
-                ass_spec_2d$y_metric, 
+                ass2d$x_metric, 
+                ass2d$y_metric, 
                 "cutoff"
             )
             tbl[["split"]] <- i
@@ -64,9 +64,7 @@ calculate_2d_metric <- function(
     tbl <- dplyr::bind_rows(tbl_list)
     any_na <- apply(tbl, 1, function(x) any(is.na(x)))
     tbl <- tbl[!any_na, ]
-    ass_spec_2d$data <- tbl
-
-    return(ass_spec_2d)
+    ass2d$set("public", "data", tbl)
 }
 
 
@@ -152,16 +150,16 @@ metric_with_rocr <- function(
 logrank_metric <- function(
     estimate,
     pheno_tbl,
-    data_spec,
+    data,
     y_metric = "logrank",
     x_metric = "prevalence"
 ){
     if(!is.data.frame(pheno_tbl))
         stop("`pheno_tbl` must inherit from `data.frame`")
-    if(!"DataSpec" %in% class(data_spec))
-        stop("`data_spec` must inherit from `DataSpec`")
-    if(!all(names(estimate) %in% pheno_tbl[[data_spec$patient_id_col]]))
-        stop("`names(estimate)` must be a subset of `pheno_tbl[[\"data_spec$patient_id_col\"]]`")
+    if(!"DataSpec" %in% class(data))
+        stop("`data` must inherit from `DataSpec`")
+    if(!all(names(estimate) %in% pheno_tbl[[data$patient_id_col]]))
+        stop("`names(estimate)` must be a subset of `pheno_tbl[[\"data$patient_id_col\"]]`")
     
     # We can no longer tolerate NAs
     estimate <- estimate[!is.na(estimate)]
@@ -170,11 +168,11 @@ logrank_metric <- function(
     cutoffs <- estimate[estimate > min(estimate)] |> unique() |> sort()
     prevalence <- numeric(length(cutoffs))
     logrank_p <- numeric(length(cutoffs))
-    pheno_mat <- pheno_tbl[, c(data_spec$time_to_event_col, data_spec$event_col)] |> as.matrix()
-    rownames(pheno_mat) <- pheno_tbl[[data_spec$patient_id_col]]
+    pheno_mat <- pheno_tbl[, c(data$time_to_event_col, data$event_col)] |> as.matrix()
+    rownames(pheno_mat) <- pheno_tbl[[data$patient_id_col]]
     pheno_mat <- pheno_mat[names(estimate), ]
-    time <- pheno_mat[, data_spec$time_to_event_col]
-    event <- pheno_mat[, data_spec$event_col]
+    time <- pheno_mat[, data$time_to_event_col]
+    event <- pheno_mat[, data$event_col]
     if(!identical(names(time), names(event)) || !identical(names(time), names(estimate)))
         stop("Names of `time`, `event`, and `estimate` must be identical")
 

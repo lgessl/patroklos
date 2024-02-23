@@ -50,18 +50,18 @@ discretize_tbl_cols <- function(
 #' infer from the data into the json. You can then fill the empty fields in by writing 
 #' the json by hand. Manullay alrady filled out info will not be overwritten.
 #' @param filename string. The path to the JSON file.
-#' @param pheno_tbl tibble. The pheno data. Its format needs to comply with `data_spec` 
+#' @param pheno_tbl tibble. The pheno data. Its format needs to comply with `data` 
 #' below.
-#' @param expr_tbl tibble. The expression data. Its format needs to comply with `data_spec`
+#' @param expr_tbl tibble. The expression data. Its format needs to comply with `data`
 #' below.
-#' @param data_spec DataSpec S3 object. Specifications on both `pheno_tbl` and `expr_tbl`.
+#' @param data DataSpec S3 object. Specifications on both `pheno_tbl` and `expr_tbl`.
 #' @return The JSON string that was written to the file.
 #' @export
 write_data_info <- function(
     filename,
     pheno_tbl,
     expr_tbl,
-    data_spec
+    data
 ){
     found_file <- FALSE
     if(file.exists(filename)){
@@ -87,17 +87,17 @@ write_data_info <- function(
         )
     }
 
-    n_included_in_survival_analysis <- (pheno_tbl[[data_spec$time_to_event_col]] > 0) |> 
+    n_included_in_survival_analysis <- (pheno_tbl[[data$time_to_event_col]] > 0) |> 
         sum(na.rm = TRUE)
-    n_high_risk <- ((pheno_tbl[[data_spec$time_to_event_col]] < data_spec$pivot_time_cutoff) & 
-        pheno_tbl[[data_spec$event_col]] == 1) |> sum(na.rm = TRUE)
-    n_low_risk <- (pheno_tbl[[data_spec$time_to_event_col]] >= 
-        data_spec$pivot_time_cutoff) |> sum(na.rm = TRUE)
+    n_high_risk <- ((pheno_tbl[[data$time_to_event_col]] < data$pivot_time_cutoff) & 
+        pheno_tbl[[data$event_col]] == 1) |> sum(na.rm = TRUE)
+    n_low_risk <- (pheno_tbl[[data$time_to_event_col]] >= 
+        data$pivot_time_cutoff) |> sum(na.rm = TRUE)
     prop_high_risk <- n_high_risk / (n_high_risk + n_low_risk)
 
     pheno_data_list <- list(
         "included in survival analysis" =  n_included_in_survival_analysis,
-        "pivot time cutoff" = data_spec$pivot_time_cutoff,
+        "pivot time cutoff" = data$pivot_time_cutoff,
         "number high risk" = n_high_risk,
         "number low risk" = n_low_risk,
         "unknown" = n_included_in_survival_analysis - n_high_risk - n_low_risk,
@@ -113,11 +113,11 @@ write_data_info <- function(
         "normalization" = ""
     )
     benchmark_list <- list(
-        "name" = data_spec$benchmark_col,
+        "name" = data$benchmark_col,
         "reference" = "",
         "performance" = prec_from_scores(
             pheno_tbl, 
-            data_spec
+            data
         )
     )
     info_list[["data"]][["pheno data"]] <- pheno_data_list
@@ -139,26 +139,26 @@ write_data_info <- function(
 
 prec_from_scores <- function(
     pheno_tbl,
-    data_spec,
+    data,
     risk_scores = NULL
 ){
     if(is.null(risk_scores)){
-        if(!is.null(data_spec$benchmark_col)){
-            risk_scores <- pheno_tbl[[data_spec$benchmark_col]]
-            names(risk_scores) <- pheno_tbl[[data_spec$patient_id_col]]
+        if(!is.null(data$benchmark_col)){
+            risk_scores <- pheno_tbl[[data$benchmark_col]]
+            names(risk_scores) <- pheno_tbl[[data$patient_id_col]]
         } else {
             message("No risk scores provided and no benchmark specified. 
                 Returning NULL.")
         }
     }
-    model_spec <- list(
+    model <- list(
         "response_type" = "binary",
-        "time_cutoffs" = data_spec$pivot_time_cutoff
+        "time_cutoffs" = data$pivot_time_cutoff
     )
     true_risk <- generate_response(
         pheno_tbl = pheno_tbl,
-        data_spec = data_spec,
-        model_spec = model_spec
+        data = data,
+        model = model
     )[, 1]
     tbl <- metric_with_rocr(
         estimate = risk_scores,
@@ -166,8 +166,8 @@ prec_from_scores <- function(
         x_metric = "rpp",
         y_metric = "prec"
     )
-    if(is.null(data_spec$benchmark_col)) data_spec$benchmark_col <- "score"
-    names(tbl) <- c("rpp", "prec", paste0(data_spec$benchmark_col, " >="))
+    if(is.null(data$benchmark_col)) data$benchmark_col <- "score"
+    names(tbl) <- c("rpp", "prec", paste0(data$benchmark_col, " >="))
     tbl <- tbl[, c(3, 1, 2)]
     return(tbl)
 }

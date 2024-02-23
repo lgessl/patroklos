@@ -11,7 +11,7 @@ test_that("read function works correctly", {
     to_csv = dir,
     split_index = 1:3
   )
-  data_spec <- DataSpec(
+  data <- DataSpec(
     name = "mock",
     directory = dir,
     train_prop = .7,
@@ -22,19 +22,19 @@ test_that("read function works correctly", {
   )
 
   # Call the function
-  result <- read(data_spec)
+  result <- read(data)
   expr_mat <- result[["expr_mat"]]
   pheno_tbl <- result[["pheno_tbl"]]
 
   expect_true(is.numeric(expr_mat))
   expect_true(is.matrix(expr_mat))
   expect_s3_class(pheno_tbl, "tbl_df")
-  expect_equal(colnames(pheno_tbl)[1], data_spec$patient_id_col)
+  expect_equal(colnames(pheno_tbl)[1], data$patient_id_col)
 
   # errors
   # directory does not exist
-  data_spec$patient_id_col <- "missing_patient_id_col"
-  expect_error(read(data_spec), "no column named")
-  data_spec$gene_id_col <- "missing_gene_id"
-  expect_error(read(data_spec), "no column named")
+  data$patient_id_col <- "missing_patient_id_col"
+  expect_error(read(data), "no column named")
+  data$gene_id_col <- "missing_gene_id"
+  expect_error(read(data), "no column named")
 })

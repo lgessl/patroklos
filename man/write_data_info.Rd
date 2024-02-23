@@ -4,18 +4,18 @@
 \alias{write_data_info}
 \title{Write data info to a JSON file}
 \usage{
-write_data_info(filename, pheno_tbl, expr_tbl, data_spec)
+write_data_info(filename, pheno_tbl, expr_tbl, data)
 }
 \arguments{
 \item{filename}{string. The path to the JSON file.}
 
-\item{pheno_tbl}{tibble. The pheno data. Its format needs to comply with \code{data_spec}
+\item{pheno_tbl}{tibble. The pheno data. Its format needs to comply with \code{data}
 below.}
 
-\item{expr_tbl}{tibble. The expression data. Its format needs to comply with \code{data_spec}
+\item{expr_tbl}{tibble. The expression data. Its format needs to comply with \code{data}
 below.}
 
-\item{data_spec}{DataSpec S3 object. Specifications on both \code{pheno_tbl} and \code{expr_tbl}.}
+\item{data}{DataSpec S3 object. Specifications on both \code{pheno_tbl} and \code{expr_tbl}.}
 }
 \value{
 The JSON string that was written to the file.

@@ -1,22 +1,22 @@
 test_that("infer_as2() works", {
 
   mirror <- c("models", "results")
-  ass_spec_2d <- AssSpec2d(
-    file = "ass_spec_2d.png",
+  ass2d <- AssSpec2d(
+    file = "ass2d.png",
     x_metric = "x",
     y_metric = "y",
     pivot_time_cutoff = 2.,
     benchmark = "benchmark",
     fellow_csv = TRUE
   )
-  ass_spec_2d$model_tree_mirror <- mirror
-  data_spec <- DataSpec(
+  ass2d$model_tree_mirror <- mirror
+  data <- DataSpec(
     name = "mock",
     directory = "data/mock",
     train_prop = .7,
     cohort = "train"
   )
-  model_spec <- ModelSpec(
+  model <- ModelSpec(
     name = "cox",
     directory = "models/cox",
     fitter = zeroSum::zeroSum,
@@ -25,9 +25,9 @@ test_that("infer_as2() works", {
   )
 
   auto_pps <- infer_as2(
-    ass_spec_2d = ass_spec_2d,
-    model_spec = model_spec,
-    data_spec = data_spec
+    ass2d = ass2d,
+    model = model,
+    data = data
   )
   expect_equal(
     auto_pps$file,
@@ -38,11 +38,11 @@ test_that("infer_as2() works", {
     "mock train, pfs_years < 2"
   )
 
-  data_spec$cohort <- "test"
+  data$cohort <- "test"
   auto_pps <- infer_as2(
-    ass_spec_2d = ass_spec_2d,
-    model_spec = model_spec,
-    data_spec = data_spec
+    ass2d = ass2d,
+    model = model,
+    data = data
   )
   expect_equal(
     auto_pps$file,

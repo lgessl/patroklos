@@ -4,10 +4,10 @@
 \alias{read}
 \title{Read expression and pheno data from csv files into consistent format}
 \usage{
-read(data_spec)
+read(data)
 }
 \arguments{
-\item{data_spec}{DataSpec S3 object. Specifications on the data. See the the
+\item{data}{DataSpec S3 object. Specifications on the data. See the the
 constructor \code{DataSpec()} for details.}
 }
 \value{

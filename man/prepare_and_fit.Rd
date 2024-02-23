@@ -7,8 +7,8 @@
 prepare_and_fit(
   expr_mat,
   pheno_tbl,
-  data_spec,
-  model_spec,
+  data,
+  model,
   quiet = FALSE,
   msg_prefix = ""
 )
@@ -19,10 +19,10 @@ in columns.}
 
 \item{pheno_tbl}{tibble. The pheno data with samples in rows and variables in columns.}
 
-\item{data_spec}{DataSpec S3 object. Specifications on the data. See the the
+\item{data}{DataSpec S3 object. Specifications on the data. See the the
 constructor \code{DataSpec()} for details.}
 
-\item{model_spec}{ModelSpec S3 object. Specifications on the model. See
+\item{model}{ModelSpec S3 object. Specifications on the model. See
 the the constructor \code{ModelSpec()} for details.}
 
 \item{quiet}{logical. Whether to suppress messages. Default is \code{FALSE}.}
@@ -30,7 +30,7 @@ the the constructor \code{ModelSpec()} for details.}
 \item{msg_prefix}{string. Prefix for messages. Default is \code{""}.}
 }
 \value{
-A list of fit objects as returned by the \code{fit()} method of \code{model_spec}.
+A list of fit objects as returned by the \code{fit()} method of \code{model}.
 }
 \description{
 Given an expression matrix and a pheno tibble, prepare the data for a

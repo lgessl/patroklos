@@ -5,9 +5,9 @@
 \title{Assess multiple models on a single data set in 2D plot}
 \usage{
 assess_2d_center(
-  ass_spec_2d,
-  model_spec_list,
-  data_spec,
+  ass2d,
+  model_list,
+  data,
   cohorts = c("test", "train"),
   model_tree_mirror = c("models", "results"),
   comparison_plot = TRUE,
@@ -15,12 +15,12 @@ assess_2d_center(
 )
 }
 \arguments{
-\item{ass_spec_2d}{AssSpec2d object. Specify the final comparison plot.
+\item{ass2d}{AssSpec2d object. Specify the final comparison plot.
 We derive the \code{AssSpec2d} for the single plots in a reasonable way from it.}
 
-\item{model_spec_list}{list of ModelSpec objects. Assess these models.}
+\item{model_list}{list of ModelSpec objects. Assess these models.}
 
-\item{data_spec}{DataSpec object. Assess on this data set.}
+\item{data}{DataSpec object. Assess on this data set.}
 
 \item{cohorts}{character vector, a subset of \code{c("train", "test")}. Assess on these
 cohorts. Default is \code{c("train", "test")}.}

@@ -4,7 +4,7 @@
 \alias{prepare}
 \title{Prepare data for model fitting and predicting}
 \usage{
-prepare(expr_mat, pheno_tbl, data_spec, model_spec)
+prepare(expr_mat, pheno_tbl, data, model)
 }
 \arguments{
 \item{expr_mat}{numeric matrix. The expression data, with patients as rows
@@ -13,10 +13,10 @@ and genes as columns. The row names must be unique patient identifiers.}
 \item{pheno_tbl}{tibble. The pheno data, with patients as rows and variables as
 columns.}
 
-\item{data_spec}{DataSpec S3 object. Specifications on the data (\code{expr_mat},
+\item{data}{DataSpec S3 object. Specifications on the data (\code{expr_mat},
 \code{pheno_tbl}). See the the constructor \code{DataSpec()} for details.}
 
-\item{model_spec}{ModelSpec S3 object. Specifications on the model to prepare for.
+\item{model}{ModelSpec S3 object. Specifications on the model to prepare for.
 See the the constructor \code{ModelSpec()} for details.}
 }
 \value{

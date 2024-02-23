@@ -15,13 +15,13 @@ test_that("training_camp() works", {
     n_na_in_pheno = n_na_in_pheno,
     to_csv = dir
   )
-  data_spec <- DataSpec(
+  data <- DataSpec(
     name = "mock",
     directory = dir,
     train_prop = .66,
     pivot_time_cutoff = 2.0
   )
-  model_spec_1 <- ModelSpec(
+  model_1 <- ModelSpec(
     name = "model1",
     directory = file.path(dir, "model1"),
     fitter = zeroSum::zeroSum,
@@ -31,14 +31,14 @@ test_that("training_camp() works", {
       zeroSum = FALSE),
     response_type = "survival_censored"
   )
-  model_spec_2 <- model_spec_1
-  model_spec_2$split_index <- 1:2
-  model_spec_2$time_cutoffs <- c(1.5, 2.)
+  model_2 <- model_1
+  model_2$split_index <- 1:2
+  model_2$time_cutoffs <- c(1.5, 2.)
   
   expect_no_error(
     training_camp(
-      data_spec = data_spec,
-      model_spec_list = list(model_spec_1, model_spec_2),
+      data = data,
+      model_list = list(model_1, model_2),
       quiet = TRUE
     )
   )

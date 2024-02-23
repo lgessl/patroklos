@@ -4,12 +4,12 @@
 \alias{training_camp}
 \title{Set up a training camp to fit models}
 \usage{
-training_camp(model_spec_list, data_spec, quiet = FALSE)
+training_camp(model_list, data, quiet = FALSE)
 }
 \arguments{
-\item{model_spec_list}{list of ModelSpec objects. The models to fit.}
+\item{model_list}{list of ModelSpec objects. The models to fit.}
 
-\item{data_spec}{DataSpec object. The data set to fit on.}
+\item{data}{DataSpec object. The data set to fit on.}
 
 \item{quiet}{logical. Whether to suppress messages. Default is \code{FALSE}.}
 }

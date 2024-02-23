@@ -4,16 +4,16 @@
 \alias{generate_response}
 \title{Generate the response matrix in a model-specific way}
 \usage{
-generate_response(pheno_tbl, data_spec, model_spec)
+generate_response(pheno_tbl, data, model)
 }
 \arguments{
 \item{pheno_tbl}{tibble. The pheno data, with patients as rows and variables as
 columns.}
 
-\item{data_spec}{DataSpec S3 object. Specifications on the data (\code{pheno_tbl}). See
+\item{data}{DataSpec S3 object. Specifications on the data (\code{pheno_tbl}). See
 the constructor \code{DataSpec()} for details.}
 
-\item{model_spec}{ModelSpec S3 object. Specifications on the model to prepare for.
+\item{model}{ModelSpec S3 object. Specifications on the model to prepare for.
 See the constructor \code{ModelSpec()} for details.}
 }
 \value{
@@ -25,7 +25,7 @@ Generate the numeric response matrix from the pheno data for a
 certain model
 }
 \details{
-If \code{model_spec$response_type == "binary"}, the response matrix will have one
+If \code{model$response_type == "binary"}, the response matrix will have one
 column filled with
 \itemize{
 \item \code{1} if progress is observed at a time <= \code{time_cutoff},

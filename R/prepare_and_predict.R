@@ -7,9 +7,9 @@
 #' @param expr_mat numeric matrix. The expression matrix with genes in rows and samples
 #' in columns.
 #' @param pheno_tbl tibble. The pheno data with samples in rows and variables in columns.
-#' @param data_spec DataSpec S3 object. Specifications on the data. See the the
+#' @param data DataSpec S3 object. Specifications on the data. See the the
 #' constructor `DataSpec()` for details.
-#' @param model_spec ModelSpec S3 object. Specifications on the model. See the the
+#' @param model ModelSpec S3 object. Specifications on the model. See the the
 #' constructor `ModelSpec()` for details.
 #' @param lambda string or numeric. The lambda regularization parameter of the model
 #' to predict with. Technically, we will pass it to the `s` parameter of the `predict()`
@@ -24,7 +24,7 @@
 #' * `"predicted"`: a list of named numeric vectors, the scores output by the model for 
 #'  each split (split index corresponding to list index).
 #' *  "actual": a list of named numeric vectors, for each split the actual values of 
-#' whether time to event was above or below `model_spec$time_cutoffs`, encoded as 1 
+#' whether time to event was above or below `model$time_cutoffs`, encoded as 1 
 #'  ("high risk") and 0 ("low risk"), respectively. 
 #' * "benchmark": A list of named numeric vectors, for each split the values of the
 #'  benchmark classifier. If `benchmark` is NULL, it is an empty list.
@@ -34,47 +34,47 @@
 prepare_and_predict <- function(
     expr_mat,
     pheno_tbl,
-    data_spec,
-    model_spec,
+    data,
+    model,
     lambda,
     pivot_time_cutoff,
     benchmark_col = NULL
 ){
-    if(length(model_spec$time_cutoffs) > 1L)
+    if(length(model$time_cutoffs) > 1L)
         stop("Multiple time cutoffs are not supported")
-    if(is.null(data_spec$cohort)) # Usually predict for new test data
-        data_spec$cohort <- "test"
+    if(is.null(data$cohort)) # Usually predict for new test data
+        data$cohort <- "test"
 
     # Retrieve model
-    fit_path <- file.path(model_spec$directory, model_spec$fit_file)
+    fit_path <- file.path(model$directory, model$fit_file)
     if(!file.exists(fit_path)){
         stop("Model object does not exist at ", fit_path)
     }
-    fits <- readRDS(file.path(model_spec$directory, model_spec$fit_file))
+    fits <- readRDS(file.path(model$directory, model$fit_file))
 
-    model_spec$response_type <- "binary" # Always evaluate for descretized response
-    predicted_list <- vector("list", length(model_spec$split_index))
-    actual_list <- vector("list", length(model_spec$split_index))
+    model$response_type <- "binary" # Always evaluate for descretized response
+    predicted_list <- vector("list", length(model$split_index))
+    actual_list <- vector("list", length(model$split_index))
 
     benchmark <- NULL
     benchmark_list <- NULL
     if(!is.null(benchmark_col)){
         benchmark <- pheno_tbl[[benchmark_col]]
-        names(benchmark) <- pheno_tbl[[data_spec$patient_id_col]]
-        benchmark_list <- vector("list", length(model_spec$split_index))
+        names(benchmark) <- pheno_tbl[[data$patient_id_col]]
+        benchmark_list <- vector("list", length(model$split_index))
     }
     if(!is.null(pivot_time_cutoff))
-        model_spec$time_cutoffs <- pivot_time_cutoff
+        model$time_cutoffs <- pivot_time_cutoff
 
-    for(i in model_spec$split_index){
-        split_name <- paste0(data_spec$split_col_prefix, i)
-        split_ms <- model_spec
+    for(i in model$split_index){
+        split_name <- paste0(data$split_col_prefix, i)
+        split_ms <- model
         split_ms$split_index <- i
         x_y <- prepare(
             expr_mat = expr_mat,
             pheno_tbl = pheno_tbl,
-            data_spec = data_spec,
-            model_spec = split_ms
+            data = data,
+            model = split_ms
         )
         actual <- x_y[["y"]][, 1]
         fit <- fits[[split_name]]

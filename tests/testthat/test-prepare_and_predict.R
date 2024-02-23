@@ -13,7 +13,7 @@ test_that("prepare_and_fit", {
     n_genes = n_genes,
     n_na_in_pheno = n_na_in_pheno
   )
-  data_spec <- DataSpec(
+  data <- DataSpec(
     name = "mock",
     directory = "mock_dir",
     train_prop = .5,
@@ -26,7 +26,7 @@ test_that("prepare_and_fit", {
   pheno_tbl[["split_2"]] <- sample(c("train", "test"), n_samples, replace = TRUE)
   dir <- withr::local_tempdir()
 
-  model_spec <- ModelSpec(
+  model <- ModelSpec(
     name = "cox-zerosum",
     directory = dir,
     fitter = zeroSum::zeroSum,
@@ -38,7 +38,7 @@ test_that("prepare_and_fit", {
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL
   )
-  ass_spec_2d <- AssSpec2d(
+  ass2d <- AssSpec2d(
     file = "dummy.pdf",
     x_metric = "rpp",
     y_metric = "prec",
@@ -48,17 +48,17 @@ test_that("prepare_and_fit", {
   prepare_and_fit(
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
-      data_spec = data_spec,
-      model_spec = model_spec,
+      data = data,
+      model = model,
       quiet = TRUE
   )
 
-  data_spec$cohort <- "test"
+  data$cohort <- "test"
   res <- prepare_and_predict(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
-    data_spec = data_spec,
-    model_spec = model_spec,
+    data = data,
+    model = model,
     lambda = "lambda.min",
     pivot_time_cutoff = 2,
     benchmark_col = "ipi"
@@ -67,6 +67,6 @@ test_that("prepare_and_fit", {
   expect_true(is.list(res))
   expect_equal(length(res), 3)
   expect_true(all(sapply(res, is.list)))
-  expect_true(all(sapply(res, length) == length(model_spec$split_index)))
+  expect_true(all(sapply(res, length) == length(model$split_index)))
   expect_true(all(sapply(res, function(x) all(sapply(x, is.numeric)))))
 })

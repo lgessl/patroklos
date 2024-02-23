@@ -7,8 +7,8 @@
 prepare_and_predict(
   expr_mat,
   pheno_tbl,
-  data_spec,
-  model_spec,
+  data,
+  model,
   lambda,
   pivot_time_cutoff,
   benchmark_col = NULL
@@ -20,10 +20,10 @@ in columns.}
 
 \item{pheno_tbl}{tibble. The pheno data with samples in rows and variables in columns.}
 
-\item{data_spec}{DataSpec S3 object. Specifications on the data. See the the
+\item{data}{DataSpec S3 object. Specifications on the data. See the the
 constructor \code{DataSpec()} for details.}
 
-\item{model_spec}{ModelSpec S3 object. Specifications on the model. See the the
+\item{model}{ModelSpec S3 object. Specifications on the model. See the the
 constructor \code{ModelSpec()} for details.}
 
 \item{lambda}{string or numeric. The lambda regularization parameter of the model
@@ -44,7 +44,7 @@ A list holding:
 \item \code{"predicted"}: a list of named numeric vectors, the scores output by the model for
 each split (split index corresponding to list index).
 \item "actual": a list of named numeric vectors, for each split the actual values of
-whether time to event was above or below \code{model_spec$time_cutoffs}, encoded as 1
+whether time to event was above or below \code{model$time_cutoffs}, encoded as 1
 ("high risk") and 0 ("low risk"), respectively.
 \item "benchmark": A list of named numeric vectors, for each split the values of the
 benchmark classifier. If \code{benchmark} is NULL, it is an empty list.

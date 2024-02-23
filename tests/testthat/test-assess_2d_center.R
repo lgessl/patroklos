@@ -17,7 +17,7 @@ test_that("assess_2d_center() works", {
     n_na_in_pheno = n_na_in_pheno,
     to_csv = data_dir
   )
-  data_spec <- DataSpec(
+  data <- DataSpec(
     name = "Mock et al. (2023)", 
     directory = data_dir, 
     train_prop = .7,
@@ -26,7 +26,7 @@ test_that("assess_2d_center() works", {
 
   model_dir <- file.path(base_dir, "models")
   dir.create(model_dir)
-  model_spec_1 <- ModelSpec(
+  model_1 <- ModelSpec(
     name = "cox-zerosum",
     directory = file.path(model_dir, "cox"),
     fitter = zeroSum::zeroSum,
@@ -37,7 +37,7 @@ test_that("assess_2d_center() works", {
     response_type = "survival_censored",
     fit_file = "model1.rds"
   )
-  model_spec_2 <- ModelSpec(
+  model_2 <- ModelSpec(
     name = "binomial-zerosum",
     directory = file.path(model_dir, "logistic"),
     fitter = zeroSum::zeroSum,
@@ -50,16 +50,16 @@ test_that("assess_2d_center() works", {
     include_from_discrete_pheno = "discrete_var",
     fit_file = "model2.rds"
   )
-  model_spec_list <- list(model_spec_1, model_spec_2)
+  model_list <- list(model_1, model_2)
 
   training_camp(
-    data_spec = data_spec,
-    model_spec_list = model_spec_list,
+    data = data,
+    model_list = model_list,
     quiet = TRUE
   )
 
   res_dir <- file.path(base_dir, "results")
-  ass_spec_2d <- AssSpec2d(
+  ass2d <- AssSpec2d(
     file = file.path(model_dir, "perf_plot.jpeg"),
     x_metric = "rpp",
     y_metric = "prec",
@@ -77,41 +77,41 @@ test_that("assess_2d_center() works", {
   )
 
   assess_2d_center(
-    model_spec_list = model_spec_list,
-    data_spec = data_spec,
-    ass_spec_2d = ass_spec_2d,
+    model_list = model_list,
+    data = data,
+    ass2d = ass2d,
     cohort = c("train", "test"),
     quiet = TRUE
   )
-  expect_true(file.exists(ass_spec_2d$file))
+  expect_true(file.exists(ass2d$file))
   expect_true(file.exists(file.path(res_dir, "logistic/2/scores.jpeg")))
   expect_true(file.exists(file.path(res_dir, "cox/2/rpp_vs_prec.csv")))
 
-  model_spec_1$split_index <- 1
-  ass_spec_2d$y_metric <- "logrank"
-  ass_spec_2d$scale_y <- "log10"
-  ass_spec_2d$file <- file.path(model_dir, "logrank.jpeg")
-  ass_spec_2d$benchmark <- NULL
-  ass_spec_2d$text <- NULL
-  ass_spec_2d$scores_plot <- FALSE
+  model_1$split_index <- 1
+  ass2d$y_metric <- "logrank"
+  ass2d$scale_y <- "log10"
+  ass2d$file <- file.path(model_dir, "logrank.jpeg")
+  ass2d$benchmark <- NULL
+  ass2d$text <- NULL
+  ass2d$scores_plot <- FALSE
   assess_2d_center(
-    model_spec_list = model_spec_list,
-    data_spec = data_spec,
-    ass_spec_2d = ass_spec_2d,
+    model_list = model_list,
+    data = data,
+    ass2d = ass2d,
     comparison_plot = FALSE,
     cohorts = "test",
     quiet = TRUE
   )
 
-  model_spec_2$time_cutoffs <- 1.5
-  ass_spec_2d$y_metric <- "precision_ci"
-  ass_spec_2d$ci_level <- .95
-  ass_spec_2d$file <- file.path(model_dir, "precision_ci.jpeg")
-  ass_spec_2d$benchmark <- "ipi"
+  model_2$time_cutoffs <- 1.5
+  ass2d$y_metric <- "precision_ci"
+  ass2d$ci_level <- .95
+  ass2d$file <- file.path(model_dir, "precision_ci.jpeg")
+  ass2d$benchmark <- "ipi"
   assess_2d_center(
-    model_spec_list = list(model_spec_2),
-    data_spec = data_spec,
-    ass_spec_2d = ass_spec_2d,
+    model_list = list(model_2),
+    data = data,
+    ass2d = ass2d,
     comparison_plot = TRUE,
     cohorts = "train",
     quiet = TRUE

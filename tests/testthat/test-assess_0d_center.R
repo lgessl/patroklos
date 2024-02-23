@@ -1,4 +1,4 @@
-test_that("assess_0d_center() works", {
+test_that("AssScalar_assess_center() works", {
 
   set.seed(452)
 
@@ -17,7 +17,7 @@ test_that("assess_0d_center() works", {
     n_na_in_pheno = n_na_in_pheno,
     to_csv = data_dir
   )
-  data_spec <- DataSpec(
+  data <- DataSpec(
     name = "Mock et al. (2023)", 
     directory = data_dir, 
     train_prop = .7,
@@ -26,7 +26,7 @@ test_that("assess_0d_center() works", {
 
   model_dir <- file.path(base_dir, "models")
   dir.create(model_dir)
-  model_spec_1 <- ModelSpec(
+  model_1 <- ModelSpec(
     name = "cox-zerosum",
     directory = file.path(model_dir, "cox"),
     fitter = zeroSum::zeroSum,
@@ -37,7 +37,7 @@ test_that("assess_0d_center() works", {
     response_type = "survival_censored",
     fit_file = "model1.rds"
   )
-  model_spec_2 <- ModelSpec(
+  model_2 <- ModelSpec(
     name = "binomial-zerosum",
     directory = file.path(model_dir, "logistic"),
     fitter = zeroSum::zeroSum,
@@ -50,25 +50,25 @@ test_that("assess_0d_center() works", {
     include_from_discrete_pheno = "discrete_var",
     fit_file = "model2.rds"
   )
-  model_spec_list <- list(model_spec_1, model_spec_2)
+  model_list <- list(model_1, model_2)
 
   training_camp(
-    data_spec = data_spec,
-    model_spec_list = model_spec_list,
+    data = data,
+    model_list = model_list,
     quiet = TRUE
   )
 
   res_dir <- file.path(base_dir, "results")
-  ass_spec_0d <- AssSpec0d(
+  ass_scalar <- AssScalar(
     metric = "get_auc",
     pivot_time_cutoff = 2,
     file = file.path(model_dir, "auc.csv")
   )
 
-  auc_tbl <- assess_0d_center(
-    model_spec_list = model_spec_list,
-    data_spec = data_spec,
-    ass_spec_0d = ass_spec_0d,
+  auc_tbl <- AssScalar_assess_center(
+    model_list = model_list,
+    data = data,
+    ass_scalar = ass_scalar,
     cohort = c("train", "test"),
     quiet = TRUE
   )

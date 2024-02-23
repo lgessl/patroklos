@@ -5,22 +5,22 @@
 #' and genes as columns.
 #' @param pheno_tbl tibble. The pheno data, with patients as rows and variables as
 #' columns.
-#' @param data_spec DataSpec S3 object. Specifications on the data (`expr_mat` and 
-#' `model_spec`). See the the constructor `DataSpec()` for details.
-#' @param model_spec ModelSpec S3 object. Specifications on the model to prepare for. 
+#' @param data DataSpec S3 object. Specifications on the data (`expr_mat` and 
+#' `model`). See the the constructor `DataSpec()` for details.
+#' @param model ModelSpec S3 object. Specifications on the model to prepare for. 
 #' See the the constructor `ModelSpec()` for details.
 #' @return A named numeric matrix with patients as rows and variables as columns. No 
 #' `NA`s in it.
 generate_predictor <- function(
     expr_mat,
     pheno_tbl,
-    data_spec,
-    model_spec
+    data,
+    model
 ){
     # Extract
-    patient_id_col <- data_spec$patient_id_col
-    include_from_continuous_pheno <- model_spec$include_from_continuous_pheno
-    include_from_discrete_pheno <- model_spec$include_from_discrete_pheno
+    patient_id_col <- data$patient_id_col
+    include_from_continuous_pheno <- model$include_from_continuous_pheno
+    include_from_discrete_pheno <- model$include_from_discrete_pheno
 
     x <- expr_mat
     patient_ids <- rownames(expr_mat) # Store for later
@@ -31,7 +31,7 @@ generate_predictor <- function(
         stage = "before_generate_predictor", 
         expr = expr_mat, 
         pheno = pheno_tbl,
-        data_spec = data_spec
+        data = data
     )
 
     # Continuous pheno first
@@ -42,7 +42,7 @@ generate_predictor <- function(
         if(!is.numeric(bind_continuous))
             stop("Variables specified in `include_from_continuous_pheno` must be numeric.")
         colnames(bind_continuous) <- colnames(bind_continuous) |> 
-            stringr::str_c(model_spec$append_to_includes)
+            stringr::str_c(model$append_to_includes)
     }
     # Discrete pheno second
     if(!is.null(include_from_discrete_pheno)){
@@ -50,7 +50,7 @@ generate_predictor <- function(
         bind_discrete <- pheno_tbl[, include_from_discrete_pheno, drop = FALSE] |>
             tibble_to_binary()
         colnames(bind_discrete) <- colnames(bind_discrete) |>
-            stringr::str_c(model_spec$append_to_includes)
+            stringr::str_c(model$append_to_includes)
     }
 
     # Combine into numeric matrix, the predictor matrix    
@@ -71,29 +71,29 @@ generate_predictor <- function(
 #' certain model
 #' @param pheno_tbl tibble. The pheno data, with patients as rows and variables as
 #' columns.
-#' @param data_spec DataSpec S3 object. Specifications on the data (`pheno_tbl`). See
+#' @param data DataSpec S3 object. Specifications on the data (`pheno_tbl`). See
 #' the constructor `DataSpec()` for details.
-#' @param model_spec ModelSpec S3 object. Specifications on the model to prepare for.
+#' @param model ModelSpec S3 object. Specifications on the model to prepare for.
 #' See the constructor `ModelSpec()` for details.
 #' @return Named response matrix: a numeric matrix with patients as rows and variables 
 #' as columns.
-#' @details If `model_spec$response_type == "binary"`, the response matrix will have one 
+#' @details If `model$response_type == "binary"`, the response matrix will have one 
 #' column filled with 
 #' * `1` if progress is observed at a time <= `time_cutoff`,
 #' * `0` if progress or censoring is observed at a time > `time_cutoff`,
 #' * `NA` if censoring without progression is observed at a time <= `time_cutoff`.
 generate_response <- function(
     pheno_tbl,
-    data_spec,
-    model_spec
+    data,
+    model
 ){
 
     # Extract
-    time_to_event_col <- data_spec$time_to_event_col
-    event_col <- data_spec$event_col
-    patient_id_col <- data_spec$patient_id_col
-    time_cutoff <- model_spec$time_cutoffs
-    response_type <- model_spec$response_type
+    time_to_event_col <- data$time_to_event_col
+    event_col <- data$event_col
+    patient_id_col <- data$patient_id_col
+    time_cutoff <- model$time_cutoffs
+    response_type <- model$response_type
 
     if(length(time_cutoff) > 1)
         stop("Can only handle one cutoff time.")
@@ -114,7 +114,7 @@ generate_response <- function(
         y[censor_bool, 1] <- time_cutoff
         y[censor_bool, 2] <- 0
         rownames(y) <- pheno_tbl[[patient_id_col]]
-        colnames(y) <- model_spec$response_colnames
+        colnames(y) <- model$response_colnames
     }
 
     return(y)

@@ -20,12 +20,12 @@ test_that("assess_2d() works", {
   )
   pheno_tbl[["split_2"]] <- pheno_tbl[["split_1"]]
 
-  data_spec <- DataSpec(
+  data <- DataSpec(
     name = "Mock et al. (2023)",
     directory = "mock",
     train_prop = .66
   )
-  model_spec_1 <- ModelSpec(
+  model_1 <- ModelSpec(
     name = "cox",
     directory = file.path(dir, "cox"),
     fitter = zeroSum::zeroSum,
@@ -35,7 +35,7 @@ test_that("assess_2d() works", {
       lambda = lambda, zeroSum = FALSE),
     response_type = "survival_censored"
   )
-  model_spec_2 <- ModelSpec(
+  model_2 <- ModelSpec(
     name = "logistic",
     directory = file.path(dir, "logistic"),
     fitter = zeroSum::zeroSum,
@@ -45,7 +45,7 @@ test_that("assess_2d() works", {
       nFold = n_fold, lambda = lambda, zeroSum = FALSE),
     response_type = "binary"
   )
-  ass_spec_2d <- AssSpec2d(
+  ass2d <- AssSpec2d(
     file = file.path(dir, "rpp.jpeg"),
     x_metric = "rpp",
     y_metric = "prec",
@@ -61,12 +61,12 @@ test_that("assess_2d() works", {
     )
   )
 
-  for(model_spec in list(model_spec_1, model_spec_2)){
+  for(model in list(model_1, model_2)){
     prepare_and_fit(
       expr_mat = expr_mat,
       pheno_tbl = pheno_tbl,
-      data_spec = data_spec,
-      model_spec = model_spec,
+      data = data,
+      model = model,
       quiet = TRUE
     )
   }
@@ -74,40 +74,40 @@ test_that("assess_2d() works", {
   tbl <- assess_2d(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
-    data_spec = data_spec,
-    model_spec = model_spec_1,
-    ass_spec_2d = ass_spec_2d,
+    data = data,
+    model = model_1,
+    ass2d = ass2d,
     quiet = TRUE
   )$data
   expect_s3_class(tbl, "tbl_df")
 
   
-  ass_spec_2d$benchmark <- "ipi"
-  ass_spec_2d$directory <- file.path(dir, "logrank.jpeg")
-  ass_spec_2d$y_metric <- "logrank"
-  ass_spec_2d$scale_y <- "log10"
+  ass2d$benchmark <- "ipi"
+  ass2d$directory <- file.path(dir, "logrank.jpeg")
+  ass2d$y_metric <- "logrank"
+  ass2d$scale_y <- "log10"
   tbl <- assess_2d(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
-    data_spec = data_spec,
-    model_spec = model_spec_2,
-    ass_spec_2d = ass_spec_2d,
+    data = data,
+    model = model_2,
+    ass2d = ass2d,
     quiet = TRUE
   )$data
   expect_equal(names(tbl), c("rpp", "logrank", "cutoff", "split", "model"))
 
-  ass_spec_2d$y_metric <- "precision_ci"
-  ass_spec_2d$ci_level <- .95
-  ass_spec_2d$directory <- file.path(dir, "precision_ci.jpeg")
-  ass_spec_2d$scale_y <- "identity"
-  ass_spec_2d$title <- "Lower precision CI boundary (upper for ipi)"
-  ass_spec_2d$show_plots <- FALSE
+  ass2d$y_metric <- "precision_ci"
+  ass2d$ci_level <- .95
+  ass2d$directory <- file.path(dir, "precision_ci.jpeg")
+  ass2d$scale_y <- "identity"
+  ass2d$title <- "Lower precision CI boundary (upper for ipi)"
+  ass2d$show_plots <- FALSE
   tbl <- assess_2d(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
-    data_spec = data_spec,
-    model_spec = model_spec_2,
-    ass_spec_2d = ass_spec_2d,
+    data = data,
+    model = model_2,
+    ass2d = ass2d,
     quiet = TRUE
   )$data
   expect_equal(names(tbl), c("rpp", "precision_ci", "cutoff", "split", "model"))

@@ -19,7 +19,7 @@ test_that("prepare_and_fit() works", {
   pheno_tbl <- data[["pheno_tbl"]]
   pheno_tbl[["split_1"]] <- sample(c("train", "test"), n_samples, replace = TRUE)
   pheno_tbl[["split_2"]] <- sample(c("train", "test"), n_samples, replace = TRUE)
-  data_spec <- DataSpec(
+  data <- DataSpec(
     name = "Mock et al. (2023)", 
     directory = "mock", 
     train_prop = 0.8,
@@ -27,7 +27,7 @@ test_that("prepare_and_fit() works", {
   )
   dir <- withr::local_tempdir()
 
-  model_spec <- ModelSpec(
+  model <- ModelSpec(
     name = "cox-vanilla",
     directory = file.path(dir, "model1"),
     fitter = zeroSum::zeroSum,
@@ -43,18 +43,18 @@ test_that("prepare_and_fit() works", {
   fits <- prepare_and_fit(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
-    data_spec = data_spec,
-    model_spec = model_spec,
+    data = data,
+    model = model,
     quiet = TRUE
   )
   expect_equal(length(fits), 2)
 
-  model_spec$split_index <- split_index
+  model$split_index <- split_index
   fits <- prepare_and_fit(
     expr_mat = expr_mat,
     pheno_tbl = pheno_tbl,
-    data_spec = data_spec,
-    model_spec = model_spec,
+    data = data,
+    model = model,
     quiet = TRUE
   )
   expect_equal(length(fits), length(split_index)+1)

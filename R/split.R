@@ -5,35 +5,35 @@
 #' that every model in a list of `ModelSpec`s gets enough splits.
 #' @param pheno_tbl A tibble holding the pheno data (see `DataSpec()`
 #' for details).
-#' @param data_spec A `DataSpec` object referring to `expr_tbl` and `pheno_tbl`.
-#' @param model_spec_list A list of `ModelSpec` objects. Ensure that every model
+#' @param data A `DataSpec` object referring to `expr_tbl` and `pheno_tbl`.
+#' @param model_list A list of `ModelSpec` objects. Ensure that every model
 #' gets the splits it needs.
 #' @return `pheno_tbl` with all required splits.
 ensure_splits <- function(
     pheno_tbl,
-    data_spec,
-    model_spec_list
+    data,
+    model_list
 ){
     # Find split indices to generate new splits for
     wanted_splits <- sapply(
-        model_spec_list, 
-        function(model_spec) model_spec$split_index
+        model_list, 
+        function(model) model$split_index
     ) |> unlist() |> as.integer()
     present_splits <- stringr::str_extract(
         names(pheno_tbl),
-        stringr::str_c(data_spec$split_col_prefix, "[0-9]+")
+        stringr::str_c(data$split_col_prefix, "[0-9]+")
     ) |> stringr::str_extract("[0-9]+$") |> as.integer()
     new_splits <- setdiff(wanted_splits, present_splits)
 
-    # Extract from data_spec
-    time_col <- data_spec$time_to_event_col
-    event_col <- data_spec$event_col
-    pivot_time_cutoff <- data_spec$pivot_time_cutoff
-    train_prop <- data_spec$train_prop
+    # Extract from data
+    time_col <- data$time_to_event_col
+    event_col <- data$event_col
+    pivot_time_cutoff <- data$pivot_time_cutoff
+    train_prop <- data$train_prop
 
     # Generate new splits
     for(i in seq_along(new_splits)){
-        if(!is.null(data_spec$pivot_time_cutoff)){
+        if(!is.null(data$pivot_time_cutoff)){
             risk <- rep("na", nrow(pheno_tbl))
             risk[pheno_tbl[[time_col]] < pivot_time_cutoff & 
                 pheno_tbl[[event_col]] == 1] <- "high"
@@ -46,13 +46,13 @@ ensure_splits <- function(
         }
         affiliation <- rep("test", nrow(pheno_tbl))
         affiliation[train_index] <- "train"
-        pheno_tbl[[stringr::str_c(data_spec$split_col_prefix, new_splits[i])]] <- 
+        pheno_tbl[[stringr::str_c(data$split_col_prefix, new_splits[i])]] <- 
             affiliation
     }
 
     # Write back to pheno csv
     if(length(new_splits) > 0){
-        pheno_file <- file.path(data_spec$directory, data_spec$pheno_file)
+        pheno_file <- file.path(data$directory, data$pheno_file)
         readr::write_csv(pheno_tbl, pheno_file)
     }
     

@@ -19,11 +19,11 @@ check_consistent_patient_ids <- function(
     stage = c("preprocessing", "before_generate_predictor", "after_generate_xy"),
     expr,
     pheno,
-    data_spec = NULL
+    data = NULL
 ){
     # Extract
     stage <- match.arg(stage)
-    patient_id_col <- data_spec$patient_id_col
+    patient_id_col <- data$patient_id_col
     patient_ids_expr <- NULL
     patient_ids_pheno <- NULL
     # case 1: during preprocessing
