@@ -13,7 +13,7 @@ test_that("prepare_and_fit", {
     n_genes = n_genes,
     n_na_in_pheno = n_na_in_pheno
   )
-  data <- DataSpec(
+  data <- Data(
     name = "mock",
     directory = "mock_dir",
     train_prop = .5,
@@ -26,7 +26,7 @@ test_that("prepare_and_fit", {
   pheno_tbl[["split_2"]] <- sample(c("train", "test"), n_samples, replace = TRUE)
   dir <- withr::local_tempdir()
 
-  model <- ModelSpec(
+  model <- Model$new(
     name = "cox-zerosum",
     directory = dir,
     fitter = zeroSum::zeroSum,
@@ -38,7 +38,7 @@ test_that("prepare_and_fit", {
     include_from_continuous_pheno = NULL,
     include_from_discrete_pheno = NULL
   )
-  ass2d <- AssSpec2d(
+  ass2d <- Ass2d$new(
     file = "dummy.pdf",
     x_metric = "rpp",
     y_metric = "prec",

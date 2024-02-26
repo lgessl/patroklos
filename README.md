@@ -26,8 +26,8 @@ Adding new data and doing exactly the same as for previous data sets, i.e., fitt
 
 Using the lymphomaSurvivalPipeline means minimal coding effort for you since it takes care of all the routine steps of the machine-learning project. You just need to call a small number of functions–and tell it what to do in a quite abstract way, namely using S3 classes specifying
 
-- a data set (like the names of certain columns/features): `DataSpec`,
-- a model (like the fitter function, which features to add to the predictor variables from the pheno data): `ModelSpec`, and
+- a data set (like the names of certain columns/features): `Data`,
+- a model (like the fitter function, which features to add to the predictor variables from the pheno data): `Model`, and
 - a plot assessing a model's performance (e.g. that you want to plot the rate of positive predictions against the precision): `AssSpec2d`.
 
 ## Read the docs

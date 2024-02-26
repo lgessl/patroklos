@@ -40,14 +40,14 @@ qc_prefit <- function(
 
 #' @title Quality control at the end of preprocessing step
 #' @description Check if the expression and pheno tibble have the format
-#' specified in the `DataSpec` and match to one another.
-#' @param expr_tbl A tibble holding the expression data (see `DataSpec()`
+#' specified in the `Data` and match to one another.
+#' @param expr_tbl A tibble holding the expression data (see `Data()`
 #' for details).
-#' @param pheno_tbl A tibble holding the pheno data (see `DataSpec()`
+#' @param pheno_tbl A tibble holding the pheno data (see `Data()`
 #' for details).
-#' @param data A `DataSpec` object referring to `expr_tbl` and `pheno_tbl`.
+#' @param data A `Data` object referring to `expr_tbl` and `pheno_tbl`.
 #' @param check_default logical. If `TRUE`, check if all default arguments of
-#' `DataSpec()` apply (i.e., replace `data` with a `DataSpec()` except for 
+#' `Data()` apply (i.e., replace `data` with a `Data()` except for 
 #' the `directory` attribute). Default is `FALSE`, in which case we use `data`.
 #' @details Intended to be used at the end of preprocessing and before applying
 #' `split_data()`.
@@ -60,7 +60,7 @@ qc_preprocess <- function(
 ){
     if(check_default){
         directory <- data$directory
-        data <- DataSpec(
+        data <- Data(
             name = "default",
             directory = directory,
             train_prop = .7

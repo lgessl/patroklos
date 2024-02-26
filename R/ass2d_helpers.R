@@ -1,104 +1,175 @@
-#' @title Assess a model on a single data set in terms how well it filters high-risk
-#' samples in a 2d plot
-#' @description Given a data set and a model, assess how well the model can filter
-#' high-risk patients. This includes: 
-#' 1. A 2D scatter plot of two performance metrics, namely the `x_metric` and `y_metric`
-#' attributes of `ass2d`. 
-#' 2. A plot of the risk scores of the model.
-#' Supports multiple splits into train and test cohorts, but not multiple time cutoffs 
-#' or multiple models. For the this, see [`assess_2d_center()`].
-#' @param expr_mat numeric matrix. The expression matrix. Rows are samples, columns
-#' are genes, their identifiers are given as row and column names, respectively.
-#' @param pheno_tbl tibble. The phenotype table. Observations are samples, columns 
-#' are variables.
-#' @param data DataSpec object specifying `expr_mat` and `pheno_tbl`. See the 
-#' constructor `DataSpec()` for details.
-#' @param model ModelSpec object. The model to be assessed. See the constructor
-#' `ModelSpec()` for details.
-#' @param ass2d AssSpec2d object. The specifications for the plot. See
-#' the constructor `AssSpec2d()` for details. The `pivot_time_cutoff` attribute of
-#' `ass2d` will override the same in `model` if both are given.
-#' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
-#' @param msg_prefix string. Prefix for messages. Default is `""`.
-#' @return A AssSpec2d object. `ass2d` with one additional attribute named
-#' `data` holding the data underlying the plots.
-#' @details The AssSpec2d class is tailored for this function, so see its constructor 
-#' [`AssSpec2d()`] for details.
-#' @param msg_prefix string. Prefix for messages. Default is `""`.
-#' @export
-assess_2d <- function(
-    expr_mat,
-    pheno_tbl,
-    data,
-    model,
-    ass2d,
-    quiet = FALSE,
-    msg_prefix = ""
-){
-    if(is.null(ass2d$pivot_time_cutoff)){
-        ass2d$pivot_time_cutoff <- data$pivot_time_cutoff
-        if(is.null(ass2d$pivot_time_cutoff)){
-            stop("You need to specify the `pivot_time_cutoff` atrribute in at least ",
-                "one of `data` and `ass2d`.")
-        }
+ass2d_initialize <- function(self, private, file, x_metric, y_metric, pivot_time_cutoff, 
+    lambda, benchmark, ci_level, fellow_csv, scores_plot, show_plots, title, 
+    x_lab, y_lab, xlim, ylim, smooth_method, smooth_benchmark, smooth_se, 
+    scale_x, scale_y, vline, hline, text_size, text, alpha, colors, theme, 
+    width, height, units, dpi)
+{
+    if(is.null(x_lab)){
+        x_lab <- x_metric
     }
-    if(is.null(ass2d$title)){
-        ass2d$title <- paste0(
-            data$name, " ", data$cohort, ", time cutoff ", 
-            ass2d$pivot_time_cutoff)
+    if(is.null(y_lab)){
+        y_lab <- y_metric
     }
-    if(is.null(data$cohort)){
-        data$cohort <- "test"
+    if(y_metric == "logrank"){
+        if(!any(stringr::str_detect(c("prevalence", "rpp"), x_metric)))
+            stop("For `y_metric` = 'logrank', `x_metric` must be 'prevalence' or 'rpp'.")
     }
-    directory <- dirname(ass2d$file)
+    stopifnot(is.character(file))
+    stopifnot(is.character(x_metric))
+    stopifnot(is.character(y_metric))
+    stopifnot(is.null(pivot_time_cutoff) || is.numeric(pivot_time_cutoff))
+    stopifnot(is.character(lambda) || is.numeric(lambda))
+    stopifnot(is.character(benchmark) || is.null(benchmark))
+    stopifnot(is.numeric(ci_level) && ci_level >= 0 && ci_level <= 1)
+    stopifnot(is.logical(fellow_csv))
+    stopifnot(is.logical(scores_plot))
+    stopifnot(is.logical(show_plots))
+    stopifnot(is.character(title) || is.null(title))
+    stopifnot(is.character(x_lab))
+    stopifnot(is.character(y_lab))
+    stopifnot(is.numeric(xlim) || is.null(xlim) || 
+        xlim[1] >= xlim[2] || ylim[1] >= ylim[2])
+    stopifnot(is.numeric(ylim) || is.null(ylim))
+    stopifnot(is.character(smooth_method) || is.null(smooth_method) ||
+        is.function(smooth_method))
+    stopifnot(is.logical(smooth_benchmark))
+    stopifnot(is.logical(smooth_se))
+    stopifnot(is.null(hline) || is.list(hline))
+    stopifnot(is.null(vline) || is.list(vline))
+    stopifnot(is.numeric(text_size) && text_size > 0)
+    stopifnot(is.null(text) || is.list(text))
+    stopifnot(is.numeric(alpha) && alpha >= 0 && alpha <= 1)
+    stopifnot(is.character(colors) || is.null(colors))
+    stopifnot(is.numeric(width) && width > 0)
+    stopifnot(is.numeric(height) && height > 0)
+    stopifnot((inherits(theme, "theme") && inherits(theme, "gg")) || is.null(theme))
+    stopifnot(is.character(units))
+    stopifnot(is.numeric(dpi) && dpi > 0)
+
+    self$x_metric <- x_metric
+    self$y_metric <- y_metric
+    self$pivot_time_cutoff <- pivot_time_cutoff
+    self$lambda <- lambda
+    self$benchmark <- benchmark
+    self$file <- file
+    self$ci_level <- ci_level
+    self$fellow_csv <- fellow_csv
+    self$scores_plot <- scores_plot
+    self$show_plots <- show_plots
+    self$title <- title
+    self$x_lab <- x_lab
+    self$y_lab <- y_lab
+    self$xlim <- xlim
+    self$ylim <- ylim
+    self$smooth_method <- smooth_method
+    self$smooth_benchmark <- smooth_benchmark
+    self$smooth_se <- smooth_se
+    self$scale_x <- scale_x
+    self$scale_y <- scale_y
+    self$vline <- vline
+    self$hline <- hline
+    self$text_size <- text_size
+    self$text <- text
+    self$alpha <- alpha
+    self$colors <- colors
+    self$theme <- theme
+    self$width <- width
+    self$height <- height
+    self$units <- units
+    self$dpi <- dpi
+
+    invisible(self)
+}
+
+ass2d_assess <- function(self, private, data, model, quiet, msg_prefix){
+
+    directory <- dirname(self$file)
     if(!dir.exists(directory))
         dir.create(directory, recursive = TRUE)
-
-    # Prepare, predict and calculate performance metric
-    # (a) For model
-    prep <- prepare_and_predict(
-        expr_mat = expr_mat,
-        pheno_tbl = pheno_tbl,
-        data = data,
-        model = model,
-        lambda = ass2d$lambda,
-        pivot_time_cutoff = ass2d$pivot_time_cutoff,
-        benchmark_col = ass2d$benchmark
+    self$calculate_2d_metric(
+        data = data, 
+        model = model
     )
-    ass2d <- calculate_2d_metric(
-        actual = prep[["actual"]],
-        predicted = prep[["predicted"]],
-        ass2d = ass2d,
-        model = model,
-        benchmark = prep[["benchmark"]],
-        pheno_tbl = pheno_tbl,
-        data = data
-    )
-
-    # Plot
     plot_2d_metric(
-        ass2d = ass2d,
+        ass2d = self,
         quiet = quiet,
         msg_prefix = msg_prefix
     )
 
-    if(ass2d$scores_plot){
-        pps_scores <- ass2d
-        pps_scores$title <- paste0(model$name, " | ", ass2d$title)
-        pps_scores$file <- file.path(
-            dirname(ass2d$file),
-            paste0("scores", stringr::str_extract(ass2d$file, "\\..+$"))
-        )
-        plot_risk_scores(
-            predicted = prep[["predicted"]],
-            actual = prep[["actual"]],
-            ass2d = pps_scores,
-            quiet = quiet,
-            ncol = model$plot_ncols,
-            msg_prefix = msg_prefix
-        )
-    }
-
-    return(ass2d)
+    invisible(self)
 }
 
+ass2d_assess_center <- function(self, private, data, model_list, model_tree_mirror, 
+    quiet, msg_prefix){
+    
+    cohorts <- data$cohort
+    if(is.null(cohorts)) cohorts <- "test"
+    perf_tbls <- list()
+    data$read()
+
+    if(!quiet) message("\nASSESSING ON ", data$name)
+    for(cohort in cohorts){
+        if(!quiet) message("# On ", cohort, " cohort")
+        data$cohort <- cohort
+        for(model in model_list){
+            if(!quiet) message("## ", model$name)
+            for(time_cutoff in model$time_cutoffs){
+                if(!quiet) message("### At time cutoff ", time_cutoff)
+                model_cutoff <- model$at_time_cutoff(time_cutoff)
+                this_as2 <- private$infer(
+                    model = model_cutoff,
+                    data = data,
+                    model_tree_mirror = model_tree_mirror
+                )
+                this_as2$assess(
+                    data = data,
+                    model = model_cutoff,
+                    quiet = quiet,
+                    msg_prefix = "#### "
+                )
+                perf_tbls[[model_cutoff$name]] <- this_as2$data
+            }
+        }
+        cohort_as2 <- self$clone()
+        cohort_as2$data <- dplyr::bind_rows(perf_tbls)
+        if(comparison_plot){
+            if(cohort == "test")
+                cohort_as2$file <- mirror_path(
+                    filepath = self$file,
+                    mirror = model_tree_mirror
+                )
+            if(is.null(cohort_as2$title))
+                cohort_as2$title <- paste0(
+                    data$name, " ", data$cohort, ", ", data$time_to_event_col,
+                    " < ", cohort_as2$pivot_time_cutoff
+                )
+            plot_2d_metric(
+                ass2d = cohort_as2,
+                quiet = TRUE
+            )
+            if(!quiet)
+                message("# Saving comparative performance plot to ", cohort_as2$file)
+        }
+    }
+}
+
+ass2d_infer <- function(self, private, model, data, model_tree_mirror){
+    this_as2 <- self$clone()
+    this_as2$file <- file.path(
+        model$directory,
+        paste0(
+            self$x_metric, "_vs_", self$y_metric,
+            stringr::str_extract(self$file, "\\..+$")
+        )
+    )
+    if(data$cohort == "test")
+        this_as2$file <- mirror_path(
+            filepath = this_as2$file,
+            mirror = self$model_tree_mirror
+        )
+    this_as2$title <- paste0(
+        data$name, " ", data$cohort, ", ",
+        data$time_to_event_col, " < ", this_as2$pivot_time_cutoff
+    )
+    return(this_as2)
+}

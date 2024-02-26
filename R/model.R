@@ -42,6 +42,8 @@ Model <- R6::R6Class("Model",
         plot_title_line = NULL,
         #' @field fit_file Store this Model object under this name in `directory`.
         fit_file = NULL,
+        #' @field fits A list holding fits (e.g. zeroSum objects).
+        fits = NULL,
 
         #' @description Create a new Model instance.
         #' @param name string. A telling name for the model.
@@ -92,7 +94,7 @@ Model <- R6::R6Class("Model",
         #' the upper limit of the figure. Default is `2.5`.
         #' @param fit_file string. The name of the model-fits file inside `directory`.
         #' Default is `"fit_obj.rds"`.
-        #' @return A ModelSpec S3 object.
+        #' @return A Model S3 object.
         #' @details Strictly speaking, one `Model` instance specifies
         #' `length(time_cutoffs) * length(split_index)` models. In terms of storing and assessing models,
         #' we consider the models obtained via repeated splitting according to `split_index` as one 
@@ -116,61 +118,72 @@ Model <- R6::R6Class("Model",
             plot_file = "training_error.pdf",
             plot_ncols = 2,
             plot_title_line = 2.5,
-            fit_file = "fit_obj.rds"
-        ){
-            response_type <- match.arg(response_type)
-            stopifnot(all(time_cutoffs >= 0))
-            stopifnot(split_index >= 1)
-            stopifnot(is.character(name))
-            check_fitter(fitter, optional_fitter_args)
-            stopifnot(is.numeric(time_cutoffs))
-            stopifnot(is.numeric(split_index))
-            stopifnot(is.character(response_type))
-            stopifnot(is.character(response_colnames))
-            stopifnot(is.character(include_from_continuous_pheno) || is.null(include_from_continuous_pheno))
-            stopifnot(is.character(include_from_discrete_pheno) || is.null(include_from_discrete_pheno))
-            stopifnot(is.character(append_to_includes))
-            stopifnot(is.character(directory))
-            stopifnot(is.logical(create_directory))
-            stopifnot(is.numeric(time_cutoffs) || is.null(time_cutoffs))
-            stopifnot(is.character(plot_file))
-            stopifnot(is.numeric(plot_ncols))
-            stopifnot(is.numeric(plot_title_line) || is.null(plot_title_line))
-            stopifnot(is.character(fit_file))
+            fit_file = "models.rds"
+        )
+            model_initialize(self, private, name, fitter, directory, split_index, 
+                time_cutoffs, optional_fitter_args, response_type, response_colnames, 
+                include_from_continuous_pheno, include_from_discrete_pheno, 
+                append_to_includes, create_directory, plot_file, plot_ncols,
+                plot_title_line, fit_file),  
 
-            self$name <- name
-            self$directory <- directory
-            self$fitter <- fitter
-            self$split_index <- split_index
-            self$time_cutoffs <- time_cutoffs
-            self$optional_fitter_args <- optional_fitter_args
-            self$response_type <- response_type
-            self$response_colnames <- response_colnames
-            self$include_from_continuous_pheno <- include_from_continuous_pheno
-            self$include_from_discrete_pheno <- include_from_discrete_pheno
-            self$append_to_includes <- append_to_includes
-            self$create_directory <- create_directory
-            self$plot_file <- plot_file
-            self$plot_ncols <- plot_ncols
-            self$plot_title_line <- plot_title_line
-            self$fit_file <- fit_file
-        }
+        #' @description Prepare the data and fit the model to it. Do this for all 
+        #' splits into training and test cohort. However, we do not support multiple time 
+        #' cutoffs at this step; enabling them is the job of `[training_camp()]`.
+        #' @param data Data object. Read it in if needed.
+        #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
+        #' @param msg_prefix string. Prefix for messages. Default is `""`.
+        #' @return A list of fit objects as returned by the `fit()` method of `model`. 
+        fit = function(
+            data,
+            quiet = FALSE,
+            msg_prefix = ""
+        )
+            model_fit(self, private, data, quiet, msg_prefix),
+
+        #' @description Prepare the data and predict with the model from it. Do 
+        #' this for all splits into training and test cohort. As with 
+        #' `[prepare_and_fit()]`, we do not support multiple time cutoffs at 
+        #' this step; this is `[assess_2d_center()]`'s job. Additonally return 
+        #' the true values of the response and, if the `benchmark_col` attribute 
+        #' of the `Data` object is not `NULL`, the values of the benchmark.
+        #' @param data Data object. Specifications on the data. Read it in if 
+        #' needed.
+        #' @param lambda string or numeric. The lambda regularization parameter 
+        #' of the model to predict with. Technically, we will pass it to the `s` 
+        #' parameter of the `predict()`method of the object returned by the 
+        #' `fitter` attribute of the `Model` object. See, e.g., 
+        #' [zeroSum::predict.zeroSum()].
+        #' @param pivot_time_cutoff numeric. Time-to-event threshold that divides 
+        #' samples into a high/low-risk (time to event below/above 
+        #' `pivot_time_cutoff`) group. 
+        #' @return A list holding:
+        #' 
+        #' * `"predicted"`: a list of named numeric vectors, the scores output by the model for 
+        #'  each split (split index corresponding to list index).
+        #' *  "actual": a list of named numeric vectors, for each split the actual values of 
+        #' whether time to event was above or below `model$time_cutoffs`, encoded as 1 
+        #'  ("high risk") and 0 ("low risk"), respectively. 
+        #' * "benchmark": A list of named numeric vectors, for each split the values of the
+        #'  benchmark classifier. If `data$benchmark` is NULL, it is an empty list.
+        #' 
+        #' For every split, the names of all three vectors match.
+        #' @importFrom stats predict
+        #' @export
+        predict = function(
+            data,
+            lambda,
+            pivot_time_cutoff
+        )
+            model_predict(self, private, data, lambda, pivot_time_cutoff),
+
+        #' @description Clone the model and set the `time_cutoffs` attribute to
+        #' `time_cutoff`.
+        #' @param time_cutoff numeric. The time cutoff to set.
+        at_time_cutoff = function(time_cutoff)
+            model_at_time_cutoff(self, private, time_cutoff)
+    ),
+
+    private = list(
+        dummy = "dummy"
     )
 )
-
-at_time_cutoff <- function(
-    model,
-    time_cutoff
-){
-    if(!time_cutoff %in% model$time_cutoffs){
-        stop("time_cutoff must be one of model$time_cutoffs")
-    }
-    model_cutoff <- model # Rely on copy-on-modify
-    model_cutoff$name <- paste0(model$name, "@", time_cutoff)
-    model_cutoff$time_cutoffs <- time_cutoff
-    model_cutoff$directory <- file.path(
-        model$directory, 
-        stringr::str_replace(as.character(time_cutoff), "\\.", "-")
-    )
-    return(model_cutoff)
-}

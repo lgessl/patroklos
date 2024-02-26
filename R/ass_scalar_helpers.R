@@ -1,24 +1,35 @@
-AssScalar_assess <- function(
-    ass_scalar,
-    data,
-    model,
-    quiet,
-    msg_prefix
-){
-    prep <- prepare_and_predict(
-        expr_mat = data$expr_mat,
-        pheno_tbl = data$pheno_tbl,
-        data = data,
-        model = model,
-        lambda = ass_scalar$lambda,
-        pivot_time_cutoff = ass_scalar$pivot_time_cutoff,
-        benchmark_col = ass_scalar$benchmark
+ass_scalar_initialize <- function(self, private, metric, pivot_time_cutoff, 
+    lambda, benchmark, file, round_digits){
+
+    stopifnot(is.character(metric))
+    stopifnot(is.numeric(pivot_time_cutoff))
+    stopifnot(pivot_time_cutoff > 0)
+    stopifnot(is.character(lambda) || is.numeric(lambda))
+    stopifnot(is.null(benchmark) || is.character(benchmark))
+    stopifnot(is.null(file) || is.character(file))
+    stopifnot(is.numeric(round_digits) && round_digits >= 0)
+    self$metric <- metric
+    self$pivot_time_cutoff <- pivot_time_cutoff
+    self$lambda <- lambda
+    self$benchmark <- benchmark
+    self$file <- file
+    self$round_digits <- round_digits
+
+    invisible(self)
+}
+
+ass_scalar_assess <- function(self, private, data, model, quiet){
+
+    prep <- model$predict(
+        data = data, 
+        lambda = self$lambda,
+        pivot_time_cutoff = self$pivot_time_cutoff
     )
     core <- function(i){
         predicted <- prep[["predicted"]][[i]]
         actual <- prep[["actual"]][[i]]
         pa <- intersect_by_names(predicted, actual, rm_na = TRUE)
-        do.call(ass_scalar$metric, list(
+        do.call(self$metric, list(
             "predicted" =  pa[[1]],
             "actual" = pa[[2]]
             )
@@ -28,16 +39,12 @@ AssScalar_assess <- function(
     return(metric)
 }
 
-AssScalar_assess_center <- function(
-    ass_scalar,
-    data,
-    model_list,
-    model_tree_mirror,
-    quiet
-){
+ass_scalar_assess_center = function(self, private, data, model_list,
+    model_tree_mirror, quiet){
+
     cohorts <- data$cohort
     if(is.null(cohorts)) cohorts <- "test"
-    digits <- ass_scalar$round_digits
+    digits <- self$round_digits
 
     data$read()
     
@@ -55,16 +62,14 @@ AssScalar_assess_center <- function(
         )
         for(j in 1:m){
             time_cutoff <- model$time_cutoffs[j]
-            model_cutoff <- at_time_cutoff(model, time_cutoff)
+            model_cutoff <- model$at_time_cutoff(time_cutoff)
             res_tbl[j, 1] <- model$name
             res_tbl[j, 2] <- data$cohort
             res_tbl[j, 3] <- time_cutoff
-            metric <- AssScalar_assess(
-                ass_scalar,
+            metric <- self$assess(
                 data,
                 model = model_cutoff,
-                quiet = quiet,
-                msg_prefix = ""
+                quiet = quiet
             )
             res_tbl[j, 4] <- round(mean(metric), digits = digits) 
             res_tbl[j, 5] <- round(stats::sd(metric), digits = digits)
@@ -81,7 +86,7 @@ AssScalar_assess_center <- function(
         res_tbl <- dplyr::bind_rows(tbl_list)
         res_tbl <- res_tbl[order(-res_tbl[["mean"]]), ]
         res_tbl_list[[cohort]] <- res_tbl
-        file <- ass_scalar$file
+        file <- self$file
         if(!is.null(file)){
             if(cohort == "test")
                 file <- mirror_path(

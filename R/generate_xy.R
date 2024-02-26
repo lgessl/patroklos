@@ -5,10 +5,10 @@
 #' and genes as columns.
 #' @param pheno_tbl tibble. The pheno data, with patients as rows and variables as
 #' columns.
-#' @param data DataSpec S3 object. Specifications on the data (`expr_mat` and 
-#' `model`). See the the constructor `DataSpec()` for details.
-#' @param model ModelSpec S3 object. Specifications on the model to prepare for. 
-#' See the the constructor `ModelSpec()` for details.
+#' @param data Data S3 object. Specifications on the data (`expr_mat` and 
+#' `model`). See the the constructor `Data()` for details.
+#' @param model Model S3 object. Specifications on the model to prepare for. 
+#' See the the constructor `Model$new()` for details.
 #' @return A named numeric matrix with patients as rows and variables as columns. No 
 #' `NA`s in it.
 generate_predictor <- function(
@@ -71,10 +71,10 @@ generate_predictor <- function(
 #' certain model
 #' @param pheno_tbl tibble. The pheno data, with patients as rows and variables as
 #' columns.
-#' @param data DataSpec S3 object. Specifications on the data (`pheno_tbl`). See
-#' the constructor `DataSpec()` for details.
-#' @param model ModelSpec S3 object. Specifications on the model to prepare for.
-#' See the constructor `ModelSpec()` for details.
+#' @param data Data S3 object. Specifications on the data (`pheno_tbl`). See
+#' the constructor `Data()` for details.
+#' @param model Model S3 object. Specifications on the model to prepare for.
+#' See the constructor `Model$new()` for details.
 #' @return Named response matrix: a numeric matrix with patients as rows and variables 
 #' as columns.
 #' @details If `model$response_type == "binary"`, the response matrix will have one 

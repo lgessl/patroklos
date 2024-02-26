@@ -1,7 +1,7 @@
 test_that("infer_as2() works", {
 
   mirror <- c("models", "results")
-  ass2d <- AssSpec2d(
+  ass2d <- Ass2d$new(
     file = "ass2d.png",
     x_metric = "x",
     y_metric = "y",
@@ -10,13 +10,13 @@ test_that("infer_as2() works", {
     fellow_csv = TRUE
   )
   ass2d$model_tree_mirror <- mirror
-  data <- DataSpec(
+  data <- Data(
     name = "mock",
     directory = "data/mock",
     train_prop = .7,
     cohort = "train"
   )
-  model <- ModelSpec(
+  model <- Model$new(
     name = "cox",
     directory = "models/cox",
     fitter = zeroSum::zeroSum,

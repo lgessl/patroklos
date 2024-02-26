@@ -50,12 +50,25 @@ generate_mock_data <- function(
         readr::write_csv(pheno_tbl, file.path(to_csv, "pheno.csv"))
     }
 
-    res <- list(
-        "expr_mat" = expr_mat,
-        "expr_tbl" = expr_tbl,
-        "pheno_tbl" = pheno_tbl
+    if(is.null(to_csv)) to_csv <- "mock_dir"
+    data <- Data$new(
+        name = "mock",
+        directory = to_csv,
+        train_prop = 0.7,
+        pivot_time_cutoff = 0.5,
+        expr_file = "expr.csv",
+        pheno_file = "pheno.csv",
+        cohort = "train",
+        patient_id_col = "patient_id",
+        time_to_event_col = "pfs_years",
+        event_col = "progression",
+        benchmark_col = "ipi",
+        gene_id_col = "gene_id",
+        split_col_prefix = "split_"
     )
-    return(res)
+    data$expr_mat <- expr_mat
+    data$pheno_tbl <- pheno_tbl
+    return(data)
 }
 
 

@@ -8,12 +8,12 @@ test_that("generate_predictor() works", {
     continuous_var = c(1, 2, 3), # +1 column
     discrete_var = c("A", "B", "A") # +1 column
   )
-  data <- DataSpec(
+  data <- Data(
     name = "Mock et al. (2023)", 
     directory =  "some_dir",
     train_prop = 0.8
   )
-  model <- ModelSpec(
+  model <- Model$new(
     name = "zerosum",
     directory = "some_dir",
     fitter = zeroSum::zeroSum,
@@ -108,7 +108,7 @@ test_that("generate_response() works", {
     "use_column" = c("A", "B", "C", "D"),
     "patient" = 1:4
   )
-  data <- DataSpec(
+  data <- Data(
     name = "Mock et al. (2023)",
     directory = "some_dir",
     train_prop = 0.8,
@@ -116,7 +116,7 @@ test_that("generate_response() works", {
     time_to_event_col = "pfs",
     event_col = "prog"
   )
-  model <- ModelSpec(
+  model <- Model$new(
     name = "zerosum",
     directory = "some_dir",
     fitter = zeroSum::zeroSum,

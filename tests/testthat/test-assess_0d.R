@@ -17,12 +17,12 @@ test_that("AssScalar_assess() works", {
     expr_mat <- data[["expr_mat"]]
     pheno_tbl <- data[["pheno_tbl"]]
 
-    data <- DataSpec(
+    data <- Data(
         name = "mock",
         directory = "mock",
         train_prop = .66
     )
-    model <- ModelSpec(
+    model <- Model$new(
         name = "logistic",
         directory = model_dir,
         fitter = zeroSum::zeroSum,

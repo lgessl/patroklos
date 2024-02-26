@@ -10,14 +10,14 @@ test_that("calculate_2d_metric() works", {
   predicted <- l[[2]]
   benchmark <- l[[3]]
   
-  model <- ModelSpec(
+  model <- Model$new(
     name = "mock model",
     directory = "mock",
     fitter = zeroSum::zeroSum,
     split_index = split_index,
     time_cutoffs = 2.
   )
-  ass2d <- AssSpec2d(
+  ass2d <- Ass2d$new(
     file = "test.pdf",
     x_metric = "rpp",
     y_metric = "prec",
@@ -28,7 +28,7 @@ test_that("calculate_2d_metric() works", {
     n_genes = 2,
     n_na_in_pheno = 0
   )[["pheno_tbl"]]
-  data <- DataSpec(
+  data <- Data(
     name = "mock data",
     directory = "mock",
     train_prop = .66
@@ -143,7 +143,7 @@ test_that("logrank_metric() works", {
     n_genes = 2,
     n_na_in_pheno = 0
   )[["pheno_tbl"]]
-  data <- DataSpec(
+  data <- Data(
     name = "mock",
     directory = "mock",
     train_prop = .66

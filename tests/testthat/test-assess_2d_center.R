@@ -17,7 +17,7 @@ test_that("assess_2d_center() works", {
     n_na_in_pheno = n_na_in_pheno,
     to_csv = data_dir
   )
-  data <- DataSpec(
+  data <- Data(
     name = "Mock et al. (2023)", 
     directory = data_dir, 
     train_prop = .7,
@@ -26,7 +26,7 @@ test_that("assess_2d_center() works", {
 
   model_dir <- file.path(base_dir, "models")
   dir.create(model_dir)
-  model_1 <- ModelSpec(
+  model_1 <- Model$new(
     name = "cox-zerosum",
     directory = file.path(model_dir, "cox"),
     fitter = zeroSum::zeroSum,
@@ -37,7 +37,7 @@ test_that("assess_2d_center() works", {
     response_type = "survival_censored",
     fit_file = "model1.rds"
   )
-  model_2 <- ModelSpec(
+  model_2 <- Model$new(
     name = "binomial-zerosum",
     directory = file.path(model_dir, "logistic"),
     fitter = zeroSum::zeroSum,
@@ -59,7 +59,7 @@ test_that("assess_2d_center() works", {
   )
 
   res_dir <- file.path(base_dir, "results")
-  ass2d <- AssSpec2d(
+  ass2d <- Ass2d$new(
     file = file.path(model_dir, "perf_plot.jpeg"),
     x_metric = "rpp",
     y_metric = "prec",

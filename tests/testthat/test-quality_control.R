@@ -14,7 +14,7 @@ test_that("qc_preprocess() works", {
   )
   expr_tbl <- data[["expr_tbl"]]
   pheno_tbl <- data[["pheno_tbl"]]
-  data <- DataSpec(
+  data <- Data(
     name = "mock",
     directory = dir,
     train_prop = .7,

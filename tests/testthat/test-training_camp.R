@@ -9,19 +9,13 @@ test_that("training_camp() works", {
   lambda <- 1
 
   dir <- withr::local_tempdir()
-  generate_mock_data(
+  data <- generate_mock_data(
     n_samples = n_samples,
     n_genes = n_genes,
     n_na_in_pheno = n_na_in_pheno,
     to_csv = dir
   )
-  data <- DataSpec(
-    name = "mock",
-    directory = dir,
-    train_prop = .66,
-    pivot_time_cutoff = 2.0
-  )
-  model_1 <- ModelSpec(
+  model_1 <- Model$new(
     name = "model1",
     directory = file.path(dir, "model1"),
     fitter = zeroSum::zeroSum,
@@ -31,15 +25,15 @@ test_that("training_camp() works", {
       zeroSum = FALSE),
     response_type = "survival_censored"
   )
-  model_2 <- model_1
+  model_2 <- model_1$clone()
   model_2$split_index <- 1:2
   model_2$time_cutoffs <- c(1.5, 2.)
   
-  expect_no_error(
-    training_camp(
-      data = data,
-      model_list = list(model_1, model_2),
-      quiet = TRUE
-    )
+  training_camp(
+    model_list = list(model_1, model_2),
+    data = data,
+    quiet = TRUE
   )
+  expect_true(file.exists(file.path(model_1$directory, "1-5", "models.rds")))
+  expect_true(file.exists(file.path(model_2$directory, "2", "models.rds")))
 })

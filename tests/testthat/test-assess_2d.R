@@ -20,12 +20,12 @@ test_that("assess_2d() works", {
   )
   pheno_tbl[["split_2"]] <- pheno_tbl[["split_1"]]
 
-  data <- DataSpec(
+  data <- Data(
     name = "Mock et al. (2023)",
     directory = "mock",
     train_prop = .66
   )
-  model_1 <- ModelSpec(
+  model_1 <- Model$new(
     name = "cox",
     directory = file.path(dir, "cox"),
     fitter = zeroSum::zeroSum,
@@ -35,7 +35,7 @@ test_that("assess_2d() works", {
       lambda = lambda, zeroSum = FALSE),
     response_type = "survival_censored"
   )
-  model_2 <- ModelSpec(
+  model_2 <- Model$new(
     name = "logistic",
     directory = file.path(dir, "logistic"),
     fitter = zeroSum::zeroSum,
@@ -45,7 +45,7 @@ test_that("assess_2d() works", {
       nFold = n_fold, lambda = lambda, zeroSum = FALSE),
     response_type = "binary"
   )
-  ass2d <- AssSpec2d(
+  ass2d <- Ass2d$new(
     file = file.path(dir, "rpp.jpeg"),
     x_metric = "rpp",
     y_metric = "prec",

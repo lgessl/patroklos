@@ -6,8 +6,8 @@
 #' * time cutoff this model specifies,
 #' call [`assess_2d()`]. In addition, plot `x_metric` vs. `y_metric` attribute
 #' of `AssSpec2d` for all models in a sinlge plot ("comparison plot").
-#' @param model_list list of ModelSpec objects. Assess these models.
-#' @param data DataSpec object. Assess on this data set.
+#' @param model_list list of Model objects. Assess these models.
+#' @param data Data object. Assess on this data set.
 #' @param ass2d AssSpec2d object. Specify the final comparison plot. 
 #' We derive the `AssSpec2d` for the single plots in a reasonable way from it.
 #' @param cohorts character vector, a subset of `c("train", "test")`. Assess on these

@@ -1,23 +1,20 @@
-calculate_2d_metric <- function(
-    actual,
-    predicted,
-    ass2d,
-    model,
-    benchmark = NULL,
-    pheno_tbl = NULL,
-    data = NULL
-){
-    if(xor(is.null(benchmark), is.null(ass2d$benchmark))){
-        stop("`ass2d$benchmark` and `benchmark` must be both NULL or both ",
-            "not NULL")
-    }
+calculate_2d_metric <- function(self, private, data, model){
+
+    prep <- data$predict(
+        model = model,
+        lambda = self$lambda,
+        pivot_time_cutoff = self$pivot_time_cutoff
+    )
+    actual <- prep[["actual"]]
+    benchmark <- prep[["benchmark"]]
+    predicted <- prep[["predicted"]]
+
     # Prepare for loop
-    tbl_list <- list()
+    tbl_list <- vector("list", length(model$split_index))
     estimate_list <- list()
     estimate_list[[model$name]] <- predicted
-    if(!is.null(benchmark)){
+    if(!is.null(benchmark))
         estimate_list[[ass2d$benchmark]] <- benchmark
-    }
 
     for(i in model$split_index){
         for(estimate_name in names(estimate_list)){
@@ -57,14 +54,14 @@ calculate_2d_metric <- function(
             )
             tbl[["split"]] <- i
             tbl[["model"]] <- estimate_name       
-            tbl_list <- c(tbl_list, list(tbl))
+            tbl_list[[i]] <- tbl
         }
     }
     # Combine all splits to one tibble
     tbl <- dplyr::bind_rows(tbl_list)
     any_na <- apply(tbl, 1, function(x) any(is.na(x)))
     tbl <- tbl[!any_na, ]
-    ass2d$set("public", "data", tbl)
+    self$data <- tbl
 }
 
 
@@ -156,8 +153,8 @@ logrank_metric <- function(
 ){
     if(!is.data.frame(pheno_tbl))
         stop("`pheno_tbl` must inherit from `data.frame`")
-    if(!"DataSpec" %in% class(data))
-        stop("`data` must inherit from `DataSpec`")
+    if(!"Data" %in% class(data))
+        stop("`data` must inherit from `Data`")
     if(!all(names(estimate) %in% pheno_tbl[[data$patient_id_col]]))
         stop("`names(estimate)` must be a subset of `pheno_tbl[[\"data$patient_id_col\"]]`")
     

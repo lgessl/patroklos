@@ -17,7 +17,7 @@ test_that("AssScalar_assess_center() works", {
     n_na_in_pheno = n_na_in_pheno,
     to_csv = data_dir
   )
-  data <- DataSpec(
+  data <- Data(
     name = "Mock et al. (2023)", 
     directory = data_dir, 
     train_prop = .7,
@@ -26,7 +26,7 @@ test_that("AssScalar_assess_center() works", {
 
   model_dir <- file.path(base_dir, "models")
   dir.create(model_dir)
-  model_1 <- ModelSpec(
+  model_1 <- Model$new(
     name = "cox-zerosum",
     directory = file.path(model_dir, "cox"),
     fitter = zeroSum::zeroSum,
@@ -37,7 +37,7 @@ test_that("AssScalar_assess_center() works", {
     response_type = "survival_censored",
     fit_file = "model1.rds"
   )
-  model_2 <- ModelSpec(
+  model_2 <- Model$new(
     name = "binomial-zerosum",
     directory = file.path(model_dir, "logistic"),
     fitter = zeroSum::zeroSum,

@@ -42,21 +42,9 @@ AssScalar <- R6::R6Class("AssScalar",
             benchmark = NULL,
             file = NULL,
             round_digits = 3
-        ){
-            stopifnot(is.character(metric))
-            stopifnot(is.numeric(pivot_time_cutoff))
-            stopifnot(pivot_time_cutoff > 0)
-            stopifnot(is.character(lambda) || is.numeric(lambda))
-            stopifnot(is.null(benchmark) || is.character(benchmark))
-            stopifnot(is.null(file) || is.character(file))
-            stopifnot(is.numeric(round_digits) && round_digits >= 0)
-            self$metric <- metric
-            self$pivot_time_cutoff <- pivot_time_cutoff
-            self$lambda <- lambda
-            self$benchmark <- benchmark
-            self$file <- file
-            self$round_digits <- round_digits
-        }, 
+        )
+            ass_scalar_initialize(self, private, metric, pivot_time_cutoff, 
+                lambda, benchmark, file, round_digits), 
 
         #' @description Assess a *single* model (with multiple splits) on a data set.
         #' @param data Data object. Assess on this data. Data must already be read in 
@@ -69,14 +57,13 @@ AssScalar <- R6::R6Class("AssScalar",
             data,
             model,
             quiet = FALSE
-        ){
-            AssScalar_assess(
+        )
+            ass_scalar_assess(
                 ass_scalar = self,
                 data = data,
                 model = model,
                 quiet = quiet
-            )
-        },
+            ),
 
         #' @description Assess *multiple* models (with multiple splits) on a data set.
         #' @param ass_scalar AssScalar S3 object. See the constructor [`AssScalar()`] for more 

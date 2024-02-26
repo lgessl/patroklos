@@ -54,7 +54,7 @@ discretize_tbl_cols <- function(
 #' below.
 #' @param expr_tbl tibble. The expression data. Its format needs to comply with `data`
 #' below.
-#' @param data DataSpec S3 object. Specifications on both `pheno_tbl` and `expr_tbl`.
+#' @param data Data S3 object. Specifications on both `pheno_tbl` and `expr_tbl`.
 #' @return The JSON string that was written to the file.
 #' @export
 write_data_info <- function(

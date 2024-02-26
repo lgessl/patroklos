@@ -61,6 +61,8 @@ including cutoffs.}
 \item{\code{width, height, units}}{The size of the plot in units.}
 
 \item{\code{dpi}}{Plot resolution in dots per inch.}
+
+\item{\code{data}}{The data underlying the plots.}
 }
 \if{html}{\out{</div>}}
 }
@@ -86,6 +88,7 @@ including cutoffs.}
 \itemize{
 \item \href{#method-Ass2d-new}{\code{Ass2d$new()}}
 \item \href{#method-Ass2d-assess}{\code{Ass2d$assess()}}
+\item \href{#method-Ass2d-plot_risk_scores}{\code{Ass2d$plot_risk_scores()}}
 \item \href{#method-Ass2d-assess_center}{\code{Ass2d$assess_center()}}
 \item \href{#method-Ass2d-clone}{\code{Ass2d$clone()}}
 }
@@ -255,6 +258,29 @@ We add the data underlying the plots to Ass2d object as a new attribute
 named \code{data}.
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Ass2d-plot_risk_scores"></a>}}
+\if{latex}{\out{\hypertarget{method-Ass2d-plot_risk_scores}{}}}
+\subsection{Method \code{plot_risk_scores()}}{
+Plot rank versus model score on a data set. You can do this
+on the fly, i.e. you actually initialize the Ass2d object for another
+purpose and this method will infer reasonable defaults for the plot.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Ass2d$plot_risk_scores(data, model, quiet = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{data}}{Data object. Plot the scores for this data.}
+
+\item{\code{model}}{Model object. Plot the scores for this model.}
+
+\item{\code{quiet}}{logical. Whether to suppress messages. Default is \code{FALSE}.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Ass2d-assess_center"></a>}}
