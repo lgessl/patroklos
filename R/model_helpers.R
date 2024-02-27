@@ -50,6 +50,8 @@ model_at_time_cutoff <- function(
     private,
     time_cutoff
 ){
+    stopifnot(is.numeric(time_cutoff))
+    if(length(time_cutoff) != 1) stop("time_cutoff must be a single number")
     if(!time_cutoff %in% self$time_cutoffs){
         stop("time_cutoff must be one of model$time_cutoffs")
     }

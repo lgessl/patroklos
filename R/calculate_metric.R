@@ -1,9 +1,9 @@
-calculate_2d_metric <- function(self, private, data, model){
+ass2d_calculate_2d_metric <- function(self, private, data, model){
 
-    prep <- data$predict(
-        model = model,
-        lambda = self$lambda,
-        pivot_time_cutoff = self$pivot_time_cutoff
+    prep <- model$predict(
+        data = data,
+        pivot_time_cutoff = self$pivot_time_cutoff,
+        lambda = self$lambda
     )
     actual <- prep[["actual"]]
     benchmark <- prep[["benchmark"]]
@@ -13,43 +13,43 @@ calculate_2d_metric <- function(self, private, data, model){
     tbl_list <- vector("list", length(model$split_index))
     estimate_list <- list()
     estimate_list[[model$name]] <- predicted
-    if(!is.null(benchmark))
-        estimate_list[[ass2d$benchmark]] <- benchmark
+    if(!is.null(self$benchmark))
+        estimate_list[[self$benchmark]] <- benchmark
 
     for(i in model$split_index){
         for(estimate_name in names(estimate_list)){
             estimate <- estimate_list[[estimate_name]]
             if(length(table(actual[[i]])) != 2)
                 stop("Actual values in split ", i, " are not binary")
-            if(ass2d$y_metric == "logrank"){
+            if(self$y_metric == "logrank"){
                 tbl <- logrank_metric(
                     estimate = estimate[[i]],
-                    pheno_tbl = pheno_tbl,
+                    pheno_tbl = data$pheno_tbl,
                     data = data,
-                    y_metric = ass2d$y_metric,
-                    x_metric = ass2d$x_metric
+                    y_metric = self$y_metric,
+                    x_metric = self$x_metric
                 )
-            } else if(ass2d$y_metric == "precision_ci"){
+            } else if(self$y_metric == "precision_ci"){
                 lower_boundary <- estimate_name == model$name
                 tbl <- precision_ci(
                     estimate = estimate[[i]],
                     actual = actual[[i]],
-                    confidence_level = ass2d$ci_level,
-                    y_metric = ass2d$y_metric,
-                    x_metric = ass2d$x_metric,
+                    confidence_level = self$ci_level,
+                    y_metric = self$y_metric,
+                    x_metric = self$x_metric,
                     lower_boundary = lower_boundary
                 )
             } else {
                 tbl <- metric_with_rocr(
                     estimate = estimate[[i]],
                     actual = actual[[i]],
-                    x_metric = ass2d$x_metric,
-                    y_metric = ass2d$y_metric
+                    x_metric = self$x_metric,
+                    y_metric = self$y_metric
                 )
             }
             names(tbl) <- c(
-                ass2d$x_metric, 
-                ass2d$y_metric, 
+                self$x_metric, 
+                self$y_metric, 
                 "cutoff"
             )
             tbl[["split"]] <- i

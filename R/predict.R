@@ -19,14 +19,14 @@ model_predict <- function(self, private, data, lambda, pivot_time_cutoff){
     benchmark <- NULL
     benchmark_list <- NULL
     if(!is.null(data$benchmark_col)){
-        benchmark <- pheno_tbl[[data$benchmark_col]]
-        names(benchmark) <- pheno_tbl[[data$patient_id_col]]
+        benchmark <- data$pheno_tbl[[data$benchmark_col]]
+        names(benchmark) <- data$pheno_tbl[[data$patient_id_col]]
         benchmark_list <- vector("list", length(self$split_index))
     }
 
-    for(i in selfs$split_index){
+    for(i in self$split_index){
         split_name <- paste0(data$split_col_prefix, i)
-        split_model <- model$clone()
+        split_model <- self$clone()
         split_model$split_index <- i
         x_y <- data$prepare(split_model)
         actual <- x_y[["y"]][, 1]

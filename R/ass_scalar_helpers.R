@@ -39,8 +39,8 @@ ass_scalar_assess <- function(self, private, data, model, quiet){
     return(metric)
 }
 
-ass_scalar_assess_center = function(self, private, data, model_list,
-    model_tree_mirror, quiet){
+ass_scalar_assess_center <- function(self, private, data, model_list,
+    mirror, quiet){
 
     cohorts <- data$cohort
     if(is.null(cohorts)) cohorts <- "test"
@@ -91,7 +91,7 @@ ass_scalar_assess_center = function(self, private, data, model_list,
             if(cohort == "test")
                 file <- mirror_path(
                     filepath = file,
-                    mirror = model_tree_mirror
+                    mirror = mirror
                 )
             if(!dir.exists(dirname(file)))
                 dir.create(dirname(file))

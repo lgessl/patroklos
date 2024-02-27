@@ -12,9 +12,9 @@ test_that("qc_preprocess() works", {
     n_na_in_pheno = 0,
     to_csv = dir
   )
-  expr_tbl <- data[["expr_tbl"]]
-  pheno_tbl <- data[["pheno_tbl"]]
-  data <- Data(
+  pheno_tbl <- data$pheno_tbl
+  expr_tbl <- data$expr_mat |> t() |> tibble::as_tibble(rownames = "gene_id")
+  data <- Data$new(
     name = "mock",
     directory = dir,
     train_prop = .7,
@@ -22,15 +22,14 @@ test_that("qc_preprocess() works", {
   )
 
   qc_preprocess(
+    data = data,
     expr_tbl = expr_tbl,
-    pheno_tbl = pheno_tbl,
-    data = data
+    pheno_tbl = pheno_tbl
   )
   qc_preprocess(
-    expr_tbl = expr_tbl,
-    pheno_tbl = pheno_tbl,
     data = data,
-    check_default = TRUE
+    expr_tbl = expr_tbl,
+    pheno_tbl = pheno_tbl
   )
 
   data$expr_file <- "nonexistent.csv"

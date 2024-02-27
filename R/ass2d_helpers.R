@@ -1,5 +1,5 @@
-ass2d_initialize <- function(self, private, file, x_metric, y_metric, pivot_time_cutoff, 
-    lambda, benchmark, ci_level, fellow_csv, scores_plot, show_plots, title, 
+ass2d_initialize <- function(self, private, x_metric, y_metric, pivot_time_cutoff, 
+    lambda, benchmark, file, ci_level, fellow_csv, scores_plot, show_plots, title, 
     x_lab, y_lab, xlim, ylim, smooth_method, smooth_benchmark, smooth_se, 
     scale_x, scale_y, vline, hline, text_size, text, alpha, colors, theme, 
     width, height, units, dpi)
@@ -14,7 +14,7 @@ ass2d_initialize <- function(self, private, file, x_metric, y_metric, pivot_time
         if(!any(stringr::str_detect(c("prevalence", "rpp"), x_metric)))
             stop("For `y_metric` = 'logrank', `x_metric` must be 'prevalence' or 'rpp'.")
     }
-    stopifnot(is.character(file))
+    stopifnot(is.character(file) || is.null(file))
     stopifnot(is.character(x_metric))
     stopifnot(is.character(y_metric))
     stopifnot(is.null(pivot_time_cutoff) || is.numeric(pivot_time_cutoff))
@@ -84,9 +84,13 @@ ass2d_initialize <- function(self, private, file, x_metric, y_metric, pivot_time
 ass2d_assess <- function(self, private, data, model, quiet, msg_prefix){
 
     directory <- dirname(self$file)
+    if(is.null(data$expr_mat) || is.null(data$pheno_tbl)) data$read()
+    # Has at_time_cutoff() been called already? Skip in this case
+    if(!stringr::str_detect(model$name, "@"))
+        model <- model$at_time_cutoff(model$time_cutoffs)
     if(!dir.exists(directory))
         dir.create(directory, recursive = TRUE)
-    self$calculate_2d_metric(
+    private$calculate_2d_metric(
         data = data, 
         model = model
     )
@@ -100,14 +104,16 @@ ass2d_assess <- function(self, private, data, model, quiet, msg_prefix){
 }
 
 ass2d_assess_center <- function(self, private, data, model_list, model_tree_mirror, 
-    quiet, msg_prefix){
+    risk_scores, comparison_plot, quiet){
     
     cohorts <- data$cohort
     if(is.null(cohorts)) cohorts <- "test"
-    perf_tbls <- list()
+    n_assess <- sum(sapply(model_list, function(m) length(m$time_cutoffs)))
+    perf_tbls <- vector("list", length(cohorts)*n_assess)
     data$read()
 
     if(!quiet) message("\nASSESSING ON ", data$name)
+    i <- 1
     for(cohort in cohorts){
         if(!quiet) message("# On ", cohort, " cohort")
         data$cohort <- cohort
@@ -127,7 +133,15 @@ ass2d_assess_center <- function(self, private, data, model_list, model_tree_mirr
                     quiet = quiet,
                     msg_prefix = "#### "
                 )
-                perf_tbls[[model_cutoff$name]] <- this_as2$data
+                perf_tbls[[i]] <- this_as2$data
+                if(risk_scores)
+                    this_as2$plot_risk_scores(
+                        data = data,
+                        model = model_cutoff,
+                        quiet = quiet,
+                        msg_prefix = "#### "
+                    )
+                i <- i+1
             }
         }
         cohort_as2 <- self$clone()
@@ -155,17 +169,17 @@ ass2d_assess_center <- function(self, private, data, model_list, model_tree_mirr
 
 ass2d_infer <- function(self, private, model, data, model_tree_mirror){
     this_as2 <- self$clone()
+    file_ext <- ".jpeg"
+    if(!is.null(self$file))
+        file_ext <- stringr::str_extract(self$file, "\\..+$")
     this_as2$file <- file.path(
         model$directory,
-        paste0(
-            self$x_metric, "_vs_", self$y_metric,
-            stringr::str_extract(self$file, "\\..+$")
-        )
+        paste0(self$x_metric, "_vs_", self$y_metric, file_ext)
     )
     if(data$cohort == "test")
         this_as2$file <- mirror_path(
             filepath = this_as2$file,
-            mirror = self$model_tree_mirror
+            mirror = model_tree_mirror
         )
     this_as2$title <- paste0(
         data$name, " ", data$cohort, ", ",

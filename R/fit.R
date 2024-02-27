@@ -10,7 +10,7 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
     if(!dir.exists(self$directory)){
         dir.create(self$directory, recursive = TRUE)
         if(!quiet)
-            message(msg_prefix, "Creating ", directory)
+            message(msg_prefix, "Creating ", self$directory)
     }
     fits <- list()
     stored_models_file <- file.path(self$directory, self$fit_file)

@@ -56,6 +56,7 @@ for splitting the data into the train and test cohort.}
 \itemize{
 \item \href{#method-Data-new}{\code{Data$new()}}
 \item \href{#method-Data-read}{\code{Data$read()}}
+\item \href{#method-Data-prepare}{\code{Data$prepare()}}
 \item \href{#method-Data-clone}{\code{Data$clone()}}
 }
 }
@@ -63,7 +64,7 @@ for splitting the data into the train and test cohort.}
 \if{html}{\out{<a id="method-Data-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Data-new}{}}}
 \subsection{Method \code{new()}}{
-A DataSpec object specifies the location and format of the expression
+A Data object specifies the location and format of the expression
 and pheno data of a single data set. This enables reading and preparing the data.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Data$new(
@@ -76,8 +77,8 @@ and pheno data of a single data set. This enables reading and preparing the data
   cohort = NULL,
   patient_id_col = "patient_id",
   time_to_event_col = "pfs_years",
-  split_col_prefix = "split_",
   event_col = "progression",
+  split_col_prefix = "split_",
   benchmark_col = NULL,
   gene_id_col = "gene_id"
 )}\if{html}{\out{</div>}}
@@ -116,14 +117,14 @@ the patient identifiers. Default is \code{"patient_id"}.}
 \item{\code{time_to_event_col}}{string. The name of the column in the pheno data that holds the
 time-to-event values. Default is \code{"pfs_years"}.}
 
+\item{\code{event_col}}{string. The name of the column in the pheno data that holds
+the event status encoded as 1 = occurrence, 0 = censoring. Default is
+\code{"progression"}.}
+
 \item{\code{split_col_prefix}}{string. Column-name prefix for those columns holding splits into
 train and test cohort. Some of these columns may be present in the pheno data already,
 others will be added during the training process if required. Default is \code{"split_"},
 i.e., split columns are named \code{"split_1"}, \code{"split_2"}, etc.}
-
-\item{\code{event_col}}{string. The name of the column in the pheno data that holds
-the event status encoded as 1 = occurrence, 0 = censoring. Default is
-\code{"progression"}.}
 
 \item{\code{benchmark_col}}{string or \code{NULL}. The name of the column in the pheno data that
 holds the benchmark risk score (like the IPI). Default is \code{NULL}.}
@@ -139,12 +140,12 @@ first column called \code{patient_id_col}), the variables as columns. The expr c
 holds the genes as rows (with \emph{unique} gene ids in the first column called \code{gene_id_col}),
 the samples as columns.
 While the computational representation of both expression and pheno data will
-change over the course of the pipeline, a DataSpec object will hold timeless
+change over the course of the pipeline, a Data object will hold timeless
 information on the data.
 }
 
 \subsection{Returns}{
-A DataSpec object.
+A Data object.
 }
 }
 \if{html}{\out{<hr>}}
@@ -155,6 +156,27 @@ Read expression data into the matrix \code{expr_mat} and pheno
 data into the tibble \code{pheno_tbl}. Both will hold patients as rows.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Data$read()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Data-prepare"></a>}}
+\if{latex}{\out{\hypertarget{method-Data-prepare}{}}}
+\subsection{Method \code{prepare()}}{
+Prepare the read-in data for a model.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Data$prepare(model)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{model}}{A Model object.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+You need to set the cohort before calling this method.
 }
 
 }

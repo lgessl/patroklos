@@ -122,3 +122,6 @@ Data <- R6::R6Class("Data",
         dummy = "dummy"
     )
 )
+
+#' @import R6
+NULL

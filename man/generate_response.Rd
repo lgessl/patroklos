@@ -10,11 +10,11 @@ generate_response(pheno_tbl, data, model)
 \item{pheno_tbl}{tibble. The pheno data, with patients as rows and variables as
 columns.}
 
-\item{data}{DataSpec S3 object. Specifications on the data (\code{pheno_tbl}). See
-the constructor \code{DataSpec()} for details.}
+\item{data}{Data S3 object. Specifications on the data (\code{pheno_tbl}). See
+the constructor \code{Data()} for details.}
 
-\item{model}{ModelSpec S3 object. Specifications on the model to prepare for.
-See the constructor \code{ModelSpec()} for details.}
+\item{model}{Model S3 object. Specifications on the model to prepare for.
+See the constructor \code{Model$new()} for details.}
 }
 \value{
 Named response matrix: a numeric matrix with patients as rows and variables

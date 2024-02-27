@@ -4,26 +4,17 @@
 \alias{qc_preprocess}
 \title{Quality control at the end of preprocessing step}
 \usage{
-qc_preprocess(expr_tbl, pheno_tbl, data, check_default = FALSE)
+qc_preprocess(data, expr_tbl, pheno_tbl)
 }
 \arguments{
-\item{expr_tbl}{A tibble holding the expression data (see \code{DataSpec()}
-for details).}
+\item{data}{A \code{Data} object.}
 
-\item{pheno_tbl}{A tibble holding the pheno data (see \code{DataSpec()}
-for details).}
-
-\item{data}{A \code{DataSpec} object referring to \code{expr_tbl} and \code{pheno_tbl}.}
-
-\item{check_default}{logical. If \code{TRUE}, check if all default arguments of
-\code{DataSpec()} apply (i.e., replace \code{data} with a \code{DataSpec()} except for
-the \code{directory} attribute). Default is \code{FALSE}, in which case we use \code{data}.}
+\item{expr_tbl, pheno_tbl}{A tibble with the expression and pheno data.}
 }
 \description{
 Check if the expression and pheno tibble have the format
-specified in the \code{DataSpec} and match to one another.
+specified in the \code{Data} and match to one another.
 }
 \details{
-Intended to be used at the end of preprocessing and before applying
-\code{split_data()}.
+Intended to be used at the end of preprocessing.
 }

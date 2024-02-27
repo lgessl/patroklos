@@ -7,12 +7,12 @@
 ensure_splits(pheno_tbl, data, model_list)
 }
 \arguments{
-\item{pheno_tbl}{A tibble holding the pheno data (see \code{DataSpec()}
+\item{pheno_tbl}{A tibble holding the pheno data (see \code{Data()}
 for details).}
 
-\item{data}{A \code{DataSpec} object referring to \code{expr_tbl} and \code{pheno_tbl}.}
+\item{data}{A \code{Data} object referring to \code{expr_tbl} and \code{pheno_tbl}.}
 
-\item{model_list}{A list of \code{ModelSpec} objects. Ensure that every model
+\item{model_list}{A list of \code{Model} objects. Ensure that every model
 gets the splits it needs.}
 }
 \value{
@@ -22,5 +22,5 @@ gets the splits it needs.}
 Split a data set into train and test data sets by noting down
 the affiliation to the train or test cohort in the pheno data for every split
 Optionally, you can preserve the ratio of high- and low-risk patients. Ensure
-that every model in a list of \code{ModelSpec}s gets enough splits.
+that every model in a list of \code{Model}s gets enough splits.
 }

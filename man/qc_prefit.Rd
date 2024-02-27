@@ -18,6 +18,5 @@ consistency and availability.
 }
 \details{
 Intended to be used after \code{generate_predictor()} and
-\code{generate_response()}. \code{prepare()} and, in particular, \code{prepare_and_fit()}
-call this function.
+\code{generate_response()}.
 }

@@ -242,10 +242,10 @@ Assess a \emph{single} model (with multiple splits) on a data set.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{data}}{Data object. Assess on this data. Data must already be read in and
-\code{cohort} attribute set.}
+\item{\code{data}}{Data object. Assess on this data. The \code{cohort} attribute
+must be set.}
 
-\item{\code{model}}{ModelSpec object. Assess this model, multiple splits are supported.}
+\item{\code{model}}{Model object. Assess this model, multiple splits are supported.}
 
 \item{\code{quiet}}{logical. Whether to suppress messages.}
 
@@ -267,7 +267,7 @@ Plot rank versus model score on a data set. You can do this
 on the fly, i.e. you actually initialize the Ass2d object for another
 purpose and this method will infer reasonable defaults for the plot.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ass2d$plot_risk_scores(data, model, quiet = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ass2d$plot_risk_scores(data, model, quiet = FALSE, msg_prefix = "")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -277,7 +277,9 @@ purpose and this method will infer reasonable defaults for the plot.
 
 \item{\code{model}}{Model object. Plot the scores for this model.}
 
-\item{\code{quiet}}{logical. Whether to suppress messages. Default is \code{FALSE}.}
+\item{\code{quiet}}{logical. Whether to suppress messages.}
+
+\item{\code{msg_prefix}}{string. Prefix for messages.}
 }
 \if{html}{\out{</div>}}
 }
@@ -287,12 +289,15 @@ purpose and this method will infer reasonable defaults for the plot.
 \if{latex}{\out{\hypertarget{method-Ass2d-assess_center}{}}}
 \subsection{Method \code{assess_center()}}{
 Assess \emph{multiple} models (with multiple splits) on a data set.
+This is a wrapper around \code{assess()} and optionally \code{plot_risk_scores()}
+for multiple models.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Ass2d$assess_center(
   data,
   model_list,
   model_tree_mirror = c("models", "results"),
-  comparison_plot = TRUE,
+  risk_scores = FALSE,
+  comparison_plot = FALSE,
   quiet = FALSE
 )}\if{html}{\out{</div>}}
 }
@@ -300,15 +305,18 @@ Assess \emph{multiple} models (with multiple splits) on a data set.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{data}}{DataSpec object. Assess on this data set.}
+\item{\code{data}}{Data object. Assess on this data set.}
 
-\item{\code{model_list}}{list of ModelSpec objects. Assess these models.
+\item{\code{model_list}}{list of Model objects. Assess these models.
 We infer the \code{AssSpec2d} for the single plots in a reasonable way from it.}
 
 \item{\code{model_tree_mirror}}{character vector of length 2. Store the single plots in
 the same directory as the corresponding model for the train cohort and the
 comparison plot at \code{file}. When doing the analogous for the test data, replace
 the first element of \code{model_tree_mirror} by the second element in every file path.}
+
+\item{\code{risk_scores}}{logical. Whether to also plot rank versus risk score
+along with the assessment "on-the-fly".}
 
 \item{\code{comparison_plot}}{logical. Whether to generate a plot holding the assessment
 of all models. Default is \code{TRUE}.}

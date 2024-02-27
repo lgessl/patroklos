@@ -17,6 +17,11 @@ AssScalar <- R6::R6Class("AssScalar",
         #' @field round_digits Round the results in tables to round_digits digits 
         #' after the point.
         round_digits = NULL,
+        #' @field file Save the resulting tibble to this csv file. This is the 
+        #' file for the *train* cohort, we infer the the file name of the test 
+        #' cohort by mirroring this file name. See the `assess_center()` method 
+        #' for more details.
+        file = NULL,
 
         #' @description Create a new AssScalar instance.
         #' @param metric character. Name of the function used to calculate the metric. It must 
@@ -30,9 +35,9 @@ AssScalar <- R6::R6Class("AssScalar",
         #' (if there was one).
         #' @param benchmark character or NULL. If not NULL, include `benchmark` (the name of column 
         #' in the pheno data) in the assessment.
-        #' @param file string or NULL. The name of the csv file to save the results to. If `NULL`,
-        #' the results are not saved. If you supply an AssScalar object to `AssScalar_assess_center()`,
-        #' specify the path for the *train* cohort.
+        #' @param file string or NULL. The name of the csv file to save the 
+        #' results to for the *train* cohort.
+        #' the results are not saved.
         #' @param round_digits numeric. The number of digits to round the results to. Default is `3`.
         #' @return A new AssScalar object.
         initialize = function(
@@ -58,12 +63,7 @@ AssScalar <- R6::R6Class("AssScalar",
             model,
             quiet = FALSE
         )
-            ass_scalar_assess(
-                ass_scalar = self,
-                data = data,
-                model = model,
-                quiet = quiet
-            ),
+            ass_scalar_assess(self, private, data, model, quiet),
 
         #' @description Assess *multiple* models (with multiple splits) on a data set.
         #' @param ass_scalar AssScalar S3 object. See the constructor [`AssScalar()`] for more 
@@ -71,9 +71,11 @@ AssScalar <- R6::R6Class("AssScalar",
         #' @param data Data object. Assess on this data.
         #' If `data$cohort` is `NULL`, assess on the test cohort.
         #' @param model_list list of Model objects. Assess these models.
-        #' @param model_tree_mirror character vector of length 2. If you want to store the 
+        #' @param mirror character vector of length 2. If you want to store the 
         #' resulting tibbles, get the test-cohort tibble's file name by mirroring 
-        #' `ass_scalar$file` according to `model_tree_mirror` (see [`mirror_path()`]).
+        #' `ass_scalar$file` according to `model_tree_mirror`, i.e. replacing 
+        #' `model_tree_mirror[1]` by `model_tree_mirror[2]` in the `file`
+        #' attribute.
         #' @param quiet logical. Whether to suppress messages.
         #' @return A tibble. Every row holds the metric (and more analysis across the splits 
         #' like standard deviation, minimum, maximum value) for one model in `model_list` 
@@ -82,16 +84,10 @@ AssScalar <- R6::R6Class("AssScalar",
         assess_center = function(
             data,
             model_list,
-            model_tree_mirror = c("models", "results"),
+            mirror = c("models", "results"),
             quiet = FALSE
-        ){
-            AssScalar_assess_center(
-                ass_scalar = self,
-                data = data,
-                model_list = model_list,
-                model_tree_mirror = model_tree_mirror,
-                quiet = quiet
-            )
-        }
+        )
+            ass_scalar_assess_center(self, private, data, model_list, 
+                mirror, quiet)
     )
 )

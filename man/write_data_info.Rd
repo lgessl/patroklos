@@ -15,7 +15,7 @@ below.}
 \item{expr_tbl}{tibble. The expression data. Its format needs to comply with \code{data}
 below.}
 
-\item{data}{DataSpec S3 object. Specifications on both \code{pheno_tbl} and \code{expr_tbl}.}
+\item{data}{Data S3 object. Specifications on both \code{pheno_tbl} and \code{expr_tbl}.}
 }
 \value{
 The JSON string that was written to the file.

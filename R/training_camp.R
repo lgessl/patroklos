@@ -15,7 +15,7 @@ training_camp <- function(
     if(!inherits(data, "Data")){
         stop("data must be a Data object")
     }
-    data$read()
+    if(is.null(data$expr_mat) || is.null(data$pheno_tbl)) data$read()
     if(is.null(data$cohort)) data$cohort <- "train"
     if(!quiet) message("Setting data$cohort to 'train' since it was NULL")
     data$pheno_tbl <- ensure_splits(

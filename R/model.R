@@ -73,7 +73,6 @@ Model <- R6::R6Class("Model",
         #' censoring, and 
         #' * the second one is the anme of the column holding the event status (1 = event, 0 =
         #' censoring). 
-        #' Default is `c("time", "status")`.
         #' @param include_from_continuous_pheno vector of strings. The names of the 
         #' *continuous* variables in the pheno data (to be) included in the predictor matrix. The
         #' values will be coerced to numeric. Default is `NULL`, which means no continuous pheno
@@ -171,13 +170,12 @@ Model <- R6::R6Class("Model",
         #' @export
         predict = function(
             data,
-            lambda,
-            pivot_time_cutoff
+            pivot_time_cutoff,
+            lambda = "lambda.min"
         )
             model_predict(self, private, data, lambda, pivot_time_cutoff),
 
-        #' @description Clone the model and set the `time_cutoffs` attribute to
-        #' `time_cutoff`.
+        #' @description Infer the model at a specific time cutoff.
         #' @param time_cutoff numeric. The time cutoff to set.
         at_time_cutoff = function(time_cutoff)
             model_at_time_cutoff(self, private, time_cutoff)

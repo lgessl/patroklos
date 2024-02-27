@@ -5,8 +5,7 @@
 #' @param x A numeric matrix with dimnames holding predictors (as rows).
 #' @param y A numeric matrix with dimnames holding responses (as rows).
 #' @details Intended to be used after `generate_predictor()` and 
-#' `generate_response()`. `prepare()` and, in particular, `prepare_and_fit()`
-#' call this function.
+#' `generate_response()`.
 qc_prefit <- function(
     x,
     y
@@ -41,32 +40,15 @@ qc_prefit <- function(
 #' @title Quality control at the end of preprocessing step
 #' @description Check if the expression and pheno tibble have the format
 #' specified in the `Data` and match to one another.
-#' @param expr_tbl A tibble holding the expression data (see `Data()`
-#' for details).
-#' @param pheno_tbl A tibble holding the pheno data (see `Data()`
-#' for details).
-#' @param data A `Data` object referring to `expr_tbl` and `pheno_tbl`.
-#' @param check_default logical. If `TRUE`, check if all default arguments of
-#' `Data()` apply (i.e., replace `data` with a `Data()` except for 
-#' the `directory` attribute). Default is `FALSE`, in which case we use `data`.
-#' @details Intended to be used at the end of preprocessing and before applying
-#' `split_data()`.
+#' @param data A `Data` object.
+#' @param expr_tbl,pheno_tbl A tibble with the expression and pheno data.
+#' @details Intended to be used at the end of preprocessing.
 #' @export
 qc_preprocess <- function(
-    expr_tbl,
-    pheno_tbl,
     data,
-    check_default = FALSE
+    expr_tbl,
+    pheno_tbl
 ){
-    if(check_default){
-        directory <- data$directory
-        data <- Data(
-            name = "default",
-            directory = directory,
-            train_prop = .7
-        )
-    }
-
     # Extract
     directory <- data$directory
     expr_file <- data$expr_file
@@ -80,26 +62,20 @@ qc_preprocess <- function(
     # Check if files exist
     expr_file <- file.path(directory, expr_file)
     pheno_file <- file.path(directory, pheno_file)
-    if(!file.exists(expr_file)){
+    if(!file.exists(expr_file))
         stop("Expression file ", expr_file, " does not exist.")
-    }
-    if(!file.exists(pheno_file)){
+    if(!file.exists(pheno_file))
         stop("Pheno file ", pheno_file, " does not exist.")
-    }
 
     # Expression tibble
-    if(names(expr_tbl)[1] != gene_id_col){
+    if(names(expr_tbl)[1] != gene_id_col)
         stop("First column of expression tibble must be ", gene_id_col)
-    }
-    if(!is.character(expr_tbl[[gene_id_col]])){
+    if(!is.character(expr_tbl[[gene_id_col]]))
         stop("Gene ids must be characters.")
-    }
-    if(!all(sapply(expr_tbl[, -1], is.numeric))){
+    if(!all(sapply(expr_tbl[, -1], is.numeric)))
         stop("Expression values must be numeric.")
-    }
-    if(any(is.na(expr_tbl[, -1]))){
-        stop("Expression values must not contain missing values.")
-    }
+    if(any(is.na(expr_tbl[, -1])))
+        stop("Expression values must not contain missing values")
 
     # Pheno tibble
     check_tbl_columns_exist(
@@ -112,22 +88,18 @@ qc_preprocess <- function(
             benchmark_col
         )
     )
-    if(names(pheno_tbl)[1] != patient_id_col){
+    if(names(pheno_tbl)[1] != patient_id_col)
         stop("First column of pheno tibble must be ", patient_id_col)
-    }
-    if(!is.character(pheno_tbl[[patient_id_col]]) || !elements_unique(pheno_tbl[[patient_id_col]])){
-        stop("Patient ids must be unique characters.")
-    }
-    if(!is.numeric(pheno_tbl[[time_to_event_col]])){
-        stop("PFS values must be numeric and not contain missing values.")
-    }
-    if(any(is.na(pheno_tbl[[time_to_event_col]]))){
-        warning("PFS values contain missing values.")
-    }
+    if(!is.character(pheno_tbl[[patient_id_col]]) || 
+        !elements_unique(pheno_tbl[[patient_id_col]]))
+        stop("Patient ids must be unique characters")
+    if(!is.numeric(pheno_tbl[[time_to_event_col]]))
+        stop("Time-to-event values must be numeric")
+    if(any(is.na(pheno_tbl[[time_to_event_col]])))
+        warning("Time-to-event values contain missing values")
     if(!is.numeric(pheno_tbl[[event_col]]) || 
-        !all(pheno_tbl[[event_col]] %in% c(0, 1))){
+        !all(pheno_tbl[[event_col]] %in% c(0, 1)))
         stop("Progression values must be numeric and either 1 (progression) or 0 (no progression).")
-    }
     if(!is.null(benchmark_col) && 
         stringr::str_detect(benchmark_col, stringr::regex("ipi", ignore_case = TRUE))){
         if(!is.numeric(pheno_tbl[[benchmark_col]]) || !all(pheno_tbl[[benchmark_col]] %in% c(0:5, NA))){

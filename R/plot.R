@@ -98,21 +98,23 @@ plot_2d_metric <- function(
     if(!quiet)
         message(msg_prefix, "Saving 2D metric plot to ", ass2d$file)
 
-    ggplot2::ggsave(
-        ass2d$file, 
-        plt, 
-        width = ass2d$width, 
-        height = ass2d$height, 
-        units = ass2d$units,
-        dpi = ass2d$dpi
-    )
+    if(!is.null(ass2d$file)){
+        ggplot2::ggsave(
+            ass2d$file, 
+            plt, 
+            width = ass2d$width, 
+            height = ass2d$height, 
+            units = ass2d$units,
+            dpi = ass2d$dpi
+        )
 
-    # Save to csv (if wanted)
-    if(ass2d$fellow_csv){
-        csv_file <- stringr::str_replace(ass2d$file, "\\..+", ".csv")
-        if(!quiet)
-            message(msg_prefix, "Saving 2D metric table to ", csv_file)
-        readr::write_csv(ass2d$data, csv_file)
+        # Save to csv (if wanted)
+        if(ass2d$fellow_csv){
+            csv_file <- stringr::str_replace(ass2d$file, "\\..+", ".csv")
+            if(!quiet)
+                message(msg_prefix, "Saving 2D metric table to ", csv_file)
+            readr::write_csv(ass2d$data, csv_file)
+        }
     }
 
     return(plt)
@@ -120,7 +122,7 @@ plot_2d_metric <- function(
 
 
 #' @importFrom rlang .data
-as2_plot_risk_scores <- function(self, private, data, model, quiet){
+as2_plot_risk_scores <- function(self, private, data, model, quiet, msg_prefix){
 
     prep <- model$predict(
         data,
@@ -157,10 +159,11 @@ as2_plot_risk_scores <- function(self, private, data, model, quiet){
     )
     tbl[["split"]] <- paste0("Split ", tbl[["split"]])
 
+    n_col <- 2
     n_split <- sum(!sapply(predicted, is.null))
-    nrow <- ceiling(n_split/ncol)
-    ass2d$height <- nrow * ass2d$height
-    ass2d$width <- ncol * ass2d$width
+    n_row <- ceiling(n_split/n_col)
+    height <- n_row * self$height
+    width <- n_col * self$width
 
     plt <- ggplot2::ggplot(
         tbl,
@@ -172,36 +175,37 @@ as2_plot_risk_scores <- function(self, private, data, model, quiet){
         ) +
         ggplot2::facet_wrap(
             facets = ggplot2::vars(.data[["split"]]),
-            ncol = ncol,
+            ncol = n_col,
             scales = "free"
         ) +
         ggplot2::geom_point() +
         ggplot2::labs(
-            title = ass2d$title
+            title = self$title
         )
-    if(!is.null(ass2d$colors)){
-        plt <- plt + ggplot2::scale_color_manual(values = ass2d$colors)
+    if(!is.null(self$colors)){
+        plt <- plt + ggplot2::scale_color_manual(values = self$colors)
     }
 
-    if(ass2d$show_plots){
+    if(self$show_plots){
         print(plt)
     }
 
-    if(!quiet)
-        message(msg_prefix, "Saving scores plot to ", ass2d$file)
-    ggplot2::ggsave(
-        ass2d$file, 
-        plt, 
-        width = ass2d$width, 
-        height = ass2d$height, 
-        units = ass2d$units
-    )
-
-    if(ass2d$fellow_csv){
-        csv_file <- stringr::str_replace(ass2d$file, "\\..+$", ".csv")
+    if(!is.null(self$file)){
+        file <- file.path(
+            dirname(self$file),
+            paste0("scores", stringr::str_extract(self$file, "\\..+$"))
+        )
         if(!quiet)
-            message(msg_prefix, "Saving scores table to ", csv_file)
-        readr::write_csv(tbl, csv_file)
+            message(msg_prefix, "Saving scores plot to ", file)
+        ggplot2::ggsave(file, plt, width = width, height = height, 
+            units = self$units)
+
+        if(self$fellow_csv){
+            csv_file <- stringr::str_replace(file, "\\..+$", ".csv")
+            if(!quiet)
+                message(msg_prefix, "Saving scores table to ", csv_file)
+            readr::write_csv(tbl, csv_file)
+        }
     }
 
     return(tbl)

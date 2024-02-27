@@ -84,7 +84,7 @@ Create a new Model instance.
   plot_file = "training_error.pdf",
   plot_ncols = 2,
   plot_title_line = 2.5,
-  fit_file = "model.rds"
+  fit_file = "models.rds"
 )}\if{html}{\out{</div>}}
 }
 
@@ -172,7 +172,7 @@ assessment.
 }
 
 \subsection{Returns}{
-A ModelSpec S3 object.
+A Model S3 object.
 }
 }
 \if{html}{\out{<hr>}}
@@ -212,7 +212,7 @@ this step; this is \verb{[assess_2d_center()]}'s job. Additonally return
 the true values of the response and, if the \code{benchmark_col} attribute
 of the \code{Data} object is not \code{NULL}, the values of the benchmark.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Model$predict(data, lambda, pivot_time_cutoff)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Model$predict(data, pivot_time_cutoff, lambda = "lambda.min")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -221,15 +221,15 @@ of the \code{Data} object is not \code{NULL}, the values of the benchmark.
 \item{\code{data}}{Data object. Specifications on the data. Read it in if
 needed.}
 
-\item{\code{lambda}}{string or numeric. The lambda regularization parameter
-of the model to predict with. Technically, we will pass it to the \code{s}
-parameter of the \code{predict()}method of the object returned by the
-\code{fitter} attribute of the \code{ModelSpec} object. See, e.g.,
-\code{\link[zeroSum:predict.zeroSum]{zeroSum::predict.zeroSum()}}.}
-
 \item{\code{pivot_time_cutoff}}{numeric. Time-to-event threshold that divides
 samples into a high/low-risk (time to event below/above
 \code{pivot_time_cutoff}) group.}
+
+\item{\code{lambda}}{string or numeric. The lambda regularization parameter
+of the model to predict with. Technically, we will pass it to the \code{s}
+parameter of the \code{predict()}method of the object returned by the
+\code{fitter} attribute of the \code{Model} object. See, e.g.,
+\code{\link[zeroSum:predict.zeroSum]{zeroSum::predict.zeroSum()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -252,8 +252,7 @@ For every split, the names of all three vectors match.
 \if{html}{\out{<a id="method-Model-at_time_cutoff"></a>}}
 \if{latex}{\out{\hypertarget{method-Model-at_time_cutoff}{}}}
 \subsection{Method \code{at_time_cutoff()}}{
-Clone the model and set the \code{time_cutoffs} attribute to
-\code{time_cutoff}.
+Infer the model at a specific time cutoff.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Model$at_time_cutoff(time_cutoff)}\if{html}{\out{</div>}}
 }

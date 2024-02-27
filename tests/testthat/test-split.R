@@ -13,7 +13,7 @@ test_that("split_dataset works", {
     split_index = NULL
   )[["pheno_tbl"]]
   pheno_tbl[["split_2"]] <- "test" # One split already there
-  data <- Data(
+  data <- Data$new(
     name = "mock",
     directory = dir,
     train_prop = 0.8,

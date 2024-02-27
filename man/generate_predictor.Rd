@@ -13,11 +13,11 @@ and genes as columns.}
 \item{pheno_tbl}{tibble. The pheno data, with patients as rows and variables as
 columns.}
 
-\item{data}{DataSpec S3 object. Specifications on the data (\code{expr_mat} and
-\code{model}). See the the constructor \code{DataSpec()} for details.}
+\item{data}{Data S3 object. Specifications on the data (\code{expr_mat} and
+\code{model}). See the the constructor \code{Data()} for details.}
 
-\item{model}{ModelSpec S3 object. Specifications on the model to prepare for.
-See the the constructor \code{ModelSpec()} for details.}
+\item{model}{Model S3 object. Specifications on the model to prepare for.
+See the the constructor \code{Model$new()} for details.}
 }
 \value{
 A named numeric matrix with patients as rows and variables as columns. No

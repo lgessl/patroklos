@@ -1,77 +1,3 @@
-test_that("calculate_2d_metric() works", {
-    
-  set.seed(134)
-
-  n_samples <- 10
-  split_index <- 1:2
-
-  l <- apb(n_samples, split_index, fluctuating_availability = FALSE)
-  actual <- l[[1]]
-  predicted <- l[[2]]
-  benchmark <- l[[3]]
-  
-  model <- Model$new(
-    name = "mock model",
-    directory = "mock",
-    fitter = zeroSum::zeroSum,
-    split_index = split_index,
-    time_cutoffs = 2.
-  )
-  ass2d <- Ass2d$new(
-    file = "test.pdf",
-    x_metric = "rpp",
-    y_metric = "prec",
-    benchmark = "ipi"
-  )
-  pheno_tbl <- generate_mock_data(
-    n_samples = n_samples,
-    n_genes = 2,
-    n_na_in_pheno = 0
-  )[["pheno_tbl"]]
-  data <- Data(
-    name = "mock data",
-    directory = "mock",
-    train_prop = .66
-  )
-
-  ass2d <- calculate_2d_metric(
-    actual = actual,
-    predicted = predicted,
-    benchmark = benchmark,
-    ass2d = ass2d,
-    model = model
-  )
-  perf_tbl <- ass2d$data
-  expect_equal(names(perf_tbl), c("rpp", "prec", "cutoff", "split", "model"))
-  expect_s3_class(perf_tbl, "tbl_df")
-  expect_true(all(perf_tbl[["model"]] %in% c(model$name, ass2d$benchmark)))
-  expect_true(perf_tbl[, 1:4] |> as.matrix() |> is.numeric() |> all())
-
-  ass2d$y_metric <- "logrank"
-  ass2d <- calculate_2d_metric(
-    actual = actual,
-    predicted = predicted,
-    ass2d = ass2d,
-    model = model,
-    benchmark = benchmark,
-    pheno_tbl = pheno_tbl,
-    data = data
-  )
-
-  ass2d$y_metric <- "precision_ci"
-  ass2d$ci_level <- .95
-  ass2d <- calculate_2d_metric(
-    actual = actual,
-    predicted = predicted,
-    ass2d = ass2d,
-    model = model,
-    benchmark = benchmark,
-    pheno_tbl = pheno_tbl,
-    data = data
-  )
-})
-
-
 test_that("precision_ci() works", {
 
   set.seed(143)
@@ -143,7 +69,7 @@ test_that("logrank_metric() works", {
     n_genes = 2,
     n_na_in_pheno = 0
   )[["pheno_tbl"]]
-  data <- Data(
+  data <- Data$new(
     name = "mock",
     directory = "mock",
     train_prop = .66

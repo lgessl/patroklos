@@ -12,11 +12,6 @@ test_that("discretize_ipi_features() works", {
   )
   col_names <- colnames(pheno_tbl)
   pheno_tbl[["mock_col"]] <- rnorm(n_samples, 0, 1)
-  data <- Data(
-    name = "test", 
-    directory = "mock", 
-    train_prop = 0.8
-  )
 
   new_tbl <- discretize_tbl_cols(
     tbl = pheno_tbl,
@@ -72,7 +67,7 @@ test_that("prec_from_scores() works", {
   risk_scores <- runif(n_samples, 0, 1)
   names(risk_scores) <- sample(pheno_tbl[["patient"]])
   names(risk_scores)[1] <- "patient_x"
-  data <- Data(
+  data <- Data$new(
     name = "test", 
     directory = "mock", 
     train_prop = 0.8,
@@ -111,7 +106,7 @@ test_that("write_data_info() works", {
   names(risk_scores) <- sample(pheno_tbl[["patient"]])
   names(risk_scores)[1] <- "patient_x"
   expr_tbl <- tibble::tibble(1:n_genes)
-  data <- Data(
+  data <- Data$new(
     name = "test", 
     directory = "mock", 
     train_prop = 0.8,

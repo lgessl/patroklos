@@ -162,14 +162,14 @@ Ass2d <- R6::R6Class("Ass2d",
             dpi = 300
         )
             ass2d_initialize(self, private, x_metric, y_metric, pivot_time_cutoff, 
-                lambda, benchmark, file, ci_level, fellow_csv, scores_plot, show_plots, 
-                title, x_lab, y_lab, xlim, ylim, smooth_method, smooth_benchmark, 
-                smooth_se, scale_x, scale_y, vline, hline, text_size, text, alpha, 
-                width, height, colors, theme, units, dpi),
+                lambda, benchmark, file, ci_level, fellow_csv, scores_plot, show_plots, title, 
+                x_lab, y_lab, xlim, ylim, smooth_method, smooth_benchmark, smooth_se, 
+                scale_x, scale_y, vline, hline, text_size, text, alpha, colors, theme, 
+                width, height, units, dpi),
 
         #' @description Assess a *single* model (with multiple splits) on a data set.
-        #' @param data Data object. Assess on this data. Data must already be read in and 
-        #' `cohort` attribute set.
+        #' @param data Data object. Assess on this data. The `cohort` attribute 
+        #' must be set.
         #' @param model Model object. Assess this model, multiple splits are supported.
         #' @param quiet logical. Whether to suppress messages.
         #' @param msg_prefix string. Prefix for messages. Default is `""`.
@@ -182,22 +182,26 @@ Ass2d <- R6::R6Class("Ass2d",
             quiet = FALSE,
             msg_prefix = ""
         )
-            ass2d_assess(self, private, quiet, model, msg_prefix),
+            ass2d_assess(self, private, data, model, quiet, msg_prefix),
 
         #' @description Plot rank versus model score on a data set. You can do this 
         #' on the fly, i.e. you actually initialize the Ass2d object for another 
         #' purpose and this method will infer reasonable defaults for the plot.
         #' @param data Data object. Plot the scores for this data.
         #' @param model Model object. Plot the scores for this model.
-        #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
+        #' @param quiet logical. Whether to suppress messages.
+        #' @param msg_prefix string. Prefix for messages.
         plot_risk_scores = function(
             data,
             model,
-            quiet = FALSE
+            quiet = FALSE,
+            msg_prefix = ""
         )
-            as2_plot_risk_scores(self, private, data, model, quiet),
+            as2_plot_risk_scores(self, private, data, model, quiet, msg_prefix),
 
         #' @description Assess *multiple* models (with multiple splits) on a data set.
+        #' This is a wrapper around `assess()` and optionally `plot_risk_scores()` 
+        #' for multiple models.
         #' @param data Data object. Assess on this data set.
         #' @param model_list list of Model objects. Assess these models.
         #' We infer the `AssSpec2d` for the single plots in a reasonable way from it.
@@ -205,6 +209,8 @@ Ass2d <- R6::R6Class("Ass2d",
         #' the same directory as the corresponding model for the train cohort and the 
         #' comparison plot at `file`. When doing the analogous for the test data, replace 
         #' the first element of `model_tree_mirror` by the second element in every file path.
+        #' @param risk_scores logical. Whether to also plot rank versus risk score 
+        #' along with the assessment "on-the-fly".
         #' @param comparison_plot logical. Whether to generate a plot holding the assessment 
         #' of all models. Default is `TRUE`.
         #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
@@ -213,11 +219,12 @@ Ass2d <- R6::R6Class("Ass2d",
             data,
             model_list,
             model_tree_mirror = c("models", "results"),
-            comparison_plot = TRUE,
+            risk_scores = FALSE,
+            comparison_plot = FALSE,
             quiet = FALSE
         )
             ass2d_assess_center(self, private, data, model_list, model_tree_mirror, 
-                comparison_plot, quiet)
+                risk_scores, comparison_plot, quiet)
     ),
 
     private = list(

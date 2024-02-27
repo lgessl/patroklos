@@ -8,7 +8,7 @@ test_that("generate_predictor() works", {
     continuous_var = c(1, 2, 3), # +1 column
     discrete_var = c("A", "B", "A") # +1 column
   )
-  data <- Data(
+  data <- Data$new(
     name = "Mock et al. (2023)", 
     directory =  "some_dir",
     train_prop = 0.8
@@ -108,7 +108,7 @@ test_that("generate_response() works", {
     "use_column" = c("A", "B", "C", "D"),
     "patient" = 1:4
   )
-  data <- Data(
+  data <- Data$new(
     name = "Mock et al. (2023)",
     directory = "some_dir",
     train_prop = 0.8,

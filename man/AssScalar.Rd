@@ -21,6 +21,11 @@ pivot_time_cutoff.}
 
 \item{\code{round_digits}}{Round the results in tables to round_digits digits
 after the point.}
+
+\item{\code{file}}{Save the resulting tibble to this csv file. This is the
+file for the \emph{train} cohort, we infer the the file name of the test
+cohort by mirroring this file name. See the \code{assess_center()} method
+for more details.}
 }
 \if{html}{\out{</div>}}
 }
@@ -69,9 +74,9 @@ prediction,
 \item{\code{benchmark}}{character or NULL. If not NULL, include \code{benchmark} (the name of column
 in the pheno data) in the assessment.}
 
-\item{\code{file}}{string or NULL. The name of the csv file to save the results to. If \code{NULL},
-the results are not saved. If you supply an AssScalar object to \code{AssScalar_assess_center()},
-specify the path for the \emph{train} cohort.}
+\item{\code{file}}{string or NULL. The name of the csv file to save the
+results to for the \emph{train} cohort.
+the results are not saved.}
 
 \item{\code{round_digits}}{numeric. The number of digits to round the results to. Default is \code{3}.}
 }
@@ -119,7 +124,7 @@ Assess \emph{multiple} models (with multiple splits) on a data set.
 \if{html}{\out{<div class="r">}}\preformatted{AssScalar$assess_center(
   data,
   model_list,
-  model_tree_mirror = c("models", "results"),
+  mirror = c("models", "results"),
   quiet = FALSE
 )}\if{html}{\out{</div>}}
 }
@@ -132,9 +137,11 @@ If \code{data$cohort} is \code{NULL}, assess on the test cohort.}
 
 \item{\code{model_list}}{list of Model objects. Assess these models.}
 
-\item{\code{model_tree_mirror}}{character vector of length 2. If you want to store the
+\item{\code{mirror}}{character vector of length 2. If you want to store the
 resulting tibbles, get the test-cohort tibble's file name by mirroring
-\code{ass_scalar$file} according to \code{model_tree_mirror} (see \code{\link[=mirror_path]{mirror_path()}}).}
+\code{ass_scalar$file} according to \code{model_tree_mirror}, i.e. replacing
+\code{model_tree_mirror[1]} by \code{model_tree_mirror[2]} in the \code{file}
+attribute.}
 
 \item{\code{quiet}}{logical. Whether to suppress messages.}
 

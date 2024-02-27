@@ -46,6 +46,7 @@ generate_mock_data <- function(
     }
 
     if(is.character(to_csv)){
+        if(!dir.exists(to_csv)) dir.create(to_csv, recursive = TRUE)
         readr::write_csv(expr_tbl, file.path(to_csv, "expr.csv"))
         readr::write_csv(pheno_tbl, file.path(to_csv, "pheno.csv"))
     }

@@ -28,6 +28,7 @@ Imports:
     stats (>= 4.0.0),
     sloop(>= 1.0.1),
     survival(>= 3.5.5),
-    jsonlite(>= 1.8.8)
+    jsonlite(>= 1.8.8),
+    R6(>= 2.5.1)
 Remotes: rehbergT/zeroSum/zeroSum
 Config/testthat/edition: 3
