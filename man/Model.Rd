@@ -128,7 +128,6 @@ use as column names for the response matrix.
 censoring, and
 \item the second one is the anme of the column holding the event status (1 = event, 0 =
 censoring).
-Default is \code{c("time", "status")}.
 }}
 
 \item{\code{include_from_continuous_pheno}}{vector of strings. The names of the

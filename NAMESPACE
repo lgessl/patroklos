@@ -2,6 +2,7 @@
 
 export(Ass2d)
 export(AssScalar)
+export(Data)
 export(Model)
 export(discretize_tbl_cols)
 export(ensure_patients_match)

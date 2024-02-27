@@ -3,6 +3,7 @@
 #' a data set. It specifies the names of important features in the columns, reads from 
 #' and writes to csv files and takes care of splitting the data into train and test 
 #' cohort.
+#' @export
 Data <- R6::R6Class("Data",
     public = list(
 
