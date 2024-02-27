@@ -33,6 +33,8 @@ test_that("Model$fit() works", {
   expect_equal(nrow(model$fits[[1]]$coef[[1]]), n_genes+1)
   expect_true(file.exists(file.path(dir, "model1", "models.rds")))
 
+  model$split_index <- 1:2
+  model$fit(data, quiet = TRUE)
 
   model$directory <- file.path(dir, "model2")
   model$split_index <- 1:2
