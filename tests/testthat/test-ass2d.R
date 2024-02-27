@@ -154,12 +154,6 @@ test_that("Ass2d$assess_center() works", {
     n_na_in_pheno = n_na_in_pheno,
     to_csv = data_dir
   )
-  data <- Data$new(
-    name = "Mock et al. (2023)", 
-    directory = data_dir, 
-    train_prop = .7,
-    benchmark_col = "ipi"
-  )
 
   model_dir <- file.path(dir, "models")
   dir.create(model_dir)

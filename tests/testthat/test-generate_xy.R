@@ -11,7 +11,9 @@ test_that("generate_predictor() works", {
   data <- Data$new(
     name = "Mock et al. (2023)", 
     directory =  "some_dir",
-    train_prop = 0.8
+    train_prop = 0.8,
+    pivot_time_cutoff = 2,
+    time_to_event_col = "pfs_years"
   )
   model <- Model$new(
     name = "zerosum",
@@ -113,6 +115,7 @@ test_that("generate_response() works", {
     directory = "some_dir",
     train_prop = 0.8,
     patient_id_col = "patient",
+    pivot_time_cutoff = 2,
     time_to_event_col = "pfs",
     event_col = "prog"
   )

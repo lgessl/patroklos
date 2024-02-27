@@ -14,12 +14,8 @@ test_that("qc_preprocess() works", {
   )
   pheno_tbl <- data$pheno_tbl
   expr_tbl <- data$expr_mat |> t() |> tibble::as_tibble(rownames = "gene_id")
-  data <- Data$new(
-    name = "mock",
-    directory = dir,
-    train_prop = .7,
-    
-  )
+  data$expr_mat <- NULL
+  data$pheno_tbl <- NULL
 
   qc_preprocess(
     data = data,

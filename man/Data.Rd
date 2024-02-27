@@ -71,16 +71,16 @@ and pheno data of a single data set. This enables reading and preparing the data
   name,
   directory,
   train_prop,
-  pivot_time_cutoff = 2,
+  pivot_time_cutoff,
+  time_to_event_col,
+  event_col = "progression",
+  benchmark_col = NULL,
+  cohort = NULL,
   expr_file = "expr.csv",
   pheno_file = "pheno.csv",
-  cohort = NULL,
   patient_id_col = "patient_id",
-  time_to_event_col = "pfs_years",
-  event_col = "progression",
-  split_col_prefix = "split_",
-  benchmark_col = NULL,
-  gene_id_col = "gene_id"
+  gene_id_col = "gene_id",
+  split_col_prefix = "split_"
 )}\if{html}{\out{</div>}}
 }
 
@@ -100,45 +100,44 @@ for splitting the data into the train and test cohort: If a numeric in (0, 1), p
 the the proportion of individuals below and above \code{time_cutoff} in both cohorts. Default
 is \code{NULL}, i.e. no further constraints on splitting.}
 
-\item{\code{expr_file}}{string. The name of the expression csv file inside \code{directory}.
-Default is \code{"expr.csv"}. See details for the expected format.}
+\item{\code{time_to_event_col}}{string. The name of the column in the pheno data that holds the
+time-to-event values.}
 
-\item{\code{pheno_file}}{string. The name of the pheno data csv inside \code{directory}.
-Default is \code{"pheno.csv"}. See details for the expected format.}
+\item{\code{event_col}}{string. The name of the column in the pheno data that holds
+the event status encoded as 1 = occurrence, 0 = censoring.}
+
+\item{\code{benchmark_col}}{string or \code{NULL}. The name of the column in the pheno data that
+holds the benchmark risk score (like the IPI).}
 
 \item{\code{cohort}}{string in \code{c("train", "test")} or \code{NULL}. The cohort, train or test, to
 prepare the data for. If NULL, the default, some functions will set it themselves
 (e.g. \code{training_camp()} to \code{"train"}, \code{assess_2d()} to \code{"test"}), others will
 throw an error.}
 
+\item{\code{expr_file}}{string. The name of the expression csv file inside \code{directory}.
+Default is \code{"expr.csv"}. See details for the expected format.}
+
+\item{\code{pheno_file}}{string. The name of the pheno data csv inside \code{directory}.
+Default is \code{"pheno.csv"}. See details for the expected format.}
+
 \item{\code{patient_id_col}}{string. The name of the column in the pheno data that holds
-the patient identifiers. Default is \code{"patient_id"}.}
+the patient identifiers.}
 
-\item{\code{time_to_event_col}}{string. The name of the column in the pheno data that holds the
-time-to-event values. Default is \code{"pfs_years"}.}
-
-\item{\code{event_col}}{string. The name of the column in the pheno data that holds
-the event status encoded as 1 = occurrence, 0 = censoring. Default is
-\code{"progression"}.}
+\item{\code{gene_id_col}}{string. The name of the column in the expression data that holds
+the gene identifiers.}
 
 \item{\code{split_col_prefix}}{string. Column-name prefix for those columns holding splits into
 train and test cohort. Some of these columns may be present in the pheno data already,
 others will be added during the training process if required. Default is \code{"split_"},
 i.e., split columns are named \code{"split_1"}, \code{"split_2"}, etc.}
-
-\item{\code{benchmark_col}}{string or \code{NULL}. The name of the column in the pheno data that
-holds the benchmark risk score (like the IPI). Default is \code{NULL}.}
-
-\item{\code{gene_id_col}}{string. The name of the column in the expression data that holds
-the gene identifiers. Default is \code{"gene_id"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
 The pheno csv file holds the samples as rows (with \emph{unique} sample ids in the
-first column called \code{patient_id_col}), the variables as columns. The expr csv file
-holds the genes as rows (with \emph{unique} gene ids in the first column called \code{gene_id_col}),
-the samples as columns.
+first column called \code{patient_id_col}), the variables as columns. The expression
+csv file holds the genes as rows (with \emph{unique} gene ids in the first
+column called \code{gene_id_col}), the samples as columns.
 While the computational representation of both expression and pheno data will
 change over the course of the pipeline, a Data object will hold timeless
 information on the data.

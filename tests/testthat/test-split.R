@@ -17,7 +17,8 @@ test_that("split_dataset works", {
     name = "mock",
     directory = dir,
     train_prop = 0.8,
-    pivot_time_cutoff = 2.0
+    pivot_time_cutoff = 2.0,
+    time_to_event_col = "pfs_years"
   )
   model_1 <- Model$new(
     name = "dummy1",

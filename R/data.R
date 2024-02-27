@@ -56,34 +56,33 @@ Data <- R6::R6Class("Data",
         #' for splitting the data into the train and test cohort: If a numeric in (0, 1), preserve 
         #' the the proportion of individuals below and above `time_cutoff` in both cohorts. Default 
         #' is `NULL`, i.e. no further constraints on splitting.
-        #' @param expr_file string. The name of the expression csv file inside `directory`.
-        #' Default is `"expr.csv"`. See details for the expected format.
-        #' @param pheno_file string. The name of the pheno data csv inside `directory`.
-        #' Default is `"pheno.csv"`. See details for the expected format.
+        #' @param time_to_event_col string. The name of the column in the pheno data that holds the 
+        #' time-to-event values.
+        #' @param event_col string. The name of the column in the pheno data that holds
+        #' the event status encoded as 1 = occurrence, 0 = censoring.
+        #' @param benchmark_col string or `NULL`. The name of the column in the pheno data that 
+        #' holds the benchmark risk score (like the IPI).
         #' @param cohort string in `c("train", "test")` or `NULL`. The cohort, train or test, to 
         #' prepare the data for. If NULL, the default, some functions will set it themselves
         #' (e.g. `training_camp()` to `"train"`, `assess_2d()` to `"test"`), others will
         #' throw an error.
+        #' @param expr_file string. The name of the expression csv file inside `directory`.
+        #' Default is `"expr.csv"`. See details for the expected format.
+        #' @param pheno_file string. The name of the pheno data csv inside `directory`.
+        #' Default is `"pheno.csv"`. See details for the expected format.
         #' @param patient_id_col string. The name of the column in the pheno data that holds 
-        #' the patient identifiers. Default is `"patient_id"`.
-        #' @param time_to_event_col string. The name of the column in the pheno data that holds the 
-        #' time-to-event values. Default is `"pfs_years"`.
-        #' @param event_col string. The name of the column in the pheno data that holds
-        #' the event status encoded as 1 = occurrence, 0 = censoring. Default is
-        #' `"progression"`.
+        #' the patient identifiers.
+        #' @param gene_id_col string. The name of the column in the expression data that holds
+        #' the gene identifiers.
         #' @param split_col_prefix string. Column-name prefix for those columns holding splits into 
         #' train and test cohort. Some of these columns may be present in the pheno data already,
         #' others will be added during the training process if required. Default is `"split_"`, 
         #' i.e., split columns are named `"split_1"`, `"split_2"`, etc.
-        #' @param benchmark_col string or `NULL`. The name of the column in the pheno data that 
-        #' holds the benchmark risk score (like the IPI). Default is `NULL`.
-        #' @param gene_id_col string. The name of the column in the expression data that holds
-        #' the gene identifiers. Default is `"gene_id"`.
         #' @return A Data object.
         #' @details The pheno csv file holds the samples as rows (with *unique* sample ids in the
-        #' first column called `patient_id_col`), the variables as columns. The expr csv file 
-        #' holds the genes as rows (with *unique* gene ids in the first column called `gene_id_col`), 
-        #' the samples as columns.
+        #' first column called `patient_id_col`), the variables as columns. The expression
+        #'  csv file holds the genes as rows (with *unique* gene ids in the first 
+        #' column called `gene_id_col`), the samples as columns.
         #' While the computational representation of both expression and pheno data will
         #' change over the course of the pipeline, a Data object will hold timeless
         #' information on the data.
@@ -91,16 +90,16 @@ Data <- R6::R6Class("Data",
             name,
             directory,
             train_prop,
-            pivot_time_cutoff = 2.0,
+            pivot_time_cutoff,
+            time_to_event_col,
+            event_col = "progression",
+            benchmark_col = NULL,
+            cohort = NULL,
             expr_file = "expr.csv",
             pheno_file = "pheno.csv",
-            cohort = NULL,
             patient_id_col = "patient_id",
-            time_to_event_col = "pfs_years",
-            event_col = "progression",
-            split_col_prefix = "split_",
-            benchmark_col = NULL,
-            gene_id_col = "gene_id"
+            gene_id_col = "gene_id",
+            split_col_prefix = "split_"
         )
             data_initialize(self, private, name, directory, train_prop,              
                 pivot_time_cutoff, expr_file, pheno_file, cohort, patient_id_col, 
