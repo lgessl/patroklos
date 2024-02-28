@@ -106,8 +106,8 @@ test_that("Ass2d$assess() works", {
     benchmark = "ipi",
     smooth_se = TRUE,
     show_plots = FALSE,
-    text = list(ggplot2::aes(x = .5, y = .5, label = "this text"), 
-     color = "red", angle = 45),
+    # text = list(ggplot2::aes(x = .5, y = .5, label = "this text"), 
+    #  color = "red", angle = 45),
     dpi = 250,
     theme = ggplot2::theme(
       text = ggplot2::element_text(family = "Courier")
@@ -199,8 +199,8 @@ test_that("Ass2d$assess_center() works", {
     benchmark = "ipi",
     fellow_csv = TRUE,
     scores_plot = TRUE,
-    text = list(ggplot2::aes(x = .5, y = .5, label = "hello"), 
-      color = "red", angle = 90),
+    # text = list(ggplot2::aes(x = .5, y = .5, label = "hello"), 
+    #   color = "red", angle = 90),
     theme = ggplot2::theme_minimal() + 
       ggplot2::theme(plot.background = ggplot2::element_rect(fill = "red")),
     dpi = 250

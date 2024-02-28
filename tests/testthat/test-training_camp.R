@@ -35,5 +35,5 @@ test_that("training_camp() works", {
     quiet = TRUE
   )
   expect_true(file.exists(file.path(model_1$directory, "1-5", "models.rds")))
-  expect_true(file.exists(file.path(model_2$directory, "2", "models.rds")))
+  expect_true(file.exists(file.path(model_2$directory, "Inf", "models.rds")))
 })

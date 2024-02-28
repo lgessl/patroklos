@@ -10,12 +10,14 @@ ass2d_calculate_2d_metric <- function(self, private, data, model){
     predicted <- prep[["predicted"]]
 
     # Prepare for loop
-    tbl_list <- vector("list", length(model$split_index))
     estimate_list <- list()
     estimate_list[[model$name]] <- predicted
     if(!is.null(self$benchmark))
         estimate_list[[self$benchmark]] <- benchmark
+    n_tbls <- length(model$split_index) * length(estimate_list)
+    tbl_list <- vector("list", n_tbls)
 
+    j <- 1
     for(i in model$split_index){
         for(estimate_name in names(estimate_list)){
             estimate <- estimate_list[[estimate_name]]
@@ -55,7 +57,8 @@ ass2d_calculate_2d_metric <- function(self, private, data, model){
             )
             tbl[["split"]] <- i
             tbl[["model"]] <- estimate_name       
-            tbl_list[[i]] <- tbl
+            tbl_list[[j]] <- tbl
+            j <- j+1
         }
     }
     # Combine all splits to one tibble

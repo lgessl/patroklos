@@ -57,7 +57,7 @@ plot_2d_metric <- function(
         )
     }
     plt <- plt +
-        ggplot2::geom_point(alpha = ass2d$alpha) +
+        ggplot2::geom_point(alpha = ass2d$alpha) # +
         ggplot2::labs(
             title = ass2d$title, 
             x = ass2d$x_lab, 
@@ -69,9 +69,9 @@ plot_2d_metric <- function(
         plt <- plt + do.call(ggplot2::geom_hline, ass2d$hline)
     if(!is.null(ass2d$vline))
         plt <- plt + do.call(ggplot2::geom_vline, ass2d$vline)
-    if(!is.null(ass2d[["text"]])){
-        ass2d[["text"]][["family"]] <- font_family
-        plt <- plt + do.call(ggplot2::geom_label, ass2d[["text"]])
+    if(!is.null(ass2d$text)){
+        ass2d$text$family <- font_family
+        plt <- plt + do.call(ggplot2::geom_label, ass2d$text)
     }
     if(!is.null(ass2d$colors)){
         plt <- plt + ggplot2::scale_color_manual(values = ass2d$colors)
