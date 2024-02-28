@@ -11,13 +11,18 @@ training_camp <- function(
     data,
     quiet = FALSE
 ){
-    # Read in data once and for all
     if(!inherits(data, "Data")){
         stop("data must be a Data object")
     }
+    stopifnot(is.logical(quiet))
+
     if(is.null(data$expr_mat) || is.null(data$pheno_tbl)) data$read()
-    if(is.null(data$cohort)) data$cohort <- "train"
-    if(!quiet) message("Setting data$cohort to 'train' since it was NULL")
+    if(!quiet) message("\nTRAINING CAMP ON ", data$name, ": opens at ", 
+        round.POSIXt(Sys.time(), units = "secs"))
+    if(is.null(data$cohort)){
+        data$cohort <- "train"
+        if(!quiet) message("Setting data$cohort to 'train' since it was NULL")
+    }
     data$pheno_tbl <- ensure_splits(
         pheno_tbl = data$pheno_tbl,
         data = data,
@@ -26,8 +31,6 @@ training_camp <- function(
     expr_mat <- data$expr_mat
     pheno_tbl <- data$pheno_tbl
 
-    if(!quiet) message("\nTRAINING CAMP ON ", data$name, ": opens at ", 
-        round.POSIXt(Sys.time(), units = "secs"))
     for(i in seq_along(model_list)){
         model <- model_list[[i]]
         if(!quiet) message("# ", model$name)
