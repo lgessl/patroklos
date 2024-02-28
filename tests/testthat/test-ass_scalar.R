@@ -81,6 +81,7 @@ test_that("AssScalar$assess_center() works", {
     optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE),
     response_type = "survival_censored",
+    include_from_continuous_pheno = "continuous_var",
     fit_file = "model1.rds"
   )
   model_2 <- Model$new(
@@ -92,7 +93,6 @@ test_that("AssScalar$assess_center() works", {
     split_index = 1:2,
     time_cutoffs = c(1.5, 2),
     response_type = "binary",
-    include_from_continuous_pheno = "continuous_var",
     include_from_discrete_pheno = "discrete_var",
     fit_file = "model2.rds"
   )

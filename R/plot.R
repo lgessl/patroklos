@@ -57,7 +57,7 @@ plot_2d_metric <- function(
         )
     }
     plt <- plt +
-        ggplot2::geom_point(alpha = ass2d$alpha) # +
+        ggplot2::geom_point(alpha = ass2d$alpha) +
         ggplot2::labs(
             title = ass2d$title, 
             x = ass2d$x_lab, 
