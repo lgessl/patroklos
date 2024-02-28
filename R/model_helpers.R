@@ -67,21 +67,25 @@ model_at_time_cutoff <- function(
 
 #' @title To every `Model` in a list of `Model`s, prepend a fixed directory to the
 #' `directory` attribute
-#' @description Often one specifies the models in general, for all data sets. If you fit the 
-#' models to a specific data set (say `"mock"`), you might want to prepend a fixed directory 
-#' like `"results/mock"` to the `directory` attribute of all `Model`s in the list.
+#' @description Often one specifies the models in general, for all data sets. 
+#' If you fit the models to a specific data set (say `"mock"`), you might want 
+#' to prepend a fixed directory like `"results/mock"` to the `directory` 
+#' attribute of all `Model`s in the list.
 #' @param model_list list of `Model`s.
 #' @param dir string. The directory to prepend to the `directory` attribute of all 
 #' `Model`s in `model_list`.
-#' @return A list of `Model`s, with `dir` prepended to the `directory` attribute.
+#' @return A list of cloned `Model`s, with `dir` prepended to the `directory` attribute.
 #' @export
 prepend_to_directory <- function(
     model_list, 
     dir
 ){
     stopifnot(is.character(dir))
+    prepended_models <- vector("list", length(model_list))
     for(i in seq_along(model_list)){
-        model_list[[i]]$directory <- file.path(dir, model_list[[i]]$directory)
+        prepended_models[[i]] <- model_list[[i]]$clone()
+        prepended_models[[i]]$directory <- 
+            file.path(dir, model_list[[i]]$directory)
     }
-    return(model_list)
+    return(prepended_models)
 }

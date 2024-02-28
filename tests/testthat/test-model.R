@@ -32,3 +32,23 @@ test_that("Model$at_time_cutoff() works", {
   
   expect_error(model$at_time_cutoff(5))
 })
+
+test_that("prepend_to_directory() works", {
+
+  model_1 <- Model$new(
+    name = "model", 
+    directory = "mock1", 
+    fitter = zeroSum::zeroSum, 
+    split_index = 1, 
+    time_cutoffs = 2
+  )
+  model_2 <- model_1$clone()
+  model_2$directory <- "mock2"
+  models <- list(model_1, model_2)
+
+  new_models <- prepend_to_directory(models, "prepend_me")
+  expect_equal(new_models[[1]]$directory, "prepend_me/mock1")
+  expect_equal(new_models[[2]]$directory, "prepend_me/mock2")
+  expect_equal(model_1$directory, "mock1")
+  expect_equal(model_2$directory, "mock2")
+})

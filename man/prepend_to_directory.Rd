@@ -14,10 +14,11 @@ prepend_to_directory(model_list, dir)
 \code{Model}s in \code{model_list}.}
 }
 \value{
-A list of \code{Model}s, with \code{dir} prepended to the \code{directory} attribute.
+A list of cloned \code{Model}s, with \code{dir} prepended to the \code{directory} attribute.
 }
 \description{
-Often one specifies the models in general, for all data sets. If you fit the
-models to a specific data set (say \code{"mock"}), you might want to prepend a fixed directory
-like \code{"results/mock"} to the \code{directory} attribute of all \code{Model}s in the list.
+Often one specifies the models in general, for all data sets.
+If you fit the models to a specific data set (say \code{"mock"}), you might want
+to prepend a fixed directory like \code{"results/mock"} to the \code{directory}
+attribute of all \code{Model}s in the list.
 }
