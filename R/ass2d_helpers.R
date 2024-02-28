@@ -86,8 +86,6 @@ ass2d_assess <- function(self, private, data, model, quiet, msg_prefix){
     directory <- dirname(self$file)
     if(is.null(data$expr_mat) || is.null(data$pheno_tbl)) data$read()
     # Has at_time_cutoff() been called already? Skip in this case
-    if(!stringr::str_detect(model$name, "@"))
-        model <- model$at_time_cutoff(model$time_cutoffs)
     if(!dir.exists(directory))
         dir.create(directory, recursive = TRUE)
     private$calculate_2d_metric(

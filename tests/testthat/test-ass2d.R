@@ -96,6 +96,8 @@ test_that("Ass2d$assess() works", {
     response_type = "binary"
   )
   training_camp(list(model_1, model_2), data, quiet = TRUE)
+  model_1 <- model_1$at_time_cutoff(2)
+  model_2 <- model_2$at_time_cutoff(2)
 
   # ROCR metrics
   ass2d <- Ass2d$new(
