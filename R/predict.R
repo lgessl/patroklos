@@ -28,6 +28,7 @@ model_predict <- function(self, private, data, lambda, pivot_time_cutoff){
         split_name <- paste0(data$split_col_prefix, i)
         split_model <- self$clone()
         split_model$split_index <- i
+        split_model$time_cutoffs <- pivot_time_cutoff
         x_y <- data$prepare(split_model)
         actual <- x_y[["y"]][, 1]
         fit <- fits[[split_name]]
