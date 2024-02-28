@@ -27,7 +27,7 @@ test_that("training_camp() works", {
   )
   model_2 <- model_1$clone()
   model_2$split_index <- 1:2
-  model_2$time_cutoffs <- c(1.5, 2.)
+  model_2$time_cutoffs <- c(1.5, Inf)
   
   training_camp(
     model_list = list(model_1, model_2),

@@ -162,7 +162,7 @@ test_that("Ass2d$assess_center() works", {
     directory = file.path(model_dir, "cox"),
     fitter = zeroSum::zeroSum,
     split_index = 1:2,
-    time_cutoffs = 2.,
+    time_cutoffs = Inf,
     optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE),
     response_type = "survival_censored"
@@ -209,7 +209,7 @@ test_that("Ass2d$assess_center() works", {
     quiet = TRUE)
   expect_true(file.exists(ass2d$file))
   expect_true(file.exists(file.path(res_dir, "logistic/2/scores.jpeg")))
-  expect_true(file.exists(file.path(res_dir, "cox/2/rpp_vs_prec.csv")))
+  expect_true(file.exists(file.path(res_dir, "cox/Inf/rpp_vs_prec.csv")))
   expect_true(file.exists(file.path(model_dir, "perf_plot.jpeg")))
 
   data$cohort <- "test"
