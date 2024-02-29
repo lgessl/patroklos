@@ -1,4 +1,4 @@
-tex=$(wildcard *.tex)
+tex=early-int.tex late-int.tex test-train.tex
 pdf=$(tex:.tex=.pdf)
 jpeg=$(pdf:.pdf=.jpeg)
 density=400
