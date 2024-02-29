@@ -7,6 +7,9 @@
 A Model specifies how a model looks like, prepares the data, fits it,
 stores it and predicts from it.
 }
+\seealso{
+\verb{[training_camp()]}.
+}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
@@ -196,6 +199,12 @@ cutoffs at this step; enabling them is the job of \verb{[training_camp()]}.
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Details}{
+This method expects the \code{Model} object to have a single time
+cutoff and the \code{directory} field be set accordingly. You may therefore
+want to apply the \code{at_time_cutoff()} method to the \code{Model} object before.
+}
+
 \subsection{Returns}{
 A list of fit objects as returned by the \code{fit()} method of \code{model}.
 }

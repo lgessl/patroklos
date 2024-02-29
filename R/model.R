@@ -132,6 +132,10 @@ Model <- R6::R6Class("Model",
         #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
         #' @param msg_prefix string. Prefix for messages. Default is `""`.
         #' @return A list of fit objects as returned by the `fit()` method of `model`. 
+        #' @seealso `[training_camp()]`.
+        #' @details This method expects the `Model` object to have a single time
+        #' cutoff and the `directory` field be set accordingly. You may therefore 
+        #' want to apply the `at_time_cutoff()` method to the `Model` object before.
         fit = function(
             data,
             quiet = FALSE,

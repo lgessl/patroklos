@@ -2,3 +2,4 @@
 ^LICENSE\.md$
 ^lymphomaSurvivalPipeline\.code-workspace$
 ^.vscode$
+^README\.Rmd$
