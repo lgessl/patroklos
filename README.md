@@ -1,4 +1,4 @@
-# patroklos <img src="man/figures/logo.png" align="right" height="139" alt="" />
+# patroklos <img src="man/figs/logo.png" align="right" height="139" alt="" />
 
   <!-- badges: start -->
 
