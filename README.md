@@ -59,7 +59,7 @@ all the other model parameters is an attribute of the `Model` object and you can
 On the test cohort (which we haven't touched so far) we can now assess the trained models. Keep in mind that most 
 models used as binary classifiers don't output the final classification, but only continuous score that 
 we need to threshold (this threshold is yet another hyperparameter of the model). To find the model best 
-fullfilling its job and threshold it, we proceed as follows:
+fulfilling its job and threshold it, we proceed as follows:
 
 1. In a pre-selection step, we map every trained model to a single real number: a score indicating its goodness 
    on the test cohort (like the ROC-AUC). Of course, you can define your metric here. This allows us to reduce 
@@ -87,11 +87,11 @@ multiple splits into training and test data and averages in a reasonable manner 
 
 #### Storing and reading in models
 
-Training and asssessing so many models takes a lot of time. So as your project evolves over time, you don't 
+Training and assessing so many models takes a lot of time. So as your project evolves over time, you don't 
 want to fit your models again and again. To this end, patroklos heavily resorts 
 to storing the models and reading them in on demand. Typically you would also "store" the `Model`, `AssScalar` and 
 `Ass2d` objects, either as an .rds file or, more typically, their initialization in an R script. Adding a new model 
-or assessment is then equivalent to adding some lines of code to hese R scripts. Typically, you would store your 
+or assessment is then equivalent to adding some lines of code to these R scripts. Typically, you would store your 
 models below `models/<data-set name>`, patroklos will then store the assessments in the analogous 
 file tree below `results/<data-set name>`. 
 
@@ -100,7 +100,7 @@ file tree below `results/<data-set name>`.
 For a set of diverse features (keep in mind: high-dimensional data and pheno data), it is tempting and simple 
 to do early integration, i.e. providing them to a well known model with a well implemented fitting algorithm. 
 While patroklos assumes you always give the model the high-dimensional omics data, 
-you have the freeedom to add features from pheno data, continuous and categorical ones alike. When I started 
+you have the freedom to add features from pheno data, continuous and categorical ones alike. When I started 
 designing this package, I had the [`zeroSum`](https://github.com/rehbergT/zeroSum) package delivering the key 
 models that deal with the high-dimensional data in my mind. The `zeroSum` package provides all the functionality 
 of the [`glmnet`](https://github.com/cran/glmnet) with each (generalized linear) model optionally endowed with 
@@ -143,3 +143,16 @@ There are four R6 classes a user of patroklos needs to know about: `Data`, `Mode
 `AssScalar` and `Ass2d`. To understand how they work together over the course of the pipeline and 
 how to use patroklos for your project, you should read their documentation in the same 
 order.
+
+As for preprocessing, you might be interested in 
+
+- [`discretize_tbl_columns()`] to turn continuous features in your pheno data into 
+   binary ones by thresholding them,
+- [`ensure_patients_math()`] to ensure expression and pheno data contain exactly 
+  the same samples,
+- [`qc_preprocess()`] to make sure the readily preprocessed data is in the format
+   patroklos expects, and
+- [`write_data_info()`] to store meta information on the data set in .json file.
+
+`prepend_to_directory()` helps you use `Model`s you only initialized once to you 
+for multiple data sets. 

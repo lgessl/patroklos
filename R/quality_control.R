@@ -1,11 +1,11 @@
-#' @title Quality control before handing over the predictor and response 
-#' matrix over to the model fitting function
-#' @description Check types of predictor and response matrix, their 
-#' consistency and availability.
-#' @param x A numeric matrix with dimnames holding predictors (as rows).
-#' @param y A numeric matrix with dimnames holding responses (as rows).
-#' @details Intended to be used after `generate_predictor()` and 
-#' `generate_response()`.
+# @title Quality control before handing over the predictor and response 
+# matrix over to the model fitting function
+# @description Check types of predictor and response matrix, their 
+# consistency and availability.
+# @param x A numeric matrix with dimnames holding predictors (as rows).
+# @param y A numeric matrix with dimnames holding responses (as rows).
+# @details Intended to be used after `generate_predictor()` and 
+# `generate_response()`.
 qc_prefit <- function(
     x,
     y

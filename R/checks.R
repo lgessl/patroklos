@@ -1,8 +1,8 @@
-#' @title Check if a tibble has certain columns
-#' @param tbl tibble. The tibble to check.
-#' @param tbl_name string. How to refer to the tibble in an error message.
-#' @param col_names vector of strings. The names of the columns to check for.
-#' @return NULL. Throws an error if one of the columns is not in the tibble.
+# @title Check if a tibble has certain columns
+# @param tbl tibble. The tibble to check.
+# @param tbl_name string. How to refer to the tibble in an error message.
+# @param col_names vector of strings. The names of the columns to check for.
+# @return NULL. Throws an error if one of the columns is not in the tibble.
 check_tbl_columns_exist <- function(
     tbl,
     tbl_name,

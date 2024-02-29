@@ -1,14 +1,14 @@
-#' @title Split a data set into train and test data multiple times
-#' @description Split a data set into train and test data sets by noting down 
-#' the affiliation to the train or test cohort in the pheno data for every split
-#' Optionally, you can preserve the ratio of high- and low-risk patients. Ensure 
-#' that every model in a list of `Model`s gets enough splits.
-#' @param pheno_tbl A tibble holding the pheno data (see `Data()`
-#' for details).
-#' @param data A `Data` object referring to `expr_tbl` and `pheno_tbl`.
-#' @param model_list A list of `Model` objects. Ensure that every model
-#' gets the splits it needs.
-#' @return `pheno_tbl` with all required splits.
+# @title Split a data set into train and test data multiple times
+# @description Split a data set into train and test data sets by noting down 
+# the affiliation to the train or test cohort in the pheno data for every split
+# Optionally, you can preserve the ratio of high- and low-risk patients. Ensure 
+# that every model in a list of `Model`s gets enough splits.
+# @param pheno_tbl A tibble holding the pheno data (see `Data()`
+# for details).
+# @param data A `Data` object referring to `expr_tbl` and `pheno_tbl`.
+# @param model_list A list of `Model` objects. Ensure that every model
+# gets the splits it needs.
+# @return `pheno_tbl` with all required splits.
 ensure_splits <- function(
     pheno_tbl,
     data,

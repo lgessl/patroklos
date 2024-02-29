@@ -108,12 +108,12 @@ intersect_by_names <- function(
 }
 
 
-#' @title Mirror a file path
-#' @param filepath string. The file path to mirror.
-#' @param mirror character vector of length 2. Replace mirror\[1\] by mirror\[2\] in
-#' filepath.
-#' @return A string. The mirrored file path.
-#' @export
+# @title Mirror a file path
+# @param filepath string. The file path to mirror.
+# @param mirror character vector of length 2. Replace mirror\[1\] by mirror\[2\] in
+# filepath.
+# @return A string. The mirrored file path.
+# @export
 mirror_path <- function(
     filepath,
     mirror

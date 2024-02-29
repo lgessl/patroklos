@@ -1,16 +1,16 @@
-#' @title Generate the predictor matrix in a model-specific way
-#' @description Generate the numeric predictor matrix from the expression and
-#' (possibly) pheno data for a certain model
-#' @param expr_mat numeric matrix. The expression data, with patients as rows
-#' and genes as columns.
-#' @param pheno_tbl tibble. The pheno data, with patients as rows and variables as
-#' columns.
-#' @param data Data S3 object. Specifications on the data (`expr_mat` and 
-#' `model`). See the the constructor `Data()` for details.
-#' @param model Model S3 object. Specifications on the model to prepare for. 
-#' See the the constructor `Model$new()` for details.
-#' @return A named numeric matrix with patients as rows and variables as columns. No 
-#' `NA`s in it.
+# @title Generate the predictor matrix in a model-specific way
+# @description Generate the numeric predictor matrix from the expression and
+# (possibly) pheno data for a certain model
+# @param expr_mat numeric matrix. The expression data, with patients as rows
+# and genes as columns.
+# @param pheno_tbl tibble. The pheno data, with patients as rows and variables as
+# columns.
+# @param data Data S3 object. Specifications on the data (`expr_mat` and 
+# `model`). See the the constructor `Data()` for details.
+# @param model Model S3 object. Specifications on the model to prepare for. 
+# See the the constructor `Model$new()` for details.
+# @return A named numeric matrix with patients as rows and variables as columns. No 
+# `NA`s in it.
 generate_predictor <- function(
     expr_mat,
     pheno_tbl,
@@ -66,22 +66,22 @@ generate_predictor <- function(
 }
 
 
-#' @title Generate the response matrix in a model-specific way
-#' @description Generate the numeric response matrix from the pheno data for a
-#' certain model
-#' @param pheno_tbl tibble. The pheno data, with patients as rows and variables as
-#' columns.
-#' @param data Data S3 object. Specifications on the data (`pheno_tbl`). See
-#' the constructor `Data()` for details.
-#' @param model Model S3 object. Specifications on the model to prepare for.
-#' See the constructor `Model$new()` for details.
-#' @return Named response matrix: a numeric matrix with patients as rows and variables 
-#' as columns.
-#' @details If `model$response_type == "binary"`, the response matrix will have one 
-#' column filled with 
-#' * `1` if progress is observed at a time <= `time_cutoff`,
-#' * `0` if progress or censoring is observed at a time > `time_cutoff`,
-#' * `NA` if censoring without progression is observed at a time <= `time_cutoff`.
+# @title Generate the response matrix in a model-specific way
+# @description Generate the numeric response matrix from the pheno data for a
+# certain model
+# @param pheno_tbl tibble. The pheno data, with patients as rows and variables as
+# columns.
+# @param data Data S3 object. Specifications on the data (`pheno_tbl`). See
+# the constructor `Data()` for details.
+# @param model Model S3 object. Specifications on the model to prepare for.
+# See the constructor `Model$new()` for details.
+# @return Named response matrix: a numeric matrix with patients as rows and variables 
+# as columns.
+# @details If `model$response_type == "binary"`, the response matrix will have one 
+# column filled with 
+# * `1` if progress is observed at a time <= `time_cutoff`,
+# * `0` if progress or censoring is observed at a time > `time_cutoff`,
+# * `NA` if censoring without progression is observed at a time <= `time_cutoff`.
 generate_response <- function(
     pheno_tbl,
     data,
