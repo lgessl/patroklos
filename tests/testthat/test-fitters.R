@@ -11,12 +11,12 @@ test_that("zeroSum_with_pheno() works", {
   y_survival <- cbind(rnorm(n_samples), y_binary)
   zs_weights <- rep(c(1, 0), c(n_genes, n_pheno_features))
 
-  fit_obj <- zeroSumWithPheno(
+  fit_obj <- zeroSumEI(
     x = x, y = y_binary, family = "binomial", nFold = 1, lambda = lambda
   )
   expect_equal(fit_obj$zeroSum.weights, zs_weights)
 
-  fit_obj <- zeroSumWithPheno(
+  fit_obj <- zeroSumEI(
     x = x, y = y_survival, family = "cox", nFold = 1, lambda = lambda
   )
   expect_equal(fit_obj$zeroSum.weights, zs_weights)
@@ -24,7 +24,7 @@ test_that("zeroSum_with_pheno() works", {
   colnames(x) <- as.character(seq(n_genes + n_pheno_features))
   zs_weights <- rep(1, ncol(x))
   
-  fit_obj <- zeroSumWithPheno(
+  fit_obj <- zeroSumEI(
     x = x, y = y_binary, family = "binomial", nFold = 1, lambda = lambda
   )
   expect_equal(fit_obj$zeroSum.weights, zs_weights)

@@ -12,7 +12,7 @@
 #' @param ... further arguments passed to [zeroSum::zeroSum()].
 #' @return `zeroSumFit` S3 object as returned by [zeroSum::zeroSum()].
 #' @export
-zeroSumWithPheno <- function(
+zeroSumEI <- function(
     x,
     y,
     pheno_regexp = "\\+\\+$",
