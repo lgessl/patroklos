@@ -28,34 +28,16 @@
     <loc>https://lgessl.github.io/patroklos/reference/Model.html</loc>
   </url>
   <url>
-    <loc>https://lgessl.github.io/patroklos/reference/check_tbl_columns_exist.html</loc>
-  </url>
-  <url>
     <loc>https://lgessl.github.io/patroklos/reference/discretize_tbl_cols.html</loc>
   </url>
   <url>
     <loc>https://lgessl.github.io/patroklos/reference/ensure_patients_match.html</loc>
   </url>
   <url>
-    <loc>https://lgessl.github.io/patroklos/reference/ensure_splits.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/generate_predictor.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/generate_response.html</loc>
-  </url>
-  <url>
     <loc>https://lgessl.github.io/patroklos/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://lgessl.github.io/patroklos/reference/mirror_path.html</loc>
-  </url>
-  <url>
     <loc>https://lgessl.github.io/patroklos/reference/prepend_to_directory.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/qc_prefit.html</loc>
   </url>
   <url>
     <loc>https://lgessl.github.io/patroklos/reference/qc_preprocess.html</loc>

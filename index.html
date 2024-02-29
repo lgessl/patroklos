@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="index.html">patroklos</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -100,7 +100,7 @@
 <div class="section level4">
 <h4 id="assessment">Assessment<a class="anchor" aria-label="anchor" href="#assessment"></a>
 </h4>
-<p>On the test cohort (which we haven’t touched so far) we can now assess the trained models. Keep in mind that most models used as binary classifiers don’t output the final classification, but only continuous score that we need to threshold (this threshold is yet another hyperparameter of the model). To find the model best fullfilling its job and threshold it, we proceed as follows:</p>
+<p>On the test cohort (which we haven’t touched so far) we can now assess the trained models. Keep in mind that most models used as binary classifiers don’t output the final classification, but only continuous score that we need to threshold (this threshold is yet another hyperparameter of the model). To find the model best fulfilling its job and threshold it, we proceed as follows:</p>
 <ol style="list-style-type: decimal">
 <li>In a pre-selection step, we map every trained model to a single real number: a score indicating its goodness on the test cohort (like the ROC-AUC). Of course, you can define your metric here. This allows us to reduce the models of interest to an arbitrary small number if not one. The R6 class <code>AssScalar</code> does this.</li>
 <li>For the remaining models, we plot one metric against another metric (e.g. rate of positive predictions versus precision). Keep in mind: we essentially get as many points in the two-dimensional space as the model has different output values here as we can use every output value as a threshold. This plot or these plots will guide our decision for a threshold and therefore for a final binary classifier. The R6 class <code>Ass2d</code> does this.</li>
@@ -123,12 +123,12 @@
 <div class="section level4">
 <h4 id="storing-and-reading-in-models">Storing and reading in models<a class="anchor" aria-label="anchor" href="#storing-and-reading-in-models"></a>
 </h4>
-<p>Training and asssessing so many models takes a lot of time. So as your project evolves over time, you don’t want to fit your models again and again. To this end, patroklos heavily resorts to storing the models and reading them in on demand. Typically you would also “store” the <code>Model</code>, <code>AssScalar</code> and <code>Ass2d</code> objects, either as an .rds file or, more typically, their initialization in an R script. Adding a new model or assessment is then equivalent to adding some lines of code to hese R scripts. Typically, you would store your models below <code>models/&lt;data-set name&gt;</code>, patroklos will then store the assessments in the analogous file tree below <code>results/&lt;data-set name&gt;</code>.</p>
+<p>Training and assessing so many models takes a lot of time. So as your project evolves over time, you don’t want to fit your models again and again. To this end, patroklos heavily resorts to storing the models and reading them in on demand. Typically you would also “store” the <code>Model</code>, <code>AssScalar</code> and <code>Ass2d</code> objects, either as an .rds file or, more typically, their initialization in an R script. Adding a new model or assessment is then equivalent to adding some lines of code to these R scripts. Typically, you would store your models below <code>models/&lt;data-set name&gt;</code>, patroklos will then store the assessments in the analogous file tree below <code>results/&lt;data-set name&gt;</code>.</p>
 </div>
 <div class="section level4">
 <h4 id="early-integration">Early integration<a class="anchor" aria-label="anchor" href="#early-integration"></a>
 </h4>
-<p>For a set of diverse features (keep in mind: high-dimensional data and pheno data), it is tempting and simple to do early integration, i.e. providing them to a well known model with a well implemented fitting algorithm. While patroklos assumes you always give the model the high-dimensional omics data, you have the freeedom to add features from pheno data, continuous and categorical ones alike. When I started designing this package, I had the <a href="https://github.com/rehbergT/zeroSum" class="external-link"><code>zeroSum</code></a> package delivering the key models that deal with the high-dimensional data in my mind. The <code>zeroSum</code> package provides all the functionality of the <a href="https://github.com/cran/glmnet" class="external-link"><code>glmnet</code></a> with each (generalized linear) model optionally endowed with the zero-sum constraint that causes the model to become scale-invariant. patroklos provides a wrapper around <code><a href="https://rdrr.io/pkg/zeroSum/man/zeroSum.html" class="external-link">zeroSum::zeroSum</a></code> named <code>zeroSumLI</code> to make <code>zeroSum</code> ready for early integration.</p>
+<p>For a set of diverse features (keep in mind: high-dimensional data and pheno data), it is tempting and simple to do early integration, i.e. providing them to a well known model with a well implemented fitting algorithm. While patroklos assumes you always give the model the high-dimensional omics data, you have the freedom to add features from pheno data, continuous and categorical ones alike. When I started designing this package, I had the <a href="https://github.com/rehbergT/zeroSum" class="external-link"><code>zeroSum</code></a> package delivering the key models that deal with the high-dimensional data in my mind. The <code>zeroSum</code> package provides all the functionality of the <a href="https://github.com/cran/glmnet" class="external-link"><code>glmnet</code></a> with each (generalized linear) model optionally endowed with the zero-sum constraint that causes the model to become scale-invariant. patroklos provides a wrapper around <code><a href="https://rdrr.io/pkg/zeroSum/man/zeroSum.html" class="external-link">zeroSum::zeroSum</a></code> named <code>zeroSumLI</code> to make <code>zeroSum</code> ready for early integration.</p>
 <p>Schematically this renders as follows:</p>
 <p><img src="reference/figures/README-/early-int.jpeg" alt="drawing" width="400"></p>
 </div>
@@ -153,6 +153,14 @@
 <h3 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h3>
 <p>There are four R6 classes a user of patroklos needs to know about: <code>Data</code>, <code>Model</code>, <code>AssScalar</code> and <code>Ass2d</code>. To understand how they work together over the course of the pipeline and how to use patroklos for your project, you should read their documentation in the same order.</p>
+<p>As for preprocessing, you might be interested in</p>
+<ul>
+<li>[<code>discretize_tbl_columns()</code>] to turn continuous features in your pheno data into binary ones by thresholding them,</li>
+<li>[<code>ensure_patients_math()</code>] to ensure expression and pheno data contain exactly the same samples,</li>
+<li>[<code><a href="reference/qc_preprocess.html">qc_preprocess()</a></code>] to make sure the readily preprocessed data is in the format patroklos expects, and</li>
+<li>[<code><a href="reference/write_data_info.html">write_data_info()</a></code>] to store meta information on the data set in .json file.</li>
+</ul>
+<p><code><a href="reference/prepend_to_directory.html">prepend_to_directory()</a></code> helps you use <code>Model</code>s you only initialized once to you for multiple data sets.</p>
 </div>
 </div>
 </div>
