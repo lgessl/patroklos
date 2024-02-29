@@ -1,5 +1,5 @@
-Package: lymphomaSurvivalPipeline
-Title: An R package pipelining omics-based lymphoma survival analysis
+Package: patroklos
+Title: An R package pipelining omics-based cancer survival analysis
 Version: 0.3.0
 Authors@R: 
     person("Lukas", "Gessl", , "lukas.gessl@icloud.com", role = c("aut", "cre"))

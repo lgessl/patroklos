@@ -1,5 +1,5 @@
 ^\.github$
 ^LICENSE\.md$
-^lymphomaSurvivalPipeline\.code-workspace$
+^patroklos\.code-workspace$
 ^.vscode$
 ^README\.Rmd$
