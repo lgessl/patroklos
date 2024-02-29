@@ -27,3 +27,4 @@ Imports:
     R6(>= 2.5.1)
 Remotes: rehbergT/zeroSum/zeroSum
 Config/testthat/edition: 3
+URL: https://lgessl.github.io/patroklos/

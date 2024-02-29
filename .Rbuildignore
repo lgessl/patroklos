@@ -3,3 +3,6 @@
 ^patroklos\.code-workspace$
 ^.vscode$
 ^README\.Rmd$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

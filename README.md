@@ -1,4 +1,4 @@
-# patroklos <img src="man/figs/logo.png" align="right" height="139" alt="" />
+# patroklos <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
   <!-- badges: start -->
 
@@ -72,7 +72,7 @@ fullfilling its job and threshold it, we proceed as follows:
 
 #### In a nut shell
 
-<img src="man/figs/README-/test-train.jpeg" alt="drawing" width="400"/>
+<img src="man/figures/README-/test-train.jpeg" alt="drawing" width="400"/>
 
 ### More tweaks powered by patroklos
 
@@ -109,7 +109,7 @@ a wrapper around `zeroSum::zeroSum` named `zeroSumLI` to make `zeroSum` ready fo
 
 Schematically this renders as follows:
 
-<img src="man/figs/README-/early-int.jpeg" alt="drawing" width="400"/>
+<img src="man/figures/README-/early-int.jpeg" alt="drawing" width="400"/>
 
 #### Late integration
 
@@ -128,7 +128,7 @@ a cross validation in a fork called [`zeroSumLI`](https://github.com/lgessl/zero
 
 Nesting has no limits as the below picture shows.
 
-<img src="man/figs/README-/late-int.jpeg" alt="drawing" width="400"/>
+<img src="man/figures/README-/late-int.jpeg" alt="drawing" width="400"/>
 
 ### Installation
 
