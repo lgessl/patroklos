@@ -66,8 +66,6 @@ AssScalar <- R6::R6Class("AssScalar",
             ass_scalar_assess(self, private, data, model, quiet),
 
         #' @description Assess *multiple* models (with multiple splits) on a data set.
-        #' @param ass_scalar AssScalar S3 object. See the constructor [`AssScalar()`] for more 
-        #' details.
         #' @param data Data object. Assess on this data.
         #' If `data$cohort` is `NULL`, assess on the test cohort.
         #' @param model_list list of Model objects. Assess these models.

@@ -8,7 +8,7 @@ A Model specifies how a model looks like, prepares the data, fits it,
 stores it and predicts from it.
 }
 \seealso{
-\verb{[training_camp()]}.
+\code{\link[=training_camp]{training_camp()}}.
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -165,25 +165,25 @@ Default is \code{"fit_obj.rds"}.}
 }
 \subsection{Details}{
 Strictly speaking, one \code{Model} instance specifies
-\code{length(time_cutoffs) * length(split_index)} models. In terms of storing and assessing models,
-we consider the models obtained via repeated splitting according to \code{split_index} as one
-model; repeated splitting serves the purpose of getting more reliable estimates of its
-performance. We view models obtained via different values of \code{time_cutoffs}, in
-contrast, as different models; e.g., we can compare them against one another in an
+\code{length(time_cutoffs) * length(split_index)} models. In terms of storing
+and assessing models, we consider the models obtained via repeated
+splitting according to \code{split_index} as one model; we view models
+obtained via different values of \code{time_cutoffs}, in contrast, as
+different models; e.g., we can compare them against one another in an
 assessment.
 }
 
 \subsection{Returns}{
-A Model S3 object.
+A \code{Model} R6 object.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Model-fit"></a>}}
 \if{latex}{\out{\hypertarget{method-Model-fit}{}}}
 \subsection{Method \code{fit()}}{
-Prepare the data and fit the model to it. Do this for all
-splits into training and test cohort. However, we do not support multiple time
-cutoffs at this step; enabling them is the job of \verb{[training_camp()]}.
+Fit the model to a data set for all splits into training
+and test cohort. However, we do not support multiple time
+cutoffs at this step; enabling them is the job of \code{\link[=training_camp]{training_camp()}}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Model$fit(data, quiet = FALSE, msg_prefix = "")}\if{html}{\out{</div>}}
 }
@@ -206,19 +206,20 @@ want to apply the \code{at_time_cutoff()} method to the \code{Model} object befo
 }
 
 \subsection{Returns}{
-A list of fit objects as returned by the \code{fit()} method of \code{model}.
+The \code{Model} object itself with the \code{fits} attribute set to a
+list holding the object returned by the \code{fitter} attribute for every
+split.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Model-predict"></a>}}
 \if{latex}{\out{\hypertarget{method-Model-predict}{}}}
 \subsection{Method \code{predict()}}{
-Prepare the data and predict with the model from it. Do
-this for all splits into training and test cohort. As with
-\verb{[prepare_and_fit()]}, we do not support multiple time cutoffs at
-this step; this is \verb{[assess_2d_center()]}'s job. Additonally return
-the true values of the response and, if the \code{benchmark_col} attribute
-of the \code{Data} object is not \code{NULL}, the values of the benchmark.
+Predict for a data set and all splits into training and
+test cohort. We don't support multiple time cutoffs here. Additonally
+return the true values of the response and, if the \code{benchmark_col}
+attribute of the \code{Data} object is not \code{NULL}, the values of the
+benchmark.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Model$predict(data, pivot_time_cutoff, lambda = "lambda.min")}\if{html}{\out{</div>}}
 }

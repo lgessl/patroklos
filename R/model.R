@@ -93,13 +93,13 @@ Model <- R6::R6Class("Model",
         #' the upper limit of the figure. Default is `2.5`.
         #' @param fit_file string. The name of the model-fits file inside `directory`.
         #' Default is `"fit_obj.rds"`.
-        #' @return A Model S3 object.
+        #' @return A `Model` R6 object.
         #' @details Strictly speaking, one `Model` instance specifies
-        #' `length(time_cutoffs) * length(split_index)` models. In terms of storing and assessing models,
-        #' we consider the models obtained via repeated splitting according to `split_index` as one 
-        #' model; repeated splitting serves the purpose of getting more reliable estimates of its
-        #' performance. We view models obtained via different values of `time_cutoffs`, in 
-        #' contrast, as different models; e.g., we can compare them against one another in an 
+        #' `length(time_cutoffs) * length(split_index)` models. In terms of storing 
+        #' and assessing models, we consider the models obtained via repeated 
+        #' splitting according to `split_index` as one model; we view models 
+        #' obtained via different values of `time_cutoffs`, in contrast, as 
+        #' different models; e.g., we can compare them against one another in an 
         #' assessment.
         initialize = function(
             name,
@@ -125,14 +125,16 @@ Model <- R6::R6Class("Model",
                 append_to_includes, create_directory, plot_file, plot_ncols,
                 plot_title_line, fit_file),  
 
-        #' @description Prepare the data and fit the model to it. Do this for all 
-        #' splits into training and test cohort. However, we do not support multiple time 
-        #' cutoffs at this step; enabling them is the job of `[training_camp()]`.
+        #' @description Fit the model to a data set for all splits into training 
+        #' and test cohort. However, we do not support multiple time 
+        #' cutoffs at this step; enabling them is the job of [`training_camp()`].
         #' @param data Data object. Read it in if needed.
         #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
         #' @param msg_prefix string. Prefix for messages. Default is `""`.
-        #' @return A list of fit objects as returned by the `fit()` method of `model`. 
-        #' @seealso `[training_camp()]`.
+        #' @return The `Model` object itself with the `fits` attribute set to a 
+        #' list holding the object returned by the `fitter` attribute for every
+        #' split. 
+        #' @seealso [`training_camp()`].
         #' @details This method expects the `Model` object to have a single time
         #' cutoff and the `directory` field be set accordingly. You may therefore 
         #' want to apply the `at_time_cutoff()` method to the `Model` object before.
@@ -143,19 +145,18 @@ Model <- R6::R6Class("Model",
         )
             model_fit(self, private, data, quiet, msg_prefix),
 
-        #' @description Prepare the data and predict with the model from it. Do 
-        #' this for all splits into training and test cohort. As with 
-        #' `[prepare_and_fit()]`, we do not support multiple time cutoffs at 
-        #' this step; this is `[assess_2d_center()]`'s job. Additonally return 
-        #' the true values of the response and, if the `benchmark_col` attribute 
-        #' of the `Data` object is not `NULL`, the values of the benchmark.
+        #' @description Predict for a data set and all splits into training and 
+        #' test cohort. We don't support multiple time cutoffs here. Additonally 
+        #' return the true values of the response and, if the `benchmark_col` 
+        #' attribute of the `Data` object is not `NULL`, the values of the 
+        #' benchmark.
         #' @param data Data object. Specifications on the data. Read it in if 
         #' needed.
         #' @param lambda string or numeric. The lambda regularization parameter 
         #' of the model to predict with. Technically, we will pass it to the `s` 
         #' parameter of the `predict()`method of the object returned by the 
         #' `fitter` attribute of the `Model` object. See, e.g., 
-        #' [zeroSum::predict.zeroSum()].
+        #' [`zeroSum::predict.zeroSum()`].
         #' @param pivot_time_cutoff numeric. Time-to-event threshold that divides 
         #' samples into a high/low-risk (time to event below/above 
         #' `pivot_time_cutoff`) group. 

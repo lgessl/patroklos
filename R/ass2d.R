@@ -69,11 +69,11 @@ Ass2d <- R6::R6Class("Ass2d",
 
         #' @description Create a new Ass2d instance.
         #' @param x_metric string. The name of the performance measure to be plotted on the x-axis.
-        #' All measures that can be passed to the `x.measure` parameter of [ROCR::performance()] are
+        #' All measures that can be passed to the `x.measure` parameter of [`ROCR::performance()`] are
         #' valid.
         #' @param y_metric string. The name of the performance measure to be plotted on the y-axis.
         #' 
-        #' * All measures that can be passed to the `measure` parameter of [ROCR::performance()] are
+        #' * All measures that can be passed to the `measure` parameter of [`ROCR::performance()`] are
         #' valid.
         #' * `"logrank"` for the p-values of a logrank test. In this case, `x_metric` must be
         #' `"prevalence"` or `"rpp"`.

@@ -144,9 +144,6 @@ resulting tibbles, get the test-cohort tibble's file name by mirroring
 attribute.}
 
 \item{\code{quiet}}{logical. Whether to suppress messages.}
-
-\item{\code{ass_scalar}}{AssScalar S3 object. See the constructor \code{\link[=AssScalar]{AssScalar()}} for more
-details.}
 }
 \if{html}{\out{</div>}}
 }
