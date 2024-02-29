@@ -46,7 +46,7 @@ stores it and predicts from it.</p>
 
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code>[training_camp()]</code>.</p></div>
+    <div class="dont-index"><p><code><a href="training_camp.html">training_camp()</a></code>.</p></div>
     </div>
     <div class="section level2">
     <h2 id="public-fields">Public fields<a class="anchor" aria-label="anchor" href="#public-fields"></a></h2>
@@ -263,24 +263,24 @@ Default is <code>"fit_obj.rds"</code>.</p></dd>
 <div class="section">
 <h4 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h4>
 <p>Strictly speaking, one <code>Model</code> instance specifies
-<code>length(time_cutoffs) * length(split_index)</code> models. In terms of storing and assessing models,
-we consider the models obtained via repeated splitting according to <code>split_index</code> as one
-model; repeated splitting serves the purpose of getting more reliable estimates of its
-performance. We view models obtained via different values of <code>time_cutoffs</code>, in
-contrast, as different models; e.g., we can compare them against one another in an
+<code>length(time_cutoffs) * length(split_index)</code> models. In terms of storing
+and assessing models, we consider the models obtained via repeated
+splitting according to <code>split_index</code> as one model; we view models
+obtained via different values of <code>time_cutoffs</code>, in contrast, as
+different models; e.g., we can compare them against one another in an
 assessment.</p>
 </div>
 
 <div class="section">
 <h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
-<p>A Model S3 object.</p>
+<p>A <code>Model</code> R6 object.</p>
 </div>
 
 </div><p></p><hr><a id="method-Model-fit"></a><div class="section">
 <h3 id="method-fit-">Method <code>fit()</code><a class="anchor" aria-label="anchor" href="#method-fit-"></a></h3>
-<p>Prepare the data and fit the model to it. Do this for all
-splits into training and test cohort. However, we do not support multiple time
-cutoffs at this step; enabling them is the job of <code>[training_camp()]</code>.</p><div class="section">
+<p>Fit the model to a data set for all splits into training
+and test cohort. However, we do not support multiple time
+cutoffs at this step; enabling them is the job of <code><a href="training_camp.html">training_camp()</a></code>.</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Model</span><span class="op">$</span><span class="fu">fit</span><span class="op">(</span><span class="va">data</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span>, msg_prefix <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -310,17 +310,18 @@ want to apply the <code>at_time_cutoff()</code> method to the <code>Model</code>
 
 <div class="section">
 <h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
-<p>A list of fit objects as returned by the <code>fit()</code> method of <code>model</code>.</p>
+<p>The <code>Model</code> object itself with the <code>fits</code> attribute set to a
+list holding the object returned by the <code>fitter</code> attribute for every
+split.</p>
 </div>
 
 </div><p></p><hr><a id="method-Model-predict"></a><div class="section">
 <h3 id="method-predict-">Method <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code><a class="anchor" aria-label="anchor" href="#method-predict-"></a></h3>
-<p>Prepare the data and predict with the model from it. Do
-this for all splits into training and test cohort. As with
-<code>[prepare_and_fit()]</code>, we do not support multiple time cutoffs at
-this step; this is <code>[assess_2d_center()]</code>'s job. Additonally return
-the true values of the response and, if the <code>benchmark_col</code> attribute
-of the <code>Data</code> object is not <code>NULL</code>, the values of the benchmark.</p><div class="section">
+<p>Predict for a data set and all splits into training and
+test cohort. We don't support multiple time cutoffs here. Additonally
+return the true values of the response and, if the <code>benchmark_col</code>
+attribute of the <code>Data</code> object is not <code>NULL</code>, the values of the
+benchmark.</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Model</span><span class="op">$</span><span class="fu">predict</span><span class="op">(</span><span class="va">data</span>, <span class="va">pivot_time_cutoff</span>, lambda <span class="op">=</span> <span class="st">"lambda.min"</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
