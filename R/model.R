@@ -15,8 +15,8 @@ Model <- R6::R6Class("Model",
         split_index = NULL,
         #' @field time_cutoffs Threshold and censor the outcome accordingly.
         time_cutoffs = NULL,
-        #' @field optional_fitter_args Optional arguments passed to `fitter`.
-        optional_fitter_args = NULL,
+        #' @field hyperparams Optional arguments passed to `fitter`.
+        hyperparams = NULL,
         #' @field response_type The type of response to be used.
         response_type = NULL,
         #' @field response_colnames Use as column names for the response matrix.
@@ -51,7 +51,7 @@ Model <- R6::R6Class("Model",
         #' `time_cutoffs`, find the corresponding model in a subdirectory named after this value. 
         #' @param fitter function. The model fitting function to be used. Must take `x` and
         #' `y` as first two positional arguments. Further arguments can be passed via
-        #' `optional_fitter_args` (below). Its return value must be an S3 object with a `plot()` 
+        #' `hyperparams` (below). Its return value must be an S3 object with a `plot()` 
         #' method, and (ideally, for assessment) with a `predict()` method. Default is `NULL`.
         #' @param time_cutoffs numeric vector.
         #' * If `response_type == "survival_censored"`: For every value in `time_cutoffs`, censor
@@ -62,7 +62,7 @@ Model <- R6::R6Class("Model",
         #' specified model.
         #' @param split_index integer vector. Split the given data into training and test samples 
         #' `length(split_index)` times, i.e., every index in `split_index` will get its own split. 
-        #' @param optional_fitter_args list. Optional arguments passed to `fitter`, e.g. alpha 
+        #' @param hyperparams list. Optional arguments passed to `fitter`, e.g. alpha 
         #' in case of an elastic net. Default is `list()`, i.e., no arguments other than `x`, `y`
         #' passed to `fitter`.
         #' @param response_type string. The type of response to be used. One of `"binary"` or
@@ -107,7 +107,7 @@ Model <- R6::R6Class("Model",
             directory,
             split_index,
             time_cutoffs,
-            optional_fitter_args = NULL,
+            hyperparams = NULL,
             response_type = c("binary", "survival_censored"),
             response_colnames = c("time", "status"),
             include_from_continuous_pheno = NULL,
@@ -120,7 +120,7 @@ Model <- R6::R6Class("Model",
             fit_file = "models.rds"
         )
             model_initialize(self, private, name, fitter, directory, split_index, 
-                time_cutoffs, optional_fitter_args, response_type, response_colnames, 
+                time_cutoffs, hyperparams, response_type, response_colnames, 
                 include_from_continuous_pheno, include_from_discrete_pheno, 
                 append_to_includes, create_directory, plot_file, plot_ncols,
                 plot_title_line, fit_file),  

@@ -6,8 +6,8 @@ test_that("check_fitter() works correctly", {
   
   check_fitter(valid_fitter)
 
-  optional_fitter_args <- list("alpha" = 0.5, nFold = 3)
-  check_fitter(valid_fitter, optional_fitter_args)
+  hyperparams <- list("alpha" = 0.5, nFold = 3)
+  check_fitter(valid_fitter, hyperparams)
 
   wrong_fitter_args <- list("alpha" = 0.5, nFold = 3, "wrong_arg" = 1)
   check_fitter(valid_fitter, wrong_fitter_args)

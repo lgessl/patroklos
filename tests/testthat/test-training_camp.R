@@ -21,7 +21,7 @@ test_that("training_camp() works", {
     fitter = zeroSum::zeroSum,
     split_index = 1,
     time_cutoffs = 1.5,
-    optional_fitter_args = list(family = "cox", nfolds = n_fold, lambda = lambda, 
+    hyperparams = list(family = "cox", nfolds = n_fold, lambda = lambda, 
       zeroSum = FALSE),
     response_type = "survival_censored"
   )

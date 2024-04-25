@@ -42,7 +42,7 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
             self$fitter, 
             args = c(
                 list("x" = x, "y" = y), 
-                self$optional_fitter_args
+                self$hyperparams
             )
         )
         if(!quiet)

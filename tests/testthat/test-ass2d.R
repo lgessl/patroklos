@@ -81,7 +81,7 @@ test_that("Ass2d$assess() works", {
     fitter = zeroSum::zeroSum,
     split_index = 1:2,
     time_cutoffs = 2.,
-    optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold, 
+    hyperparams = list(family = "cox", alpha = 1, nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE),
     response_type = "survival_censored"
   )
@@ -91,7 +91,7 @@ test_that("Ass2d$assess() works", {
     fitter = zeroSum::zeroSum,
     split_index = 1,
     time_cutoffs = 2.,
-    optional_fitter_args = list(family = "binomial", alpha = 1, 
+    hyperparams = list(family = "binomial", alpha = 1, 
       nFold = n_fold, lambda = lambda, zeroSum = FALSE),
     response_type = "binary"
   )
@@ -165,7 +165,7 @@ test_that("Ass2d$assess_center() works", {
     fitter = zeroSum::zeroSum,
     split_index = 1:2,
     time_cutoffs = Inf,
-    optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold, 
+    hyperparams = list(family = "cox", alpha = 1, nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE),
     response_type = "survival_censored"
   )
@@ -173,7 +173,7 @@ test_that("Ass2d$assess_center() works", {
     name = "binomial",
     directory = file.path(model_dir, "logistic"),
     fitter = zeroSum::zeroSum,
-    optional_fitter_args = list(family = "binomial", alpha = 1, nFold = n_fold, 
+    hyperparams = list(family = "binomial", alpha = 1, nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE),
     split_index = 1,
     time_cutoffs = c(1.5, 2),

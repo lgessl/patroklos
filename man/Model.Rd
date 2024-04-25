@@ -24,7 +24,7 @@ stores it and predicts from it.
 
 \item{\code{time_cutoffs}}{Threshold and censor the outcome accordingly.}
 
-\item{\code{optional_fitter_args}}{Optional arguments passed to \code{fitter}.}
+\item{\code{hyperparams}}{Optional arguments passed to \code{fitter}.}
 
 \item{\code{response_type}}{The type of response to be used.}
 
@@ -77,7 +77,7 @@ Create a new Model instance.
   directory,
   split_index,
   time_cutoffs,
-  optional_fitter_args = NULL,
+  hyperparams = NULL,
   response_type = c("binary", "survival_censored"),
   response_colnames = c("time", "status"),
   include_from_continuous_pheno = NULL,
@@ -98,7 +98,7 @@ Create a new Model instance.
 
 \item{\code{fitter}}{function. The model fitting function to be used. Must take \code{x} and
 \code{y} as first two positional arguments. Further arguments can be passed via
-\code{optional_fitter_args} (below). Its return value must be an S3 object with a \code{plot()}
+\code{hyperparams} (below). Its return value must be an S3 object with a \code{plot()}
 method, and (ideally, for assessment) with a \code{predict()} method. Default is \code{NULL}.}
 
 \item{\code{directory}}{string. The directory to store the models in. For every value in
@@ -117,7 +117,7 @@ outcome depending on whether it occured before or after this value, and train th
 specified model.
 }}
 
-\item{\code{optional_fitter_args}}{list. Optional arguments passed to \code{fitter}, e.g. alpha
+\item{\code{hyperparams}}{list. Optional arguments passed to \code{fitter}, e.g. alpha
 in case of an elastic net. Default is \code{list()}, i.e., no arguments other than \code{x}, \code{y}
 passed to \code{fitter}.}
 

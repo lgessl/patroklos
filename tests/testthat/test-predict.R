@@ -21,7 +21,7 @@ test_that("model$predict() works", {
     fitter = zeroSum::zeroSum,
     split_index = 1:2,
     time_cutoffs = Inf,
-    optional_fitter_args = list(family = "cox", alpha = 1, nFold = n_fold, 
+    hyperparams = list(family = "cox", alpha = 1, nFold = n_fold, 
     lambda = lambda, zeroSum = FALSE),
     response_type = "survival_censored"
   )
@@ -32,7 +32,7 @@ test_that("model$predict() works", {
     fitter = zeroSum::zeroSum,
     split_index = 1:2,
     time_cutoffs = 2,
-    optional_fitter_args = list(family = "binomial", alpha = 1, nFold = n_fold, 
+    hyperparams = list(family = "binomial", alpha = 1, nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE),
     response_type = "binary"
   )
