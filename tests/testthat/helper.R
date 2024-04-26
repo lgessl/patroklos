@@ -18,17 +18,11 @@ generate_mock_data <- function(
     # pheno (n_samples x 5 tibble)
     pheno_tbl <- tibble::tibble(.rows = n_samples)
     pheno_tbl[["patient_id"]] <- rownames(expr_mat)
-    pheno_tbl[["progression"]] <- sample(
-        0:1,
-        size = n_samples,
-        replace = TRUE,
-        prob = c(.3, .7)
-    )
-    pheno_tbl[["pfs_years"]] <- runif(n_samples, 0, 4)
+    pheno_tbl[["progression"]] <- rep(1, n_samples)
+    pheno_tbl[["pfs_years"]] <- rep(0, n_samples)
     pheno_tbl[["discrete_var"]] <- sample(1:3, size = n_samples, replace = TRUE)
     pheno_tbl[["continuous_var"]] <- rnorm(n_samples, 10, 10)
     pheno_tbl[["ipi"]] <- sample(1:5, size = n_samples, replace = TRUE)
-    pheno_tbl[["ipi"]][1] <- NA
     for(i in split_index){
         pheno_tbl[[paste0("split_", i)]] <- sample(
             c("train", "test"),
@@ -36,9 +30,38 @@ generate_mock_data <- function(
             replace = TRUE
         )
     }
+
+    # Generate a reasonable time-to-event columm as follows:
+    # 1. y = x %*% beta + noise (beta, noise ~ N(0, 1))
+    # 2. Reduce survival of those samples with IPI = i randomly uniformly 
+    # by (11-i)/10 to (10-i)/10 (i = 1, 2, 3, 4, 5)
+    # 3. Scale y linealy such that y >= 0 and median is 2
+    # 4. Introduce 20% censored samples with censoring time uniformly reduced 
+    # by 0-100% of the original survival time 
+    # All in all, survival follows a linear model scaled according to the IPI
+    x_cont <- cbind(expr_mat, pheno_tbl[["continuous_var"]])
+    x_cat <- tibble_to_binary(pheno_tbl[, c("discrete_var", "ipi")])
+    x <- cbind(expr_mat, x_cat)
+    beta <- rnorm(ncol(x))
+    y <- x %*% beta + rnorm(n_samples)
+    y <- y[, 1]
+    for (i in 1:5) {
+        y[pheno_tbl[["ipi"]] == i] <- runif(sum(pheno_tbl[["ipi"]] == i), 
+            (10-i)/10, (11-i)/10) * y[pheno_tbl[["ipi"]] == i]
+    }
+    y <- (y-median(y)) / abs(min(y)) * 2 + 2
+    progression <- rep(1, n_samples)
+    censored <- sample(seq(n_samples), floor(0.2*n_samples))
+    progression[censored] <- 0
+    y[censored] <- runif(length(censored), 0, 1) * y[censored] 
+    pheno_tbl[["pfs_years"]] <- y
+    pheno_tbl[["progression"]] <- progression
+
     # insert NAs
+    pheno_tbl[["ipi"]][1] <- NA
     na_rows <- sample(1:n_samples, n_na_in_pheno, replace = TRUE)
-    na_cols <- sample(4:6, n_na_in_pheno, replace = TRUE)
+    na_cols <- sample(c("continuous_var", "discrete_var", "ipi"), n_na_in_pheno, 
+        replace = TRUE)
     if(n_na_in_pheno > 0){
         for(i in 1:n_na_in_pheno){
             pheno_tbl[na_rows[i], na_cols[i]] <- NA

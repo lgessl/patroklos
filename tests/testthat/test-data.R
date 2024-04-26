@@ -43,7 +43,7 @@ test_that("Data$read() works", {
     n_na_in_pheno = 3,
     to_csv = dir,
     split_index = 1:3
-  )
+  ) 
   data <- Data$new(
     name = "mock",
     directory = dir,
