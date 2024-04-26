@@ -42,7 +42,11 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
             self$fitter, 
             args = c(
                 list("x" = x, "y" = y), 
-                self$hyperparams
+                self$hyperparams,
+                list(
+                    "n_folds" = self$n_folds, 
+                    "append_to_includes" = self$append_to_includes
+                )
             )
         )
         if(!quiet)

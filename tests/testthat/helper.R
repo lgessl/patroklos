@@ -3,7 +3,8 @@ generate_mock_data <- function(
     n_genes = 2,
     n_na_in_pheno = 3,
     to_csv = NULL,
-    split_index = 1:3
+    split_index = 1:3,
+    return_type = "data"
 ){
     # expression matrix
     expr_mat <- matrix(
@@ -40,19 +41,24 @@ generate_mock_data <- function(
     # by 0-100% of the original survival time 
     # All in all, survival follows a linear model scaled according to the IPI
     x_cont <- cbind(expr_mat, pheno_tbl[["continuous_var"]])
+    colnames(x_cont)[n_genes+1] <- "continuous_var++"
     x_cat <- tibble_to_binary(pheno_tbl[, c("discrete_var", "ipi")])
+    colnames(x_cat) <- paste0(colnames(x_cat), "++")
     x <- cbind(expr_mat, x_cat)
     beta <- rnorm(ncol(x))
-    y <- x %*% beta + rnorm(n_samples)
+    y <- x %*% beta 
     y <- y[, 1]
     for (i in 1:5) {
         y[pheno_tbl[["ipi"]] == i] <- runif(sum(pheno_tbl[["ipi"]] == i), 
             (10-i)/10, (11-i)/10) * y[pheno_tbl[["ipi"]] == i]
     }
-    y <- (y-median(y)) / abs(min(y)) * 2 + 2
+    y <- (y-median(y)) / abs(min(y)) * 2 + 2 + rnorm(n_samples, 0, .5) 
+    if (return_type == "fitter") 
+        return(list("x" = x, "y" = as.numeric(y<2)))
     progression <- rep(1, n_samples)
     censored <- sample(seq(n_samples), floor(0.2*n_samples))
     progression[censored] <- 0
+    y_uncensored <- y
     y[censored] <- runif(length(censored), 0, 1) * y[censored] 
     pheno_tbl[["pfs_years"]] <- y
     pheno_tbl[["progression"]] <- progression
@@ -73,8 +79,8 @@ generate_mock_data <- function(
         readr::write_csv(expr_tbl, file.path(to_csv, "expr.csv"))
         readr::write_csv(pheno_tbl, file.path(to_csv, "pheno.csv"))
     }
-
     if(is.null(to_csv)) to_csv <- "mock_dir"
+
     data <- Data$new(
         name = "mock",
         directory = to_csv,
