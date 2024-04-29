@@ -42,7 +42,7 @@ generate_predictor <- function(
         if(!is.numeric(bind_continuous))
             stop("Variables specified in `include_from_continuous_pheno` must be numeric.")
         colnames(bind_continuous) <- colnames(bind_continuous) |> 
-            stringr::str_c(model$append_to_includes)
+            stringr::str_c(model$li_var_suffix)
     }
     # Discrete pheno second
     if(!is.null(include_from_discrete_pheno)){
@@ -50,7 +50,7 @@ generate_predictor <- function(
         bind_discrete <- pheno_tbl[, include_from_discrete_pheno, drop = FALSE] |>
             tibble_to_binary()
         colnames(bind_discrete) <- colnames(bind_discrete) |>
-            stringr::str_c(model$append_to_includes)
+            stringr::str_c(model$li_var_suffix)
     }
 
     # Combine into numeric matrix, the predictor matrix    

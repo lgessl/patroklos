@@ -19,7 +19,7 @@ test_that("nested_cv() works", {
     fit <- nested_cv_oob(
         x = x, y = y, fitter1 = zeroSum::zeroSum, fitter2 = ranger::ranger,
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
-        n_folds = 3, append_to_includes = "++" 
+        n_folds = 3, li_var_suffix = "++" 
     )
     expect_s3_class(fit, "nested_fit")
     expect_s3_class(fit$model1, "zeroSum")
@@ -37,13 +37,13 @@ test_that("nested_cv() works", {
     expect_error(nested_cv_oob(
         x = x, y = y, fitter1 = zeroSum::zeroSum, fitter2 = ranger::ranger,
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
-        n_folds = 3, append_to_includes = "++" 
+        n_folds = 3, li_var_suffix = "++" 
     ))
-    append_to_includes <- "--"
+    li_var_suffix <- "--"
     expect_error(nested_cv_oob(
         x = x, y = y, fitter1 = zeroSum::zeroSum, fitter2 = ranger::ranger,
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
-        n_folds = 3, append_to_includes = append_to_includes 
+        n_folds = 3, li_var_suffix = li_var_suffix 
     ))
 })
 
@@ -64,14 +64,14 @@ test_that("nested_fit() works", {
     fit1 <- structure(1, class = c("zeroSum", "list")) 
     fit2 <- structure(2, class = c("ranger", "list")) 
     fit <- nested_fit(model1 = fit1, model2 = fit2, best_hyperparams = 
-        list(lambda = 123), append_to_includes = "++")
+        list(lambda = 123), li_var_suffix = "++")
     expect_s3_class(fit, "nested_fit")
 
     # Errors
     class(fit1) <- "nonesense"
     expect_error(nested_fit(model1 = fit1, model2 = fit2, best_hyperparams = list(lambda = lambda, 
         mtry = 3, min.node.size = 4, classification = TRUE, num.trees = 100), 
-        append_to_includes = "--"))
+        li_var_suffix = "--"))
 })
 
 test_that("predict.nested_fit() works", {
@@ -95,7 +95,7 @@ test_that("predict.nested_fit() works", {
         mtry = 3, min.node.size = 4, classification = TRUE, num.trees = 100) 
     n_fit <- nested_fit(fit1, fit2, list(lambda_index = seq_along(lambda), 
     lambda = lambda, mtry = 3, min.node.size = 4, classification = TRUE, 
-    num.trees = 100), append_to_includes = "++")
+    num.trees = 100), li_var_suffix = "++")
     proj <- predict(n_fit, x)
 
     expect_equal(length(proj), n_samples)

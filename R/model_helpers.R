@@ -1,7 +1,7 @@
 model_initialize <- function(self, private, name, fitter, directory, split_index, 
     time_cutoffs, hyperparams, response_type, response_colnames, 
     include_from_continuous_pheno, include_from_discrete_pheno, 
-    append_to_includes, create_directory, plot_file, plot_ncols,
+    li_var_suffix, create_directory, plot_file, plot_ncols,
     plot_title_line, fit_file){
 
     response_type <- match.arg(response_type, c("binary", "survival_censored"))
@@ -15,7 +15,7 @@ model_initialize <- function(self, private, name, fitter, directory, split_index
     stopifnot(is.character(response_colnames))
     stopifnot(is.character(include_from_continuous_pheno) || is.null(include_from_continuous_pheno))
     stopifnot(is.character(include_from_discrete_pheno) || is.null(include_from_discrete_pheno))
-    stopifnot(is.character(append_to_includes))
+    stopifnot(is.character(li_var_suffix))
     stopifnot(is.character(directory))
     stopifnot(is.logical(create_directory))
     stopifnot(is.numeric(time_cutoffs) || is.null(time_cutoffs))
@@ -34,7 +34,7 @@ model_initialize <- function(self, private, name, fitter, directory, split_index
     self$response_colnames <- response_colnames
     self$include_from_continuous_pheno <- include_from_continuous_pheno
     self$include_from_discrete_pheno <- include_from_discrete_pheno
-    self$append_to_includes <- append_to_includes
+    self$li_var_suffix <- li_var_suffix
     self$create_directory <- create_directory
     self$plot_file <- plot_file
     self$plot_ncols <- plot_ncols

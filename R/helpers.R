@@ -128,19 +128,21 @@ mirror_path <- function(
     return(new_filepath)
 }
 
-get_early_bool <- function(x, append_to_includes){
+get_early_bool <- function(x, li_var_suffix){
     stopifnot(!is.null(colnames(x)))
-    stopifnot(is.character(append_to_includes))
+    stopifnot(is.character(li_var_suffix))
     early_bool <- vapply(
         colnames(x),
         function(s) 
-            stringr::str_sub(s, -nchar(append_to_includes)) != 
-            append_to_includes,
+            stringr::str_sub(s, -nchar(li_var_suffix)) != 
+            li_var_suffix,
         logical(1)
     ) 
-    if (all(early_bool))
-        stop("No features to feed into the late model.")
-    if (!any(early_bool))
-        stop("No features to feed into the early model.")
+    if (all(early_bool) || all(!early_bool))
+        stop(ifelse(all(early_bool), "All", "No"), " features are for the early", 
+        " model.\n", "You set `li_var_suffix`' to ", li_var_suffix, ".\n",
+        "These are your features: ", paste(colnames(x), collapse = ", "), ".\n",
+        "Did you forget to set `include_from_discrete_pheno` or ", 
+        "`include_from_continuous_pheno` when constructing the Model object?\n")
     early_bool
 }

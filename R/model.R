@@ -27,9 +27,9 @@ Model <- R6::R6Class("Model",
         #' @field include_from_discrete_pheno The names of the discrete variables in the
         #' pheno data (to be) included in the predictor matrix.
         include_from_discrete_pheno = NULL,
-        #' @field append_to_includes Append this to the names of features from the pheno data
+        #' @field li_var_suffix Append this to the names of features from the pheno data
         #' when adding them to the predictor matrix.
-        append_to_includes = NULL,
+        li_var_suffix = NULL,
         #' @field create_directory Whether to create `directory` if it does not exist, yet.
         create_directory = NULL,
         #' @field plot_file Store the plots resulting from `plot(fit_obj)` in `directory` under
@@ -81,7 +81,7 @@ Model <- R6::R6Class("Model",
         #' variables in the pheno data (to be) included in the predictor matrix. A discrete
         #' variable with n levels will be converted to n-1 binary variables. Default is `NULL`,
         #' which means no discrete pheno variables are or will be included.
-        #' @param append_to_includes string. Append this to the names of features from the pheno
+        #' @param li_var_suffix string. Append this to the names of features from the pheno
         #' data when adding them to the predictor matrix. Default is `"++"`.
         #' @param create_directory logical. Whether to create `directory` if it does not exist, yet. 
         #' Default is `TRUE`.
@@ -112,7 +112,7 @@ Model <- R6::R6Class("Model",
             response_colnames = c("time", "status"),
             include_from_continuous_pheno = NULL,
             include_from_discrete_pheno = NULL,
-            append_to_includes = "++",
+            li_var_suffix = "++",
             create_directory = TRUE,
             plot_file = "training_error.pdf",
             plot_ncols = 2,
@@ -122,7 +122,7 @@ Model <- R6::R6Class("Model",
             model_initialize(self, private, name, fitter, directory, split_index, 
                 time_cutoffs, hyperparams, response_type, response_colnames, 
                 include_from_continuous_pheno, include_from_discrete_pheno, 
-                append_to_includes, create_directory, plot_file, plot_ncols,
+                li_var_suffix, create_directory, plot_file, plot_ncols,
                 plot_title_line, fit_file),  
 
         #' @description Fit the model to a data set for all splits into training 

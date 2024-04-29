@@ -23,7 +23,7 @@ test_that("generate_predictor() works", {
     time_cutoffs = 2.,
     include_from_continuous_pheno = "continuous_var",
     include_from_discrete_pheno = "discrete_var",
-    append_to_includes = "APP"
+    li_var_suffix = "APP"
   )
   
   # Test case 1: include both continuous and discrete pheno variables

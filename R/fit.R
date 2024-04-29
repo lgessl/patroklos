@@ -41,12 +41,9 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
         fits[[split_name]] <- do.call(
             self$fitter, 
             args = c(
-                list("x" = x, "y" = y), 
-                self$hyperparams,
-                list(
-                    "n_folds" = self$n_folds, 
-                    "append_to_includes" = self$append_to_includes
-                )
+                list("x" = x, "y" = y, 
+                    "li_var_suffix" = self$li_var_suffix),
+                self$hyperparams
             )
         )
         if(!quiet)
@@ -59,15 +56,16 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
     saveRDS(self, stored_models_file)
 
     # Plots about fitting as a grid
-    grDevices::pdf(file = file.path(self$directory, self$plot_file))
-    graphics::par(mfrow = c(1, self$plot_ncols))
-    for(i in self$split_index){
-        split_name <- paste0(data$split_col_prefix, i)
-        fit <- fits[[split_name]]
-        plot(fit)
-        graphics::title(main = paste0("Split ", i), line = self$plot_title_line)
+    if (any(class(self$fits[[1]]) %in% sloop::s3_methods_generic("plot")[["class"]])) {
+        grDevices::pdf(file = file.path(self$directory, self$plot_file))
+        graphics::par(mfrow = c(1, self$plot_ncols))
+        for(i in self$split_index){
+            split_name <- paste0(data$split_col_prefix, i)
+            fit <- fits[[split_name]]
+            plot(fit)
+            graphics::title(main = paste0("Split ", i), line = self$plot_title_line)
+        }
+        grDevices::dev.off()
     }
-    grDevices::dev.off()
-
     invisible(self)
 }

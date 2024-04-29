@@ -11,8 +11,8 @@ nested_cv_oob(
   fitter2,
   hyperparams1,
   hyperparams2,
-  n_folds,
-  append_to_includes,
+  li_var_suffix,
+  n_folds = 10,
   pseudo_cv = TRUE
 )
 }
@@ -41,11 +41,11 @@ to obtain cross-validated predictions from the early model.}
 Unlike \code{hyperparams1}, we call \code{fitter2} for every combination of values in
 \code{hyperparams2} and lambda value from \code{fitter1}.}
 
-\item{n_folds}{An integer specifying the number of folds for the cross-validation.}
-
-\item{append_to_includes}{A character string to filter columns in \code{x} we
+\item{li_var_suffix}{A character string to filter columns in \code{x} we
 provide to the late model as predictors: all columns with names matching
-\code{append_to_includes} as a regular expression.}
+\code{li_var_suffix} as a regular expression.}
+
+\item{n_folds}{An integer specifying the number of folds for the cross-validation.}
 
 \item{pseudo_cv}{A logical indicating whether we use pseudo cross-validation.
 I.e., \code{fitter1} performs one \code{n_folds} cross validation, get a new training

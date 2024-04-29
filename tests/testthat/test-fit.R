@@ -72,4 +72,34 @@ test_that("Model$fit() works", {
   expect_equal(nrow(model$fits[[1]]$coef[[1]]), n_genes+1+2+1)
   expect_equal(length(model$fits), length(model$split_index))
   expect_true(file.exists(file.path(dir, "model4", "models.rds")))
+
+  # nested_cv
+  model <- Model$new(
+      name = "RF pseudo OOB",
+      fitter = nested_cv_oob,
+      directory = file.path(dir, "model5"),
+      split_index = 1,
+      time_cutoffs = 2.,
+      hyperparams = list(
+          fitter1 = zeroSum::zeroSum,
+          fitter2 = ranger::ranger,
+          hyperparams1 = list(
+              family = "binomial",
+              alpha = 1,
+              zeroSum = FALSE
+          ),
+          hyperparams2 = list(
+              num.trees = 100, 
+              mtry = 2:3,
+              min.node.size = 3, 
+              classification = TRUE
+          ),
+          n_folds = 2,
+          pseudo_cv = TRUE
+      ),
+      response_type = "binary",
+      include_from_continuous_pheno = "continuous_var",
+      include_from_discrete_pheno = "discrete_var"   
+  )
+  model$fit(data, quiet = TRUE)
 })

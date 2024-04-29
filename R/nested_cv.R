@@ -21,9 +21,9 @@
 #' Unlike `hyperparams1`, we call `fitter2` for every combination of values in 
 #' `hyperparams2` and lambda value from `fitter1`.
 #' @param n_folds An integer specifying the number of folds for the cross-validation.
-#' @param append_to_includes A character string to filter columns in `x` we 
+#' @param li_var_suffix A character string to filter columns in `x` we 
 #' provide to the late model as predictors: all columns with names matching
-#' `append_to_includes` as a regular expression.
+#' `li_var_suffix` as a regular expression.
 #' @param pseudo_cv A logical indicating whether we use pseudo cross-validation.
 #' I.e., `fitter1` performs one `n_folds` cross validation, get a new training 
 #' set by replacing `fitter1`'s input features by the cross-validated predictions 
@@ -50,8 +50,8 @@ nested_cv_oob <- function(
     fitter2,
     hyperparams1,
     hyperparams2,
-    n_folds,
-    append_to_includes,
+    li_var_suffix,
+    n_folds = 10,
     pseudo_cv = TRUE
 ){
     # Input checks
@@ -69,13 +69,13 @@ nested_cv_oob <- function(
     stopifnot(is.list(hyperparams1) && is.list(hyperparams2))
     n_folds <- as.integer(n_folds)
     stopifnot(n_folds > 1)
-    stopifnot(is.character(append_to_includes))
-    stopifnot(is.character(append_to_includes))
+    stopifnot(is.character(li_var_suffix))
+    stopifnot(is.character(li_var_suffix))
     stopifnot(is.logical(pseudo_cv))
     if (!pseudo_cv) {
         stop("Right now, only pseudo cross-validation is supported.")
     }
-    early_bool <- get_early_bool(x, append_to_includes) 
+    early_bool <- get_early_bool(x, li_var_suffix) 
     x_early <- x[, early_bool] 
     if(is.null(hyperparams2$expand) || hyperparams2$expand){
         hyperparams2 <- expand.grid(hyperparams2)
@@ -86,7 +86,7 @@ nested_cv_oob <- function(
         c(list(x = x_early, y = y, nFold = n_folds), hyperparams1)
     )
     # Second stage
-    n_lambda <- length(fit$lambda)
+    n_lambda <- length(fit$cv_predict)
     n_hyper2 <- nrow(hyperparams2)
     fits <- vector("list", length(fit$lambda) * nrow(hyperparams2))
     best_acc <- 0
@@ -118,7 +118,7 @@ nested_cv_oob <- function(
         model1 = fit, 
         model2 = fits[[best_idx]], 
         best_hyperparams = best_hyperparams, 
-        append_to_includes = append_to_includes
+        li_var_suffix = li_var_suffix
     )
 }
 
@@ -129,7 +129,7 @@ nested_cv_oob <- function(
 #' @param model2 An S3 object with a `predict` method. The late model.
 #' @param best_hyperparams A named list with the best hyperparameters for the 
 #' late model.
-#' @param append_to_includes A character string matching exactly the names of 
+#' @param li_var_suffix A character string matching exactly the names of 
 #' the features we only feed into the late model.
 #' @return An S3 object with class `nested_fit'.
 #' @details Nest two models. The first model takes part of the features (those 
@@ -141,7 +141,7 @@ nested_fit <- function(
     model1,
     model2,
     best_hyperparams,
-    append_to_includes
+    li_var_suffix
 ){
     methods1 <- unlist(lapply(class(model1), function(cl) sloop::s3_methods_class(
         cl)$generic)) 
@@ -154,13 +154,13 @@ nested_fit <- function(
         stop("`model2` must have a predict method.")
     }
     stopifnot(is.list(best_hyperparams))
-    stopifnot(is.character(append_to_includes))
+    stopifnot(is.character(li_var_suffix))
     structure(
         list(
             "model1" = model1,
             "model2" = model2,
             "best_hyperparams" = best_hyperparams,
-            "append_to_includes" = append_to_includes
+            "li_var_suffix" = li_var_suffix
         ),
         class = c("nested_fit", "list")
     )
@@ -184,7 +184,7 @@ predict.nested_fit <- function(
 ){
     stopifnot(inherits(newx, "matrix"))
     stopifnot(!is.null(colnames(newx)))
-    early_bool <- get_early_bool(newx, object$append_to_includes)
+    early_bool <- get_early_bool(newx, object$li_var_suffix)
     x_early <- newx[, early_bool]
     x_late <- cbind(
         predict(object = object$model1, newx = x_early, 

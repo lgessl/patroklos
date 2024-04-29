@@ -36,7 +36,7 @@ pheno data (to be) included in the predictor matrix.}
 \item{\code{include_from_discrete_pheno}}{The names of the discrete variables in the
 pheno data (to be) included in the predictor matrix.}
 
-\item{\code{append_to_includes}}{Append this to the names of features from the pheno data
+\item{\code{li_var_suffix}}{Append this to the names of features from the pheno data
 when adding them to the predictor matrix.}
 
 \item{\code{create_directory}}{Whether to create \code{directory} if it does not exist, yet.}
@@ -82,7 +82,7 @@ Create a new Model instance.
   response_colnames = c("time", "status"),
   include_from_continuous_pheno = NULL,
   include_from_discrete_pheno = NULL,
-  append_to_includes = "++",
+  li_var_suffix = "++",
   create_directory = TRUE,
   plot_file = "training_error.pdf",
   plot_ncols = 2,
@@ -143,7 +143,7 @@ variables in the pheno data (to be) included in the predictor matrix. A discrete
 variable with n levels will be converted to n-1 binary variables. Default is \code{NULL},
 which means no discrete pheno variables are or will be included.}
 
-\item{\code{append_to_includes}}{string. Append this to the names of features from the pheno
+\item{\code{li_var_suffix}}{string. Append this to the names of features from the pheno
 data when adding them to the predictor matrix. Default is \code{"++"}.}
 
 \item{\code{create_directory}}{logical. Whether to create \code{directory} if it does not exist, yet.
