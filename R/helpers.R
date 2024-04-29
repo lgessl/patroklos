@@ -127,3 +127,20 @@ mirror_path <- function(
     new_filepath <- do.call(file.path, as.list(path_split))
     return(new_filepath)
 }
+
+get_early_bool <- function(x, append_to_includes){
+    stopifnot(!is.null(colnames(x)))
+    stopifnot(is.character(append_to_includes))
+    early_bool <- vapply(
+        colnames(x),
+        function(s) 
+            stringr::str_sub(s, -nchar(append_to_includes)) != 
+            append_to_includes,
+        logical(1)
+    ) 
+    if (all(early_bool))
+        stop("No features to feed into the late model.")
+    if (!any(early_bool))
+        stop("No features to feed into the early model.")
+    early_bool
+}

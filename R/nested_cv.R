@@ -24,6 +24,15 @@
 #' @param append_to_includes A character string to filter columns in `x` we 
 #' provide to the late model as predictors: all columns with names matching
 #' `append_to_includes` as a regular expression.
+#' @param pseudo_cv A logical indicating whether we use pseudo cross-validation.
+#' I.e., `fitter1` performs one `n_folds` cross validation, get a new training 
+#' set by replacing `fitter1`'s input features by the cross-validated predictions 
+#' and procede with model fitting and getting out-of-bag predictions. This a is 
+#' not real independent testing since the OOB prediction for a given sample 
+#' according to `fitter2` involves a model that saw the sample during training.
+#' Yet, this pseudo method saves us a factor of `n_folds` in computational time 
+#' compared to a classical nested cross-validation. The latter will follow in 
+#' future versions soon. 
 #' @return An S3 object with class `nested_fit`, the model with the best 
 #' performance according to the out-of-bag (OOB) predictions based on cross-validated
 #' predictions from the early model.   
@@ -42,16 +51,31 @@ nested_cv_oob <- function(
     hyperparams1,
     hyperparams2,
     n_folds,
-    append_to_includes
+    append_to_includes,
+    pseudo_cv = TRUE
 ){
-    # Split into early and late part
-    early_bool <- vapply(
-        colnames(x),
-        function(s) 
-            stringr::str_sub(s, -nchar(append_to_includes)) != 
-            append_to_includes,
-        logical(1)
-    ) 
+    # Input checks
+    stopifnot(is.matrix(x) && is.numeric(x))
+    stopifnot(is.numeric(y) || is.factor(y))
+    if (is.vector(y)) {
+        stopifnot(length(y) == nrow(x))
+    } else if (is.matrix(y)) {
+        stopifnot(nrow(y) == nrow(x))
+    } else {
+        stop("y must be a vector or a matrix.")
+    }
+    stopifnot(length(unique(y)) != 1)
+    stopifnot(is.function(fitter1) && is.function(fitter2))
+    stopifnot(is.list(hyperparams1) && is.list(hyperparams2))
+    n_folds <- as.integer(n_folds)
+    stopifnot(n_folds > 1)
+    stopifnot(is.character(append_to_includes))
+    stopifnot(is.character(append_to_includes))
+    stopifnot(is.logical(pseudo_cv))
+    if (!pseudo_cv) {
+        stop("Right now, only pseudo cross-validation is supported.")
+    }
+    early_bool <- get_early_bool(x, append_to_includes) 
     x_early <- x[, early_bool] 
     if(is.null(hyperparams2$expand) || hyperparams2$expand){
         hyperparams2 <- expand.grid(hyperparams2)
@@ -62,27 +86,32 @@ nested_cv_oob <- function(
         c(list(x = x_early, y = y, nFold = n_folds), hyperparams1)
     )
     # Second stage
+    n_lambda <- length(fit$lambda)
+    n_hyper2 <- nrow(hyperparams2)
     fits <- vector("list", length(fit$lambda) * nrow(hyperparams2))
-    dim(fits) <- c(length(fit$lambda), nrow(hyperparams2))
     best_acc <- 0
-    best_idx <- c(1L, 1L)
+    best_idx <- 0
     best_hyperparams <- NULL 
-    for (l in seq_along(fit$lambda)) {
+    for (l in seq(n_lambda)) {
         x_late <- cbind(fit$cv_predict[[l]], x[, !early_bool])
-        for (m in seq_len(nrow(hyperparams2))) {
-           fits[[l, m]] <- do.call(
+        for (m in seq(n_hyper2)) {
+            idx <- (l-1)*n_hyper2 + m 
+            fits[[idx]] <- do.call(
                 fitter2,
                 c(list(x = x_late, y = y), as.list(hyperparams2[m, ]))
-           )
-           acc <- 1-fits[[l, m]]$prediction.error 
-           if (acc > best_acc) {
-               best_acc <- acc 
-               best_idx <- c(l, m)
-               best_hyperparams <- c(
-                    list("lambda" = fit$lambda[l]), 
+            ) 
+            acc <- mean(fits[[idx]]$predictions == y) 
+            if(is.nan(acc))
+                stop("The S3 object returned by `fitter2` must have a `predictions` 
+                    attribute.")
+            if (acc > best_acc) {
+                best_acc <- acc 
+                best_idx <- idx
+                best_hyperparams <- c(
+                    list("lambda_index" = l, "lambda" = fit$lambda[l]), 
                     as.list(hyperparams2[m, ])
                 )
-           }
+            }
         } 
     }
     nested_fit(
@@ -114,18 +143,27 @@ nested_fit <- function(
     best_hyperparams,
     append_to_includes
 ){
-   stopifnot("predict" %in% sloop::s3_methods_class(class(model1)[1])) 
-   stopifnot("predict" %in% sloop::s3_methods_class(class(model2)[1]))
-   stopifnot(is.list(best_hyperparams))
-   structure(
-       list(
-           "model1" = model1,
-           "model2" = model2,
-           "best_hyperparams" = best_hyperparams,
-           "append_to_includes" = append_to_includes
-       ),
-       class = c("nested_fit", "list")
-   )
+    methods1 <- unlist(lapply(class(model1), function(cl) sloop::s3_methods_class(
+        cl)$generic)) 
+    methods2 <- unlist(lapply(class(model2), function(cl) sloop::s3_methods_class(
+        cl)$generic)) 
+    if (!("predict" %in% methods1)) {
+        stop("`model1` must have a predict method.")
+    }
+    if (!("predict" %in% methods2)) {
+        stop("`model2` must have a predict method.")
+    }
+    stopifnot(is.list(best_hyperparams))
+    stopifnot(is.character(append_to_includes))
+    structure(
+        list(
+            "model1" = model1,
+            "model2" = model2,
+            "best_hyperparams" = best_hyperparams,
+            "append_to_includes" = append_to_includes
+        ),
+        class = c("nested_fit", "list")
+    )
 }
 
 #' @title Predict method for nested_fit objects
@@ -134,6 +172,11 @@ nested_fit <- function(
 #' @param newx A numeric matrix with the same number of columns and column names 
 #' as the matrix used to fit the model. Rows correspond to samples, columns to 
 #' features.
+#' @param ... Other arguments for the normal predict function if the fit is not 
+#' a nested_fit object.
+#' @return A numeric vector with the prediction for every sample.
+#' @importFrom stats predict
+#' @export  
 predict.nested_fit <- function(
     object = NULL,
     newx = NULL,
@@ -141,16 +184,21 @@ predict.nested_fit <- function(
 ){
     stopifnot(inherits(newx, "matrix"))
     stopifnot(!is.null(colnames(newx)))
-    stopifnot(is.character(append_to_includes))
-    early_bool <- !stringr::str_detect(
-        colnames(newx), 
-        paste0(append_to_includes, "$")
-    )
+    early_bool <- get_early_bool(newx, object$append_to_includes)
     x_early <- newx[, early_bool]
     x_late <- cbind(
-        predict(object$model1, newx = x_early, s = object$best_hyperparams[1]),
+        predict(object = object$model1, newx = x_early, 
+            s = object$best_hyperparams$lambda_index),
         newx[, !early_bool]
     )
-    y <- predict(object$model2, newx = x_late)
-    rownames(y) <- rownames(newx)
+    y <- predict(object = object$model2, data = x_late, newx = x_late)
+    if (!is.numeric(y)) 
+        y <- y[[1]]
+    if (!is.numeric(y) || length(y) != nrow(newx))
+        stop("The predict method of `model2` must return a numeric vector of same 
+            length as the number of rows in `newx` or a list with the first element 
+            being the former.")
+    dim(y) <- NULL
+    names(y) <- rownames(newx)
+    y
 }

@@ -12,7 +12,8 @@ nested_cv_oob(
   hyperparams1,
   hyperparams2,
   n_folds,
-  append_to_includes
+  append_to_includes,
+  pseudo_cv = TRUE
 )
 }
 \arguments{
@@ -45,6 +46,16 @@ Unlike \code{hyperparams1}, we call \code{fitter2} for every combination of valu
 \item{append_to_includes}{A character string to filter columns in \code{x} we
 provide to the late model as predictors: all columns with names matching
 \code{append_to_includes} as a regular expression.}
+
+\item{pseudo_cv}{A logical indicating whether we use pseudo cross-validation.
+I.e., \code{fitter1} performs one \code{n_folds} cross validation, get a new training
+set by replacing \code{fitter1}'s input features by the cross-validated predictions
+and procede with model fitting and getting out-of-bag predictions. This a is
+not real independent testing since the OOB prediction for a given sample
+according to \code{fitter2} involves a model that saw the sample during training.
+Yet, this pseudo method saves us a factor of \code{n_folds} in computational time
+compared to a classical nested cross-validation. The latter will follow in
+future versions soon.}
 }
 \value{
 An S3 object with class \code{nested_fit}, the model with the best

@@ -12,7 +12,8 @@ Suggests:
     testthat (>= 3.0.0),
     withr (>= 2.5.2),
     tibble (>= 3.0.0),
-    zeroSum (>= 2.0.6)
+    zeroSum (>= 2.0.6),
+    ranger (>= 0.16.0)
 Imports:
     dplyr (>= 1.1.3),
     readr (>= 2.1.4),
