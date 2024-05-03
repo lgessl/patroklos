@@ -86,7 +86,8 @@ test_that("Model$fit() works", {
           hyperparams1 = list(
               family = "binomial",
               alpha = 1,
-              zeroSum = FALSE
+              zeroSum = FALSE,
+              lambda = lambda
           ),
           hyperparams2 = list(
               num.trees = 100, 

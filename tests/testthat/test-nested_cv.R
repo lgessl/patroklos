@@ -24,8 +24,7 @@ test_that("nested_cv() works", {
     expect_s3_class(fit, "nested_fit")
     expect_s3_class(fit$model1, "zeroSum")
     expect_s3_class(fit$model2, "ranger")
-    hyperparams <- c(list(lambda_index = seq_along(lambda), lambda = lambda), 
-        hyperparams2)
+    hyperparams <- c(hyperparams2, list(lambda = lambda))
     expect_true(all(vapply(
         seq_along(hyperparams),
         function(i) fit$best_hyperparams[[i]] %in% hyperparams[[i]],
@@ -55,6 +54,7 @@ test_that("nested_fit() works", {
     n_genes <- 5
     n_fold <- 3
     lambda <- 1
+    search_grid <- expand.grid(list(lambda = 1:2, mtry = 3:4))
 
     x_y <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
         return_type = "fitter")
@@ -63,13 +63,14 @@ test_that("nested_fit() works", {
 
     fit1 <- structure(1, class = c("zeroSum", "list")) 
     fit2 <- structure(2, class = c("ranger", "list")) 
-    fit <- nested_fit(model1 = fit1, model2 = fit2, best_hyperparams = 
-        list(lambda = 123), li_var_suffix = "++")
+    fit <- nested_fit(model1 = fit1, model2 = fit2, search_grid = search_grid, 
+        best_hyperparams = list(lambda = 123), li_var_suffix = "++")
     expect_s3_class(fit, "nested_fit")
 
     # Errors
     class(fit1) <- "nonesense"
-    expect_error(nested_fit(model1 = fit1, model2 = fit2, best_hyperparams = list(lambda = lambda, 
+    expect_error(nested_fit(model1 = fit1, model2 = fit2,
+        search_grid = search_grid, best_hyperparams = list(lambda = lambda, 
         mtry = 3, min.node.size = 4, classification = TRUE, num.trees = 100), 
         li_var_suffix = "--"))
 })
@@ -82,6 +83,7 @@ test_that("predict.nested_fit() works", {
     n_genes <- 5
     n_fold <- 1 
     lambda <- 1
+    search_grid <- expand.grid(list(num.trees = 100, mtry = 3, lambda = lambda))
 
     x_y <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
         return_type = "fitter")
@@ -93,9 +95,10 @@ test_that("predict.nested_fit() works", {
     fit1 <- zeroSum::zeroSum(x = x_early, y = y, nFold = n_fold, lambda = lambda)
     fit2 <- ranger::ranger(x = cbind(fit1$cv.predict[[1]], x_late), y = y, 
         mtry = 3, min.node.size = 4, classification = TRUE, num.trees = 100) 
-    n_fit <- nested_fit(fit1, fit2, list(lambda_index = seq_along(lambda), 
-    lambda = lambda, mtry = 3, min.node.size = 4, classification = TRUE, 
-    num.trees = 100), li_var_suffix = "++")
+    n_fit <- nested_fit(fit1, fit2, search_grid = search_grid, 
+        list(lambda_index = seq_along(lambda), lambda = lambda, mtry = 3, 
+        min.node.size = 4, classification = TRUE, num.trees = 100), 
+        li_var_suffix = "++")
     proj <- predict(n_fit, x)
 
     expect_equal(length(proj), n_samples)

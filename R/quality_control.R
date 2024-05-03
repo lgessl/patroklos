@@ -34,6 +34,9 @@ qc_prefit <- function(
         x = x,
         y = y
     )
+    if (is.null(colnames(x))) {
+        stop("x has no column names")
+    }
 }
 
 
