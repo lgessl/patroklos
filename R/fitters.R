@@ -28,3 +28,23 @@ zeroSumEI <- function(
     fit_obj$zeroSum.weights <- zeroSum.weights
     return(fit_obj)
 }
+
+ptk_ranger <- function(x, y, ...){
+    args <- list(...)
+    args <- args[names(args) != "li_var_suffix"]
+    ptk_ranger_obj <- do.call(
+        ranger::ranger, 
+        c(list("x" = x, "y" = y), args)
+    )
+    class(ptk_ranger_obj) <- c("ptk_ranger", class(ptk_ranger_obj))
+}
+
+predict.ptk_ranger <- function(object, newx, ...){
+    y <- do.call(
+        ranger::predict.ranger, 
+        c(list("object" = object, "data" = newx), list(...))
+    )[[1]]
+    dim(y) <- NULL
+    names(y) <- rownames(newx)
+    y
+}
