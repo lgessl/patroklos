@@ -93,7 +93,7 @@ pheno data (to be) included in the predictor matrix.</p></dd>
 pheno data (to be) included in the predictor matrix.</p></dd>
 
 
-<dt><code>append_to_includes</code></dt>
+<dt><code>li_var_suffix</code></dt>
 <dd><p>Append this to the names of features from the pheno data
 when adding them to the predictor matrix.</p></dd>
 
@@ -152,7 +152,7 @@ when calling <code>plot(fit_obj)</code>.</p></dd>
 <span>  response_colnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"time"</span>, <span class="st">"status"</span><span class="op">)</span>,</span>
 <span>  include_from_continuous_pheno <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  include_from_discrete_pheno <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  append_to_includes <span class="op">=</span> <span class="st">"++"</span>,</span>
+<span>  li_var_suffix <span class="op">=</span> <span class="st">"++"</span>,</span>
 <span>  create_directory <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  plot_file <span class="op">=</span> <span class="st">"training_error.pdf"</span>,</span>
 <span>  plot_ncols <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -228,7 +228,7 @@ variable with n levels will be converted to n-1 binary variables. Default is <co
 which means no discrete pheno variables are or will be included.</p></dd>
 
 
-<dt><code>append_to_includes</code></dt>
+<dt><code>li_var_suffix</code></dt>
 <dd><p>string. Append this to the names of features from the pheno
 data when adding them to the predictor matrix. Default is <code>"++"</code>.</p></dd>
 
