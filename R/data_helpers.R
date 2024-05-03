@@ -63,7 +63,7 @@ data_read <- function(self, private){
     }
 
     # expression to matrix
-    gene_names <- tbls[["expr"]][[gene_id_col]]
+    gene_names <- expr_tbl[[gene_id_col]]
     if(!elements_unique(gene_names)){
         stop("Column ", gene_id_col, " in ", expr_file, " holds duplicate entries.")
     }

@@ -65,6 +65,9 @@ test_that("Data$read() works", {
   expect_true(is.matrix(data$expr_mat))
   expect_s3_class(data$pheno_tbl, "tbl_df")
   expect_equal(colnames(data$pheno_tbl)[1], data$patient_id_col)
+  expect_equal(colnames(data$expr_mat), paste0("gene_", 1:n_genes))
+  expect_equal(rownames(data$expr_mat), paste0("sample_", 1:n_samples))
+  expect_equal(data$pheno_tbl[[data$patient_id_col]], paste0("sample_", 1:n_samples))
 
   # errors
   # directory does not exist
