@@ -238,7 +238,8 @@ samples into a high/low-risk (time to event below/above
 of the model to predict with. Technically, we will pass it to the \code{s}
 parameter of the \code{predict()}method of the object returned by the
 \code{fitter} attribute of the \code{Model} object. See, e.g.,
-\code{\link[zeroSum:predict.zeroSum]{zeroSum::predict.zeroSum()}}.}
+\code{\link[zeroSum:predict.zeroSum]{zeroSum::predict.zeroSum()}}. Currently not in use, i.e. we let the
+\code{predict()} method of the S3 object decide for a hyperparameter.}
 }
 \if{html}{\out{</div>}}
 }

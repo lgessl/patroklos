@@ -34,12 +34,13 @@ model_predict <- function(self, private, data, lambda, pivot_time_cutoff){
         fit <- fits[[split_name]]
         if(is.null(fit))
             stop("No fit found for split ", split)
-        predicted <- predict(fit, newx = x_y[["x"]], s = lambda)
+        predicted <- predict(fit, newx = x_y[["x"]], data = x_y[["x"]])
 
         # Check what predict method did
         if(!is.numeric(predicted)){
             stop("predict method for class ", class(fit), " does not return a ", 
-            "numeric matrix or vector")
+            "numeric matrix or vector. Instead it has class ", class(predicted), 
+            ".")
         }
         if(is.matrix(predicted)){
             if(ncol(predicted) > 1L){
