@@ -37,7 +37,8 @@ test_that("AssScalar$assess() works", {
       name = "rf",
       directory = file.path(model_dir, "rf"),
       fitter = ptk_ranger,
-      hyperparams = list(mtry = 2, num.trees = 100, min.node.size = 3),
+      hyperparams = list(mtry = 2, num.trees = 100, min.node.size = 3, 
+        classification = TRUE),
       split_index = 1:2,
       time_cutoffs = 2,
       response_type = "binary",
@@ -67,7 +68,7 @@ test_that("AssScalar$assess_center() works", {
   n_fold <- 1
   lambda <- 1
   multiple_metric <- c("accuracy", "precision")
-  single_metric <- "accuracy"
+  single_metric <- "auc"
 
   dir <- withr::local_tempdir()
   data <- generate_mock_data(
@@ -92,7 +93,8 @@ test_that("AssScalar$assess_center() works", {
     name = "rf",
     directory = file.path(dir, "models/rf"),
     fitter = ptk_ranger,
-    hyperparams = list(mtry = 2, num.trees = 100, min.node.size = 3),
+    hyperparams = list(mtry = 2, num.trees = 100, min.node.size = 3,
+      classification = TRUE),
     split_index = 1:2,
     time_cutoffs = c(1.5, 2),
     response_type = "binary",

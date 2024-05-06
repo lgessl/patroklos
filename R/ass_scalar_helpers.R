@@ -32,12 +32,12 @@ ass_scalar_assess <- function(self, private, data, model, quiet){
         actual <- prep[["actual"]][[i]]
         pa <- intersect_by_names(predicted, actual, rm_na = TRUE)
         for (j in seq_along(self$metric)) {
-            metric <- paste0("get_", self$metric[j])
-            res_mat[i, j] <- do.call(metric, list(
-                "predicted" =  pa[[1]],
-                "actual" = pa[[2]],
-                "data" = data
-            ))
+            res_mat[i, j] <- get_metric(
+                metric = self$metric[j],
+                predicted = pa[[1]],
+                actual = pa[[2]],
+                data = data
+            )
         }
     }
     colnames(res_mat) <- self$metric
@@ -126,43 +126,43 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
     return(dplyr::bind_rows(res_tbl_list))
 }
 
-get_auc <- function(
+get_metric <- function(
+    metric,
     predicted,
     actual,
-    ...
+    data
 ){
-    pred_obj <- ROCR::prediction(predictions = predicted, labels = actual)
-    res <- ROCR::performance(pred_obj, measure = "auc")
-    res@y.values[[1]]
-}
-
-get_accuracy <- function(
-    predicted,
-    actual,
-    ...
-){
-    mean(predicted == actual)
-}
-
-get_precision <- function(
-    predicted,
-    actual,
-    ...
-){
-   mean(actual[predicted == 1]) 
-}
-
-get_logrank <- function(
-    predicted,
-    actual,
-    data,
-    ...
-){
-    pheno_tbl <- data$pheno_tbl
-    pheno_tbl <- pheno_tbl[pheno_tbl[[data$patient_id_col]] %in% names(predicted), ]
-    time <- pheno_tbl[[data$time_to_event_col]]
-    event <- pheno_tbl[[data$event_col]]
-    survival::survdiff(
-        survival::Surv(time = time, event = event) ~ predicted
-    )[["pvalue"]]
+    # Some metrics want binary data, i.e. in {0, 1} 
+    check_predicted_binary <- function(){
+        if (!setequal(unique(predicted), c(0, 1)))
+            stop("For metric = ", metric, ", predicted values must be in `c(0, 1)`. ", 
+                "In fact, they have unique ", 
+                "values (", paste(unique(predicted), collapse=", "), "). There might ", 
+                "be something wrong with (the predict method of) your model.")
+    }
+    if (metric == "auc") {
+        pred_obj <- ROCR::prediction(predictions = predicted, labels = actual)
+        res <- ROCR::performance(pred_obj, measure = "auc")
+        return(res@y.values[[1]])
+    } else if (metric == "accuracy") {
+        check_predicted_binary()
+        return(mean(predicted == actual))
+    } else if (metric == "precision") {
+        check_predicted_binary()
+        if (all(predicted == 0))
+            message("No positive predictions. Precision is NaN.")
+        return(mean(actual[predicted == 1]))
+    } else if (metric == "logrank") {
+        check_predicted_binary()
+        pheno_tbl <- data$pheno_tbl
+        pheno_tbl <- pheno_tbl[pheno_tbl[[data$patient_id_col]] %in% names(predicted), ]
+        time <- pheno_tbl[[data$time_to_event_col]]
+        event <- pheno_tbl[[data$event_col]]
+        res <- survival::survdiff(
+            survival::Surv(time = time, event = event) ~ predicted
+        )[["pvalue"]]
+        return(res)
+    } else {
+        stop("Unknown metric: ", metric)
+    }
 }
