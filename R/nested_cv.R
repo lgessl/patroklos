@@ -21,9 +21,6 @@
 #' Unlike `hyperparams1`, we call `fitter2` for every combination of values in 
 #' `hyperparams2` and lambda value from `fitter1`.
 #' @param n_folds An integer specifying the number of folds for the cross-validation.
-#' @param li_var_suffix A character string to filter columns in `x` we 
-#' provide to the late model as predictors: all columns with names matching
-#' `li_var_suffix` as a regular expression.
 #' @param pseudo_cv A logical indicating whether we use pseudo cross-validation.
 #' I.e., `fitter1` performs one `n_folds` cross validation, get a new training 
 #' set by replacing `fitter1`'s input features by the cross-validated predictions 
@@ -50,7 +47,6 @@ nested_cv_oob <- function(
     fitter2,
     hyperparams1,
     hyperparams2,
-    li_var_suffix,
     n_folds = 10,
     pseudo_cv = TRUE
 ){
@@ -73,13 +69,11 @@ nested_cv_oob <- function(
     stopifnot(is.list(hyperparams1) && is.list(hyperparams2))
     n_folds <- as.integer(n_folds)
     stopifnot(n_folds > 1)
-    stopifnot(is.character(li_var_suffix))
-    stopifnot(is.character(li_var_suffix))
     stopifnot(is.logical(pseudo_cv))
     if (!pseudo_cv) {
         stop("right now, only pseudo cross-validation is supported.")
     }
-    early_bool <- get_early_bool(x, li_var_suffix) 
+    early_bool <- get_early_bool(x) 
     x_early <- x[, early_bool]
     # First stage
     fit <- do.call(
@@ -121,8 +115,7 @@ nested_cv_oob <- function(
         model1 = fit, 
         model2 = fits[[best_idx]], 
         search_grid = hyperparams,
-        best_hyperparams = hyperparams[best_idx, ], 
-        li_var_suffix = li_var_suffix
+        best_hyperparams = hyperparams[best_idx, ]
     )
 }
 
@@ -136,8 +129,6 @@ nested_cv_oob <- function(
 #' model or to one combinations of hyperparameters. Plus an extra column for the
 #' cross-validated or out-of-bag (OOB) accuracy.
 #' @param best_hyperparams A named list with the best hyperparameters.
-#' @param li_var_suffix A string matching exactly the names of 
-#' the features we only feed into the late model.
 #' @return An S3 object with class `nested_fit'.
 #' @details Nest two models. The first model takes part of the features (those 
 #' not matching pattern) to make a prediction that we in turn feed together with 
@@ -148,8 +139,7 @@ nested_fit <- function(
     model1,
     model2,
     search_grid,
-    best_hyperparams,
-    li_var_suffix
+    best_hyperparams
 ){
     methods1 <- unlist(lapply(class(model1), function(cl) sloop::s3_methods_class(
         cl)$generic)) 
@@ -163,14 +153,12 @@ nested_fit <- function(
     }
     stopifnot(is.data.frame(search_grid))
     stopifnot(is.list(best_hyperparams))
-    stopifnot(is.character(li_var_suffix))
     structure(
         list(
             "model1" = model1,
             "model2" = model2,
             "search_grid" = search_grid,
-            "best_hyperparams" = best_hyperparams,
-            "li_var_suffix" = li_var_suffix
+            "best_hyperparams" = best_hyperparams
         ),
         class = c("nested_fit", "list")
     )
@@ -188,20 +176,20 @@ nested_fit <- function(
 #' @importFrom stats predict
 #' @export  
 predict.nested_fit <- function(
-    object = NULL,
-    newx = NULL,
+    object,
+    newx,
     ...
 ){
     stopifnot(inherits(newx, "matrix"))
     stopifnot(!is.null(colnames(newx)))
-    early_bool <- get_early_bool(newx, object$li_var_suffix)
+    early_bool <- get_early_bool(newx)
     x_early <- newx[, early_bool]
     x_late <- cbind(
         predict(object = object$model1, newx = x_early, 
             s = object$best_hyperparams$lambda_index),
         newx[, !early_bool]
     )
-    y <- predict(object = object$model2, data = x_late, newx = x_late)
+    y <- predict(object = object$model2, newx = x_late)
     if (!is.numeric(y)) 
         y <- y[[1]]
     if (!is.numeric(y) || length(y) != nrow(newx))

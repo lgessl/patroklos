@@ -4,7 +4,7 @@
 \alias{nested_fit}
 \title{Construct a nested_fit S3 object}
 \usage{
-nested_fit(model1, model2, search_grid, best_hyperparams, li_var_suffix)
+nested_fit(model1, model2, search_grid, best_hyperparams)
 }
 \arguments{
 \item{model1}{An S3 object with a \code{predict} method. The early model.}
@@ -17,9 +17,6 @@ model or to one combinations of hyperparameters. Plus an extra column for the
 cross-validated or out-of-bag (OOB) accuracy.}
 
 \item{best_hyperparams}{A named list with the best hyperparameters.}
-
-\item{li_var_suffix}{A string matching exactly the names of
-the features we only feed into the late model.}
 }
 \value{
 An S3 object with class `nested_fit'.

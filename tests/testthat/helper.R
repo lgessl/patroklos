@@ -53,6 +53,7 @@ generate_mock_data <- function(
             (10-i)/10, (11-i)/10) * y[pheno_tbl[["ipi"]] == i]
     }
     y <- (y-median(y)) / abs(min(y)) * 2 + 2 + rnorm(n_samples, 0, .5) 
+    attr(x, "li_var_suffix") <- "++"
     if (return_type == "fitter") 
         return(list("x" = x, "y" = as.numeric(y<2)))
     progression <- rep(1, n_samples)

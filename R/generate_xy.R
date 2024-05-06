@@ -58,6 +58,7 @@ generate_predictor <- function(
     rownames(x) <- patient_ids
     # Remove rows with NA (they are never useful)
     x <- x[stats::complete.cases(x), , drop = FALSE]
+    attr(x, "li_var_suffix") <- model$li_var_suffix
 
     if(nrow(x) == 0)
         stop("No samples left in predictor matrix after subsetting to cohort and removing NAs")

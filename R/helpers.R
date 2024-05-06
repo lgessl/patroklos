@@ -72,6 +72,8 @@ intersect_by_names <- function(
     b,
     rm_na = FALSE
 ){
+    li_var_suffix_a <- attr(a, "li_var_suffix")
+    li_var_suffix_b <- attr(b, "li_var_suffix")
     if(is.matrix(a) && is.matrix(b)){
         if(is.null(rownames(a))) stop("intersect_by_names(): a has no row names")
         if(is.null(rownames(b))) stop("intersect_by_names(): b has no row names")
@@ -87,6 +89,8 @@ intersect_by_names <- function(
         }
         a <- a[intersect_names, , drop = FALSE]
         b <- b[intersect_names, , drop = FALSE]
+        attr(a, "li_var_suffix") <- li_var_suffix_a
+        attr(b, "li_var_suffix") <- li_var_suffix_b
         return(list(a, b))
     } else if(is.vector(a) && is.vector(b)){
         if(is.null(names(a))) stop("intersect_by_names(): a has no names")
@@ -128,9 +132,10 @@ mirror_path <- function(
     return(new_filepath)
 }
 
-get_early_bool <- function(x, li_var_suffix){
+get_early_bool <- function(x){
+    li_var_suffix <- attr(x, "li_var_suffix")
     stopifnot(!is.null(colnames(x)))
-    stopifnot(is.character(li_var_suffix))
+    stopifnot(!is.null(li_var_suffix))
     early_bool <- vapply(
         colnames(x),
         function(s) 

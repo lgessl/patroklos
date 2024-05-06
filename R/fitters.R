@@ -29,21 +29,38 @@ zeroSumEI <- function(
     return(fit_obj)
 }
 
+#' @title Wrap [`ranger::ranger()`] into a patroklos-compliant fit function
+#' @description You can now use it as the `fitter` attribute of a `Model` object.
+#' @param x Predictor data as a named numeric matrix. Samples correspond to rows,
+#' an attribute `li_var_suffix` is expected to be present.
+#' @param y Response data as numeric vector. The length of `y` must match the
+#' number of rows in `x`.
+#' @param ... Further arguments passed to the wrapped function.
+#' @return A `ptk_ranger` S3 object.
+#' @details The interface of this function is the interface of a patroklos-compliant
+#' fitter.
+#' @export
 ptk_ranger <- function(x, y, ...){
-    args <- list(...)
-    args <- args[names(args) != "li_var_suffix"]
-    ptk_ranger_obj <- do.call(
-        ranger::ranger, 
-        c(list("x" = x, "y" = y), args)
-    )
+    ptk_ranger_obj <- ranger::ranger(x = x, y = y, ...)
     class(ptk_ranger_obj) <- c("ptk_ranger", class(ptk_ranger_obj))
+    ptk_ranger_obj
 }
 
+#' @title Wrap [`ranger::predict.ranger()`] into a patroklos-compliant predict
+#' function
+#' @description `Model$predict()` uses this function as a predict method for
+#' the `predict()` generic.
+#' @param object A fit S3 object.
+#' @param newx Predictor data as a named numeric matrix. Samples correspond to 
+#' rows, an attribute `li_var_suffix` is expected to be present.
+#' @param ... Further arguments passed to the wrapped function.
+#' @return A named numeric vector of predictions. 
+#' @details The interface of this function is the interface of a patroklos-compliant
+#' predict method.
+#' @export
 predict.ptk_ranger <- function(object, newx, ...){
-    y <- do.call(
-        ranger::predict.ranger, 
-        c(list("object" = object, "data" = newx), list(...))
-    )[[1]]
+    class(object) <- "ranger"
+    y <- predict(object, data = newx, ...)[[1]]
     dim(y) <- NULL
     names(y) <- rownames(newx)
     y

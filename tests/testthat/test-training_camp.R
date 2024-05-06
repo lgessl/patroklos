@@ -33,7 +33,7 @@ test_that("training_camp() works", {
       time_cutoffs = 2.,
       hyperparams = list(
           fitter1 = zeroSum::zeroSum,
-          fitter2 = ranger::ranger,
+          fitter2 = ptk_ranger,
           hyperparams1 = list(
               family = "binomial",
               alpha = 1,

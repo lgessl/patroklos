@@ -31,12 +31,11 @@ data_prepare <- function(
         data = self,
         model = model
     )
-
     y <- generate_response(
         pheno_tbl = pheno_tbl,
         data = self,
         model = model
     )
-    
+
     return(list("x" = x, "y" = y))
 }

@@ -37,6 +37,9 @@ qc_prefit <- function(
     if (is.null(colnames(x))) {
         stop("x has no column names")
     }
+    if (is.null(attr(x, "li_var_suffix"))) {
+        stop("x has no li_var_suffix attribute")
+    }
 }
 
 

@@ -17,9 +17,9 @@ test_that("nested_cv() works", {
     y <- x_y$y
 
     fit <- nested_cv_oob(
-        x = x, y = y, fitter1 = zeroSum::zeroSum, fitter2 = ranger::ranger,
+        x = x, y = y, fitter1 = zeroSum::zeroSum, fitter2 = ptk_ranger,
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
-        n_folds = 3, li_var_suffix = "++" 
+        n_folds = 3
     )
     expect_s3_class(fit, "nested_fit")
     expect_s3_class(fit$model1, "zeroSum")
@@ -34,15 +34,14 @@ test_that("nested_cv() works", {
     # Errors
     x <- x[1:(n_samples-1), ]
     expect_error(nested_cv_oob(
-        x = x, y = y, fitter1 = zeroSum::zeroSum, fitter2 = ranger::ranger,
+        x = x, y = y, fitter1 = zeroSum::zeroSum, fitter2 = ptk_ranger,
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
         n_folds = 3, li_var_suffix = "++" 
     ))
-    li_var_suffix <- "--"
+    attr(x, "li_var_suffix") <- "--"
     expect_error(nested_cv_oob(
-        x = x, y = y, fitter1 = zeroSum::zeroSum, fitter2 = ranger::ranger,
-        hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
-        n_folds = 3, li_var_suffix = li_var_suffix 
+        x = x, y = y, fitter1 = zeroSum::zeroSum, fitter2 = ptk_ranger,
+        hyperparams1 = hyperparams1, hyperparams2 = hyperparams2, n_folds = 3
     ))
 })
 
@@ -64,15 +63,15 @@ test_that("nested_fit() works", {
     fit1 <- structure(1, class = c("zeroSum", "list")) 
     fit2 <- structure(2, class = c("ranger", "list")) 
     fit <- nested_fit(model1 = fit1, model2 = fit2, search_grid = search_grid, 
-        best_hyperparams = list(lambda = 123), li_var_suffix = "++")
+        best_hyperparams = list(lambda = 123))
     expect_s3_class(fit, "nested_fit")
 
     # Errors
     class(fit1) <- "nonesense"
     expect_error(nested_fit(model1 = fit1, model2 = fit2,
         search_grid = search_grid, best_hyperparams = list(lambda = lambda, 
-        mtry = 3, min.node.size = 4, classification = TRUE, num.trees = 100), 
-        li_var_suffix = "--"))
+        mtry = 3, min.node.size = 4, classification = TRUE, num.trees = 100))
+    )
 })
 
 test_that("predict.nested_fit() works", {
@@ -93,12 +92,11 @@ test_that("predict.nested_fit() works", {
     x_late <- x[, -seq(n_genes)]
 
     fit1 <- zeroSum::zeroSum(x = x_early, y = y, nFold = n_fold, lambda = lambda)
-    fit2 <- ranger::ranger(x = cbind(fit1$cv.predict[[1]], x_late), y = y, 
+    fit2 <- ptk_ranger(x = cbind(fit1$cv.predict[[1]], x_late), y = y, 
         mtry = 3, min.node.size = 4, classification = TRUE, num.trees = 100) 
     n_fit <- nested_fit(fit1, fit2, search_grid = search_grid, 
         list(lambda_index = seq_along(lambda), lambda = lambda, mtry = 3, 
-        min.node.size = 4, classification = TRUE, num.trees = 100), 
-        li_var_suffix = "++")
+        min.node.size = 4, classification = TRUE, num.trees = 100)) 
     proj <- predict(n_fit, x)
 
     expect_equal(length(proj), n_samples)

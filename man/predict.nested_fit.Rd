@@ -4,7 +4,7 @@
 \alias{predict.nested_fit}
 \title{Predict method for nested_fit objects}
 \usage{
-\method{predict}{nested_fit}(object = NULL, newx = NULL, ...)
+\method{predict}{nested_fit}(object, newx, ...)
 }
 \arguments{
 \item{object}{An S3 object with class \code{nested_fit}. The two-stage nested

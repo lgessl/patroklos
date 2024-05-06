@@ -41,8 +41,7 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
         fits[[split_name]] <- do.call(
             self$fitter, 
             args = c(
-                list("x" = x, "y" = y, 
-                    "li_var_suffix" = self$li_var_suffix),
+                list("x" = x, "y" = y),
                 self$hyperparams
             )
         )
