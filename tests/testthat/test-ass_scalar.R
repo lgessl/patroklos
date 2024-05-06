@@ -36,7 +36,7 @@ test_that("AssScalar$assess() works", {
     model <- Model$new(
       name = "rf",
       directory = file.path(model_dir, "rf"),
-      fitter = ranger::ranger,
+      fitter = ptk_ranger,
       hyperparams = list(mtry = 2, num.trees = 100, min.node.size = 3),
       split_index = 1:2,
       time_cutoffs = 2,
@@ -54,7 +54,7 @@ test_that("AssScalar$assess() works", {
     res <- ass_scalar$assess(data, model, quiet = TRUE)
     expect_true(is.numeric(res))
     expect_true(is.matrix(res))
-    expect_equal(dim(res), c(length(split_index, length(metric))))
+    expect_equal(dim(res), c(length(split_index), length(metric)))
 })
 
 test_that("AssScalar$assess_center() works", {
@@ -127,6 +127,5 @@ test_that("AssScalar$assess_center() works", {
     file.exists(file.path(dir, "results/eval.csv"))
   )
   expect_equal(nrow(eval_tbl), length(data$cohort) * (2+2))  
-  expect_equal(colnames(eval_tbl), c("model", "cohort", "cutoff", metric))
-
+  expect_equal(colnames(eval_tbl), c("model", "cohort", "cutoff", multiple_metric))
 })

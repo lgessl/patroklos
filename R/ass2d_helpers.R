@@ -163,6 +163,7 @@ ass2d_assess_center <- function(self, private, data, model_list, model_tree_mirr
                 message("# Saving comparative performance plot to ", cohort_as2$file)
         }
     }
+    data$cohort <- cohorts # No side effects
 }
 
 ass2d_infer <- function(self, private, model, data, model_tree_mirror){

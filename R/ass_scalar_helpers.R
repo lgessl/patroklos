@@ -62,15 +62,16 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
             "cohort" = character(m),
             "cutoff" = numeric(m)
         )
-        if (length(self$metric == 1)) {
+        if (length(self$metric) == 1) {
             ncol_addon <- 4
             colnames_addon <- c("mean", "sd", "min", "max")
         } else {
             ncol_addon <- length(self$metric)
             colnames_addon <- self$metric
         }
-        addon_tbl <- tibble::as_tibble(matrix(.0, nrow = m, ncol = ncol_addon))
-        names(addon_tbl) <- colnames_addon
+        addon_mat <- matrix(.0, nrow = m, ncol = ncol_addon)
+        colnames(addon_mat) <- colnames_addon
+        addon_tbl <- tibble::as_tibble(addon_mat)
         res_tbl <- dplyr::bind_cols(res_tbl, addon_tbl)
         for(j in 1:m){
             time_cutoff <- model$time_cutoffs[j]
@@ -104,7 +105,8 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
         data$cohort <- cohort
         tbl_list <- lapply(seq_along(model_list), core)
         res_tbl <- dplyr::bind_rows(tbl_list)
-        res_tbl <- res_tbl[order(-res_tbl[["mean"]]), ]
+        sortby <- ifelse(length(self$metric) == 1, "mean", self$metric[1])
+        res_tbl <- res_tbl[order(-res_tbl[[sortby]]), ]
         res_tbl_list[[cohort]] <- res_tbl
         file <- self$file
         if(!is.null(file)){
@@ -120,6 +122,7 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
                 message("Writing ", file)
         }
     }
+    data$cohort <- cohorts # No side effects
     return(dplyr::bind_rows(res_tbl_list))
 }
 
