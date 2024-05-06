@@ -45,7 +45,7 @@ plus their hyperparameters.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nested_fit</span><span class="op">(</span><span class="va">model1</span>, <span class="va">model2</span>, <span class="va">search_grid</span>, <span class="va">best_hyperparams</span>, <span class="va">li_var_suffix</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nested_fit</span><span class="op">(</span><span class="va">model1</span>, <span class="va">model2</span>, <span class="va">search_grid</span>, <span class="va">best_hyperparams</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -67,11 +67,6 @@ cross-validated or out-of-bag (OOB) accuracy.</p></dd>
 
 <dt>best_hyperparams</dt>
 <dd><p>A named list with the best hyperparameters.</p></dd>
-
-
-<dt>li_var_suffix</dt>
-<dd><p>A string matching exactly the names of
-the features we only feed into the late model.</p></dd>
 
 </dl></div>
     <div class="section level2">
