@@ -30,6 +30,7 @@ test_that("nested_cv() works", {
         function(i) fit$best_hyperparams[[i]] %in% hyperparams[[i]],
         logical(1)
     )))
+    expect_true(all(!is.na(fit$search_grid[["cv_accuracy"]])))
 
     # Errors
     x <- x[1:(n_samples-1), ]

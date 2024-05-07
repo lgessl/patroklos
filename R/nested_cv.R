@@ -86,7 +86,7 @@ nested_cv_oob <- function(
         hyperparams2, 
         list("lambda_index" = seq(n_lambda))
     ))
-    accuracy <- numeric(nrow(hyperparams)) 
+    accuracy <- rep(NA, nrow(hyperparams)) 
     fits <- vector("list", nrow(hyperparams))
     n_hyper2 <- as.integer(nrow(hyperparams)/n_lambda)
     n_class_hyper2 <- length(hyperparams2)
@@ -110,6 +110,7 @@ nested_cv_oob <- function(
         }
     } 
     best_idx <- which.max(accuracy)
+    hyperparams[["cv_accuracy"]] <- accuracy
 
     nested_fit(
         model1 = fit, 
