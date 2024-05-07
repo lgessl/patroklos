@@ -67,7 +67,8 @@ test_that("AssScalar$assess_center() works", {
   n_na_in_pheno <- 5
   n_fold <- 1
   lambda <- 1
-  multiple_metric <- c("accuracy", "precision")
+  multiple_metric <- c("accuracy", "precision", "n_true", "perc_true", "n_samples", 
+    "logrank")
   single_metric <- "auc"
 
   dir <- withr::local_tempdir()

@@ -152,6 +152,12 @@ get_metric <- function(
         if (all(predicted == 0))
             message("No positive predictions. Precision is NaN.")
         return(mean(actual[predicted == 1]))
+    } else if (metric == "n_true") {
+        return(sum(actual))
+    } else if (metric == "perc_true") {
+        return(mean(actual))
+    } else if (metric == "n_samples") {
+        return(length(actual))
     } else if (metric == "logrank") {
         check_predicted_binary()
         pheno_tbl <- data$pheno_tbl
