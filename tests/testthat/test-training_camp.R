@@ -15,6 +15,7 @@ test_that("training_camp() works", {
     n_na_in_pheno = n_na_in_pheno,
     to_csv = dir
   )
+  
   model_1 <- Model$new(
     name = "model1",
     directory = file.path(dir, "model1"),
@@ -25,6 +26,7 @@ test_that("training_camp() works", {
       zeroSum = FALSE),
     response_type = "survival_censored"
   )
+
   model_2 <- Model$new(
       name = "RF pseudo OOB",
       fitter = nested_cv_oob,
@@ -52,15 +54,21 @@ test_that("training_camp() works", {
       include_from_continuous_pheno = "continuous_var",
       include_from_discrete_pheno = "discrete_var"   
   )
-  # model_2 <- model_1$clone()
   model_2$split_index <- 1:2
   model_2$time_cutoffs <- 1.75 
   
+  model_3 <- model_1$clone()
+  model_3$directory <- file.path(dir, "model3")
+  model_3$time_cutoffs <- 2
+  model_3$hyperparams[["family"]] <- "binomial"
+  model_3$response_type <- "binary"
+  
   training_camp(
-    model_list = list(model_1, model_2),
+    model_list = list(model_1, model_2, model_3),
     data = data,
     quiet = TRUE
   )
   expect_true(file.exists(file.path(model_1$directory, "1-5", "models.rds")))
   expect_true(file.exists(file.path(model_2$directory, "1-75", "models.rds")))
+  expect_true(file.exists(file.path(model_3$directory, "2", "models.rds")))
 })

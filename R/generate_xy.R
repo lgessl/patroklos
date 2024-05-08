@@ -54,6 +54,8 @@ generate_predictor <- function(
     }
 
     # Combine into numeric matrix, the predictor matrix    
+    if(!model$include_expr)
+        x <- NULL
     x <- x |> cbind(bind_continuous, bind_discrete)
     rownames(x) <- patient_ids
     # Remove rows with NA (they are never useful)

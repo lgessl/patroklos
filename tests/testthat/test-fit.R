@@ -68,8 +68,9 @@ test_that("Model$fit() works", {
   model$split_index <- 1
   model$include_from_discrete_pheno <- "discrete_var" # 3 levels
   model$include_from_continuous_pheno <- "continuous_var"
+  model$include_expr <- FALSE
   model$fit(data, quiet = TRUE)
-  expect_equal(nrow(model$fits[[1]]$coef[[1]]), n_genes+1+2+1)
+  expect_equal(nrow(model$fits[[1]]$coef[[1]]), 1+2+1)
   expect_equal(length(model$fits), length(model$split_index))
   expect_true(file.exists(file.path(dir, "model4", "models.rds")))
 

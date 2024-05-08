@@ -27,6 +27,8 @@ Model <- R6::R6Class("Model",
         #' @field include_from_discrete_pheno The names of the discrete variables in the
         #' pheno data (to be) included in the predictor matrix.
         include_from_discrete_pheno = NULL,
+        #' @field include_expr Whether to include the expression data in the predictor matrix. 
+        include_expr = NULL,
         #' @field li_var_suffix Append this to the names of features from the pheno data
         #' when adding them to the predictor matrix.
         li_var_suffix = NULL,
@@ -81,6 +83,8 @@ Model <- R6::R6Class("Model",
         #' variables in the pheno data (to be) included in the predictor matrix. A discrete
         #' variable with n levels will be converted to n-1 binary variables. Default is `NULL`,
         #' which means no discrete pheno variables are or will be included.
+        #' @param include_expr logical. Whether to include the expression data in the predictor
+        #' matrix.
         #' @param li_var_suffix string. Append this to the names of features from the pheno
         #' data when adding them to the predictor matrix. Default is `"++"`.
         #' @param create_directory logical. Whether to create `directory` if it does not exist, yet. 
@@ -112,6 +116,7 @@ Model <- R6::R6Class("Model",
             response_colnames = c("time", "status"),
             include_from_continuous_pheno = NULL,
             include_from_discrete_pheno = NULL,
+            include_expr = TRUE,
             li_var_suffix = "++",
             create_directory = TRUE,
             plot_file = "training_error.pdf",
@@ -122,7 +127,7 @@ Model <- R6::R6Class("Model",
             model_initialize(self, private, name, fitter, directory, split_index, 
                 time_cutoffs, hyperparams, response_type, response_colnames, 
                 include_from_continuous_pheno, include_from_discrete_pheno, 
-                li_var_suffix, create_directory, plot_file, plot_ncols,
+                include_expr, li_var_suffix, create_directory, plot_file, plot_ncols,
                 plot_title_line, fit_file),  
 
         #' @description Fit the model to a data set for all splits into training 

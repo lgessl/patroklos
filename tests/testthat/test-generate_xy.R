@@ -88,6 +88,18 @@ test_that("generate_predictor() works", {
   expect_identical(rownames(x), rownames(expr_mat))
   expect_type(x, "double")
 
+  # Case 5: pheno variables without expression data
+  model$include_expr <- FALSE
+  model$include_from_continuous_pheno <- "continuous_var"
+  model$include_from_discrete_pheno <- "discrete_var"
+  x <- generate_predictor(
+    expr_mat = expr_mat,
+    pheno_tbl = pheno_df,
+    data = data,
+    model = model
+  )
+  expect_equal(ncol(x), 2)
+
   # Error: include categorical pheno variable as continuous
   model$include_from_continuous_pheno <- "discrete_var"
   expect_error(
