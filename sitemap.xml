@@ -55,6 +55,9 @@
     <loc>https://lgessl.github.io/patroklos/reference/ptk_ranger.html</loc>
   </url>
   <url>
+    <loc>https://lgessl.github.io/patroklos/reference/ptk_zeroSum.html</loc>
+  </url>
+  <url>
     <loc>https://lgessl.github.io/patroklos/reference/qc_preprocess.html</loc>
   </url>
   <url>
@@ -62,8 +65,5 @@
   </url>
   <url>
     <loc>https://lgessl.github.io/patroklos/reference/write_data_info.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/zeroSumEI.html</loc>
   </url>
 </urlset>
