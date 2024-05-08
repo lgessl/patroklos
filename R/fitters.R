@@ -1,34 +1,3 @@
-# Some straightforward wrappers around existing models
-
-#' @title Call [`zeroSum::zeroSum()`] with zeroSum.weights corresponding to features 
-#' from pheno data set to zero
-#' @description Recognize features added to predcitor from pheno via a common suffix
-#' and set zeroSum.weights to 0 for those features (since they are, unlike RNAseq data, 
-#' not affected by rescaling), then call [`zeroSum::zeroSum()`]
-#' @param x See [`zeroSum::zeroSum()`].
-#' @param y See [`zeroSum::zeroSum()`].
-#' @param pheno_regexp string that matches exactly those features (column names) in 
-#' `x` that were added from pheno data. Default is `"\\+\\+$"`.
-#' @param ... further arguments passed to [`zeroSum::zeroSum()`].
-#' @return `zeroSumFit` S3 object as returned by [`zeroSum::zeroSum()`].
-#' @export
-zeroSumEI <- function(
-    x,
-    y,
-    pheno_regexp = "\\+\\+$",
-    ...
-){
-    zeroSum.weights <- as.numeric(!stringr::str_detect(colnames(x), pheno_regexp))
-    fit_obj <- zeroSum::zeroSum(
-        x = x, 
-        y = y, 
-        zeroSum.weights = zeroSum.weights,
-        ...
-        )
-    fit_obj$zeroSum.weights <- zeroSum.weights
-    return(fit_obj)
-}
-
 #' @title Wrap [`ranger::ranger()`] into a patroklos-compliant fit function
 #' @description You can now use it as the `fitter` attribute of a `Model` object.
 #' @param x Predictor data as a named numeric matrix. Samples correspond to rows,
@@ -64,4 +33,40 @@ predict.ptk_ranger <- function(object, newx, ...){
     dim(y) <- NULL
     names(y) <- rownames(newx)
     y
+}
+
+#' @title Wrap [`zeroSum::zeroSum()`] into a patroklos-compliant fit function
+#' @description You can now use it as the `fitter` attribute of a `Model` object.
+#' This fitter is suited for early integration.
+#' @inheritParams ptk_ranger
+#' @param exclude_pheno_from_lasso Logical. If `TRUE`, set LASSO penalty weights
+#' corresponding to features from the pheno data to zero.
+#' @param binarize_predictions numeric or NULL. If not NULL, the predict method 
+#' for the returned `ptk_zeroSum` object will binarize the predictions using the
+#' `binarize_predictions` as a threshold.
+#' @return A `ptk_zeroSum` S3 object. 
+#' @export
+ptk_zeroSum <- function(
+    x,
+    y,
+    exclude_pheno_from_lasso = TRUE,
+    binarize_predictions = NULL,    
+    ...
+){
+    early_bool <- get_early_bool(x)
+    zerosum_weights <- as.numeric(early_bool) 
+    penalty_factor <- rep(1, ncol(x))
+    if (exclude_pheno_from_lasso)
+        penalty_factor <- as.numeric(early_bool)
+    fit_obj <- zeroSum::zeroSum(
+        x = x, 
+        y = y, 
+        zeroSum.weights = zerosum_weights,
+        penalty.factor = penalty_factor,
+        ...
+        )
+    fit_obj$zeroSum.weights <- zeroSum.weights
+    fit_obj$binarize_predictions <- binarize_predictions
+    class(fit_obj)[1] <- "ptk_zeroSum"
+    return(fit_obj)
 }
