@@ -44,7 +44,7 @@ generate_mock_data <- function(
     colnames(x_cont)[n_genes+1] <- "continuous_var++"
     x_cat <- tibble_to_binary(pheno_tbl[, c("discrete_var", "ipi")])
     colnames(x_cat) <- paste0(colnames(x_cat), "++")
-    x <- cbind(expr_mat, x_cat)
+    x <- cbind(x_cont, x_cat)
     beta <- rnorm(ncol(x))
     y <- x %*% beta 
     y <- y[, 1]

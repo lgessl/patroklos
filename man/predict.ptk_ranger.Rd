@@ -8,7 +8,7 @@ function}
 \method{predict}{ptk_ranger}(object, newx, ...)
 }
 \arguments{
-\item{object}{A fit S3 object.}
+\item{object}{A ptk_ranger S3 object.}
 
 \item{newx}{Predictor data as a named numeric matrix. Samples correspond to
 rows, an attribute \code{li_var_suffix} is expected to be present.}
