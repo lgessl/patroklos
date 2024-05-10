@@ -21,26 +21,33 @@
 #' Unlike `hyperparams1`, we call `fitter2` for every combination of values in 
 #' `hyperparams2` and lambda value from `fitter1`.
 #' @param n_folds An integer specifying the number of folds for the cross-validation.
-#' @param pseudo_cv A logical indicating whether we use pseudo cross-validation.
-#' I.e., `fitter1` performs one `n_folds` cross validation, get a new training 
-#' set by replacing `fitter1`'s input features by the cross-validated predictions 
-#' and procede with model fitting and getting out-of-bag predictions. This a is 
-#' not real independent testing since the OOB prediction for a given sample 
-#' according to `fitter2` involves a model that saw the sample during training.
-#' Yet, this pseudo method saves us a factor of `n_folds` in computational time 
-#' compared to a classical nested cross-validation. The latter will follow in 
-#' future versions soon. 
+#' @param oob A logical vector of length 2. If the first element is `TRUE`, train 
+#' the late model on out-of-bag, else cross-validated predictions from the early
+#' model. If the second element is `TRUE`, evaluate the entire model on OOB,
+#' else cross-validated predictions.
 #' @return An S3 object with class `nested_fit`, the model with the best 
 #' performance according to the out-of-bag (OOB) predictions based on cross-validated
 #' predictions from the early model.   
 #' @export
 #' @details This function does hyperparameter tuning for a nested model, i.e.,
 #' a so-called early model makes predictions from the high-dimensional part of 
-#' data (e.g. RNA-seq, Nanostring). We then provide these predictions as a 
-#' one-dimensional continuous feature together with new features to a late model 
-#' *that enables a performance estimate via out-of-bag (OOB) predictions 
-#' (typically a random forest)*.       
-nested_cv_oob <- function(
+#' data (e.g. RNA-seq, Nanostring), we then provide these predictions as a 
+#' one-dimensional feature together with new features to a late model. Both the 
+#' early and late model try to predict `y`. To not provide the late model overly 
+#' optimistic (since overfitted) predictions during training, we feed its 
+#' training algorithm with values comparable to those we would observe for 
+#' independent test samples, i.e. either cross-validated or out-of-bage (OOB) 
+#' predictions. To evaluate the overall model, we do a second cross-validation 
+#' or use OOB predictions. 
+#' Note that the predictions we get for the nested model are not predictions as 
+#' one would observe for independent test samples:
+#' Let's fix sample i. We get the OOB/CV prediction for sample i from models/
+#' a model whose training algorithm didn't see sample i itself. But it probably 
+#' saw the prediction for a sample j != i according to an early model whose 
+#' training algorithm had seen sample i. Hence the term "pseudo" in the name of 
+#' this function. This heuristic saves a factor `n_folds` computation time
+#' compared to a full nested cross-validation.  
+nested_pseudo_cv <- function(
     x,
     y,
     fitter1,
@@ -48,7 +55,7 @@ nested_cv_oob <- function(
     hyperparams1,
     hyperparams2,
     n_folds = 10,
-    pseudo_cv = TRUE
+    oob = c(FALSE, TRUE)
 ){
     # Input checks
     stopifnot(is.matrix(x) && is.numeric(x))
@@ -69,21 +76,22 @@ nested_cv_oob <- function(
     stopifnot(is.list(hyperparams1) && is.list(hyperparams2))
     n_folds <- as.integer(n_folds)
     stopifnot(n_folds > 1)
-    stopifnot(is.logical(pseudo_cv))
-    if (!pseudo_cv) {
-        stop("right now, only pseudo cross-validation is supported.")
-    }
+    stopifnot(is.logical(oob) && length(oob) == 2)
+
+    oob_cv_predict <- ifelse(oob, "oob_predict", "cv_predict")
     early_bool <- get_early_bool(x) 
     li_var_suffix <- attr(x, "li_var_suffix")
     x_early <- x[, early_bool]
     attr(x_early, "li_var_suffix") <- li_var_suffix
+
     # First stage
     fit <- do.call(
         fitter1,
         c(list(x = x_early, y = y, nfold = n_folds), hyperparams1)
     )
+
     # Second stage
-    n_lambda <- length(fit$cv_predict) # Partition for-loop
+    n_lambda <- length(fit[[oob_cv_predict[1]]]) # Partition for-loop
     hyperparams <- expand.grid(c(
         hyperparams2, 
         list("lambda_index" = seq(n_lambda))
@@ -94,7 +102,7 @@ nested_cv_oob <- function(
     n_class_hyper2 <- length(hyperparams2)
     hyperparams[["lambda"]] <- fit$lambda[hyperparams[["lambda_index"]]]
     for (l in seq(n_lambda)) {
-        x_late <- cbind(fit$cv_predict[[l]], x[, !early_bool])
+        x_late <- cbind(fit[[oob_cv_predict[1]]][[l]], x[, !early_bool])
         for (m in seq(n_hyper2)) {
             idx <- (l-1)*n_hyper2 + m 
             fits[[idx]] <- do.call(
@@ -104,7 +112,7 @@ nested_cv_oob <- function(
                     as.list(hyperparams[m, seq(n_class_hyper2)])
                 )
             ) 
-            acc <- mean(fits[[idx]]$predictions == y) 
+            acc <- mean(fits[[idx]][[oob_cv_predict[2]]] == y) 
             if(is.nan(acc))
                 stop("the s3 object returned by `fitter2` must have a `predictions` 
                     attribute.")
@@ -112,7 +120,8 @@ nested_cv_oob <- function(
         }
     } 
     best_idx <- which.max(accuracy)
-    hyperparams[["cv_accuracy"]] <- accuracy
+    cv_oob <- ifelse(oob[2], "oob", "cv")
+    hyperparams[[paste0("overall_", cv_oob, "_accuracy")]] <- accuracy
 
     nested_fit(
         model1 = fit, 

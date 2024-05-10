@@ -29,7 +29,7 @@ test_that("training_camp() works", {
 
   model_2 <- Model$new(
       name = "RF pseudo OOB",
-      fitter = nested_cv_oob,
+      fitter = nested_pseudo_cv,
       directory = file.path(dir, "model2"),
       split_index = 1,
       time_cutoffs = 2.,
@@ -48,11 +48,11 @@ test_that("training_camp() works", {
               classification = TRUE
           ),
           n_folds = 2,
-          pseudo_cv = TRUE
+          oob = c(FALSE, TRUE)
       ),
       response_type = "binary",
       include_from_continuous_pheno = "continuous_var",
-      include_from_discrete_pheno = "discrete_var"   
+      include_from_discrete_pheno = "discrete_var"
   )
   model_2$split_index <- 1:2
   model_2$time_cutoffs <- 1.75 

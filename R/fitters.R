@@ -11,6 +11,9 @@
 #' @export
 ptk_ranger <- function(x, y, ...){
     ptk_ranger_obj <- ranger::ranger(x = x, y = y, ...)
+    # Rename OOB predictions
+    ptk_ranger_obj$oob_predict <- ptk_ranger_obj$predictions
+    ptk_ranger_obj$predictions <- NULL
     class(ptk_ranger_obj) <- c("ptk_ranger", class(ptk_ranger_obj))
     ptk_ranger_obj
 }

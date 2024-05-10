@@ -16,10 +16,10 @@ test_that("nested_cv() works", {
     x <- x_y$x
     y <- x_y$y
 
-    fit <- nested_cv_oob(
+    fit <- nested_pseudo_cv(
         x = x, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
-        n_folds = 3
+        n_folds = 3, oob = c(FALSE, TRUE)
     )
     expect_s3_class(fit, "nested_fit")
     expect_s3_class(fit$model1, "ptk_zerosum")
@@ -34,13 +34,13 @@ test_that("nested_cv() works", {
 
     # Errors
     x <- x[1:(n_samples-1), ]
-    expect_error(nested_cv_oob(
+    expect_error(nested_pseudo_cv(
         x = x, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
         n_folds = 3, li_var_suffix = "++" 
     ))
     attr(x, "li_var_suffix") <- "--"
-    expect_error(nested_cv_oob(
+    expect_error(nested_pseudo_cv(
         x = x, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2, n_folds = 3
     ))

@@ -77,27 +77,27 @@ test_that("Model$fit() works", {
   # nested_cv
   model <- Model$new(
       name = "RF pseudo OOB",
-      fitter = nested_cv_oob,
+      fitter = nested_pseudo_cv,
       directory = file.path(dir, "model5"),
       split_index = 1,
       time_cutoffs = 2.,
       hyperparams = list(
-          fitter1 = ptk_zerosum,
-          fitter2 = ptk_ranger,
-          hyperparams1 = list(
-              family = "binomial",
-              alpha = 1,
-              zeroSum = FALSE,
-              lambda = lambda
-          ),
-          hyperparams2 = list(
-              num.trees = 100, 
-              mtry = 2:3,
-              min.node.size = 3, 
-              classification = TRUE
-          ),
-          n_folds = 2,
-          pseudo_cv = TRUE
+        fitter1 = ptk_zerosum,
+        fitter2 = ptk_ranger,
+        hyperparams1 = list(
+          family = "binomial",
+          alpha = 1,
+          zeroSum = FALSE,
+          lambda = lambda
+        ),
+        hyperparams2 = list(
+          num.trees = 100, 
+          mtry = 2:3,
+          min.node.size = 3, 
+          classification = TRUE
+        ),
+        n_folds = 2,
+        oob = c(FALSE, TRUE)
       ),
       response_type = "binary",
       include_from_continuous_pheno = "continuous_var",
