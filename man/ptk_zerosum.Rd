@@ -47,3 +47,9 @@ A \code{ptk_zerosum} S3 object.
 You can now use it as the \code{fitter} attribute of a \code{Model} object.
 This fitter is suited for early integration.
 }
+\details{
+A \emph{patroklos-compliant fitter with integrated CV} is a patroklos-
+compliant fitter (cf. details of \code{\link[=ptk_ranger]{ptk_ranger()}} whose return value has an
+attribute \code{cv_predict_list}, a list of numeric vectors holding cross-validated
+predictions for every value of the model hyperparameter lambda.
+}

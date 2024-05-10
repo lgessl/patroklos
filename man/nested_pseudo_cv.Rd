@@ -21,20 +21,13 @@ columns are features.}
 
 \item{y}{A numeric vector holding the response variable.}
 
-\item{fitter1}{A function that fits the early model. It must be able to perform
-a cross validation and return an S3 class with
-\itemize{
-\item a \code{cv_predict} attribute, a list of vectors, for every lambda the
-cross-validated predictions.
-\item a \code{lambda} attribute, a numeric vector holding the lambda values, and
-\item a \code{predict} method.
-}}
+\item{fitter1}{A \emph{patroklos-compliant fitter with integrated CV} (for what this
+means, see \code{\link[=ptk_zerosum]{ptk_zerosum()}}) to fit the early model.}
 
-\item{fitter2}{A function that fits the late model. It must return an S3 object
-with a \code{predict} method.}
+\item{fitter2}{A \emph{patroklos-compliant fitter with validated predictions} (
+for what this means, see \code{\link[=ptk_ranger]{ptk_ranger()}}) to fit the late model.}
 
-\item{hyperparams1}{A named list with hyperpamaters we will pass to \code{fitter1}
-to obtain cross-validated predictions from the early model.}
+\item{hyperparams1}{A named list with hyperparaters we will pass to \code{fitter1}.}
 
 \item{hyperparams2}{A named list with hyperparameters for the late model.
 Unlike \code{hyperparams1}, we call \code{fitter2} for every combination of values in
@@ -70,6 +63,7 @@ training algorithm with values comparable to those we would observe for
 independent test samples, i.e. either cross-validated or out-of-bage (OOB)
 predictions. To evaluate the overall model, we do a second cross-validation
 or use OOB predictions.
+
 Note that the predictions we get for the nested model are not predictions as
 one would observe for independent test samples:
 Let's fix sample i. We get the OOB/CV prediction for sample i from models/

@@ -7,16 +7,11 @@
 #' @param x A numeric matrix holding the predictor features: rows are samples and
 #' columns are features.
 #' @param y A numeric vector holding the response variable. 
-#' @param fitter1 A function that fits the early model. It must be able to perform 
-#' a cross validation and return an S3 class with
-#' * a `cv_predict` attribute, a list of vectors, for every lambda the
-#' cross-validated predictions.
-#' * a `lambda` attribute, a numeric vector holding the lambda values, and 
-#' * a `predict` method.
-#' @param fitter2 A function that fits the late model. It must return an S3 object
-#' with a `predict` method.
-#' @param hyperparams1 A named list with hyperpamaters we will pass to `fitter1`
-#' to obtain cross-validated predictions from the early model.
+#' @param fitter1 A *patroklos-compliant fitter with integrated CV* (for what this 
+#' means, see [`ptk_zerosum()`]) to fit the early model.
+#' @param fitter2 A *patroklos-compliant fitter with validated predictions* (
+#' for what this means, see [`ptk_ranger()`]) to fit the late model.
+#' @param hyperparams1 A named list with hyperparaters we will pass to `fitter1`.
 #' @param hyperparams2 A named list with hyperparameters for the late model. 
 #' Unlike `hyperparams1`, we call `fitter2` for every combination of values in 
 #' `hyperparams2` and lambda value from `fitter1`.
@@ -39,6 +34,7 @@
 #' independent test samples, i.e. either cross-validated or out-of-bage (OOB) 
 #' predictions. To evaluate the overall model, we do a second cross-validation 
 #' or use OOB predictions. 
+#' 
 #' Note that the predictions we get for the nested model are not predictions as 
 #' one would observe for independent test samples:
 #' Let's fix sample i. We get the OOB/CV prediction for sample i from models/
@@ -91,7 +87,7 @@ nested_pseudo_cv <- function(
     )
 
     # Second stage
-    n_lambda <- length(fit[[oob_cv_predict[1]]]) # Partition for-loop
+    n_lambda <- length(fit[[paste0(oob_cv_predict[1], "_list")]]) # Partition for-loop
     hyperparams <- expand.grid(c(
         hyperparams2, 
         list("lambda_index" = seq(n_lambda))
@@ -114,7 +110,7 @@ nested_pseudo_cv <- function(
             ) 
             acc <- mean(fits[[idx]][[oob_cv_predict[2]]] == y) 
             if(is.nan(acc))
-                stop("the s3 object returned by `fitter2` must have a `predictions` 
+                stop("The S3 object returned by `fitter2` must have a `predictions` 
                     attribute.")
             accuracy[idx] <- acc 
         }

@@ -16,13 +16,13 @@ rows, an attribute \code{li_var_suffix} is expected to be present.}
 \item{...}{Further arguments passed to the wrapped function.}
 }
 \value{
-A named numeric vector of predictions.
+A named numeric vector of predictions from \code{newx}.
 }
 \description{
 \code{Model$predict()} uses this function as a predict method for
 the \code{predict()} generic.
 }
 \details{
-The interface of this function is the interface of a patroklos-compliant
-predict method.
+A \emph{patroklos-compliant predict method} is a function with the same
+signature as this function.
 }

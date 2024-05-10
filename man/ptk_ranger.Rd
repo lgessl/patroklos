@@ -16,12 +16,19 @@ number of rows in \code{x}.}
 \item{...}{Further arguments passed to the wrapped function.}
 }
 \value{
-A \code{ptk_ranger} S3 object.
+A \code{ptk_ranger} S3 object, a \code{ranger} S3 object with the \code{predictions}
+attribute renamed to \code{oob_predict}.
 }
 \description{
 You can now use it as the \code{fitter} attribute of a \code{Model} object.
 }
 \details{
-The interface of this function is the interface of a patroklos-compliant
-fitter.
+A \emph{patroklos-compliant fitter} is a function with the same parameters
+as this function and a return value that is an S3 object with a \emph{patroklos-
+compliant predict method} (see details of \code{\link[=predict.ptk_ranger]{predict.ptk_ranger()}}).
+
+A \emph{patroklos compliant fitter with validated predictions} is a patroklos-
+compliant fitter whose return value has an attribute \code{cv_predict} or
+\code{oob_predict}, a numeric vector holding cross-validated or out-of-bag (OOB)
+predictions, respectively.
 }

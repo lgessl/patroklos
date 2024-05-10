@@ -5,9 +5,16 @@
 #' @param y Response data as numeric vector. The length of `y` must match the
 #' number of rows in `x`.
 #' @param ... Further arguments passed to the wrapped function.
-#' @return A `ptk_ranger` S3 object.
-#' @details The interface of this function is the interface of a patroklos-compliant
-#' fitter.
+#' @return A `ptk_ranger` S3 object, a `ranger` S3 object with the `predictions` 
+#' attribute renamed to `oob_predict`.
+#' @details A *patroklos-compliant fitter* is a function with the same parameters
+#' as this function and a return value that is an S3 object with a *patroklos-
+#' compliant predict method* (see details of [`predict.ptk_ranger()`]).
+#' 
+#' A *patroklos compliant fitter with validated predictions* is a patroklos-
+#' compliant fitter whose return value has an attribute `cv_predict` or 
+#' `oob_predict`, a numeric vector holding cross-validated or out-of-bag (OOB) 
+#' predictions, respectively.
 #' @export
 ptk_ranger <- function(x, y, ...){
     ptk_ranger_obj <- ranger::ranger(x = x, y = y, ...)
@@ -26,9 +33,9 @@ ptk_ranger <- function(x, y, ...){
 #' @param newx Predictor data as a named numeric matrix. Samples correspond to 
 #' rows, an attribute `li_var_suffix` is expected to be present.
 #' @param ... Further arguments passed to the wrapped function.
-#' @return A named numeric vector of predictions. 
-#' @details The interface of this function is the interface of a patroklos-compliant
-#' predict method.
+#' @return A named numeric vector of predictions from `newx`. 
+#' @details A *patroklos-compliant predict method* is a function with the same
+#' signature as this function. 
 #' @export
 predict.ptk_ranger <- function(object, newx, ...){
     class(object) <- "ranger"
@@ -48,6 +55,10 @@ predict.ptk_ranger <- function(object, newx, ...){
 #' for the returned `ptk_zerosum` object will binarize the predictions using the
 #' `binarize_predictions` as a threshold.
 #' @return A `ptk_zerosum` S3 object. 
+#' @details A *patroklos-compliant fitter with integrated CV* is a patroklos-
+#' compliant fitter (cf. details of [`ptk_ranger()`] whose return value has an 
+#' attribute `cv_predict_list`, a list of numeric vectors holding cross-validated 
+#' predictions for every value of the model hyperparameter lambda.
 #' @export
 ptk_zerosum <- function(
     x,
@@ -77,6 +88,8 @@ ptk_zerosum <- function(
     }
     fit_obj <- zeroSum::zeroSum(x = x, y = y, zeroSum.weights = zeroSum.weights, 
         penalty.factor = penalty.factor, ...)
+    fit_obj$cv_predict_list <- fit_obj$cv_predict
+    fit_obj$cv_predict <- NULL
     if (fit_obj$useZeroSum)
         fit_obj$zeroSumWeights <- zeroSum.weights
     if (fit_obj$standardize == 0)
