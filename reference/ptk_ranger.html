@@ -65,12 +65,20 @@ number of rows in <code>x</code>.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A <code>ptk_ranger</code> S3 object.</p>
+<p>A <code>ptk_ranger</code> S3 object, a <code>ranger</code> S3 object with the <code>predictions</code></p>
+
+
+<p>attribute renamed to <code>oob_predict</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The interface of this function is the interface of a patroklos-compliant
-fitter.</p>
+    <p>A <em>patroklos-compliant fitter</em> is a function with the same parameters
+as this function and a return value that is an S3 object with a <em>patroklos-
+compliant predict method</em> (see details of <code><a href="predict.ptk_ranger.html">predict.ptk_ranger()</a></code>).</p>
+<p>A <em>patroklos compliant fitter with validated predictions</em> is a patroklos-
+compliant fitter whose return value has an attribute <code>cv_predict</code> or
+<code>oob_predict</code>, a numeric vector holding cross-validated or out-of-bag (OOB)
+predictions, respectively.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

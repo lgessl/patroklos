@@ -78,22 +78,17 @@ columns are features.</p></dd>
 
 
 <dt>fitter1</dt>
-<dd><p>A function that fits the early model. It must be able to perform
-a cross validation and return an S3 class with</p><ul><li><p>a <code>cv_predict</code> attribute, a list of vectors, for every lambda the
-cross-validated predictions.</p></li>
-<li><p>a <code>lambda</code> attribute, a numeric vector holding the lambda values, and</p></li>
-<li><p>a <code>predict</code> method.</p></li>
-</ul></dd>
+<dd><p>A <em>patroklos-compliant fitter with integrated CV</em> (for what this
+means, see <code><a href="ptk_zerosum.html">ptk_zerosum()</a></code>) to fit the early model.</p></dd>
 
 
 <dt>fitter2</dt>
-<dd><p>A function that fits the late model. It must return an S3 object
-with a <code>predict</code> method.</p></dd>
+<dd><p>A <em>patroklos-compliant fitter with validated predictions</em> (
+for what this means, see <code><a href="ptk_ranger.html">ptk_ranger()</a></code>) to fit the late model.</p></dd>
 
 
 <dt>hyperparams1</dt>
-<dd><p>A named list with hyperpamaters we will pass to <code>fitter1</code>
-to obtain cross-validated predictions from the early model.</p></dd>
+<dd><p>A named list with hyperparaters we will pass to <code>fitter1</code>.</p></dd>
 
 
 <dt>hyperparams2</dt>
@@ -132,8 +127,8 @@ optimistic (since overfitted) predictions during training, we feed its
 training algorithm with values comparable to those we would observe for
 independent test samples, i.e. either cross-validated or out-of-bage (OOB)
 predictions. To evaluate the overall model, we do a second cross-validation
-or use OOB predictions.
-Note that the predictions we get for the nested model are not predictions as
+or use OOB predictions.</p>
+<p>Note that the predictions we get for the nested model are not predictions as
 one would observe for independent test samples:
 Let's fix sample i. We get the OOB/CV prediction for sample i from models/
 a model whose training algorithm didn't see sample i itself. But it probably
