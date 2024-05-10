@@ -81,7 +81,7 @@ test_that("AssScalar$assess_center() works", {
   model1 <- Model$new(
     name = "binomial-zerosum",
     directory = file.path(dir, "models/logistic"),
-    fitter = zeroSum::zeroSum,
+    fitter = ptk_zerosum,
     hyperparams = list(family = "binomial", alpha = 1, nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE),
     split_index = 1,

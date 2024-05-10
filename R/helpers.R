@@ -132,7 +132,7 @@ mirror_path <- function(
     return(new_filepath)
 }
 
-get_early_bool <- function(x){
+get_early_bool <- function(x, for_li = TRUE){
     li_var_suffix <- attr(x, "li_var_suffix")
     stopifnot(!is.null(colnames(x)))
     stopifnot(!is.null(li_var_suffix))
@@ -143,7 +143,7 @@ get_early_bool <- function(x){
             li_var_suffix,
         logical(1)
     ) 
-    if (all(early_bool) || all(!early_bool))
+    if ((all(early_bool) || all(!early_bool)) && for_li) 
         stop(ifelse(all(early_bool), "All", "No"), " features are for the early", 
         " model.\n", "You set `li_var_suffix`' to ", li_var_suffix, ".\n",
         "These are your features: ", paste(colnames(x), collapse = ", "), ".\n",

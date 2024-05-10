@@ -2,13 +2,13 @@ test_that("Model$new() works", {
   
     model <- Model$new(
       name = "cox",
-      fitter = zeroSum::zeroSum,
+      fitter = ptk_zerosum,
       directory = "models/cox",
       split_index = 1:2,
       time_cutoffs = c(1.5, 2)
     )
     expect_equal(model$name, "cox")
-    expect_equal(model$fitter, zeroSum::zeroSum)
+    expect_equal(model$fitter, ptk_zerosum)
     expect_equal(model$directory, "models/cox")
     expect_equal(model$split_index, 1:2)
     expect_equal(model$time_cutoffs, c(1.5, 2))
@@ -19,7 +19,7 @@ test_that("Model$at_time_cutoff() works", {
 
   model <- Model$new(
     name = "cox",
-    fitter = zeroSum::zeroSum,
+    fitter = ptk_zerosum,
     directory = "models/cox",
     split_index = 1:2,
     time_cutoffs = c(1.5, 2)
@@ -38,7 +38,7 @@ test_that("prepend_to_directory() works", {
   model_1 <- Model$new(
     name = "model", 
     directory = "mock1", 
-    fitter = zeroSum::zeroSum, 
+    fitter = ptk_zerosum, 
     split_index = 1, 
     time_cutoffs = 2
   )

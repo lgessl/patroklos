@@ -18,7 +18,7 @@ test_that("model$predict() works", {
   model1 <- Model$new(
     name = "cox-zerosum",
     directory = dir,
-    fitter = zeroSum::zeroSum,
+    fitter = ptk_zerosum,
     split_index = 1:2,
     time_cutoffs = Inf,
     hyperparams = list(family = "cox", alpha = 1, nFold = n_fold, 
@@ -29,7 +29,7 @@ test_that("model$predict() works", {
   model2 <- Model$new(
     name = "logistic",
     directory = dir,
-    fitter = zeroSum::zeroSum,
+    fitter = ptk_zerosum,
     split_index = 1:2,
     time_cutoffs = 2,
     hyperparams = list(family = "binomial", alpha = 1, nFold = n_fold, 

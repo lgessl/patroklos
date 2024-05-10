@@ -20,7 +20,7 @@ test_that("Model$fit() works", {
   model <- Model$new(
     name = "cox",
     directory = file.path(dir, "model1"),
-    fitter = zeroSum::zeroSum,
+    fitter = ptk_zerosum,
     split_index = 1,
     time_cutoffs = 2,
     hyperparams = list(family = "cox", nfolds = n_fold, lambda = lambda, 
@@ -52,7 +52,7 @@ test_that("Model$fit() works", {
   model <- Model$new(
     name = "logistic",
     directory = file.path(dir, "model3"),
-    fitter = zeroSum::zeroSum,
+    fitter = ptk_zerosum,
     split_index = 1:2,
     time_cutoffs = 2,
     hyperparams = list(family = "binomial", nfolds = n_fold, lambda = lambda, 
@@ -62,7 +62,7 @@ test_that("Model$fit() works", {
 
   model$fit(data, quiet = TRUE)
   expect_equal(nrow(model$fits[[1]]$coef[[1]]), n_genes+1)
-  expect_s3_class(model$fits[[2]], "zeroSum")
+  expect_s3_class(model$fits[[2]], "ptk_zerosum")
 
   model$directory <- file.path(dir, "model4")
   model$split_index <- 1
@@ -82,7 +82,7 @@ test_that("Model$fit() works", {
       split_index = 1,
       time_cutoffs = 2.,
       hyperparams = list(
-          fitter1 = zeroSum::zeroSum,
+          fitter1 = ptk_zerosum,
           fitter2 = ptk_ranger,
           hyperparams1 = list(
               family = "binomial",

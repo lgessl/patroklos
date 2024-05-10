@@ -19,7 +19,7 @@ test_that("training_camp() works", {
   model_1 <- Model$new(
     name = "model1",
     directory = file.path(dir, "model1"),
-    fitter = zeroSum::zeroSum,
+    fitter = ptk_zerosum,
     split_index = 1,
     time_cutoffs = c(1.5, 2),
     hyperparams = list(family = "cox", nfolds = n_fold, lambda = lambda, 
@@ -34,7 +34,7 @@ test_that("training_camp() works", {
       split_index = 1,
       time_cutoffs = 2.,
       hyperparams = list(
-          fitter1 = zeroSum::zeroSum,
+          fitter1 = ptk_zerosum,
           fitter2 = ptk_ranger,
           hyperparams1 = list(
               family = "binomial",

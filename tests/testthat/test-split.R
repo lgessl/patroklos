@@ -23,14 +23,14 @@ test_that("split_dataset works", {
   model_1 <- Model$new(
     name = "dummy1",
     directory = dir,
-    fitter = zeroSum::zeroSum,
+    fitter = ptk_zerosum,
     split_index = 1:2,
     time_cutoffs = 2
   )
   model_2 <- Model$new(
     name = "dummy2",
     directory = dir,
-    fitter = zeroSum::zeroSum,
+    fitter = ptk_zerosum,
     split_index = 1,
     time_cutoffs = 2
   )

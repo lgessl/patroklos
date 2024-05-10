@@ -74,7 +74,9 @@ nested_cv_oob <- function(
         stop("right now, only pseudo cross-validation is supported.")
     }
     early_bool <- get_early_bool(x) 
+    li_var_suffix <- attr(x, "li_var_suffix")
     x_early <- x[, early_bool]
+    attr(x_early, "li_var_suffix") <- li_var_suffix
     # First stage
     fit <- do.call(
         fitter1,
@@ -185,6 +187,7 @@ predict.nested_fit <- function(
     stopifnot(!is.null(colnames(newx)))
     early_bool <- get_early_bool(newx)
     x_early <- newx[, early_bool]
+    attr(x_early, "li_var_suffix") <- attr(newx, "li_var_suffix")
     x_late <- cbind(
         predict(object = object$model1, newx = x_early, 
             s = object$best_hyperparams$lambda_index),

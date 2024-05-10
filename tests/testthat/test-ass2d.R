@@ -78,7 +78,7 @@ test_that("Ass2d$assess() works", {
   model_1 <- Model$new(
     name = "cox",
     directory = file.path(dir, "cox"),
-    fitter = zeroSum::zeroSum,
+    fitter = ptk_zerosum,
     split_index = 1:2,
     time_cutoffs = 2.,
     hyperparams = list(family = "cox", alpha = 1, nFold = n_fold, 
@@ -88,7 +88,7 @@ test_that("Ass2d$assess() works", {
   model_2 <- Model$new(
     name = "logistic",
     directory = file.path(dir, "logistic"),
-    fitter = zeroSum::zeroSum,
+    fitter = ptk_zerosum,
     split_index = 1,
     time_cutoffs = 2.,
     hyperparams = list(family = "binomial", alpha = 1, 
@@ -162,7 +162,7 @@ test_that("Ass2d$assess_center() works", {
   model_1 <- Model$new(
     name = "cox",
     directory = file.path(model_dir, "cox"),
-    fitter = zeroSum::zeroSum,
+    fitter = ptk_zerosum,
     split_index = 1:2,
     time_cutoffs = Inf,
     hyperparams = list(family = "cox", alpha = 1, nFold = n_fold, 
@@ -172,7 +172,7 @@ test_that("Ass2d$assess_center() works", {
   model_2 <- Model$new(
     name = "binomial",
     directory = file.path(model_dir, "logistic"),
-    fitter = zeroSum::zeroSum,
+    fitter = ptk_zerosum,
     hyperparams = list(family = "binomial", alpha = 1, nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE),
     split_index = 1,

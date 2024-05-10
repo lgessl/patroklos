@@ -18,7 +18,7 @@ test_that("generate_predictor() works", {
   model <- Model$new(
     name = "zerosum",
     directory = "some_dir",
-    fitter = zeroSum::zeroSum,
+    fitter = ptk_zerosum,
     split_index = 1,
     time_cutoffs = 2.,
     include_from_continuous_pheno = "continuous_var",
@@ -134,7 +134,7 @@ test_that("generate_response() works", {
   model <- Model$new(
     name = "zerosum",
     directory = "some_dir",
-    fitter = zeroSum::zeroSum,
+    fitter = ptk_zerosum,
     split_index = 1,
     time_cutoffs = 1.9,
     response_type = "binary"

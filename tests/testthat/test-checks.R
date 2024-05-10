@@ -1,6 +1,6 @@
 test_that("check_fitter() works correctly", {
 
-  valid_fitter <- zeroSum::zeroSum
+  valid_fitter <- ptk_zerosum
   invalid_fitter1 <- function(y, ...) {}
   invalid_fitter2 <- function(x) {}
   

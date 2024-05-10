@@ -60,7 +60,7 @@ ptk_zerosum <- function(
         (is.numeric(binarize_predictions) && binarize_predictions > 0 && 
         binarize_predictions < 1))
     args <- list(...)
-    early_bool <- get_early_bool(x)
+    early_bool <- get_early_bool(x, for_li = FALSE)
     # zeroSum weights
     if (is.null(zeroSum.weights))
         zeroSum.weights <- as.numeric(early_bool) 
