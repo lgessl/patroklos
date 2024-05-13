@@ -5,20 +5,19 @@
 \title{To every \code{Model} in a list of \code{Model}s, prepend a fixed directory to the
 \code{directory} attribute}
 \usage{
-prepend_to_directory(model_list, dir)
+prepend_to_directory(model_list, prefix)
 }
 \arguments{
 \item{model_list}{list of \code{Model}s.}
 
-\item{dir}{string. The directory to prepend to the \code{directory} attribute of all
-\code{Model}s in \code{model_list}.}
+\item{prefix}{character Prepend this directory to the \code{directory} attribute of each
+\code{Model} in \code{model_list}.}
 }
 \value{
-A list of cloned \code{Model}s, with \code{dir} prepended to the \code{directory} attribute.
+list of modified \code{Model}s.
 }
 \description{
-Often one specifies the models in general, for all data sets.
-If you fit the models to a specific data set (say \code{"mock"}), you might want
-to prepend a fixed directory like \code{"results/mock"} to the \code{directory}
-attribute of all \code{Model}s in the list.
+This function supports the paradigm of specifying the \code{Model}s for
+for \emph{all} data sets at one place and them quickly adopting for a specific data
+set. We modify the Model objects \emph{in place}.
 }

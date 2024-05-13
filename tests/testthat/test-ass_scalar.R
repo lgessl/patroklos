@@ -133,3 +133,19 @@ test_that("AssScalar$assess_center() works", {
   expect_equal(colnames(eval_tbl), c("model", "cohort", "cutoff", multiple_metric))
   expect_true(is.numeric(as.matrix(eval_tbl[, 4:ncol(eval_tbl)])))
 })
+
+test_that("prepend_to_filename works", {
+
+  ass_scalar1 <- AssScalar$new(metric = "accuracy", pivot_time_cutoff = 2, 
+    file = "file1")
+  ass_scalar2 <- ass_scalar1$clone()
+  ass_scalar2$file <- "file2"
+  as_list <- list(ass_scalar1, ass_scalar2)
+  # Prepend prefix to the file attributes
+  prepend_to_filename(as_list, "prefix")
+
+  # Check that the file attributes have been correctly prepended
+  expect_equal(as_list[[1]]$file, "prefix/file1")
+  expect_equal(ass_scalar1$file, "prefix/file1")
+  expect_equal(ass_scalar2$file, "prefix/file2")
+})

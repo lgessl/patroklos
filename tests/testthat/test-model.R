@@ -49,8 +49,6 @@ test_that("prepend_to_directory() works", {
   models <- list(model_1, model_2)
 
   new_models <- prepend_to_directory(models, "prepend_me")
-  expect_equal(new_models[[1]]$directory, "prepend_me/mock1")
-  expect_equal(new_models[[2]]$directory, "prepend_me/mock2")
-  expect_equal(model_1$directory, "mock1")
-  expect_equal(model_2$directory, "mock2")
+  expect_equal(model_1$directory, "prepend_me/mock1")
+  expect_equal(model_2$directory, "prepend_me/mock2")
 })

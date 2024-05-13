@@ -71,25 +71,21 @@ model_at_time_cutoff <- function(
 
 #' @title To every `Model` in a list of `Model`s, prepend a fixed directory to the
 #' `directory` attribute
-#' @description Often one specifies the models in general, for all data sets. 
-#' If you fit the models to a specific data set (say `"mock"`), you might want 
-#' to prepend a fixed directory like `"results/mock"` to the `directory` 
-#' attribute of all `Model`s in the list.
+#' @description This function supports the paradigm of specifying the `Model`s for 
+#' for *all* data sets at one place and them quickly adopting for a specific data 
+#' set. We modify the Model objects *in place*.
 #' @param model_list list of `Model`s.
-#' @param dir string. The directory to prepend to the `directory` attribute of all 
-#' `Model`s in `model_list`.
-#' @return A list of cloned `Model`s, with `dir` prepended to the `directory` attribute.
+#' @param prefix character Prepend this directory to the `directory` attribute of each
+#' `Model` in `model_list`.
+#' @return list of modified `Model`s.
 #' @export
 prepend_to_directory <- function(
     model_list, 
-    dir
+    prefix
 ){
-    stopifnot(is.character(dir))
-    prepended_models <- vector("list", length(model_list))
-    for(i in seq_along(model_list)){
-        prepended_models[[i]] <- model_list[[i]]$clone()
-        prepended_models[[i]]$directory <- 
-            file.path(dir, model_list[[i]]$directory)
-    }
-    return(prepended_models)
+    stopifnot(is.character(prefix))
+    lapply(model_list, function(model) {
+        stopifnot(inherits(model, "Model"))
+        model$directory <- file.path(prefix, model$directory)
+    })
 }

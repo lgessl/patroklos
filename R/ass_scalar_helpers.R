@@ -211,3 +211,21 @@ get_metric <- function(
     }
     res
 }
+
+#' @title Prepend a prefix to the file attribute of a list of AssScalar objects
+#' @description Modify the AssScalar objects *in place*. This function supports 
+#' the paradigm of specifying the `Model`s for 
+#' for *all* data sets at one place and them quickly adopting for a specific data 
+#' set.
+#' @param ass_scalar_list list of AssScalar objects.
+#' @param prefix character Prepend this prefix to the `file` attribute of each 
+#' element in `ass_scalar_list`.
+#' @return list of modified `AssScalar`s.
+#' @export
+prepend_to_filename <- function(ass_scalar_list, prefix) {
+    stopifnot(is.character(prefix))
+    lapply(ass_scalar_list, function(as) {
+        stopifnot(inherits(as, "AssScalar"))
+        as$file <- file.path(prefix, as$file)
+    }) 
+}
