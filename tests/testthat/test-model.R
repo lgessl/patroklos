@@ -5,7 +5,8 @@ test_that("Model$new() works", {
       fitter = ptk_zerosum,
       directory = "models/cox",
       split_index = 1:2,
-      time_cutoffs = c(1.5, 2)
+      time_cutoffs = c(1.5, 2),
+      continuous_output = TRUE
     )
     expect_equal(model$name, "cox")
     expect_equal(model$fitter, ptk_zerosum)
@@ -40,7 +41,8 @@ test_that("prepend_to_directory() works", {
     directory = "mock1", 
     fitter = ptk_zerosum, 
     split_index = 1, 
-    time_cutoffs = 2
+    time_cutoffs = 2,
+    continuous_output = TRUE
   )
   model_2 <- model_1$clone()
   model_2$directory <- "mock2"

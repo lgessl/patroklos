@@ -46,6 +46,8 @@ Model <- R6::R6Class("Model",
         fit_file = NULL,
         #' @field fits A list holding fits (e.g. zeroSum objects).
         fits = NULL,
+        #' @field continuous_output Whether the output of the model is continous or binary.
+        continuous_output = NULL,
 
         #' @description Create a new Model instance.
         #' @param name string. A telling name for the model.
@@ -97,6 +99,10 @@ Model <- R6::R6Class("Model",
         #' the upper limit of the figure. Default is `2.5`.
         #' @param fit_file string. The name of the model-fits file inside `directory`.
         #' Default is `"fit_obj.rds"`.
+        #' @param continuous_output logical or NULL. Whether the output of the model 
+        #' is continous (like the conditional probabilities of a logistic regression) or
+        #' binary (like with a random forest). This piece of information is helpful 
+        #' when it comes to assessing a model (Ass2d$assess_center() uses it, e.g.).
         #' @return A `Model` R6 object.
         #' @details Strictly speaking, one `Model` instance specifies
         #' `length(time_cutoffs) * length(split_index)` models. In terms of storing 
@@ -122,13 +128,14 @@ Model <- R6::R6Class("Model",
             plot_file = "training_error.pdf",
             plot_ncols = 2,
             plot_title_line = 2.5,
-            fit_file = "models.rds"
+            fit_file = "models.rds",
+            continuous_output = NULL
         )
             model_initialize(self, private, name, fitter, directory, split_index, 
                 time_cutoffs, hyperparams, response_type, response_colnames, 
                 include_from_continuous_pheno, include_from_discrete_pheno, 
                 include_expr, li_var_suffix, create_directory, plot_file, plot_ncols,
-                plot_title_line, fit_file),  
+                plot_title_line, fit_file, continuous_output),  
 
         #' @description Fit the model to a data set for all splits into training 
         #' and test cohort. However, we do not support multiple time 

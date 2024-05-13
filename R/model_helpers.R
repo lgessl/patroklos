@@ -2,7 +2,7 @@ model_initialize <- function(self, private, name, fitter, directory, split_index
     time_cutoffs, hyperparams, response_type, response_colnames, 
     include_from_continuous_pheno, include_from_discrete_pheno, include_expr, 
     li_var_suffix, create_directory, plot_file, plot_ncols,
-    plot_title_line, fit_file){
+    plot_title_line, fit_file, continuous_output){
 
     response_type <- match.arg(response_type, c("binary", "survival_censored"))
     stopifnot(all(time_cutoffs >= 0))
@@ -24,6 +24,7 @@ model_initialize <- function(self, private, name, fitter, directory, split_index
     stopifnot(is.numeric(plot_ncols))
     stopifnot(is.numeric(plot_title_line) || is.null(plot_title_line))
     stopifnot(is.character(fit_file))
+    stopifnot(is.logical(continuous_output) || is.null(continuous_output))
 
     self$name <- name
     self$directory <- directory
@@ -43,6 +44,7 @@ model_initialize <- function(self, private, name, fitter, directory, split_index
     self$plot_title_line <- plot_title_line
     self$fit_file <- fit_file
     self$fits <- vector("list", length(split_index))
+    self$continuous_output <- continuous_output
 
     invisible(self)
 }
