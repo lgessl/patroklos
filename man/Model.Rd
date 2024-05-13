@@ -54,6 +54,8 @@ when calling \code{plot(fit_obj)}.}
 \item{\code{fit_file}}{Store this Model object under this name in \code{directory}.}
 
 \item{\code{fits}}{A list holding fits (e.g. zeroSum objects).}
+
+\item{\code{continuous_output}}{Whether the output of the model is continous or binary.}
 }
 \if{html}{\out{</div>}}
 }
@@ -90,7 +92,8 @@ Create a new Model instance.
   plot_file = "training_error.pdf",
   plot_ncols = 2,
   plot_title_line = 2.5,
-  fit_file = "models.rds"
+  fit_file = "models.rds",
+  continuous_output = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -166,6 +169,11 @@ the upper limit of the figure. Default is \code{2.5}.}
 
 \item{\code{fit_file}}{string. The name of the model-fits file inside \code{directory}.
 Default is \code{"fit_obj.rds"}.}
+
+\item{\code{continuous_output}}{logical or NULL. Whether the output of the model
+is continous (like the conditional probabilities of a logistic regression) or
+binary (like with a random forest). This piece of information is helpful
+when it comes to assessing a model (Ass2d$assess_center() uses it, e.g.).}
 }
 \if{html}{\out{</div>}}
 }

@@ -116,6 +116,8 @@ ass2d_assess_center <- function(self, private, data, model_list, model_tree_mirr
         if(!quiet) message("# On ", cohort, " cohort")
         data$cohort <- cohort
         for(model in model_list){
+            if (!is.null(model$continuous_output) && !model$continuous_output)
+                next()
             if(!quiet) message("## ", model$name)
             for(time_cutoff in model$time_cutoffs){
                 if(!quiet) message("### At time cutoff ", time_cutoff)

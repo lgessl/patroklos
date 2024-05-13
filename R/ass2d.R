@@ -205,6 +205,8 @@ Ass2d <- R6::R6Class("Ass2d",
         #' @param data Data object. Assess on this data set.
         #' @param model_list list of Model objects. Assess these models.
         #' We infer the `AssSpec2d` for the single plots in a reasonable way from it.
+        #' We skip models with the `continuous_output` attribute being FALSE (a plot 
+        #' is an overkill in this case).
         #' @param model_tree_mirror character vector of length 2. Store the single plots in 
         #' the same directory as the corresponding model for the train cohort and the 
         #' comparison plot at `file`. When doing the analogous for the test data, replace 

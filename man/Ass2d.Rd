@@ -308,7 +308,9 @@ for multiple models.
 \item{\code{data}}{Data object. Assess on this data set.}
 
 \item{\code{model_list}}{list of Model objects. Assess these models.
-We infer the \code{AssSpec2d} for the single plots in a reasonable way from it.}
+We infer the \code{AssSpec2d} for the single plots in a reasonable way from it.
+We skip models with the \code{continuous_output} attribute being FALSE (a plot
+is an overkill in this case).}
 
 \item{\code{model_tree_mirror}}{character vector of length 2. Store the single plots in
 the same directory as the corresponding model for the train cohort and the

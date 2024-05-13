@@ -181,6 +181,16 @@ test_that("Ass2d$assess_center() works", {
     include_from_continuous_pheno = "continuous_var",
     include_from_discrete_pheno = "discrete_var"
   )
+  model_3 <- Model$new(
+    name = "rf",
+    directory = file.path(model_dir, "rf"),
+    fitter = ptk_ranger,
+    hyperparams = list(mtry = 2, num.trees = 10),
+    split_index = 1,
+    time_cutoffs = 2,
+    response_type = "binary",
+    continuous_output = FALSE
+  )
   model_list <- list(model_1, model_2)
 
   training_camp(
@@ -189,6 +199,7 @@ test_that("Ass2d$assess_center() works", {
     quiet = TRUE
   )
 
+  model_list[[3]] <- model_3
   data$cohort <- c("train", "test")
   res_dir <- file.path(dir, "results")
   ass2d <- Ass2d$new(
