@@ -31,14 +31,12 @@ ass_scalar_assess <- function(self, private, data, model, quiet){
         predicted <- prep[["predicted"]][[i]]
         actual <- prep[["actual"]][[i]]
         pa <- intersect_by_names(predicted, actual, rm_na = TRUE)
-        for (j in seq_along(self$metric)) {
-            res_mat[i, j] <- get_metric(
-                metric = self$metric[j],
-                predicted = pa[[1]],
-                actual = pa[[2]],
-                data = data
-            )
-        }
+        res_mat[i, ] <- get_metric(
+            metrics = self$metric,
+            predicted = pa[[1]],
+            actual = pa[[2]],
+            data = data
+        )
     }
     colnames(res_mat) <- self$metric
     rownames(res_mat) <- self$split_index
@@ -127,45 +125,89 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
 }
 
 get_metric <- function(
-    metric,
+    metrics,
     predicted,
     actual,
     data
 ){
     # Some metrics want binary data, i.e. in {0, 1} 
     binary_bool <- all(predicted %in% c(0, 1))
-    if (metric == "auc") {
-        pred_obj <- ROCR::prediction(predictions = predicted, labels = actual)
-        res <- ROCR::performance(pred_obj, measure = "auc")
-        return(res@y.values[[1]])
-    } else if (metric == "accuracy") {
-        if (!binary_bool)
-            return(NA)
-        return(mean(predicted == actual))
-    } else if (metric == "precision") {
-        if (!binary_bool)
-            return(NA)
-        if (all(predicted == 0))
-            message("No positive predictions. Precision is NaN.")
-        return(mean(actual[predicted == 1]))
-    } else if (metric == "n_true") {
-        return(sum(actual))
-    } else if (metric == "perc_true") {
-        return(mean(actual))
-    } else if (metric == "n_samples") {
-        return(length(actual))
-    } else if (metric == "logrank") {
-        if (!binary_bool)
-            return(NA)
-        pheno_tbl <- data$pheno_tbl
-        pheno_tbl <- pheno_tbl[pheno_tbl[[data$patient_id_col]] %in% names(predicted), ]
-        time <- pheno_tbl[[data$time_to_event_col]]
-        event <- pheno_tbl[[data$event_col]]
-        res <- survival::survdiff(
-            survival::Surv(time = time, event = event) ~ predicted
-        )[["pvalue"]]
-        return(res)
-    } else {
-        stop("Unknown metric: ", metric)
+    res <- numeric(length(metrics))
+    thresholds <- ifelse(binary_bool, 1, unique(predicted))
+    swap_sign <- FALSE
+
+    check_one_threshold <- function(){
+        if(length(thresholds) != 1)
+            stop(metrics[j], "is only defined for truly binary classfiers",
+                " and it's nonsense to threshold a classfier with ", 
+                " continous predictions by maximizing the", metrics[j], 
+                ". So provide a binary classifier or make sure that ",
+                "something reasonable to tune the threshold with (like accuracy) comes ",
+                "before \"", metrics[j], "\" in the `metric` attribute of the ",
+                "AssScalar object.")
     }
+    for (j in seq_along(metrics)) {
+        switch(metrics[j],
+            "auc" = {
+                pred_obj <- ROCR::prediction(predictions = predicted, labels = actual)
+                j_res <- ROCR::performance(pred_obj, measure = "auc")@y.values[[1]]
+            },
+            "accuracy" = {
+                j_res <- vapply(thresholds, 
+                    function(t) mean(as.numeric(predicted >= t) == actual), numeric(1))
+            },
+            "precision" = {
+                check_one_threshold()
+                j_res <- vapply(thresholds, 
+                    function(t) mean(actual[predicted >= t]), numeric(1))
+            },
+            "prevalence" = {
+                check_one_threshold()
+                j_res <- mean(predicted >= thresholds)
+            },
+            "n_true" = {
+                check_one_threshold()
+                j_res <- sum(actual)
+            },
+            "perc_true" = {
+                check_one_threshold()
+                j_res <- mean(actual)
+            },
+            "n_samples" = {
+                check_one_threshold()
+                j_res <- length(actual)
+            },
+            "logrank" = {
+                pheno_tbl <- data$pheno_tbl
+                pheno_tbl <- pheno_tbl[pheno_tbl[[data$patient_id_col]] %in% names(predicted), ]
+                time <- pheno_tbl[[data$time_to_event_col]]
+                event <- pheno_tbl[[data$event_col]]
+                j_res <- vapply(thresholds, function(t) {
+                    predicted_binary <- predicted >= t
+                    if (all(predicted_binary) || all(!predicted_binary))
+                        return(Inf)
+                    survival::survdiff(
+                        survival::Surv(time = time, event = event) ~ predicted_binary
+                    )$pvalue
+                    }, 
+                    numeric(1)
+                )
+                swap_sign <- TRUE
+            },
+            "threshold" = {
+                if (length(thresholds) != 1)
+                    stop("Either assess a binary classifier or make sure", 
+                        " something reasonable to tune the threshold with",
+                        " (like accuracy) comes before \"threshold\" in the", 
+                        " `metric` attribute of the AssScalar object.")
+                j_res <- thresholds
+            },
+            stop("Unknown metric: ", metrics[j])
+        )
+        max_idx <- which.max(ifelse(swap_sign, -1, 1) * j_res)
+        thresholds <- thresholds[max_idx]
+        res[j] <- j_res[max_idx]
+        swap_sign <- FALSE
+    }
+    res
 }

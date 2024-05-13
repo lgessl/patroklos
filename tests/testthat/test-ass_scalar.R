@@ -68,7 +68,7 @@ test_that("AssScalar$assess_center() works", {
   n_fold <- 1
   lambda <- 1
   multiple_metric <- c("accuracy", "precision", "n_true", "perc_true", "n_samples", 
-    "logrank")
+    "logrank", "threshold")
   single_metric <- "auc"
 
   dir <- withr::local_tempdir()
@@ -131,6 +131,5 @@ test_that("AssScalar$assess_center() works", {
   )
   expect_equal(nrow(eval_tbl), length(data$cohort) * (2+2))  
   expect_equal(colnames(eval_tbl), c("model", "cohort", "cutoff", multiple_metric))
-  expect_true(all(is.na(eval_tbl[eval_tbl[["model"]] == "binomial-zerosum", 
-    c("accuracy", "precision", "logrank")])))
+  expect_true(is.numeric(as.matrix(eval_tbl[, 4:ncol(eval_tbl)])))
 })
