@@ -87,7 +87,9 @@ check_fitter <- function(
     if(!("..." %in% parameters)){
         for(arg in names(optional_args)){
             if(!(arg %in% parameters)){
-                stop("fitter must have an argument named '", arg, "'.")
+                stop("The hyperparameters of your Model object include one", 
+                    " named \"", arg, "\", but your fitter doesn't accept such", 
+                    " an argument.")
             }
         }
     }
