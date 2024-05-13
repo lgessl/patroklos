@@ -128,6 +128,10 @@ when calling <code>plot(fit_obj)</code>.</p></dd>
 <dd><p>A list holding fits (e.g. zeroSum objects).</p></dd>
 
 
+<dt><code>continuous_output</code></dt>
+<dd><p>Whether the output of the model is continous or binary.</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div class="section level2">
@@ -162,7 +166,8 @@ when calling <code>plot(fit_obj)</code>.</p></dd>
 <span>  plot_file <span class="op">=</span> <span class="st">"training_error.pdf"</span>,</span>
 <span>  plot_ncols <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  plot_title_line <span class="op">=</span> <span class="fl">2.5</span>,</span>
-<span>  fit_file <span class="op">=</span> <span class="st">"models.rds"</span></span>
+<span>  fit_file <span class="op">=</span> <span class="st">"models.rds"</span>,</span>
+<span>  continuous_output <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -266,6 +271,13 @@ the upper limit of the figure. Default is <code>2.5</code>.</p></dd>
 <dt><code>fit_file</code></dt>
 <dd><p>string. The name of the model-fits file inside <code>directory</code>.
 Default is <code>"fit_obj.rds"</code>.</p></dd>
+
+
+<dt><code>continuous_output</code></dt>
+<dd><p>logical or NULL. Whether the output of the model
+is continous (like the conditional probabilities of a logistic regression) or
+binary (like with a random forest). This piece of information is helpful
+when it comes to assessing a model (Ass2d$assess_center() uses it, e.g.).</p></dd>
 
 
 </dl><p></p></div>
