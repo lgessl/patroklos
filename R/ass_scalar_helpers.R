@@ -133,22 +133,18 @@ get_metric <- function(
     data
 ){
     # Some metrics want binary data, i.e. in {0, 1} 
-    check_predicted_binary <- function(){
-        if (!setequal(unique(predicted), c(0, 1)))
-            stop("For metric = ", metric, ", predicted values must be in `c(0, 1)`. ", 
-                "In fact, they have unique ", 
-                "values (", paste(unique(predicted), collapse=", "), "). There might ", 
-                "be something wrong with (the predict method of) your model.")
-    }
+    binary_bool <- all(predicted %in% c(0, 1))
     if (metric == "auc") {
         pred_obj <- ROCR::prediction(predictions = predicted, labels = actual)
         res <- ROCR::performance(pred_obj, measure = "auc")
         return(res@y.values[[1]])
     } else if (metric == "accuracy") {
-        check_predicted_binary()
+        if (!binary_bool)
+            return(NA)
         return(mean(predicted == actual))
     } else if (metric == "precision") {
-        check_predicted_binary()
+        if (!binary_bool)
+            return(NA)
         if (all(predicted == 0))
             message("No positive predictions. Precision is NaN.")
         return(mean(actual[predicted == 1]))
@@ -159,7 +155,8 @@ get_metric <- function(
     } else if (metric == "n_samples") {
         return(length(actual))
     } else if (metric == "logrank") {
-        check_predicted_binary()
+        if (!binary_bool)
+            return(NA)
         pheno_tbl <- data$pheno_tbl
         pheno_tbl <- pheno_tbl[pheno_tbl[[data$patient_id_col]] %in% names(predicted), ]
         time <- pheno_tbl[[data$time_to_event_col]]
