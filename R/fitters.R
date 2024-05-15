@@ -1,5 +1,6 @@
-#' @title Wrap [`ranger::ranger()`] into a patroklos-compliant fit function
-#' @description You can now use it as the `fitter` attribute of a `Model` object.
+#' @title Wrap [`ranger::ranger()`] into a patroklos-compliant fitter 
+#' @description This function is a patroklos-compliant fitter with validated 
+#' predictions, it has a return value with a `oob_predict` attribute.
 #' @param x Predictor data as a named numeric matrix. Samples correspond to rows,
 #' an attribute `li_var_suffix` is expected to be present.
 #' @param y Response data as numeric vector. The length of `y` must match the
@@ -7,14 +8,6 @@
 #' @param ... Further arguments passed to the wrapped function.
 #' @return A `ptk_ranger` S3 object, a `ranger` S3 object with the `predictions` 
 #' attribute renamed to `oob_predict`.
-#' @details A *patroklos-compliant fitter* is a function with the same parameters
-#' as this function and a return value that is an S3 object with a *patroklos-
-#' compliant predict method* (see details of [`predict.ptk_ranger()`]).
-#' 
-#' A *patroklos compliant fitter with validated predictions* is a patroklos-
-#' compliant fitter whose return value has an attribute `cv_predict` or 
-#' `oob_predict`, a numeric vector holding cross-validated or out-of-bag (OOB) 
-#' predictions, respectively.
 #' @export
 ptk_ranger <- function(x, y, ...){
     ptk_ranger_obj <- ranger::ranger(x = x, y = y, ...)
@@ -27,8 +20,6 @@ ptk_ranger <- function(x, y, ...){
 
 #' @title Wrap [`ranger::predict.ranger()`] into a patroklos-compliant predict
 #' function
-#' @description `Model$predict()` uses this function as a predict method for
-#' the `predict()` generic.
 #' @param object A ptk_ranger S3 object.
 #' @param newx Predictor data as a named numeric matrix. Samples correspond to 
 #' rows, an attribute `li_var_suffix` is expected to be present.
@@ -46,8 +37,9 @@ predict.ptk_ranger <- function(object, newx, ...){
 }
 
 #' @title Wrap [`zeroSum::zeroSum()`] into a patroklos-compliant fit function
-#' @description You can now use it as the `fitter` attribute of a `Model` object.
-#' This fitter is suited for early integration.
+#' @description This function is a patroklos-compliant fitter with integrated 
+#' CV and, if `length(lambda) == 1`, also a patroklos-compliant fitter with 
+#' validated predictions.
 #' @inheritParams zeroSum::zeroSum
 #' @param exclude_pheno_from_lasso Logical. If `TRUE`, set LASSO penalty weights
 #' corresponding to features from the pheno data to zero.
@@ -56,7 +48,7 @@ predict.ptk_ranger <- function(object, newx, ...){
 #' `binarize_predictions` as a threshold.
 #' @return A `ptk_zerosum` S3 object. 
 #' @details A *patroklos-compliant fitter with integrated CV* is a patroklos-
-#' compliant fitter (cf. details of [`ptk_ranger()`] whose return value has an 
+#' compliant fitter (cf. details of [`ptk_ranger()`]) whose return value has an 
 #' attribute `cv_predict_list`, a list of numeric vectors holding cross-validated 
 #' predictions for every value of the model hyperparameter lambda.
 #' @export
@@ -66,6 +58,7 @@ ptk_zerosum <- function(
     exclude_pheno_from_lasso = TRUE,
     binarize_predictions = NULL,    
     ...,
+    nFold = 10,
     zeroSum.weights = NULL, # Do not partially match these
     penalty.factor = NULL
 ){
@@ -73,6 +66,7 @@ ptk_zerosum <- function(
     stopifnot(is.null(binarize_predictions) || 
         (is.numeric(binarize_predictions) && binarize_predictions > 0 && 
         binarize_predictions < 1))
+
     early_bool <- get_early_bool(x, for_li = FALSE)
     # zeroSum weights
     if (is.null(zeroSum.weights))
@@ -85,10 +79,14 @@ ptk_zerosum <- function(
             penalty.factor[!early_bool] <- 0
         }
     }
-    fit_obj <- zeroSum::zeroSum(x = x, y = y, zeroSum.weights = zeroSum.weights, 
-        penalty.factor = penalty.factor, ...)
+    fit_obj <- zeroSum::zeroSum(x = x, y = y, nFold = nFold, 
+        zeroSum.weights = zeroSum.weights, penalty.factor = penalty.factor, 
+        ...)
     fit_obj$cv_predict_list <- fit_obj$cv_predict
     fit_obj$cv_predict <- NULL
+    if (is.numeric(binarize_predictions))
+        fit_obj$cv_predict_list <- lapply(fit_obj$cv_predict_list,
+            function(v) as.numeric(1/(1+exp(-v)) > binarize_predictions))
     if (length(fit_obj$cv_predict_list) == 1)
         fit_obj$cv_predict <- fit_obj$cv_predict_list[[1]]
     if (fit_obj$useZeroSum)
