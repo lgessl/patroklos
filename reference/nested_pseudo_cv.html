@@ -61,7 +61,6 @@ forest).</p>
 <span>  <span class="va">fitter2</span>,</span>
 <span>  <span class="va">hyperparams1</span>,</span>
 <span>  <span class="va">hyperparams2</span>,</span>
-<span>  n_folds <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  oob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -95,10 +94,6 @@ for what this means, see <code><a href="ptk_ranger.html">ptk_ranger()</a></code>
 <dd><p>A named list with hyperparameters for the late model.
 Unlike <code>hyperparams1</code>, we call <code>fitter2</code> for every combination of values in
 <code>hyperparams2</code> and lambda value from <code>fitter1</code>.</p></dd>
-
-
-<dt>n_folds</dt>
-<dd><p>An integer specifying the number of folds for the cross-validation.</p></dd>
 
 
 <dt>oob</dt>
