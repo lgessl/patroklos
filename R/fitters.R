@@ -73,7 +73,6 @@ ptk_zerosum <- function(
     stopifnot(is.null(binarize_predictions) || 
         (is.numeric(binarize_predictions) && binarize_predictions > 0 && 
         binarize_predictions < 1))
-    args <- list(...)
     early_bool <- get_early_bool(x, for_li = FALSE)
     # zeroSum weights
     if (is.null(zeroSum.weights))
@@ -90,6 +89,8 @@ ptk_zerosum <- function(
         penalty.factor = penalty.factor, ...)
     fit_obj$cv_predict_list <- fit_obj$cv_predict
     fit_obj$cv_predict <- NULL
+    if (length(fit_obj$cv_predict_list) == 1)
+        fit_obj$cv_predict <- fit_obj$cv_predict_list[[1]]
     if (fit_obj$useZeroSum)
         fit_obj$zeroSumWeights <- zeroSum.weights
     if (fit_obj$standardize == 0)

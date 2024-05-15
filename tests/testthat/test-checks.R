@@ -13,5 +13,4 @@ test_that("check_fitter() works correctly", {
   expect_error(check_fitter(valid_fitter, wrong_fitter_args))
 
   expect_error(check_fitter(invalid_fitter))
-
 })

@@ -16,6 +16,8 @@ test_that("ptk_zerosum() works", {
   expect_equal(fit$zeroSumWeights, c(rep(1, n_genes), rep(0, 2+1+4)))
   expect_equal(fit$penaltyFactor, c(rep(1, n_genes), rep(0, 2+1+4)))
   expect_equal(fit$binarizePredictions, 0.5)
+  expect_false(is.null(fit$cv_predict))
+  expect_false(is.null(fit$cv_predict_list))
   expect_s3_class(fit, "ptk_zerosum")
 
   fit <- ptk_zerosum(x = x, y = y, exclude_pheno_from_lasso = FALSE, 
