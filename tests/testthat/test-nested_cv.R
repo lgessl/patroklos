@@ -32,10 +32,17 @@ test_that("nested_cv() works", {
     )))
     expect_true(all(!is.na(fit$search_grid[["cv_accuracy"]])))
 
+    # logistic regression as late model
+    hyperparams2 <- list(family = "binomial", lambda = 0, zeroSum = FALSE, 
+        binarize_predictions = 0.5)
+    fit <- nested_pseudo_cv(x = x, y = y, fitter1 = ptk_zerosum, fitter2 = 
+        ptk_zerosum, hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
+        oob = c(FALSE, FALSE))
+
     # Errors
-    x <- x[1:(n_samples-1), ]
+    x_small <- x[1:(n_samples-1), ]
     expect_error(nested_pseudo_cv(
-        x = x, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
+        x = x_small, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
          li_var_suffix = "++" 
     ))

@@ -85,17 +85,18 @@ nested_pseudo_cv <- function(
 
     # Second stage
     n_lambda <- length(fit[[val_predict_name[1]]]) # Partition for-loop
-    hyperparams <- expand.grid(c(
-        hyperparams2, 
-        list("lambda_index" = seq(n_lambda))
-    ))
+    hyperparams <- expand.grid(
+        c(hyperparams2, list("lambda1_index" = seq(n_lambda))),
+        stringsAsFactors = FALSE
+    )
     accuracy <- rep(NA, nrow(hyperparams)) 
     fits <- vector("list", nrow(hyperparams))
     n_hyper2 <- as.integer(nrow(hyperparams)/n_lambda)
     n_class_hyper2 <- length(hyperparams2)
-    hyperparams[["lambda"]] <- fit$lambda[hyperparams[["lambda_index"]]]
+    hyperparams[["lambda1"]] <- fit$lambda[hyperparams[["lambda1_index"]]]
     for (l in seq(n_lambda)) {
         x_late <- cbind(fit[[val_predict_name[1]]][[l]], x[, !early_bool])
+        attr(x_late, "li_var_suffix") <- li_var_suffix
         if (ncol(x_late) != sum(!early_bool)+1)
             stop("Something went wrong with adding the early model's predictions.")
         for (m in seq(n_hyper2)) {
