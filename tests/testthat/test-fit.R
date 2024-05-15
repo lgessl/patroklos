@@ -23,7 +23,7 @@ test_that("Model$fit() works", {
     fitter = ptk_zerosum,
     split_index = 1,
     time_cutoffs = 2,
-    hyperparams = list(family = "cox", nfolds = n_fold, lambda = lambda, 
+    hyperparams = list(family = "cox", nFold = n_fold, lambda = lambda, 
       zeroSum = FALSE),
     response_type = "survival_censored"
   )
@@ -55,7 +55,7 @@ test_that("Model$fit() works", {
     fitter = ptk_zerosum,
     split_index = 1:2,
     time_cutoffs = 2,
-    hyperparams = list(family = "binomial", nfolds = n_fold, lambda = lambda, 
+    hyperparams = list(family = "binomial", nFold = n_fold, lambda = lambda, 
       zeroSum = FALSE),
     response_type = "binary"
   )
@@ -96,7 +96,6 @@ test_that("Model$fit() works", {
           min.node.size = 3, 
           classification = TRUE
         ),
-        n_folds = 2,
         oob = c(FALSE, TRUE)
       ),
       response_type = "binary",

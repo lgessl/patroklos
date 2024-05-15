@@ -11,7 +11,6 @@ nested_pseudo_cv(
   fitter2,
   hyperparams1,
   hyperparams2,
-  n_folds = 10,
   oob = c(FALSE, TRUE)
 )
 }
@@ -32,8 +31,6 @@ for what this means, see \code{\link[=ptk_ranger]{ptk_ranger()}}) to fit the lat
 \item{hyperparams2}{A named list with hyperparameters for the late model.
 Unlike \code{hyperparams1}, we call \code{fitter2} for every combination of values in
 \code{hyperparams2} and lambda value from \code{fitter1}.}
-
-\item{n_folds}{An integer specifying the number of folds for the cross-validation.}
 
 \item{oob}{A logical vector of length 2. If the first element is \code{TRUE}, train
 the late model on out-of-bag, else cross-validated predictions from the early

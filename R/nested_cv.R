@@ -15,7 +15,6 @@
 #' @param hyperparams2 A named list with hyperparameters for the late model. 
 #' Unlike `hyperparams1`, we call `fitter2` for every combination of values in 
 #' `hyperparams2` and lambda value from `fitter1`.
-#' @param n_folds An integer specifying the number of folds for the cross-validation.
 #' @param oob A logical vector of length 2. If the first element is `TRUE`, train 
 #' the late model on out-of-bag, else cross-validated predictions from the early
 #' model. If the second element is `TRUE`, evaluate the entire model on OOB,
@@ -50,7 +49,6 @@ nested_pseudo_cv <- function(
     fitter2,
     hyperparams1,
     hyperparams2,
-    n_folds = 10,
     oob = c(FALSE, TRUE)
 ){
     # Input checks
@@ -70,11 +68,10 @@ nested_pseudo_cv <- function(
     }
     stopifnot(is.function(fitter1) && is.function(fitter2))
     stopifnot(is.list(hyperparams1) && is.list(hyperparams2))
-    n_folds <- as.integer(n_folds)
-    stopifnot(n_folds > 1)
     stopifnot(is.logical(oob) && length(oob) == 2)
 
-    oob_cv_predict <- ifelse(oob, "oob_predict", "cv_predict")
+    val_predict_name <- ifelse(oob, "oob_predict", "cv_predict")
+    val_predict_name[1] <- paste0(val_predict_name[1], "_list")
     early_bool <- get_early_bool(x) 
     li_var_suffix <- attr(x, "li_var_suffix")
     x_early <- x[, early_bool]
@@ -83,11 +80,11 @@ nested_pseudo_cv <- function(
     # First stage
     fit <- do.call(
         fitter1,
-        c(list(x = x_early, y = y, nfold = n_folds), hyperparams1)
+        c(list(x = x_early, y = y), hyperparams1)
     )
 
     # Second stage
-    n_lambda <- length(fit[[paste0(oob_cv_predict[1], "_list")]]) # Partition for-loop
+    n_lambda <- length(fit[[val_predict_name[1]]]) # Partition for-loop
     hyperparams <- expand.grid(c(
         hyperparams2, 
         list("lambda_index" = seq(n_lambda))
@@ -98,7 +95,9 @@ nested_pseudo_cv <- function(
     n_class_hyper2 <- length(hyperparams2)
     hyperparams[["lambda"]] <- fit$lambda[hyperparams[["lambda_index"]]]
     for (l in seq(n_lambda)) {
-        x_late <- cbind(fit[[oob_cv_predict[1]]][[l]], x[, !early_bool])
+        x_late <- cbind(fit[[val_predict_name[1]]][[l]], x[, !early_bool])
+        if (ncol(x_late) != sum(!early_bool)+1)
+            stop("Something went wrong with adding the early model's predictions.")
         for (m in seq(n_hyper2)) {
             idx <- (l-1)*n_hyper2 + m 
             fits[[idx]] <- do.call(
@@ -108,7 +107,7 @@ nested_pseudo_cv <- function(
                     as.list(hyperparams[m, seq(n_class_hyper2)])
                 )
             ) 
-            acc <- mean(fits[[idx]][[oob_cv_predict[2]]] == y) 
+            acc <- mean(fits[[idx]][[val_predict_name[2]]] == y) 
             if(is.nan(acc))
                 stop("The S3 object returned by `fitter2` must have a `predictions` 
                     attribute.")

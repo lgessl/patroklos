@@ -6,7 +6,7 @@ test_that("nested_cv() works", {
     n_genes <- 10
     n_fold <- 3
     lambda <- c(1, 2)
-    hyperparams1 <- list(family = "binomial", nfolds = n_fold, lambda = lambda, 
+    hyperparams1 <- list(family = "binomial", nFold = n_fold, lambda = lambda, 
         zeroSum = FALSE)
     hyperparams2 <- list(mtry = c(3, 4), min.node.size = c(4, 5), 
         classification = TRUE, num.trees = 100)
@@ -19,7 +19,7 @@ test_that("nested_cv() works", {
     fit <- nested_pseudo_cv(
         x = x, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
-        n_folds = 3, oob = c(FALSE, TRUE)
+         oob = c(FALSE, TRUE)
     )
     expect_s3_class(fit, "nested_fit")
     expect_s3_class(fit$model1, "ptk_zerosum")
@@ -37,12 +37,12 @@ test_that("nested_cv() works", {
     expect_error(nested_pseudo_cv(
         x = x, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
-        n_folds = 3, li_var_suffix = "++" 
+         li_var_suffix = "++" 
     ))
     attr(x, "li_var_suffix") <- "--"
     expect_error(nested_pseudo_cv(
         x = x, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
-        hyperparams1 = hyperparams1, hyperparams2 = hyperparams2, n_folds = 3
+        hyperparams1 = hyperparams1, hyperparams2 = hyperparams2 
     ))
 })
 
