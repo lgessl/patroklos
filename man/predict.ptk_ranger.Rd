@@ -19,8 +19,8 @@ rows, an attribute \code{li_var_suffix} is expected to be present.}
 A named numeric vector of predictions from \code{newx}.
 }
 \description{
-\code{Model$predict()} uses this function as a predict method for
-the \code{predict()} generic.
+Wrap \code{\link[ranger:predict.ranger]{ranger::predict.ranger()}} into a patroklos-compliant predict
+function
 }
 \details{
 A \emph{patroklos-compliant predict method} is a function with the same

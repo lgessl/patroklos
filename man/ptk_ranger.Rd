@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitters.R
 \name{ptk_ranger}
 \alias{ptk_ranger}
-\title{Wrap \code{\link[ranger:ranger]{ranger::ranger()}} into a patroklos-compliant fit function}
+\title{Wrap \code{\link[ranger:ranger]{ranger::ranger()}} into a patroklos-compliant fitter}
 \usage{
 ptk_ranger(x, y, ...)
 }
@@ -20,15 +20,6 @@ A \code{ptk_ranger} S3 object, a \code{ranger} S3 object with the \code{predicti
 attribute renamed to \code{oob_predict}.
 }
 \description{
-You can now use it as the \code{fitter} attribute of a \code{Model} object.
-}
-\details{
-A \emph{patroklos-compliant fitter} is a function with the same parameters
-as this function and a return value that is an S3 object with a \emph{patroklos-
-compliant predict method} (see details of \code{\link[=predict.ptk_ranger]{predict.ptk_ranger()}}).
-
-A \emph{patroklos compliant fitter with validated predictions} is a patroklos-
-compliant fitter whose return value has an attribute \code{cv_predict} or
-\code{oob_predict}, a numeric vector holding cross-validated or out-of-bag (OOB)
-predictions, respectively.
+This function is a patroklos-compliant fitter with validated
+predictions, it has a return value with a \code{oob_predict} attribute.
 }

@@ -10,6 +10,7 @@ ptk_zerosum(
   exclude_pheno_from_lasso = TRUE,
   binarize_predictions = NULL,
   ...,
+  nFold = 10,
   zeroSum.weights = NULL,
   penalty.factor = NULL
 )
@@ -30,6 +31,8 @@ for the returned \code{ptk_zerosum} object will binarize the predictions using t
 
 \item{...}{can be used for adjusting internal parameters}
 
+\item{nFold}{the number of folds used by the cross validation (Default 10)}
+
 \item{zeroSum.weights}{weights vector for the zero-sum constraint of
 length ncol(x). By setting a weight to 0 the corresponding feature
 will be excluded from the zero-sum constraint.
@@ -44,12 +47,13 @@ will not be regularized and thus will be part of the resulting model.
 A \code{ptk_zerosum} S3 object.
 }
 \description{
-You can now use it as the \code{fitter} attribute of a \code{Model} object.
-This fitter is suited for early integration.
+This function is a patroklos-compliant fitter with integrated
+CV and, if \code{length(lambda) == 1}, also a patroklos-compliant fitter with
+validated predictions.
 }
 \details{
 A \emph{patroklos-compliant fitter with integrated CV} is a patroklos-
-compliant fitter (cf. details of \code{\link[=ptk_ranger]{ptk_ranger()}} whose return value has an
+compliant fitter (cf. details of \code{\link[=ptk_ranger]{ptk_ranger()}}) whose return value has an
 attribute \code{cv_predict_list}, a list of numeric vectors holding cross-validated
 predictions for every value of the model hyperparameter lambda.
 }
