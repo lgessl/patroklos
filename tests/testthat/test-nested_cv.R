@@ -19,7 +19,7 @@ test_that("nested_cv() works", {
     fit <- nested_pseudo_cv(
         x = x, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
-         oob = c(FALSE, TRUE)
+        oob = c(FALSE, TRUE), metric = "accuracy"
     )
     expect_s3_class(fit, "nested_fit")
     expect_s3_class(fit$model1, "ptk_zerosum")
@@ -30,21 +30,30 @@ test_that("nested_cv() works", {
         function(i) fit$best_hyperparams[[i]] %in% hyperparams[[i]],
         logical(1)
     )))
-    expect_true(all(!is.na(fit$search_grid[["cv_accuracy"]])))
+    expect_equal(dim(fit$search_grid), c(2*(2*2), 2+length(hyperparams2)+1))
+    expect_equal(length(fit$model1$cv_predict_list), 2)
+    expect_true(all(fit$model1$cv_predict_list[[1]] >= 0 &
+        fit$model1$cv_predict_list[[1]] <= 1))
 
     # logistic regression as late model
-    hyperparams2 <- list(family = "binomial", lambda = 0, zeroSum = FALSE, 
-        binarize_predictions = 0.5)
+    # with binomial log-likelihood
+    hyperparams2 <- list(family = "binomial", lambda = 0, zeroSum = FALSE)
     fit <- nested_pseudo_cv(x = x, y = y, fitter1 = ptk_zerosum, fitter2 = 
         ptk_zerosum, hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
-        oob = c(FALSE, FALSE))
+        oob = c(FALSE, FALSE), metric = "binomial_log_likelihood")
+    expect_equal(length(fit$best_hyperparams[["overall_cv_performance"]]), 1)
+    # with AUC
+    fit <- nested_pseudo_cv(x = x, y = y, fitter1 = ptk_zerosum, fitter2 = 
+        ptk_zerosum, hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
+        oob = c(FALSE, FALSE), metric = "roc_auc")
+    metric_v <- fit$search_grid[["overall_model_performance"]]
+    expect_true(all(metric_v >= 0 & metric_v <= 1))
 
     # Errors
     x_small <- x[1:(n_samples-1), ]
     expect_error(nested_pseudo_cv(
         x = x_small, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
-        hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
-         li_var_suffix = "++" 
+        hyperparams1 = hyperparams1, hyperparams2 = hyperparams2
     ))
     attr(x, "li_var_suffix") <- "--"
     expect_error(nested_pseudo_cv(
@@ -111,4 +120,27 @@ test_that("predict.nested_fit() works", {
     expect_equal(length(proj), n_samples)
     expect_true(all(proj %in% c(0, 1)))
     expect_false(is.null(names(proj)))
+})
+
+test_that("get_<metric> works", {
+
+    set.seed(432)
+
+    n_samples <- 10
+
+    y <- sample(0:1, n_samples, replace = TRUE)
+    y_hat <- sample(0:1, n_samples, replace = TRUE)
+
+    acc <- get_accuracy(y, y_hat)
+    expect_true(acc >= 0 & acc <= 1)
+    y_hat[1] <- -1.5
+    expect_error(get_accuracy(y, y_hat))
+
+    y_hat <- runif(n_samples)
+    auc <- get_roc_auc(y, y_hat)
+    expect_true(auc >= 0 & auc <= 1)
+
+   bll <- get_binomial_log_likelihood(y, y_hat) 
+   y_hat[1] <- 1.1
+   expect_error(get_binomial_log_likelihood(y, y_hat))
 })

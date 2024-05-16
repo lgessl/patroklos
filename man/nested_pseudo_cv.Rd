@@ -11,7 +11,8 @@ nested_pseudo_cv(
   fitter2,
   hyperparams1,
   hyperparams2,
-  oob = c(FALSE, TRUE)
+  oob = c(FALSE, TRUE),
+  metric = c("accuracy", "roc_auc", "binomial_log_likelihood")
 )
 }
 \arguments{
@@ -20,11 +21,11 @@ columns are features.}
 
 \item{y}{A numeric vector holding the response variable.}
 
-\item{fitter1}{A \emph{patroklos-compliant fitter with integrated CV} (for what this
-means, see \code{\link[=ptk_zerosum]{ptk_zerosum()}}) to fit the early model.}
+\item{fitter1}{A \emph{patroklos-compliant fitter with CV tuning} (see README for
+more details).}
 
-\item{fitter2}{A \emph{patroklos-compliant fitter with validated predictions} (
-for what this means, see \code{\link[=ptk_ranger]{ptk_ranger()}}) to fit the late model.}
+\item{fitter2}{A \emph{patroklos-compliant fitter with validated predictions} (see
+README for more details).}
 
 \item{hyperparams1}{A named list with hyperparaters we will pass to \code{fitter1}.}
 
@@ -36,6 +37,19 @@ Unlike \code{hyperparams1}, we call \code{fitter2} for every combination of valu
 the late model on out-of-bag, else cross-validated predictions from the early
 model. If the second element is \code{TRUE}, evaluate the entire model on OOB,
 else cross-validated predictions.}
+
+\item{metric}{A character string or a function. The optimal combination of
+hyperparameters yield the model whose pseudo-cv predictions maximize this
+metric.
+\itemize{
+\item If a character string, it must be one of \code{"accuracy"}, \code{"roc_auc"}, or
+\code{"binomial_log_likelihood"}. Make sure that \code{cv_predict} or \code{oob_predict}
+attribute of the fit object returned by \code{fitter2} holds predictions in
+\code{c(0, 1)} if \code{metric == "accuracy"}, and probabilities in \code{c(0, 1)} if
+\code{metric == "binomial_log_likelihood"}.
+\item If a function, it must take two arguments (the true outcome and the predicted
+outcome) and return a numeric. Do this if you want to provide a custom metric.
+}}
 }
 \value{
 An S3 object with class \code{nested_fit}, the model with the best
