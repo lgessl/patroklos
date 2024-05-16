@@ -56,7 +56,8 @@ validated predictions.</p>
 <span>  <span class="va">...</span>,</span>
 <span>  nFold <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  zeroSum.weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  penalty.factor <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  penalty.factor <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  family <span class="op">=</span> <span class="st">"binomial"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -103,6 +104,25 @@ will be excluded from the zero-sum constraint.
 length ncol(x). By setting a weight to 0 the corresponding feature
 will not be regularized and thus will be part of the resulting model.
 (must be greater than or equal to zero, default 1).</p></dd>
+
+
+<dt>family</dt>
+<dd><p>choose the regression type:</p><dl><dt>gaussian:</dt>
+<dd><p>numeric response</p></dd>
+
+    <dt>binomial:</dt>
+<dd></dd>
+
+    <dt>multinomial:</dt>
+<dd></dd>
+
+    <dt>cox:</dt>
+<dd><p>y should be matrix with two columns, the first must
+                contain the event time and the second indicating the
+                 type: 1 = event has occured, 0 = right censoring</p></dd>
+
+
+</dl></dd>
 
 </dl></div>
     <div class="section level2">

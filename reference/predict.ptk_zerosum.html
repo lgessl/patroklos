@@ -68,12 +68,12 @@ rows, an attribute <code>li_var_suffix</code> is expected to be present.</p></dd
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A numeric vector with the prediction for every sample. If the
-<code>binarize_predictions</code> attribute of the <code>ptk_zerosum</code> object is NULL, return
-the linear predictor beta_0 + beta^T x. Otherwise, return the binary class
-labels by thresholding the logistic transformation of the linear predictor
-via <code>binarize_predictions</code>.</p>
-    </div>
+<p>A numeric vector with the prediction for every sample. Unline
+<code><a href="https://rdrr.io/pkg/zeroSum/man/predict.zeroSum.html" class="external-link">zeroSum::predict.zeroSum()</a></code>,</p><ul><li><p>if <code>object$type == 2</code> (i.e., <code>object</code> was fitted with <code>family = "binomial" by </code>ptk_zerosum`), the predictions are binomial probabilities,</p></li>
+<li><p>if <code>object$type == 4</code> (i.e., <code>object</code> was fitted with <code>family = "cox" by </code>ptk_zerosum<code>), the predictions are the exponential of the linear predictor,  i.e., </code>exp(beta_0 + beta^T x)`.</p></li>
+<li><p>If <code>object$binarizePredictions</code> is not <code>NULL</code>, the predictions are binarized
+via <code>as.numeric(y &gt; object$binarizePredictions)</code>.</p></li>
+</ul></div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>

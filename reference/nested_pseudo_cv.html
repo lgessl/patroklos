@@ -61,7 +61,8 @@ forest).</p>
 <span>  <span class="va">fitter2</span>,</span>
 <span>  <span class="va">hyperparams1</span>,</span>
 <span>  <span class="va">hyperparams2</span>,</span>
-<span>  oob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  oob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  metric <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"accuracy"</span>, <span class="st">"roc_auc"</span>, <span class="st">"binomial_log_likelihood"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -77,13 +78,13 @@ columns are features.</p></dd>
 
 
 <dt>fitter1</dt>
-<dd><p>A <em>patroklos-compliant fitter with integrated CV</em> (for what this
-means, see <code><a href="ptk_zerosum.html">ptk_zerosum()</a></code>) to fit the early model.</p></dd>
+<dd><p>A <em>patroklos-compliant fitter with CV tuning</em> (see README for
+more details).</p></dd>
 
 
 <dt>fitter2</dt>
-<dd><p>A <em>patroklos-compliant fitter with validated predictions</em> (
-for what this means, see <code><a href="ptk_ranger.html">ptk_ranger()</a></code>) to fit the late model.</p></dd>
+<dd><p>A <em>patroklos-compliant fitter with validated predictions</em> (see
+README for more details).</p></dd>
 
 
 <dt>hyperparams1</dt>
@@ -101,6 +102,19 @@ Unlike <code>hyperparams1</code>, we call <code>fitter2</code> for every combina
 the late model on out-of-bag, else cross-validated predictions from the early
 model. If the second element is <code>TRUE</code>, evaluate the entire model on OOB,
 else cross-validated predictions.</p></dd>
+
+
+<dt>metric</dt>
+<dd><p>A character string or a function. The optimal combination of
+hyperparameters yield the model whose pseudo-cv predictions maximize this
+metric.</p><ul><li><p>If a character string, it must be one of <code>"accuracy"</code>, <code>"roc_auc"</code>, or
+<code>"binomial_log_likelihood"</code>. Make sure that <code>cv_predict</code> or <code>oob_predict</code>
+attribute of the fit object returned by <code>fitter2</code> holds predictions in
+<code>c(0, 1)</code> if <code>metric == "accuracy"</code>, and probabilities in <code>c(0, 1)</code> if
+<code>metric == "binomial_log_likelihood"</code>.</p></li>
+<li><p>If a function, it must take two arguments (the true outcome and the predicted
+outcome) and return a numeric. Do this if you want to provide a custom metric.</p></li>
+</ul></dd>
 
 </dl></div>
     <div class="section level2">
