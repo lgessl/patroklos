@@ -12,7 +12,8 @@ ptk_zerosum(
   ...,
   nFold = 10,
   zeroSum.weights = NULL,
-  penalty.factor = NULL
+  penalty.factor = NULL,
+  family = "binomial"
 )
 }
 \arguments{
@@ -42,6 +43,16 @@ will be excluded from the zero-sum constraint.
 length ncol(x). By setting a weight to 0 the corresponding feature
 will not be regularized and thus will be part of the resulting model.
 (must be greater than or equal to zero, default 1).}
+
+\item{family}{choose the regression type:
+\describe{
+    \item{gaussian:}{numeric response}
+    \item{binomial:}{}
+    \item{multinomial:}{}
+    \item{cox:}{y should be matrix with two columns, the first must
+                contain the event time and the second indicating the
+                 type: 1 = event has occured, 0 = right censoring}
+}}
 }
 \value{
 A \code{ptk_zerosum} S3 object.

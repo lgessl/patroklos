@@ -12,7 +12,7 @@ test_that("ptk_zerosum() works", {
   y <- x_y$y
 
   fit <- ptk_zerosum(x = x, y = y, exclude_pheno_from_lasso = TRUE, 
-    binarize_predictions = 0.5, lambda = lambda, nFold = 2)
+    binarize_predictions = 0.5, lambda = lambda, nFold = 2, family = "binomial")
   expect_equal(fit$zeroSumWeights, c(rep(1, n_genes), rep(0, 2+1+4)))
   expect_equal(fit$penaltyFactor, c(rep(1, n_genes), rep(0, 2+1+4)))
   expect_equal(fit$binarizePredictions, 0.5)
@@ -21,23 +21,29 @@ test_that("ptk_zerosum() works", {
   expect_true(all(vapply(fit$cv_predict_list, function(v) v %in% c(0, 1), 
     logical(n_samples))))
   expect_s3_class(fit, "ptk_zerosum")
+  expect_equal(fit$type, 2)
 
   lambda <- lambda[2]
+
   fit <- ptk_zerosum(x = x, y = y, exclude_pheno_from_lasso = FALSE, 
-    binarize_predictions = NULL, lambda = lambda, nFold = 2, zeroSum = FALSE)
+    binarize_predictions = NULL, lambda = lambda, nFold = 2, zeroSum = FALSE, 
+    family = "binomial")
   expect_false(as.logical(fit$useZeroSum))
   expect_true(is.null(fit$zeroSumWeights))
   expect_true(is.null(fit$penaltyFactor))
   expect_true(is.null(fit$binarizePredictions))
-  expect_false(all(vapply(fit$cv_predict_list, function(v) v %in% c(0, 1), 
-    logical(n_samples))))
+  expect_true(all(vapply(fit$cv_predict_list, function(v) 
+    all(v >= 0 & v <= 1), logical(1))), logical(n_samples))
+  expect_true(all(fit$cv_predict <= 1 & fit$cv_predict >= 0))
+  expect_equal(fit$type, 2)
 
   fit <- ptk_zerosum(x = x, y = y, exclude_pheno_from_lasso = TRUE, 
     lambda = lambda, nFold = 2, zeroSum = FALSE, binarize_predictions = 0.6, 
-    penalty.factor = runif(ncol(x)))
+    penalty.factor = runif(ncol(x)), family = "binomial")
   expect_true(all(fit$penaltyFactor[!get_early_bool(x)] == 0))
   expect_true(all(vapply(fit$cv_predict_list, function(v) v %in% c(0, 1), 
     logical(n_samples))))
+  expect_equal(fit$type, 2)
 })
 
 test_that("predict.ptk_zerosum() works", {
@@ -60,5 +66,12 @@ test_that("predict.ptk_zerosum() works", {
 
   fit$binarizePredictions <- NULL
   y_hat <- predict(fit, x, s = 2)
-  expect_false(all(y_hat %in% c(0, 1)))
+  expect_true(all(y_hat >= 0 & y_hat <= 1))
+  
+  lambda <- lambda[2]
+  y <- cbind(runif(n_samples), sample(c(0, 1), n_samples, replace = TRUE))
+  fit <- ptk_zerosum(x = x, y = y, nFold = 2, family = "cox", zeroSum = FALSE)
+  y_hat <- predict(fit, x)
+  expect_true(all(y_hat > 0))
+  expect_equal(fit$type, 4)
 })

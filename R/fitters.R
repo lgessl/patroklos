@@ -60,7 +60,8 @@ ptk_zerosum <- function(
     ...,
     nFold = 10,
     zeroSum.weights = NULL, # Do not partially match these
-    penalty.factor = NULL
+    penalty.factor = NULL,
+    family = "binomial"
 ){
     stopifnot(is.logical(exclude_pheno_from_lasso))
     stopifnot(is.null(binarize_predictions) || 
@@ -81,12 +82,16 @@ ptk_zerosum <- function(
     }
     fit_obj <- zeroSum::zeroSum(x = x, y = y, nFold = nFold, 
         zeroSum.weights = zeroSum.weights, penalty.factor = penalty.factor, 
-        ...)
+        family = family, ...)
     fit_obj$cv_predict_list <- fit_obj$cv_predict
     fit_obj$cv_predict <- NULL
+    if (family == "binomial") {
+        fit_obj$cv_predict_list <- lapply(fit_obj$cv_predict_list,
+            function(v) 1/(1+exp(-v)))
+    }
     if (is.numeric(binarize_predictions))
         fit_obj$cv_predict_list <- lapply(fit_obj$cv_predict_list,
-            function(v) as.numeric(1/(1+exp(-v)) > binarize_predictions))
+            function(v) as.numeric(v > binarize_predictions))
     if (length(fit_obj$cv_predict_list) == 1)
         fit_obj$cv_predict <- fit_obj$cv_predict_list[[1]]
     if (fit_obj$useZeroSum)
@@ -103,11 +108,15 @@ ptk_zerosum <- function(
 #' the `predict()` generic.
 #' @inheritParams predict.ptk_ranger
 #' @param object A ptk_patroklos S3 object.
-#' @return A numeric vector with the prediction for every sample. If the 
-#' `binarize_predictions` attribute of the `ptk_zerosum` object is NULL, return 
-#' the linear predictor beta_0 + beta^T x. Otherwise, return the binary class 
-#' labels by thresholding the logistic transformation of the linear predictor 
-#' via `binarize_predictions`.
+#' @return A numeric vector with the prediction for every sample. Unline 
+#' `zeroSum::predict.zeroSum()`, 
+#' * if `object$type == 2` (i.e., `object` was fitted with `family = "binomial"
+#' by `ptk_zerosum`), the predictions are binomial probabilities,
+#' * if `object$type == 4` (i.e., `object` was fitted with `family = "cox" by
+#' `ptk_zerosum`), the predictions are the exponential of the linear predictor, 
+#' i.e., `exp(beta_0 + beta^T x)`.
+#' * If `object$binarizePredictions` is not `NULL`, the predictions are binarized
+#' via `as.numeric(y > object$binarizePredictions)`.
 #' @export
 predict.ptk_zerosum <- function(
     object,
@@ -117,14 +126,13 @@ predict.ptk_zerosum <- function(
     class(object) <- "zeroSum"
     args <- list(...)
     if(!is.null(args[["type"]]))
-        stop("`type` argument is not allowed. The `binarizePredictions` attribute 
-            of the `ptk_zerosum` object determines the prediction type.")
-    # type "link" returns linear predictor beta_0 + beta^T x
-    y <- do.call("predict", c(
-        list(object = object, newx = newx, type = "link"), 
-        args
-    ))
+        stop("`type` argument is not allowed.") 
+    type <- NULL
+    if(object$type %in% c(2, 4)) # 2 \mapsto binomial, 4 \mapsto cox
+        # get probabilities (binomial), exp(beta_0 + beta^T x) (cox)
+        type <- "response"     
+    y <- predict(object = object, newx = newx, type = type, ...)
     if (!is.null(object$binarizePredictions))
-        y <- as.numeric(1/(1+exp(-y)) > object$binarizePredictions)
+        y <- as.numeric(y > object$binarizePredictions)
     return(y)
 }

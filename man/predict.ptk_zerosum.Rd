@@ -15,11 +15,14 @@ rows, an attribute \code{li_var_suffix} is expected to be present.}
 \item{...}{Further arguments passed to the wrapped function.}
 }
 \value{
-A numeric vector with the prediction for every sample. If the
-\code{binarize_predictions} attribute of the \code{ptk_zerosum} object is NULL, return
-the linear predictor beta_0 + beta^T x. Otherwise, return the binary class
-labels by thresholding the logistic transformation of the linear predictor
-via \code{binarize_predictions}.
+A numeric vector with the prediction for every sample. Unline
+\code{zeroSum::predict.zeroSum()},
+\itemize{
+\item if \code{object$type == 2} (i.e., \code{object} was fitted with \verb{family = "binomial" by }ptk_zerosum`), the predictions are binomial probabilities,
+\item if \code{object$type == 4} (i.e., \code{object} was fitted with \verb{family = "cox" by }ptk_zerosum\verb{), the predictions are the exponential of the linear predictor,  i.e., }exp(beta_0 + beta^T x)`.
+\item If \code{object$binarizePredictions} is not \code{NULL}, the predictions are binarized
+via \code{as.numeric(y > object$binarizePredictions)}.
+}
 }
 \description{
 \code{Model$predict()} uses this function as a predict method for

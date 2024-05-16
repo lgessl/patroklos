@@ -39,10 +39,11 @@ test_that("training_camp() works", {
           hyperparams1 = list(
               family = "binomial",
               alpha = 1,
-              zeroSum = FALSE
+              zeroSum = FALSE,
+              lambda = c(0.5, 1)
           ),
           hyperparams2 = list(
-              num.trees = 10, 
+              num.trees = 10, # If chosen too small, OOB predictions can be NA
               mtry = 2,
               min.node.size = 3, 
               classification = TRUE
