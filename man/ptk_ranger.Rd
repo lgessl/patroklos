@@ -4,7 +4,7 @@
 \alias{ptk_ranger}
 \title{Wrap \code{\link[ranger:ranger]{ranger::ranger()}} into a patroklos-compliant fitter}
 \usage{
-ptk_ranger(x, y, ...)
+ptk_ranger(x, y, mtry, ...)
 }
 \arguments{
 \item{x}{Predictor data as a named numeric matrix. Samples correspond to rows,
@@ -12,6 +12,8 @@ an attribute \code{li_var_suffix} is expected to be present.}
 
 \item{y}{Response data as numeric vector. The length of \code{y} must match the
 number of rows in \code{x}.}
+
+\item{mtry}{Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Alternatively, a single argument function returning an integer, given the number of independent variables.}
 
 \item{...}{Further arguments passed to the wrapped function.}
 }

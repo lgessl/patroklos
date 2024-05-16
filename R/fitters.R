@@ -1,6 +1,7 @@
 #' @title Wrap [`ranger::ranger()`] into a patroklos-compliant fitter 
 #' @description This function is a patroklos-compliant fitter with validated 
 #' predictions, it has a return value with a `oob_predict` attribute.
+#' @inheritParams ranger::ranger
 #' @param x Predictor data as a named numeric matrix. Samples correspond to rows,
 #' an attribute `li_var_suffix` is expected to be present.
 #' @param y Response data as numeric vector. The length of `y` must match the
@@ -9,7 +10,8 @@
 #' @return A `ptk_ranger` S3 object, a `ranger` S3 object with the `predictions` 
 #' attribute renamed to `oob_predict`.
 #' @export
-ptk_ranger <- function(x, y, ...){
+ptk_ranger <- function(x, y, mtry, ...){
+    mtry <- mtry[mtry <= ncol(x)]
     ptk_ranger_obj <- ranger::ranger(x = x, y = y, ...)
     # Rename OOB predictions
     ptk_ranger_obj$oob_predict <- ptk_ranger_obj$predictions
