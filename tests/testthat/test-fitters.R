@@ -44,6 +44,8 @@ test_that("ptk_zerosum() works", {
   expect_true(all(vapply(fit$cv_predict_list, function(v) v %in% c(0, 1), 
     logical(n_samples))))
   expect_equal(fit$type, 2)
+
+  expect_error(ptk_zerosum(x, y, binarize_predictions = TRUE))
 })
 
 test_that("predict.ptk_zerosum() works", {
