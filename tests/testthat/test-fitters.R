@@ -1,3 +1,21 @@
+test_that("ptk_ranger() works", {
+
+  set.seed(123)
+
+  n_samples <- 10
+  n_genes <- 2
+  
+  x_y <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
+    return_type = "fitter")
+  x <- x_y$x
+  y <- x_y$y
+
+  fit <- ptk_ranger(x = x, y = y, mtry = 1, num.trees = 1, min.node.size = 1, 
+    classification = TRUE)
+  expect_false(is.null(fit$oob_predict))
+  expect_true(is.null(fit$predictions))
+})
+
 test_that("ptk_zerosum() works", {
 
   set.seed(123)
