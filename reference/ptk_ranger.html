@@ -45,23 +45,17 @@ predictions, it has a return value with a <code>oob_predict</code> attribute.</p
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ptk_ranger</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">mtry</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ptk_ranger</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
-<dd><p>Predictor data as a named numeric matrix. Samples correspond to rows,
-an attribute <code>li_var_suffix</code> is expected to be present.</p></dd>
+<dd><p>Predictor data (independent variables), alternative interface to data with formula or dependent.variable.name.</p></dd>
 
 
 <dt>y</dt>
-<dd><p>Response data as numeric vector. The length of <code>y</code> must match the
-number of rows in <code>x</code>.</p></dd>
-
-
-<dt>mtry</dt>
-<dd><p>Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Alternatively, a single argument function returning an integer, given the number of independent variables.</p></dd>
+<dd><p>Response vector (dependent variable), alternative interface to data with formula or dependent.variable.name. For survival use a <code>Surv()</code> object or a matrix with time and status.</p></dd>
 
 
 <dt>...</dt>
