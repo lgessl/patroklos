@@ -77,7 +77,6 @@ model_at_time_cutoff <- function(
 #' @param model_list list of `Model`s.
 #' @param prefix character Prepend this directory to the `directory` attribute of each
 #' `Model` in `model_list`.
-#' @return list of modified `Model`s.
 #' @export
 prepend_to_directory <- function(
     model_list, 
@@ -88,4 +87,5 @@ prepend_to_directory <- function(
         stopifnot(inherits(model, "Model"))
         model$directory <- file.path(prefix, model$directory)
     })
+    return(NULL)
 }

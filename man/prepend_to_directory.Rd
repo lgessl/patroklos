@@ -13,9 +13,6 @@ prepend_to_directory(model_list, prefix)
 \item{prefix}{character Prepend this directory to the \code{directory} attribute of each
 \code{Model} in \code{model_list}.}
 }
-\value{
-list of modified \code{Model}s.
-}
 \description{
 This function supports the paradigm of specifying the \code{Model}s for
 for \emph{all} data sets at one place and them quickly adopting for a specific data
