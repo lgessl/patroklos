@@ -45,7 +45,7 @@ predictions, it has a return value with a <code>oob_predict</code> attribute.</p
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ptk_ranger</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ptk_ranger</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">mtry</span>, skip_on_invalid_input <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -56,6 +56,16 @@ predictions, it has a return value with a <code>oob_predict</code> attribute.</p
 
 <dt>y</dt>
 <dd><p>Response vector (dependent variable), alternative interface to data with formula or dependent.variable.name. For survival use a <code>Surv()</code> object or a matrix with time and status.</p></dd>
+
+
+<dt>mtry</dt>
+<dd><p>Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Alternatively, a single argument function returning an integer, given the number of independent variables.</p></dd>
+
+
+<dt>skip_on_invalid_input</dt>
+<dd><p>Logical. If <code>TRUE</code> and invalid input is detected,
+return <code>"next"</code> instead of an error. This is useful when calling this function
+from inside <code><a href="nested_pseudo_cv.html">nested_pseudo_cv()</a></code>.</p></dd>
 
 
 <dt>...</dt>
