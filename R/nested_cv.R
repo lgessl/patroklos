@@ -117,6 +117,7 @@ nested_pseudo_cv <- function(
     hyperparams[["lambda1"]] <- fit$lambda[hyperparams[["lambda1_index"]]]
     for (l in seq(n_lambda)) {
         x_late <- cbind(fit[[val_predict_name[1]]][[l]], x[, !early_bool])
+        colnames(x_late) <- c("early_predict", colnames(x)[!early_bool])
         attr(x_late, "li_var_suffix") <- li_var_suffix
         if (ncol(x_late) != sum(!early_bool)+1)
             stop("Something went wrong with adding the early model's predictions.")

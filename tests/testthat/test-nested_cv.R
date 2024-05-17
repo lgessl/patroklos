@@ -1,4 +1,4 @@
-test_that("nested_cv() works", {
+test_that("nested_pseudo_cv() works", {
 
     set.seed(123)
 
@@ -49,7 +49,9 @@ test_that("nested_cv() works", {
         oob = c(FALSE, FALSE), metric = "binomial_log_likelihood")
     expect_equal(length(fit$best_hyperparams[["overall_cv_performance"]]), 1)
     # with AUC
-    fit <- nested_pseudo_cv(x = x, y = y, fitter1 = ptk_zerosum, fitter2 = 
+    x_small <- x[, 1:(n_genes+1)]
+    attr(x_small, "li_var_suffix") <- attr(x, "li_var_suffix")
+    fit <- nested_pseudo_cv(x = x_small, y = y, fitter1 = ptk_zerosum, fitter2 = 
         ptk_zerosum, hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
         oob = c(FALSE, FALSE), metric = "roc_auc")
     metric_v <- fit$search_grid[["overall_model_performance"]]
@@ -57,15 +59,16 @@ test_that("nested_cv() works", {
 
     # Errors
     x_small <- x[1:(n_samples-1), ]
+    attr(x_small, "li_var_suffix") <- attr(x, "li_var_suffix")
     expect_error(nested_pseudo_cv(
         x = x_small, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2
-    ))
+    ), regexp = "is not TRUE")
     attr(x, "li_var_suffix") <- "--"
     expect_error(nested_pseudo_cv(
         x = x, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2 
-    ))
+    ), regexp = "All features are for the early model")
 })
 
 test_that("nested_fit() works", {
