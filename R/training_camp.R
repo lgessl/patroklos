@@ -1,6 +1,7 @@
 #' @title Set up a training camp to fit models
 #' @description Given one data set and a list of models, fit all models for all 
-#' splits and time cutoffs. Store the models.
+#' splits and time cutoffs. Store the models. If an error occurs while fitting 
+#' a model, skip to next model.
 #' @param model_list list of Model objects. The models to fit.
 #' @param data Data object. The data set to fit on.
 #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
@@ -41,7 +42,16 @@ training_camp <- function(
             if(!quiet) message("## At time cutoff ", time_cutoff, 
                 " (", round.POSIXt(Sys.time(), units = "secs"), ")")
             model_tc <- model$at_time_cutoff(time_cutoff)
-            model_tc$fit(data, quiet = quiet, msg_prefix = "### ")
+            tryCatch(
+                {
+                    model_tc$fit(data, quiet = quiet, msg_prefix = "### ")
+                }, 
+                error = function(cnd){
+                    message("### Error while fitting ", model_tc$name, 
+                        " at time cutoff ", time_cutoff, "!\n### Condition message: ", 
+                        conditionMessage(cnd), "\n### Skipping to next model.")
+                }
+            )
         }
     }
     if(!quiet) message("Training camp closes at ", round.POSIXt(Sys.time(), units = "secs"))

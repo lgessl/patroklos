@@ -15,5 +15,6 @@ training_camp(model_list, data, quiet = FALSE)
 }
 \description{
 Given one data set and a list of models, fit all models for all
-splits and time cutoffs. Store the models.
+splits and time cutoffs. Store the models. If an error occurs while fitting
+a model, skip to next model.
 }

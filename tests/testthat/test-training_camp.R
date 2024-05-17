@@ -63,12 +63,21 @@ test_that("training_camp() works", {
   model_3$hyperparams[["family"]] <- "binomial"
   model_3$response_type <- "binary"
   
-  training_camp(
-    model_list = list(model_1, model_2, model_3),
-    data = data,
-    quiet = TRUE
+  model_4 <- model_3$clone()
+  model_4$name <- "problem model"
+  model_4$directory <- file.path(dir, "model4")
+  model_4$hyperparams[["family"]] <- "blabla"
+
+  expect_message(
+    training_camp(
+      model_list = list(model_1, model_2, model_3, model_4),
+      data = data,
+      quiet = TRUE
+    ),
+    regexp = "Error while fitting problem model"
   )
   expect_true(file.exists(file.path(model_1$directory, "1-5", "models.rds")))
   expect_true(file.exists(file.path(model_2$directory, "1-75", "models.rds")))
   expect_true(file.exists(file.path(model_3$directory, "2", "models.rds")))
+  expect_false(file.exists(file.path(model_4$directory, "2", "models.rds")))
 })
