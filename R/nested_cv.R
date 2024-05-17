@@ -10,7 +10,8 @@
 #' @param fitter1 A *patroklos-compliant fitter with CV tuning* (see README for 
 #' more details).
 #' @param fitter2 A *patroklos-compliant fitter with validated predictions* (see 
-#' README for more details).
+#' README for more details). If it returns `"next"`, we skip the current 
+#' combination of hyperparameters and set its metric to `-Inf`.
 #' @param hyperparams1 A named list with hyperparaters we will pass to `fitter1`.
 #' @param hyperparams2 A named list with hyperparameters for the late model. 
 #' Unlike `hyperparams1`, we call `fitter2` for every combination of values in 
@@ -128,6 +129,10 @@ nested_pseudo_cv <- function(
                     as.list(hyperparams[m, seq(n_class_hyper2)])
                 )
             ) 
+            if (is.character(fits[[idx]]) && fits[[idx]] == "next") {
+                metric_v[idx] <- -Inf
+                next
+            }
             y_hat <- fits[[idx]][[val_predict_name[2]]]
             if(length(y_hat) != length(y))
                 stop("The S3 object returned by `fitter2` must have a `", 

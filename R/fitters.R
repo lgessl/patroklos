@@ -2,12 +2,19 @@
 #' @description This function is a patroklos-compliant fitter with validated 
 #' predictions, it has a return value with a `oob_predict` attribute.
 #' @inheritParams ranger::ranger
+#' @param skip_on_invalid_input Logical. If `TRUE` and invalid input is detected,
+#' return `"next"` instead of an error. This is useful when calling this function 
+#' from inside [`nested_pseudo_cv()`].
 #' @param ... Further arguments passed to the wrapped function.
 #' @return A `ptk_ranger` S3 object, a `ranger` S3 object with the `predictions` 
 #' attribute renamed to `oob_predict`.
 #' @export
-ptk_ranger <- function(x, y, ...){
-    ptk_ranger_obj <- ranger::ranger(x = x, y = y, ...)
+ptk_ranger <- function(x, y, mtry, skip_on_invalid_input = FALSE, ...){
+    if (ncol(x) < mtry) {
+        if (skip_on_invalid_input) return("next")
+        stop("mtry must be less than the number of features.")
+    }
+    ptk_ranger_obj <- ranger::ranger(x = x, y = y, mtry = mtry, ...)
     # Rename OOB predictions
     ptk_ranger_obj$oob_predict <- ptk_ranger_obj$predictions
     ptk_ranger_obj$predictions <- NULL

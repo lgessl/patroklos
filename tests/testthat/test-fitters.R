@@ -14,6 +14,13 @@ test_that("ptk_ranger() works", {
     classification = TRUE)
   expect_false(is.null(fit$oob_predict))
   expect_true(is.null(fit$predictions))
+
+  expect_error(ptk_ranger(x = x, y = y, mtry = ncol(x)+1, 
+    skip_on_invalid_input = FALSE), regexp = "mtry must be")
+  
+  fit <- ptk_ranger(x = x, y = y, mtry = ncol(x)+1, 
+    skip_on_invalid_input = TRUE)
+  expect_equal(fit, "next")
 })
 
 test_that("ptk_zerosum() works", {

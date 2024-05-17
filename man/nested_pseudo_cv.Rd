@@ -25,7 +25,8 @@ columns are features.}
 more details).}
 
 \item{fitter2}{A \emph{patroklos-compliant fitter with validated predictions} (see
-README for more details).}
+README for more details). If it returns \code{"next"}, we skip the current
+combination of hyperparameters and set its metric to \code{-Inf}.}
 
 \item{hyperparams1}{A named list with hyperparaters we will pass to \code{fitter1}.}
 

@@ -6,15 +6,15 @@ test_that("nested_cv() works", {
     n_genes <- 10
     n_fold <- 3
     lambda <- c(1, 2)
-    hyperparams1 <- list(family = "binomial", nFold = n_fold, lambda = lambda, 
-        zeroSum = FALSE)
-    hyperparams2 <- list(mtry = c(3, 4), min.node.size = c(4, 5), 
-        classification = TRUE, num.trees = 100)
-    
+
     x_y <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
         return_type = "fitter")
     x <- x_y$x
     y <- x_y$y
+    hyperparams1 <- list(family = "binomial", nFold = n_fold, lambda = lambda, 
+        zeroSum = FALSE)
+    hyperparams2 <- list(mtry = c(3, 4, ncol(x)+1), min.node.size = c(4, 5), 
+        classification = TRUE, num.trees = 100, skip_on_invalid_input = TRUE)
 
     fit <- nested_pseudo_cv(
         x = x, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
@@ -30,11 +30,17 @@ test_that("nested_cv() works", {
         function(i) fit$best_hyperparams[[i]] %in% hyperparams[[i]],
         logical(1)
     )))
-    expect_equal(dim(fit$search_grid), c(2*(2*2), 2+length(hyperparams2)+1))
+    expect_equal(dim(fit$search_grid), c(2*(3*2), 2+length(hyperparams2)+1))
     expect_equal(length(fit$model1$cv_predict_list), 2)
     expect_true(all(fit$model1$cv_predict_list[[1]] >= 0 &
         fit$model1$cv_predict_list[[1]] <= 1))
 
+    hyperparams2[["skip_on_invalid_input"]] <- FALSE
+    expect_error(nested_pseudo_cv(
+        x = x, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
+        hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
+        oob = c(FALSE, TRUE), metric = "accuracy"
+    ), regexp = "mtry must be less than the number of features.")
     # logistic regression as late model
     # with binomial log-likelihood
     hyperparams2 <- list(family = "binomial", lambda = 0, zeroSum = FALSE)
