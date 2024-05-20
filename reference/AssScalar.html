@@ -46,17 +46,14 @@ threshold with a <em>scalar</em> metric (like the ROC-AUC).</p>
 
     <div class="section level2">
     <h2 id="public-fields">Public fields<a class="anchor" aria-label="anchor" href="#public-fields"></a></h2>
-    <p></p><div class="r6-fields"><dl><dt><code>metric</code></dt>
-<dd><p>Scalar metric.</p></dd>
+    <p></p><div class="r6-fields"><dl><dt><code>metrics</code></dt>
+<dd><p>Assess the model for these scalar metrics. Check out the
+initializer for possible choices.</p></dd>
 
 
 <dt><code>pivot_time_cutoff</code></dt>
 <dd><p>Assess classifying time to event less than
 pivot_time_cutoff.</p></dd>
-
-
-<dt><code>lambda</code></dt>
-<dd><p>Assess the model with regularization parameter lambda.</p></dd>
 
 
 <dt><code>benchmark</code></dt>
@@ -92,9 +89,9 @@ for more details.</p></dd>
 <p>Create a new AssScalar instance.</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/AssScalar.html">AssScalar</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
-<span>  <span class="va">metric</span>,</span>
+<span>  metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auc"</span>, <span class="st">"accuracy"</span>, <span class="st">"precision"</span>, <span class="st">"prevalence"</span>, <span class="st">"n_true"</span>, <span class="st">"perc_true"</span>,</span>
+<span>    <span class="st">"n_samples"</span>, <span class="st">"logrank"</span>, <span class="st">"threshold"</span><span class="op">)</span>,</span>
 <span>  <span class="va">pivot_time_cutoff</span>,</span>
-<span>  lambda <span class="op">=</span> <span class="st">"lambda.min"</span>,</span>
 <span>  benchmark <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  round_digits <span class="op">=</span> <span class="fl">3</span></span>
@@ -103,22 +100,20 @@ for more details.</p></dd>
 
 <div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>metric</code></dt>
-<dd><p>character. Name of the function used to calculate the metric. It must
-take two numeric vectors of the same length as arguments:</p><ol><li><p><code>predicted</code>, the predictions by a model, higher values indicate a more positive
-prediction,</p></li>
-<li><p><code>actual</code>, the true values with the positive class coded as 1, the negative one as 0.</p></li>
-</ol></dd>
+<p></p><div class="arguments"><dl><dt><code>metrics</code></dt>
+<dd><p>character. Assess the model for these metrics. For
+currently offered choices see "Usage" above. If you have a model with
+non-binary output (like a logistic regression), we choose a threshold
+by maximizing the left-most metric in <code>metrics</code> <em>that is made for
+classifiers with binary output</em> (often this is
+<code>"accuracy"</code>). If this cannot be done reasonably (e.g., <code>"precision"</code>
+would usually give you a very high threshold with very low prevalence),
+we throw an error.</p></dd>
 
 
 <dt><code>pivot_time_cutoff</code></dt>
 <dd><p>numeric. Assess for classifying time to event &lt;
 <code>pivot_time_cutoff</code>.</p></dd>
-
-
-<dt><code>lambda</code></dt>
-<dd><p>Assess the model belonging to this <code>lambda</code> in the cross validation
-(if there was one).</p></dd>
 
 
 <dt><code>benchmark</code></dt>
@@ -174,7 +169,8 @@ and <code>cohort</code> attribute set.</p></dd>
 
 <div class="section">
 <h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
-<p>numeric vector. For every split index the desired metric.</p>
+<p>numeric matrix. The rows correspond to the splits of the model,
+the columns correspond to <code>self$metrics</code>.</p>
 </div>
 
 </div><p></p><hr><a id="method-AssScalar-assess_center"></a><div class="section">
@@ -216,10 +212,10 @@ attribute.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
-<p>A tibble. Every row holds the metric (and more analysis across the splits
-like standard deviation, minimum, maximum value) for one model in <code>model_list</code>
-and every time cutoff specified for this model.</p>
-</div>
+<p>A tibble. Every row stands for one model.</p><ul><li><p>If <code>length(self$metrics) == 1</code>, the columns hold statistics on the
+single metric (like mean, standard deviation).</p></li>
+<li><p>Otherwise columns correspond to <code>self$metrics</code>.</p></li>
+</ul></div>
 
 </div><p></p><hr><a id="method-AssScalar-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>

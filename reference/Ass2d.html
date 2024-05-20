@@ -67,10 +67,6 @@ assessment.</p></dd>
 <dd><p>Store results in this file.</p></dd>
 
 
-<dt><code>lambda</code></dt>
-<dd><p>Assess model with this regularization parameter.</p></dd>
-
-
 <dt><code>ci_level</code></dt>
 <dd><p>For any confidence intervals calculated use this level.</p></dd>
 
@@ -201,7 +197,6 @@ including cutoffs.</p></dd>
 <span>  <span class="va">x_metric</span>,</span>
 <span>  <span class="va">y_metric</span>,</span>
 <span>  <span class="va">pivot_time_cutoff</span>,</span>
-<span>  lambda <span class="op">=</span> <span class="st">"lambda.min"</span>,</span>
 <span>  benchmark <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ci_level <span class="op">=</span> <span class="fl">0.95</span>,</span>
@@ -255,11 +250,6 @@ of the precision according to Clopper-Pearson.</p></li>
 high/low-risk (time to event below/above <code>pivot_time_cutoff</code>) group. Model performance
 will be measured in terms of how well it can separate these two groups as a binary
 classifier.</p></dd>
-
-
-<dt><code>lambda</code></dt>
-<dd><p>numeric or string. The regularization parameter of the model to
-evaluate.</p></dd>
 
 
 <dt><code>benchmark</code></dt>
