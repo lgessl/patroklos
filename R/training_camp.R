@@ -47,7 +47,7 @@ training_camp <- function(
                     model_tc$fit(data, quiet = quiet, msg_prefix = "### ")
                 }, 
                 error = function(cnd){
-                    message("### Error while fitting ", model_tc$name, 
+                    warning("### Error while fitting ", model_tc$name, 
                         " at time cutoff ", time_cutoff, "!\n### Condition message: ", 
                         conditionMessage(cnd), "\n### Skipping to next model.")
                 }

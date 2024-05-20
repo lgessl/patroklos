@@ -68,7 +68,7 @@ test_that("training_camp() works", {
   model_4$directory <- file.path(dir, "model4")
   model_4$hyperparams[["family"]] <- "blabla"
 
-  expect_message(
+  expect_warning(
     training_camp(
       model_list = list(model_1, model_2, model_3, model_4),
       data = data,
