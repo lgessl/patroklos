@@ -126,7 +126,6 @@ as2_plot_risk_scores <- function(self, private, data, model, quiet, msg_prefix){
 
     prep <- model$predict(
         data,
-        lambda = self$lambda,
         pivot_time_cutoff = self$pivot_time_cutoff
     )
     predicted <- prep[["predicted"]]

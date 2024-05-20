@@ -2,8 +2,7 @@ ass2d_calculate_2d_metric <- function(self, private, data, model){
 
     prep <- model$predict(
         data = data,
-        pivot_time_cutoff = self$pivot_time_cutoff,
-        lambda = self$lambda
+        pivot_time_cutoff = self$pivot_time_cutoff
     )
     actual <- prep[["actual"]]
     benchmark <- prep[["benchmark"]]

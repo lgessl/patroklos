@@ -10,12 +10,11 @@ threshold with a \emph{scalar} metric (like the ROC-AUC).
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{metric}}{Scalar metric.}
+\item{\code{metrics}}{Assess the model for these scalar metrics. Check out the
+initializer for possible choices.}
 
 \item{\code{pivot_time_cutoff}}{Assess classifying time to event less than
 pivot_time_cutoff.}
-
-\item{\code{lambda}}{Assess the model with regularization parameter lambda.}
 
 \item{\code{benchmark}}{Incorporate the benchmark into the assessment.}
 
@@ -45,9 +44,9 @@ for more details.}
 Create a new AssScalar instance.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AssScalar$new(
-  metric,
+  metrics = c("auc", "accuracy", "precision", "prevalence", "n_true", "perc_true",
+    "n_samples", "logrank", "threshold"),
   pivot_time_cutoff,
-  lambda = "lambda.min",
   benchmark = NULL,
   file = NULL,
   round_digits = 3
@@ -57,19 +56,17 @@ Create a new AssScalar instance.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{metric}}{character. Name of the function used to calculate the metric. It must
-take two numeric vectors of the same length as arguments:
-\enumerate{
-\item \code{predicted}, the predictions by a model, higher values indicate a more positive
-prediction,
-\item \code{actual}, the true values with the positive class coded as 1, the negative one as 0.
-}}
+\item{\code{metrics}}{character. Assess the model for these metrics. For
+currently offered choices see "Usage" above. If you have a model with
+non-binary output (like a logistic regression), we choose a threshold
+by maximizing the left-most metric in \code{metrics} \emph{that is made for
+classifiers with binary output} (often this is
+\code{"accuracy"}). If this cannot be done reasonably (e.g., \code{"precision"}
+would usually give you a very high threshold with very low prevalence),
+we throw an error.}
 
 \item{\code{pivot_time_cutoff}}{numeric. Assess for classifying time to event <
 \code{pivot_time_cutoff}.}
-
-\item{\code{lambda}}{Assess the model belonging to this \code{lambda} in the cross validation
-(if there was one).}
 
 \item{\code{benchmark}}{character or NULL. If not NULL, include \code{benchmark} (the name of column
 in the pheno data) in the assessment.}
@@ -112,7 +109,8 @@ The AssScalar S3 class is tailored for this function.
 }
 
 \subsection{Returns}{
-numeric vector. For every split index the desired metric.
+numeric matrix. The rows correspond to the splits of the model,
+the columns correspond to \code{self$metrics}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -148,9 +146,12 @@ attribute.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A tibble. Every row holds the metric (and more analysis across the splits
-like standard deviation, minimum, maximum value) for one model in \code{model_list}
-and every time cutoff specified for this model.
+A tibble. Every row stands for one model.
+\itemize{
+\item If \code{length(self$metrics) == 1}, the columns hold statistics on the
+single metric (like mean, standard deviation).
+\item Otherwise columns correspond to \code{self$metrics}.
+}
 }
 }
 \if{html}{\out{<hr>}}

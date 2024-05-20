@@ -17,8 +17,6 @@ Ass2d <- R6::R6Class("Ass2d",
         benchmark = NULL,
         #' @field file Store results in this file.
         file = NULL,
-        #' @field lambda Assess model with this regularization parameter.
-        lambda = NULL,
         #' @field ci_level For any confidence intervals calculated use this level.
         ci_level = NULL,
         #' @field fellow_csv Whether to also store the plotted data in a csv 
@@ -83,8 +81,6 @@ Ass2d <- R6::R6Class("Ass2d",
         #' high/low-risk (time to event below/above `pivot_time_cutoff`) group. Model performance
         #' will be measured in terms of how well it can separate these two groups as a binary
         #' classifier.
-        #' @param lambda numeric or string. The regularization parameter of the model to
-        #' evaluate.
         #' @param benchmark string. Incorporate this benchmark (from pheno data) into the 
         #' assessment if `benchmark` is not `NULL`.
         #' @param file string. If not `NULL`, store the resulting plot in this file.
@@ -132,7 +128,6 @@ Ass2d <- R6::R6Class("Ass2d",
             x_metric,
             y_metric,
             pivot_time_cutoff,
-            lambda = "lambda.min",
             benchmark = NULL,
             file = NULL,
             ci_level = 0.95,
@@ -162,7 +157,7 @@ Ass2d <- R6::R6Class("Ass2d",
             dpi = 300
         )
             ass2d_initialize(self, private, x_metric, y_metric, pivot_time_cutoff, 
-                lambda, benchmark, file, ci_level, fellow_csv, scores_plot, show_plots, title, 
+                benchmark, file, ci_level, fellow_csv, scores_plot, show_plots, title, 
                 x_lab, y_lab, xlim, ylim, smooth_method, smooth_benchmark, smooth_se, 
                 scale_x, scale_y, vline, hline, text_size, text, alpha, colors, theme, 
                 width, height, units, dpi),

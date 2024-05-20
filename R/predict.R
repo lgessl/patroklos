@@ -1,4 +1,4 @@
-model_predict <- function(self, private, data, lambda, pivot_time_cutoff){
+model_predict <- function(self, private, data, pivot_time_cutoff){
 
     if(length(self$time_cutoffs) > 1L)
         stop("Multiple time cutoffs are not supported")

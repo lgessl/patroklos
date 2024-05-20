@@ -4,7 +4,6 @@ test_that("Ass2d$new() works", {
     x_metric = "rpp",
     y_metric = "prec",
     pivot_time_cutoff = 2,
-    lambda = 1.6,
     benchmark = "ipi",
     file = "some-file",
     ci_level = .66,
@@ -33,7 +32,6 @@ test_that("Ass2d$new() works", {
   expect_equal(ass2d$x_metric, "rpp")
   expect_equal(ass2d$y_metric, "prec")
   expect_equal(ass2d$pivot_time_cutoff, 2)
-  expect_equal(ass2d$lambda, 1.6)
   expect_equal(ass2d$benchmark, "ipi")
   expect_equal(ass2d$file, "some-file")
   expect_equal(ass2d$ci_level, .66)

@@ -21,8 +21,6 @@ assessment.}
 
 \item{\code{file}}{Store results in this file.}
 
-\item{\code{lambda}}{Assess model with this regularization parameter.}
-
 \item{\code{ci_level}}{For any confidence intervals calculated use this level.}
 
 \item{\code{fellow_csv}}{Whether to also store the plotted data in a csv
@@ -103,7 +101,6 @@ Create a new Ass2d instance.
   x_metric,
   y_metric,
   pivot_time_cutoff,
-  lambda = "lambda.min",
   benchmark = NULL,
   file = NULL,
   ci_level = 0.95,
@@ -155,9 +152,6 @@ of the precision according to Clopper-Pearson.
 high/low-risk (time to event below/above \code{pivot_time_cutoff}) group. Model performance
 will be measured in terms of how well it can separate these two groups as a binary
 classifier.}
-
-\item{\code{lambda}}{numeric or string. The regularization parameter of the model to
-evaluate.}
 
 \item{\code{benchmark}}{string. Incorporate this benchmark (from pheno data) into the
 assessment if \code{benchmark} is not \code{NULL}.}

@@ -1,19 +1,20 @@
 test_that("AssScalar$new() works", {
 
     ass_scalar <- AssScalar$new(
-        metric = "get_auc",
+        metrics = c("auc", "accuracy", "prevalence", "n_true"),
         pivot_time_cutoff = 2,
-        lambda = 1.5,
         benchmark = "ipi",
         file = "some file",
         round_digits = 4
     )
-    expect_equal(ass_scalar$metric, "get_auc")
+    expect_equal(ass_scalar$metrics, c("auc", "accuracy", "prevalence", "n_true"))
     expect_equal(ass_scalar$pivot_time_cutoff, 2)
-    expect_equal(ass_scalar$lambda, 1.5)
     expect_equal(ass_scalar$benchmark, "ipi")
     expect_equal(ass_scalar$round_digits, 4)
     expect_equal(ass_scalar$file, "some file")
+
+    expect_error(AssScalar$new(metrics = c("auc", "blabla"), pivot_time_cutoff = 
+      1.5))
 })
 
 test_that("AssScalar$assess() works", {
@@ -22,9 +23,8 @@ test_that("AssScalar$assess() works", {
     n_samples <- 50
     n_genes <- 5
     n_fold <- 1
-    lambda <- 1
     split_index <- 1:2
-    metric <- c("auc", "accuracy", "precision", "logrank")
+    metrics <- c("auc", "accuracy", "precision", "logrank")
     
     model_dir <- withr::local_tempdir()
     data <- generate_mock_data(
@@ -45,7 +45,7 @@ test_that("AssScalar$assess() works", {
       fit_file = "model.rds"
     )
     ass_scalar <- AssScalar$new(
-      metric = metric,
+      metrics = metrics,
       pivot_time_cutoff = 2,
       benchmark = "ipi",
       round_digits = 4
@@ -55,7 +55,7 @@ test_that("AssScalar$assess() works", {
     res <- ass_scalar$assess(data, model, quiet = TRUE)
     expect_true(is.numeric(res))
     expect_true(is.matrix(res))
-    expect_equal(dim(res), c(length(split_index), length(metric)))
+    expect_equal(dim(res), c(length(split_index), length(metrics)))
 })
 
 test_that("AssScalar$assess_center() works", {
@@ -67,7 +67,7 @@ test_that("AssScalar$assess_center() works", {
   n_na_in_pheno <- 5
   n_fold <- 1
   lambda <- 1
-  multiple_metric <- c("accuracy", "precision", "n_true", "perc_true", "n_samples", 
+  multiple_metrics <- c("accuracy", "precision", "n_true", "perc_true", "n_samples", 
     "logrank", "threshold")
   single_metric <- "auc"
 
@@ -107,7 +107,7 @@ test_that("AssScalar$assess_center() works", {
   model_list <- list(model1, model2)
   training_camp(model_list, data, quiet = TRUE) 
   ass_scalar <- AssScalar$new(
-    metric = "auc", # just for the moment
+    metrics = "auc", # just for the moment
     pivot_time_cutoff = 2,
     file = file.path(dir, "models/eval.csv")
   )
@@ -115,7 +115,7 @@ test_that("AssScalar$assess_center() works", {
   
   # Case 1: one metric
   data$cohort <- "test"
-  ass_scalar$metric <- single_metric 
+  ass_scalar$metrics <- single_metric 
   eval_tbl <- ass_scalar$assess_center(data, model1_list, quiet = TRUE)
   expect_equal(nrow(eval_tbl), length(data$cohort) * (2+2))  
   expect_equal(colnames(eval_tbl), c("model", "cohort", "cutoff", "mean", 
@@ -123,20 +123,20 @@ test_that("AssScalar$assess_center() works", {
 
   # Case 2: multiple metrics
   data$cohort <- c("train", "test")
-  ass_scalar$metric <- multiple_metric
+  ass_scalar$metrics <- multiple_metrics
   eval_tbl <- ass_scalar$assess_center(data, model2_list, quiet = TRUE)
   expect_true(
     file.exists(file.path(dir, "models/eval.csv")) &&
     file.exists(file.path(dir, "results/eval.csv"))
   )
   expect_equal(nrow(eval_tbl), length(data$cohort) * (2+2))  
-  expect_equal(colnames(eval_tbl), c("model", "cohort", "cutoff", multiple_metric))
+  expect_equal(colnames(eval_tbl), c("model", "cohort", "cutoff", multiple_metrics))
   expect_true(is.numeric(as.matrix(eval_tbl[, 4:ncol(eval_tbl)])))
 })
 
 test_that("prepend_to_filename works", {
 
-  ass_scalar1 <- AssScalar$new(metric = "accuracy", pivot_time_cutoff = 2, 
+  ass_scalar1 <- AssScalar$new(metrics = "accuracy", pivot_time_cutoff = 2, 
     file = "file1")
   ass_scalar2 <- ass_scalar1$clone()
   ass_scalar2$file <- "file2"

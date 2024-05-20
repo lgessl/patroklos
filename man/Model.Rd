@@ -235,7 +235,7 @@ return the true values of the response and, if the \code{benchmark_col}
 attribute of the \code{Data} object is not \code{NULL}, the values of the
 benchmark.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Model$predict(data, pivot_time_cutoff, lambda = "lambda.min")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Model$predict(data, pivot_time_cutoff)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -247,13 +247,6 @@ needed.}
 \item{\code{pivot_time_cutoff}}{numeric. Time-to-event threshold that divides
 samples into a high/low-risk (time to event below/above
 \code{pivot_time_cutoff}) group.}
-
-\item{\code{lambda}}{string or numeric. The lambda regularization parameter
-of the model to predict with. Technically, we will pass it to the \code{s}
-parameter of the \code{predict()}method of the object returned by the
-\code{fitter} attribute of the \code{Model} object. See, e.g.,
-\code{\link[zeroSum:predict.zeroSum]{zeroSum::predict.zeroSum()}}. Currently not in use, i.e. we let the
-\code{predict()} method of the S3 object decide for a hyperparameter.}
 }
 \if{html}{\out{</div>}}
 }

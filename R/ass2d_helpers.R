@@ -1,5 +1,5 @@
 ass2d_initialize <- function(self, private, x_metric, y_metric, pivot_time_cutoff, 
-    lambda, benchmark, file, ci_level, fellow_csv, scores_plot, show_plots, title, 
+    benchmark, file, ci_level, fellow_csv, scores_plot, show_plots, title, 
     x_lab, y_lab, xlim, ylim, smooth_method, smooth_benchmark, smooth_se, 
     scale_x, scale_y, vline, hline, text_size, text, alpha, colors, theme, 
     width, height, units, dpi)
@@ -18,7 +18,6 @@ ass2d_initialize <- function(self, private, x_metric, y_metric, pivot_time_cutof
     stopifnot(is.character(x_metric))
     stopifnot(is.character(y_metric))
     stopifnot(is.null(pivot_time_cutoff) || is.numeric(pivot_time_cutoff))
-    stopifnot(is.character(lambda) || is.numeric(lambda))
     stopifnot(is.character(benchmark) || is.null(benchmark))
     stopifnot(is.numeric(ci_level) && ci_level >= 0 && ci_level <= 1)
     stopifnot(is.logical(fellow_csv))
@@ -49,7 +48,6 @@ ass2d_initialize <- function(self, private, x_metric, y_metric, pivot_time_cutof
     self$x_metric <- x_metric
     self$y_metric <- y_metric
     self$pivot_time_cutoff <- pivot_time_cutoff
-    self$lambda <- lambda
     self$benchmark <- benchmark
     self$file <- file
     self$ci_level <- ci_level

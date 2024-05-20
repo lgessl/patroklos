@@ -164,12 +164,6 @@ Model <- R6::R6Class("Model",
         #' benchmark.
         #' @param data Data object. Specifications on the data. Read it in if 
         #' needed.
-        #' @param lambda string or numeric. The lambda regularization parameter 
-        #' of the model to predict with. Technically, we will pass it to the `s` 
-        #' parameter of the `predict()`method of the object returned by the 
-        #' `fitter` attribute of the `Model` object. See, e.g., 
-        #' [`zeroSum::predict.zeroSum()`]. Currently not in use, i.e. we let the 
-        #' `predict()` method of the S3 object decide for a hyperparameter.
         #' @param pivot_time_cutoff numeric. Time-to-event threshold that divides 
         #' samples into a high/low-risk (time to event below/above 
         #' `pivot_time_cutoff`) group. 
@@ -188,10 +182,9 @@ Model <- R6::R6Class("Model",
         #' @export
         predict = function(
             data,
-            pivot_time_cutoff,
-            lambda = "lambda.min"
+            pivot_time_cutoff
         )
-            model_predict(self, private, data, lambda, pivot_time_cutoff),
+            model_predict(self, private, data, pivot_time_cutoff),
 
         #' @description Infer the model at a specific time cutoff.
         #' @param time_cutoff numeric. The time cutoff to set.

@@ -5,13 +5,12 @@
 AssScalar <- R6::R6Class("AssScalar",
     public = list(
 
-        #' @field metric Scalar metric.
-        metric = NULL,
+        #' @field metrics Assess the model for these scalar metrics. Check out the 
+        #' initializer for possible choices.
+        metrics = NULL,
         #' @field pivot_time_cutoff Assess classifying time to event less than 
         #' pivot_time_cutoff.
         pivot_time_cutoff = NULL,
-        #' @field lambda Assess the model with regularization parameter lambda.
-        lambda = NULL,
         #' @field benchmark Incorporate the benchmark into the assessment.
         benchmark = NULL,
         #' @field round_digits Round the results in tables to round_digits digits 
@@ -24,15 +23,16 @@ AssScalar <- R6::R6Class("AssScalar",
         file = NULL,
 
         #' @description Create a new AssScalar instance.
-        #' @param metric character. Name of the function used to calculate the metric. It must 
-        #' take two numeric vectors of the same length as arguments: 
-        #' 1. `predicted`, the predictions by a model, higher values indicate a more positive 
-        #' prediction,
-        #' 2. `actual`, the true values with the positive class coded as 1, the negative one as 0. 
+        #' @param metrics character. Assess the model for these metrics. For 
+        #' currently offered choices see "Usage" above. If you have a model with 
+        #' non-binary output (like a logistic regression), we choose a threshold 
+        #' by maximizing the left-most metric in `metrics` *that is made for 
+        #' classifiers with binary output* (often this is 
+        #' `"accuracy"`). If this cannot be done reasonably (e.g., `"precision"` 
+        #' would usually give you a very high threshold with very low prevalence), 
+        #' we throw an error.
         #' @param pivot_time_cutoff numeric. Assess for classifying time to event < 
         #' `pivot_time_cutoff`.
-        #' @param lambda Assess the model belonging to this `lambda` in the cross validation 
-        #' (if there was one).
         #' @param benchmark character or NULL. If not NULL, include `benchmark` (the name of column 
         #' in the pheno data) in the assessment.
         #' @param file string or NULL. The name of the csv file to save the 
@@ -41,22 +41,23 @@ AssScalar <- R6::R6Class("AssScalar",
         #' @param round_digits numeric. The number of digits to round the results to. Default is `3`.
         #' @return A new AssScalar object.
         initialize = function(
-            metric,
+            metrics = c("auc", "accuracy", "precision", "prevalence", "n_true", 
+                "perc_true", "n_samples", "logrank", "threshold"),
             pivot_time_cutoff,
-            lambda = "lambda.min",
             benchmark = NULL,
             file = NULL,
             round_digits = 3
         )
-            ass_scalar_initialize(self, private, metric, pivot_time_cutoff, 
-                lambda, benchmark, file, round_digits), 
+            ass_scalar_initialize(self, private, metrics, pivot_time_cutoff, 
+                benchmark, file, round_digits), 
 
         #' @description Assess a *single* model (with multiple splits) on a data set.
         #' @param data Data object. Assess on this data. Data must already be read in 
         #' and `cohort` attribute set.
         #' @param model Model object. Assess this model, multiple splits are supported.
         #' @param quiet logical. Whether to suppress messages.
-        #' @return numeric vector. For every split index the desired metric.
+        #' @return numeric matrix. The rows correspond to the splits of the model,
+        #' the columns correspond to `self$metrics`.
         #' @details The AssScalar S3 class is tailored for this function.
         assess = function(
             data,
@@ -75,9 +76,10 @@ AssScalar <- R6::R6Class("AssScalar",
         #' `model_tree_mirror[1]` by `model_tree_mirror[2]` in the `file`
         #' attribute.
         #' @param quiet logical. Whether to suppress messages.
-        #' @return A tibble. Every row holds the metric (and more analysis across the splits 
-        #' like standard deviation, minimum, maximum value) for one model in `model_list` 
-        #' and every time cutoff specified for this model.
+        #' @return A tibble. Every row stands for one model. 
+        #' * If `length(self$metrics) == 1`, the columns hold statistics on the 
+        #' single metric (like mean, standard deviation).
+        #' * Otherwise columns correspond to `self$metrics`. 
         #' @export
         assess_center = function(
             data,

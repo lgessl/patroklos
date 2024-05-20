@@ -1,16 +1,16 @@
-ass_scalar_initialize <- function(self, private, metric, pivot_time_cutoff, 
-    lambda, benchmark, file, round_digits){
+ass_scalar_initialize <- function(self, private, metrics, pivot_time_cutoff, 
+    benchmark, file, round_digits){
 
-    stopifnot(is.character(metric))
+    stopifnot(is.character(metrics))
+    available_metrics <- eval(formals(self$initialize)[["metrics"]])
+    stopifnot(all(metrics %in% available_metrics))
     stopifnot(is.numeric(pivot_time_cutoff))
     stopifnot(pivot_time_cutoff > 0)
-    stopifnot(is.character(lambda) || is.numeric(lambda))
     stopifnot(is.null(benchmark) || is.character(benchmark))
     stopifnot(is.null(file) || is.character(file))
     stopifnot(is.numeric(round_digits) && round_digits >= 0)
-    self$metric <- metric
+    self$metrics <- metrics
     self$pivot_time_cutoff <- pivot_time_cutoff
-    self$lambda <- lambda
     self$benchmark <- benchmark
     self$file <- file
     self$round_digits <- round_digits
@@ -22,23 +22,22 @@ ass_scalar_assess <- function(self, private, data, model, quiet){
 
     prep <- model$predict(
         data = data, 
-        lambda = self$lambda,
         pivot_time_cutoff = self$pivot_time_cutoff
     )
     res_mat <- matrix(.0, nrow = length(model$split_index), 
-        ncol = length(self$metric), byrow = TRUE)
+        ncol = length(self$metrics), byrow = TRUE)
     for (i in seq_along(model$split_index)) {
         predicted <- prep[["predicted"]][[i]]
         actual <- prep[["actual"]][[i]]
         pa <- intersect_by_names(predicted, actual, rm_na = TRUE)
         res_mat[i, ] <- get_metric(
-            metrics = self$metric,
+            metrics = self$metrics,
             predicted = pa[[1]],
             actual = pa[[2]],
             data = data
         )
     }
-    colnames(res_mat) <- self$metric
+    colnames(res_mat) <- self$metrics
     rownames(res_mat) <- self$split_index
     res_mat
 }
@@ -60,12 +59,12 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
             "cohort" = character(m),
             "cutoff" = numeric(m)
         )
-        if (length(self$metric) == 1) {
+        if (length(self$metrics) == 1) {
             ncol_addon <- 4
             colnames_addon <- c("mean", "sd", "min", "max")
         } else {
-            ncol_addon <- length(self$metric)
-            colnames_addon <- self$metric
+            ncol_addon <- length(self$metrics)
+            colnames_addon <- self$metrics
         }
         addon_mat <- matrix(.0, nrow = m, ncol = ncol_addon)
         colnames(addon_mat) <- colnames_addon
@@ -82,14 +81,14 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
                 model = model_cutoff,
                 quiet = quiet
             )
-            if (length(self$metric) == 1) {
+            if (length(self$metrics) == 1) {
                 metric <- metric_mat[, 1]
                 res_tbl[j, 4] <- round(mean(metric), digits = digits) 
                 res_tbl[j, 5] <- round(stats::sd(metric), digits = digits)
                 res_tbl[j, 6] <- round(min(metric), digits = digits)
                 res_tbl[j, 7] <- round(max(metric), digits = digits)
             } else {
-                for(k in seq_along(self$metric)){
+                for(k in seq_along(self$metrics)){
                     metric <- metric_mat[, k]
                     res_tbl[j, 3 + k] <- round(mean(metric), digits = digits)
                 }
@@ -103,7 +102,7 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
         data$cohort <- cohort
         tbl_list <- lapply(seq_along(model_list), core)
         res_tbl <- dplyr::bind_rows(tbl_list)
-        sortby <- ifelse(length(self$metric) == 1, "mean", self$metric[1])
+        sortby <- ifelse(length(self$metrics) == 1, "mean", self$metrics[1])
         res_tbl <- res_tbl[order(-res_tbl[[sortby]]), ]
         res_tbl_list[[cohort]] <- res_tbl
         file <- self$file
@@ -143,7 +142,7 @@ get_metric <- function(
                 " continous predictions by maximizing the", metrics[j], 
                 ". So provide a binary classifier or make sure that ",
                 "something reasonable to tune the threshold with (like accuracy) comes ",
-                "before \"", metrics[j], "\" in the `metric` attribute of the ",
+                "before \"", metrics[j], "\" in the `metrics` attribute of the ",
                 "AssScalar object.")
     }
     for (j in seq_along(metrics)) {
@@ -195,11 +194,7 @@ get_metric <- function(
                 swap_sign <- TRUE
             },
             "threshold" = {
-                if (length(thresholds) != 1)
-                    stop("Either assess a binary classifier or make sure", 
-                        " something reasonable to tune the threshold with",
-                        " (like accuracy) comes before \"threshold\" in the", 
-                        " `metric` attribute of the AssScalar object.")
+                check_one_threshold()
                 j_res <- thresholds
             },
             stop("Unknown metric: ", metrics[j])
