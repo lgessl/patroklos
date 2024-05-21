@@ -65,14 +65,6 @@ qc_preprocess <- function(
     event_col <- data$event_col
     benchmark_col <- data$benchmark_col
 
-    # Check if files exist
-    expr_file <- file.path(directory, expr_file)
-    pheno_file <- file.path(directory, pheno_file)
-    if(!file.exists(expr_file))
-        stop("Expression file ", expr_file, " does not exist.")
-    if(!file.exists(pheno_file))
-        stop("Pheno file ", pheno_file, " does not exist.")
-
     # Expression tibble
     if(names(expr_tbl)[1] != gene_id_col)
         stop("First column of expression tibble must be ", gene_id_col)
