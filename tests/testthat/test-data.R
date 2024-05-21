@@ -85,9 +85,12 @@ test_that("Data$survival_quantiles()", {
 
   data <- generate_mock_data(n_samples = n_samples, n_genes = 1, split_index = 1)
   
-  q <- data$survival_quantiles()
-  expect_true(length(q) <= n_samples)
-  expect_true(all(names(q) >= 0 & names(q) <= 1))
-  expect_true(all(q >= 0))
+  tbl <- data$survival_quantiles()
+  expect_true(nrow(tbl) <= n_samples)
+  q <- tbl[["quantile"]]
+  v <- tbl[[data$time_to_event_col]]
+  expect_true(all(q >= 0 & q <= 1))
+  expect_true(all(v >= 0))
   expect_equal(order(q), seq_along(q))
+  expect_equal(order(v), seq_along(v))
 })

@@ -57,6 +57,7 @@ for splitting the data into the train and test cohort.}
 \item \href{#method-Data-new}{\code{Data$new()}}
 \item \href{#method-Data-read}{\code{Data$read()}}
 \item \href{#method-Data-prepare}{\code{Data$prepare()}}
+\item \href{#method-Data-survival_quantiles}{\code{Data$survival_quantiles()}}
 \item \href{#method-Data-clone}{\code{Data$clone()}}
 }
 }
@@ -178,6 +179,32 @@ Prepare the read-in data for a model.
 You need to set the cohort before calling this method.
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Data-survival_quantiles"></a>}}
+\if{latex}{\out{\hypertarget{method-Data-survival_quantiles}{}}}
+\subsection{Method \code{survival_quantiles()}}{
+Calculate the quantiles of the survival times.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Data$survival_quantiles(round_digits = 3)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{round_digits}}{integer. Round the numbers in the returned tibble
+to this number of digits after the point.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+We take censoring into account.
+}
+
+\subsection{Returns}{
+A tibble with two columns. For each quantile q in the first
+column, the time-to-event value in the second column.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Data-clone"></a>}}

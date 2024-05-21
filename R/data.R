@@ -118,10 +118,11 @@ Data <- R6::R6Class("Data",
             data_prepare(self, private, model),
 
         #' @description Calculate the quantiles of the survival times.
-        #' @param round_digits integer. Round the numbers in the returned numeric
-        #' vector to this many digits.
-        #' @return A named numeric vector. Names map to values like q to q-quantile.
-        #' @details We take into account censoring.
+        #' @param round_digits integer. Round the numbers in the returned tibble 
+        #' to this number of digits after the point.
+        #' @return A tibble with two columns. For each quantile q in the first 
+        #' column, the time-to-event value in the second column.
+        #' @details We take censoring into account. 
         survival_quantiles = function(round_digits = 3)
             data_survival_quantiles(self, private, round_digits)
     ),

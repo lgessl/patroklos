@@ -97,9 +97,9 @@ data_survival_quantiles <- function(self, private, round_digits) {
     order_tte <- order(time_to_event)
     time_to_event <- time_to_event[order_tte]
     progression <- progression[order_tte]
-    quantiles  <- unique(time_to_event)
+    values  <- unique(time_to_event)
 
-    names(quantiles) <- vapply(quantiles, function(x){
+    quantiles <- vapply(values, function(x){
         n_below <- sum(time_to_event < x & progression == 1)
         n_above <- sum(time_to_event >= x)
         round(n_below / (n_below+n_above), digits = round_digits)
@@ -107,7 +107,9 @@ data_survival_quantiles <- function(self, private, round_digits) {
         numeric(1)
     )
     quantiles <- round(quantiles, digits = round_digits) 
-    n_leading_zeros <- sum(names(quantiles) == "0")
-    quantiles <- quantiles[seq(n_leading_zeros, length(quantiles))]
-    return(quantiles)
+    n_leading_zeros <- sum(quantiles == "0")
+    tbl <- tibble::tibble(quantiles, values)
+    names(tbl) <- c("quantile", data$time_to_event_col)
+    tbl <- tbl[seq(n_leading_zeros, length(quantiles)), ]
+    return(tbl)
 }
