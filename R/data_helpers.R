@@ -109,7 +109,7 @@ data_survival_quantiles <- function(self, private, round_digits) {
     quantiles <- round(quantiles, digits = round_digits) 
     n_leading_zeros <- sum(quantiles == "0")
     tbl <- tibble::tibble(quantiles, values)
-    names(tbl) <- c("quantile", data$time_to_event_col)
+    names(tbl) <- c("quantile", self$time_to_event_col)
     tbl <- tbl[seq(n_leading_zeros, length(quantiles)), ]
     return(tbl)
 }
