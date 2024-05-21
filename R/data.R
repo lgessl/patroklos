@@ -115,7 +115,15 @@ Data <- R6::R6Class("Data",
         #' @param model A Model object.
         #' @details You need to set the cohort before calling this method.
         prepare = function(model)
-            data_prepare(self, private, model)
+            data_prepare(self, private, model),
+
+        #' @description Calculate the quantiles of the survival times.
+        #' @param round_digits integer. Round the numbers in the returned numeric
+        #' vector to this many digits.
+        #' @return A named numeric vector. Names map to values like q to q-quantile.
+        #' @details We take into account censoring.
+        survival_quantiles = function(round_digits = 3)
+            data_survival_quantiles(self, private, round_digits)
     ),
 
     private = list(

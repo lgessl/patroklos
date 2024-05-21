@@ -86,3 +86,28 @@ data_read <- function(self, private){
 
     invisible(self)
 }
+
+data_survival_quantiles <- function(self, private, round_digits) {
+
+    if (is.null(self$pheno_tbl)){
+        stop("You need to read in the data first.")
+    }
+    time_to_event <- self$pheno_tbl[[self$time_to_event_col]]
+    progression <- self$pheno_tbl[[self$event_col]]
+    order_tte <- order(time_to_event)
+    time_to_event <- time_to_event[order_tte]
+    progression <- progression[order_tte]
+    quantiles  <- unique(time_to_event)
+
+    names(quantiles) <- vapply(quantiles, function(x){
+        n_below <- sum(time_to_event < x & progression == 1)
+        n_above <- sum(time_to_event >= x)
+        round(n_below / (n_below+n_above), digits = round_digits)
+        },
+        numeric(1)
+    )
+    quantiles <- round(quantiles, digits = round_digits) 
+    n_leading_zeros <- sum(names(quantiles) == "0")
+    quantiles <- quantiles[seq(n_leading_zeros, length(quantiles))]
+    return(quantiles)
+}

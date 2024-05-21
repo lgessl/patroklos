@@ -76,3 +76,18 @@ test_that("Data$read() works", {
   data$gene_id_col <- "missing_gene_id"
   expect_error(data$read(), "no column named")
 })
+
+test_that("Data$survival_quantiles()", {
+  
+  set.seed(321)
+
+  n_samples <- 20
+
+  data <- generate_mock_data(n_samples = n_samples, n_genes = 1, split_index = 1)
+  
+  q <- data$survival_quantiles()
+  expect_true(length(q) <= n_samples)
+  expect_true(all(names(q) >= 0 & names(q) <= 1))
+  expect_true(all(q >= 0))
+  expect_equal(order(q), seq_along(q))
+})
