@@ -130,6 +130,7 @@ for splitting the data into the train and test cohort.</p></dd>
 <ul><li><p><a href="#method-Data-new"><code>Data$new()</code></a></p></li>
 <li><p><a href="#method-Data-read"><code>Data$read()</code></a></p></li>
 <li><p><a href="#method-Data-prepare"><code>Data$prepare()</code></a></p></li>
+<li><p><a href="#method-Data-survival_quantiles"><code>Data$survival_quantiles()</code></a></p></li>
 <li><p><a href="#method-Data-clone"><code>Data$clone()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-Data-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
@@ -273,15 +274,42 @@ data into the tibble <code>pheno_tbl</code>. Both will hold patients as rows.</p
 </div>
 
 
-</div><p></p><hr><a id="method-Data-clone"></a><div class="section">
-<h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
-<p>The objects of this class are cloneable with this method.</p><div class="section">
+</div><p></p><hr><a id="method-Data-survival_quantiles"></a><div class="section">
+<h3 id="method-survival-quantiles-">Method <code>survival_quantiles()</code><a class="anchor" aria-label="anchor" href="#method-survival-quantiles-"></a></h3>
+<p>Calculate the quantiles of the survival times.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Data</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Data</span><span class="op">$</span><span class="fu">survival_quantiles</span><span class="op">(</span>round_digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>round_digits</code></dt>
+<dd><p>integer. Round the numbers in the returned tibble
+to this number of digits after the point.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="details-2">Details<a class="anchor" aria-label="anchor" href="#details-2"></a></h4>
+<p>We take censoring into account.</p>
+</div>
+
+<div class="section">
+<h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
+<p>A tibble with two columns. For each quantile q in the first
+column, the time-to-event value in the second column.</p>
+</div>
+
+</div><p></p><hr><a id="method-Data-clone"></a><div class="section">
+<h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
+<p>The objects of this class are cloneable with this method.</p><div class="section">
+<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Data</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
