@@ -56,8 +56,8 @@ the <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">p
 
 
 <dt>newx</dt>
-<dd><p>Predictor data as a named numeric matrix. Samples correspond to
-rows, an attribute <code>li_var_suffix</code> is expected to be present.</p></dd>
+<dd><p>Predictor data as a <em>named</em> numeric matrix. Samples correspond to
+rows.</p></dd>
 
 
 <dt>...</dt>
@@ -68,7 +68,7 @@ rows, an attribute <code>li_var_suffix</code> is expected to be present.</p></dd
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A numeric vector with the prediction for every sample. Unline
+<p>A numeric vector with the prediction for every sample. Unlike
 <code><a href="https://rdrr.io/pkg/zeroSum/man/predict.zeroSum.html" class="external-link">zeroSum::predict.zeroSum()</a></code>,</p><ul><li><p>if <code>object$type == 2</code> (i.e., <code>object</code> was fitted with <code>family = "binomial" by </code>ptk_zerosum`), the predictions are binomial probabilities,</p></li>
 <li><p>if <code>object$type == 4</code> (i.e., <code>object</code> was fitted with <code>family = "cox" by </code>ptk_zerosum<code>), the predictions are the exponential of the linear predictor,  i.e., </code>exp(beta_0 + beta^T x)`.</p></li>
 <li><p>If <code>object$binarizePredictions</code> is not <code>NULL</code>, the predictions are binarized
