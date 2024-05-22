@@ -40,6 +40,15 @@ test_that("generate_predictor() works", {
   expect_identical(colnames(x)[1:4], colnames(expr_mat))
   expect_identical(rownames(x), rownames(expr_mat))
   expect_type(x, "double")
+  expr_mat_small <- expr_mat[2:3, ]
+  pheno_df_small <- pheno_df[2:3, ]
+  x_small <- generate_predictor(
+    expr_mat = expr_mat_small,
+    pheno_tbl = pheno_df_small,
+    data = data,
+    model = model
+  )
+  expect_identical(colnames(x), colnames(x_small))
 
   # Test case 2: include only continuous pheno variables
   model$include_from_discrete_pheno <- NULL

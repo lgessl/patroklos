@@ -112,7 +112,9 @@ ptk_zerosum <- function(
 #' the `predict()` generic.
 #' @inheritParams predict.ptk_ranger
 #' @param object A ptk_patroklos S3 object.
-#' @return A numeric vector with the prediction for every sample. Unline 
+#' @param newx Predictor data as a *named* numeric matrix. Samples correspond to 
+#' rows.
+#' @return A numeric vector with the prediction for every sample. Unlike 
 #' `zeroSum::predict.zeroSum()`, 
 #' * if `object$type == 2` (i.e., `object` was fitted with `family = "binomial"
 #' by `ptk_zerosum`), the predictions are binomial probabilities,
@@ -131,6 +133,7 @@ predict.ptk_zerosum <- function(
     args <- list(...)
     if(!is.null(args[["type"]]))
         stop("`type` argument is not allowed.") 
+    stopifnot(all(names(coef(object)) == colnames(newx)))
     type <- NULL
     if(object$type %in% c(2, 4)) # 2 \mapsto binomial, 4 \mapsto cox
         # get probabilities (binomial), exp(beta_0 + beta^T x) (cox)

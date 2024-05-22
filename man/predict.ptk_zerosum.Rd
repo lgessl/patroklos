@@ -9,13 +9,13 @@
 \arguments{
 \item{object}{A ptk_patroklos S3 object.}
 
-\item{newx}{Predictor data as a named numeric matrix. Samples correspond to
-rows, an attribute \code{li_var_suffix} is expected to be present.}
+\item{newx}{Predictor data as a \emph{named} numeric matrix. Samples correspond to
+rows.}
 
 \item{...}{Further arguments passed to the wrapped function.}
 }
 \value{
-A numeric vector with the prediction for every sample. Unline
+A numeric vector with the prediction for every sample. Unlike
 \code{zeroSum::predict.zeroSum()},
 \itemize{
 \item if \code{object$type == 2} (i.e., \code{object} was fitted with \verb{family = "binomial" by }ptk_zerosum`), the predictions are binomial probabilities,

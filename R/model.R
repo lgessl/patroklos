@@ -179,6 +179,7 @@ Model <- R6::R6Class("Model",
         #' 
         #' For every split, the names of all three vectors match.
         #' @importFrom stats predict
+        #' @importFrom stats coef
         #' @export
         predict = function(
             data,
