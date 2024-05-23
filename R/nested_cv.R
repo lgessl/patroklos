@@ -141,6 +141,8 @@ nested_pseudo_cv <- function(
             metric_v[idx] <- do.call(metric_fun, list(y, y_hat))
         }
     } 
+    if (all(sapply(fits, is.character)))
+        stop("All fits were skipped. Check your `fitter2`.")
     best_idx <- which.max(metric_v)
     cv_oob <- ifelse(oob[2], "oob", "cv")
     hyperparams[[paste0("overall_", cv_oob, "_performance")]] <- metric_v
