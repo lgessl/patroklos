@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="index.html">patroklos</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -205,7 +205,7 @@
 <div class="section level4">
 <h4 id="patroklos-compliant-fitter-with-validated-predictions">patroklos-compliant fitter with validated predictions<a class="anchor" aria-label="anchor" href="#patroklos-compliant-fitter-with-validated-predictions"></a>
 </h4>
-<p>A <em>patroklos-compliant fitter with validated predictions</em> is a patroklos-compliant fitter whose S3 return value has an attribute <code>cv_predict</code> or <code>oob_predict</code>, a numeric vector holding cross-validated or out-of-bag (OOB) predictions, respectively.</p>
+<p>A <em>patroklos-compliant fitter with validated predictions</em> is a patroklos-compliant fitter whose S3 return value has an attribute <code>val_predict</code>, a numeric vector holding some form of validated predictions. “Validated predictions are predictions made on independent data like cross-validated (CV) predictions or out-of-bag (OOB) predictions in the case of random forests.</p>
 </div>
 <div class="section level4">
 <h4 id="patroklos-compliant-fitter-with-cv-tuning">patroklos-compliant fitter with CV tuning<a class="anchor" aria-label="anchor" href="#patroklos-compliant-fitter-with-cv-tuning"></a>
@@ -213,11 +213,11 @@
 <p>A <em>patroklos-compliant fitter with cross-validation tuning</em> is a patroklos-compliant fitter whose return value has the attributes</p>
 <ul>
 <li>
-<code>cv_predict_list</code>: list of numeric vectors holding cross-validated predictions for every hyperparameter <span class="math inline"><em>λ</em></span>,</li>
+<code>val_predict_list</code>: list of numeric vectors holding cross-validated predictions for every hyperparameter <span class="math inline"><em>λ</em></span>,</li>
 <li>
-<code>lambda</code>: numeric vector of the hyperparameters <span class="math inline"><em>λ</em></span>.</li>
+<code>lambda</code>: numeric or character vector of the hyperparameters <span class="math inline"><em>λ</em></span>.</li>
 </ul>
-<p>While a <em>patroklos-compliant fitter with validated predictions</em> only performs a cross validation for one combination of hyperparameters, a <em>patroklos-compliant fitter with CV tuning</em> performs a cross validation for multiple values of a (scalar) hyperparameter <span class="math inline"><em>λ</em></span>. The embraced word “scalar” is a clear constraint here and it may be worth relaxing the definition from a search line to a search grid for hyperparameters in the future (which of course involves modifying those functions requiring a <em>patroklos-compliant fitter with CV tuning</em>).</p>
+<p>While a <em>patroklos-compliant fitter with validated predictions</em> only performs a cross validation for one combination of hyperparameters, a <em>patroklos-compliant fitter with CV tuning</em> performs a cross validation for multiple values of a hyperparameter <span class="math inline"><em>λ</em></span> (which may be a tuple, not just a scalar). The embraced word “scalar” is a clear constraint here and it may be worth relaxing the definition from a search line to a search grid for hyperparameters in the future (which of course involves modifying those functions requiring a <em>patroklos-compliant fitter with CV tuning</em>).</p>
 </div>
 </div>
 </div>

@@ -14,7 +14,7 @@ validated predictions."><meta property="og:image" content="https://lgessl.github
     
     <a class="navbar-brand me-2" href="../index.html">patroklos</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -129,14 +129,8 @@ will not be regularized and thus will be part of the resulting model.
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A <code>ptk_zerosum</code> S3 object.</p>
-    </div>
-    <div class="section level2">
-    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>A <em>patroklos-compliant fitter with integrated CV</em> is a patroklos-
-compliant fitter (cf. details of <code><a href="ptk_ranger.html">ptk_ranger()</a></code>) whose return value has an
-attribute <code>cv_predict_list</code>, a list of numeric vectors holding cross-validated
-predictions for every value of the model hyperparameter lambda.</p>
+<p>A <code>ptk_zerosum</code> S3 object with the <code>cv_predict</code> attribute renamed to
+<code>val_predict_list</code>.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
