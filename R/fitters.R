@@ -10,7 +10,7 @@
 #' attribute renamed to `oob_predict`.
 #' @export
 ptk_ranger <- function(x, y, mtry, skip_on_invalid_input = FALSE, ...){
-    if (ncol(x) < mtry) {
+    if (!is.null(mtry) && ncol(x) < mtry) {
         if (skip_on_invalid_input) return("next")
         stop("mtry must be less than the number of features.")
     }
