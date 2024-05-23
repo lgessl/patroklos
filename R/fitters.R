@@ -9,7 +9,7 @@
 #' @return A `ptk_ranger` S3 object, a `ranger` S3 object with the `predictions` 
 #' attribute renamed to `oob_predict`.
 #' @export
-ptk_ranger <- function(x, y, mtry, skip_on_invalid_input = FALSE, ...){
+ptk_ranger <- function(x, y, mtry = NULL, skip_on_invalid_input = FALSE, ...){
     if (!is.null(mtry) && ncol(x) < mtry) {
         if (skip_on_invalid_input) return("next")
         stop("mtry must be less than the number of features.")
