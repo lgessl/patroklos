@@ -12,7 +12,7 @@ test_that("ptk_ranger() works", {
 
   fit <- ptk_ranger(x = x, y = y, mtry = 1, num.trees = 1, min.node.size = 1, 
     classification = TRUE)
-  expect_false(is.null(fit$oob_predict))
+  expect_false(is.null(fit$val_predict))
   expect_true(is.null(fit$predictions))
 
   expect_error(ptk_ranger(x = x, y = y, mtry = ncol(x)+1, 
@@ -41,9 +41,9 @@ test_that("ptk_zerosum() works", {
   expect_equal(fit$zeroSumWeights, c(rep(1, n_genes), rep(0, 2+1+4)))
   expect_equal(fit$penaltyFactor, c(rep(1, n_genes), rep(0, 2+1+4)))
   expect_equal(fit$binarizePredictions, 0.5)
-  expect_false(is.null(fit$cv_predict))
-  expect_false(is.null(fit$cv_predict_list))
-  expect_true(all(vapply(fit$cv_predict_list, function(v) v %in% c(0, 1), 
+  expect_false(is.null(fit$val_predict))
+  expect_false(is.null(fit$val_predict_list))
+  expect_true(all(vapply(fit$val_predict_list, function(v) v %in% c(0, 1), 
     logical(n_samples))))
   expect_s3_class(fit, "ptk_zerosum")
   expect_equal(fit$type, 2)
@@ -57,16 +57,16 @@ test_that("ptk_zerosum() works", {
   expect_true(is.null(fit$zeroSumWeights))
   expect_true(is.null(fit$penaltyFactor))
   expect_true(is.null(fit$binarizePredictions))
-  expect_true(all(vapply(fit$cv_predict_list, function(v) 
+  expect_true(all(vapply(fit$val_predict_list, function(v) 
     all(v >= 0 & v <= 1), logical(1))), logical(n_samples))
-  expect_true(all(fit$cv_predict <= 1 & fit$cv_predict >= 0))
+  expect_true(all(fit$val_predict <= 1 & fit$val_predict >= 0))
   expect_equal(fit$type, 2)
 
   fit <- ptk_zerosum(x = x, y = y, exclude_pheno_from_lasso = TRUE, 
     lambda = lambda, nFold = 2, zeroSum = FALSE, binarize_predictions = 0.6, 
     penalty.factor = runif(ncol(x)), family = "binomial")
   expect_true(all(fit$penaltyFactor[!get_early_bool(x)] == 0))
-  expect_true(all(vapply(fit$cv_predict_list, function(v) v %in% c(0, 1), 
+  expect_true(all(vapply(fit$val_predict_list, function(v) v %in% c(0, 1), 
     logical(n_samples))))
   expect_equal(fit$type, 2)
 

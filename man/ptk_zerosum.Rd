@@ -55,16 +55,11 @@ will not be regularized and thus will be part of the resulting model.
 }}
 }
 \value{
-A \code{ptk_zerosum} S3 object.
+A \code{ptk_zerosum} S3 object with the \code{cv_predict} attribute renamed to
+\code{val_predict_list}.
 }
 \description{
 This function is a patroklos-compliant fitter with integrated
 CV and, if \code{length(lambda) == 1}, also a patroklos-compliant fitter with
 validated predictions.
-}
-\details{
-A \emph{patroklos-compliant fitter with integrated CV} is a patroklos-
-compliant fitter (cf. details of \code{\link[=ptk_ranger]{ptk_ranger()}}) whose return value has an
-attribute \code{cv_predict_list}, a list of numeric vectors holding cross-validated
-predictions for every value of the model hyperparameter lambda.
 }

@@ -1,13 +1,13 @@
 #' @title Wrap [`ranger::ranger()`] into a patroklos-compliant fitter 
 #' @description This function is a patroklos-compliant fitter with validated 
-#' predictions, it has a return value with a `oob_predict` attribute.
+#' predictions, it has a return value with a `val_predict` attribute.
 #' @inheritParams ranger::ranger
 #' @param skip_on_invalid_input Logical. If `TRUE` and invalid input is detected,
 #' return `"next"` instead of an error. This is useful when calling this function 
 #' from inside [`nested_pseudo_cv()`].
 #' @param ... Further arguments passed to the wrapped function.
-#' @return A `ptk_ranger` S3 object, a `ranger` S3 object with the `predictions` 
-#' attribute renamed to `oob_predict`.
+#' @return A `ptk_ranger` S3 object, a `ranger` S3 object with the (OOB) 
+#' `predictions` attribute renamed to `val_predict`.
 #' @export
 ptk_ranger <- function(x, y, mtry = NULL, skip_on_invalid_input = FALSE, ...){
     if (!is.null(mtry) && ncol(x) < mtry) {
@@ -16,7 +16,7 @@ ptk_ranger <- function(x, y, mtry = NULL, skip_on_invalid_input = FALSE, ...){
     }
     ptk_ranger_obj <- ranger::ranger(x = x, y = y, mtry = mtry, ...)
     # Rename OOB predictions
-    ptk_ranger_obj$oob_predict <- ptk_ranger_obj$predictions
+    ptk_ranger_obj$val_predict <- ptk_ranger_obj$predictions
     ptk_ranger_obj$predictions <- NULL
     class(ptk_ranger_obj) <- c("ptk_ranger", class(ptk_ranger_obj))
     ptk_ranger_obj
@@ -29,8 +29,6 @@ ptk_ranger <- function(x, y, mtry = NULL, skip_on_invalid_input = FALSE, ...){
 #' rows, an attribute `li_var_suffix` is expected to be present.
 #' @param ... Further arguments passed to the wrapped function.
 #' @return A named numeric vector of predictions from `newx`. 
-#' @details A *patroklos-compliant predict method* is a function with the same
-#' signature as this function. 
 #' @export
 predict.ptk_ranger <- function(object, newx, ...){
     class(object) <- "ranger"
@@ -50,11 +48,8 @@ predict.ptk_ranger <- function(object, newx, ...){
 #' @param binarize_predictions numeric or NULL. If not NULL, the predict method 
 #' for the returned `ptk_zerosum` object will binarize the predictions using the
 #' `binarize_predictions` as a threshold.
-#' @return A `ptk_zerosum` S3 object. 
-#' @details A *patroklos-compliant fitter with integrated CV* is a patroklos-
-#' compliant fitter (cf. details of [`ptk_ranger()`]) whose return value has an 
-#' attribute `cv_predict_list`, a list of numeric vectors holding cross-validated 
-#' predictions for every value of the model hyperparameter lambda.
+#' @return A `ptk_zerosum` S3 object with the `cv_predict` attribute renamed to 
+#' `val_predict_list`.
 #' @export
 ptk_zerosum <- function(
     x,
@@ -87,17 +82,17 @@ ptk_zerosum <- function(
     fit_obj <- zeroSum::zeroSum(x = x, y = y, nFold = nFold, 
         zeroSum.weights = zeroSum.weights, penalty.factor = penalty.factor, 
         family = family, ...)
-    fit_obj$cv_predict_list <- fit_obj$cv_predict
+    fit_obj$val_predict_list <- fit_obj$cv_predict
     fit_obj$cv_predict <- NULL
     if (family == "binomial") {
-        fit_obj$cv_predict_list <- lapply(fit_obj$cv_predict_list,
+        fit_obj$val_predict_list <- lapply(fit_obj$val_predict_list,
             function(v) 1/(1+exp(-v)))
     }
     if (is.numeric(binarize_predictions))
-        fit_obj$cv_predict_list <- lapply(fit_obj$cv_predict_list,
+        fit_obj$val_predict_list <- lapply(fit_obj$val_predict_list,
             function(v) as.numeric(v > binarize_predictions))
-    if (length(fit_obj$cv_predict_list) == 1)
-        fit_obj$cv_predict <- fit_obj$cv_predict_list[[1]]
+    if (length(fit_obj$val_predict_list) == 1)
+        fit_obj$val_predict <- fit_obj$val_predict_list[[1]]
     if (fit_obj$useZeroSum)
         fit_obj$zeroSumWeights <- zeroSum.weights
     if (fit_obj$standardize == 0)

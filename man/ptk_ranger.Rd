@@ -20,10 +20,10 @@ from inside \code{\link[=nested_pseudo_cv]{nested_pseudo_cv()}}.}
 \item{...}{Further arguments passed to the wrapped function.}
 }
 \value{
-A \code{ptk_ranger} S3 object, a \code{ranger} S3 object with the \code{predictions}
-attribute renamed to \code{oob_predict}.
+A \code{ptk_ranger} S3 object, a \code{ranger} S3 object with the (OOB)
+\code{predictions} attribute renamed to \code{val_predict}.
 }
 \description{
 This function is a patroklos-compliant fitter with validated
-predictions, it has a return value with a \code{oob_predict} attribute.
+predictions, it has a return value with a \code{val_predict} attribute.
 }

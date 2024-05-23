@@ -87,5 +87,5 @@ prepend_to_directory <- function(
         stopifnot(inherits(model, "Model"))
         model$directory <- file.path(prefix, model$directory)
     })
-    return(NULL)
+    invisible(NULL)
 }

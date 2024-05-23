@@ -151,3 +151,17 @@ get_early_bool <- function(x, for_li = TRUE){
         "`include_from_continuous_pheno` when constructing the Model object?\n")
     early_bool
 }
+
+get_early_x <- function(x){
+    early_bool <- get_early_bool(x, for_li = TRUE)
+    x_early <- x[, early_bool, drop = FALSE]
+    attr(x_early, "li_var_suffix") <- attr(x, "li_var_suffix")
+    x_early
+}
+
+get_late_x <- function(early_predicted, x){
+    early_bool <- get_early_bool(x, for_li = TRUE)
+    x_late <- cbind(early_predicted, x[, !early_bool, drop = FALSE])
+    attr(x_late, "li_var_suffix") <- attr(x, "li_var_suffix")
+    x_late
+}

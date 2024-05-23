@@ -95,8 +95,7 @@ test_that("Model$fit() works", {
           mtry = 2:3,
           min.node.size = 3, 
           classification = TRUE
-        ),
-        oob = c(FALSE, TRUE)
+        )
       ),
       response_type = "binary",
       include_from_continuous_pheno = "continuous_var",

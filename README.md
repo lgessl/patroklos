@@ -207,23 +207,25 @@ It returns an S3 object with a patroklos-compliant predict method.
 #### patroklos-compliant fitter with validated predictions
 
 A *patroklos-compliant fitter with validated predictions* is a patroklos-compliant
-fitter whose S3 return value has an attribute `cv_predict` or `oob_predict`, a 
-numeric vector holding cross-validated or out-of-bag (OOB) predictions, 
-respectively. 
+fitter whose S3 return value has an attribute `val_predict`, a 
+numeric vector holding some form of validated predictions. "Validated predictions 
+are predictions made on independent data like cross-validated (CV) predictions 
+or out-of-bag (OOB) predictions in the case of random forests.
 
-#### patroklos-compliant fitter with CV tuning   
+#### patroklos-compliant fitter with CV tuning 
 
 A *patroklos-compliant fitter with cross-validation tuning* is a
 patroklos-compliant fitter whose return value has the attributes
 
-- `cv_predict_list`: list of numeric vectors holding cross-validated 
+- `val_predict_list`: list of numeric vectors holding cross-validated 
 predictions for every hyperparameter $\lambda$,
-- `lambda`: numeric vector of the hyperparameters $\lambda$.
+- `lambda`: numeric or character vector of the hyperparameters $\lambda$.
 
 While a *patroklos-compliant fitter with validated predictions* only performs 
 a cross validation for one combination of hyperparameters, a *patroklos-compliant
 fitter with CV tuning* performs a cross validation for multiple values of a 
-(scalar) hyperparameter $\lambda$. The embraced word "scalar" is a clear 
-constraint here and it may be worth relaxing the definition from a search line 
-to a search grid for hyperparameters in the future (which of course involves 
-modifying those functions requiring a *patroklos-compliant fitter with CV tuning*).
+hyperparameter $\lambda$ (which may be a tuple, not just a scalar). The embraced 
+word "scalar" is a clear constraint here and it may be worth relaxing the definition 
+from a search line to a search grid for hyperparameters in the future (which of 
+course involves modifying those functions requiring a *patroklos-compliant 
+fitter with CV tuning*).

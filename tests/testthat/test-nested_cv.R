@@ -19,7 +19,7 @@ test_that("nested_pseudo_cv() works", {
     fit <- nested_pseudo_cv(
         x = x, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
-        oob = c(FALSE, TRUE), metric = "accuracy"
+        metric = "accuracy"
     )
     expect_s3_class(fit, "nested_fit")
     expect_s3_class(fit$model1, "ptk_zerosum")
@@ -31,29 +31,29 @@ test_that("nested_pseudo_cv() works", {
         logical(1)
     )))
     expect_equal(dim(fit$search_grid), c(2*(3*2), 2+length(hyperparams2)+1))
-    expect_equal(length(fit$model1$cv_predict_list), 2)
-    expect_true(all(fit$model1$cv_predict_list[[1]] >= 0 &
-        fit$model1$cv_predict_list[[1]] <= 1))
+    expect_equal(length(fit$model1$val_predict_list), 2)
+    expect_true(all(fit$model1$val_predict_list[[1]] >= 0 &
+        fit$model1$val_predict_list[[1]] <= 1))
 
     hyperparams2[["skip_on_invalid_input"]] <- FALSE
     expect_error(nested_pseudo_cv(
         x = x, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
-        oob = c(FALSE, TRUE), metric = "accuracy"
+        metric = "accuracy"
     ), regexp = "mtry must be less than the number of features.")
     # logistic regression as late model
     # with binomial log-likelihood
     hyperparams2 <- list(family = "binomial", lambda = 0, zeroSum = FALSE)
     fit <- nested_pseudo_cv(x = x, y = y, fitter1 = ptk_zerosum, fitter2 = 
         ptk_zerosum, hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
-        oob = c(FALSE, FALSE), metric = "binomial_log_likelihood")
-    expect_equal(length(fit$best_hyperparams[["overall_cv_performance"]]), 1)
+        metric = "binomial_log_likelihood")
+    expect_equal(length(fit$best_hyperparams[["overall_val_performance"]]), 1)
     # with AUC
     x_small <- x[, 1:(n_genes+1)]
     attr(x_small, "li_var_suffix") <- attr(x, "li_var_suffix")
     fit <- nested_pseudo_cv(x = x_small, y = y, fitter1 = ptk_zerosum, fitter2 = 
         ptk_zerosum, hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
-        oob = c(FALSE, FALSE), metric = "roc_auc")
+        metric = "roc_auc")
     metric_v <- fit$search_grid[["overall_model_performance"]]
     expect_true(all(metric_v >= 0 & metric_v <= 1))
 

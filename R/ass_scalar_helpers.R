@@ -228,4 +228,5 @@ prepend_to_filename <- function(ass_scalar_list, prefix) {
         stopifnot(inherits(as, "AssScalar"))
         as$file <- file.path(prefix, as$file)
     }) 
+    invisible(NULL)
 }

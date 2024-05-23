@@ -1,9 +1,10 @@
 #' @title Nested cross-validation for second-stage OOB predictions
 #' @description Perform a nested cross-validation for a late-integration scheme,
 #' i.e., perform a cross-validation for the early model and then train second-stage
-#' models on cross-validated predictions and evaluate the entire models via 
-#' out-of-bag (OOB) predictions of the second-stage models (usually a random 
-#' forest).
+#' models on validated predictions and evaluate the entire models via 
+#' validated predictions made by the late model. "Validated prediction" means 
+#' predictions made on independent data like out-of-bag (OOB) or cross-validated 
+#' (CV) predictions.
 #' @param x A numeric matrix holding the predictor features: rows are samples and
 #' columns are features.
 #' @param y A numeric vector holding the response variable. 
@@ -16,23 +17,18 @@
 #' @param hyperparams2 A named list with hyperparameters for the late model. 
 #' Unlike `hyperparams1`, we call `fitter2` for every combination of values in 
 #' `hyperparams2` and lambda value from `fitter1`.
-#' @param oob A logical vector of length 2. If the first element is `TRUE`, train 
-#' the late model on out-of-bag, else cross-validated predictions from the early
-#' model. If the second element is `TRUE`, evaluate the entire model on OOB,
-#' else cross-validated predictions.
 #' @param metric A character string or a function. The optimal combination of 
 #' hyperparameters yield the model whose pseudo-cv predictions maximize this 
 #' metric. 
 #' * If a character string, it must be one of `"accuracy"`, `"roc_auc"`, or
-#' `"binomial_log_likelihood"`. Make sure that `cv_predict` or `oob_predict`
-#' attribute of the fit object returned by `fitter2` holds predictions in 
-#' `c(0, 1)` if `metric == "accuracy"`, and probabilities in `c(0, 1)` if 
+#' `"binomial_log_likelihood"`. Make sure that the `val_predict` attribute 
+#' of the fit object returned by `fitter2` holds predictions in 
+#' `c(0, 1)` if `metric == "accuracy"`, and probabilities in $(0, 1)$ if 
 #' `metric == "binomial_log_likelihood"`.
 #' * If a function, it must take two arguments (the true outcome and the predicted 
 #' outcome) and return a numeric. Do this if you want to provide a custom metric.
 #' @return An S3 object with class `nested_fit`, the model with the best 
-#' performance according to the out-of-bag (OOB) predictions based on cross-validated
-#' predictions from the early model.   
+#' performance according to validated predictions assessed with `metric`. 
 #' @export
 #' @details This function does hyperparameter tuning for a nested model, i.e.,
 #' a so-called early model makes predictions from the high-dimensional part of 
@@ -60,7 +56,6 @@ nested_pseudo_cv <- function(
     fitter2,
     hyperparams1,
     hyperparams2,
-    oob = c(FALSE, TRUE),
     metric = c("accuracy", "roc_auc", "binomial_log_likelihood")
 ){
     # Input checks
@@ -81,7 +76,6 @@ nested_pseudo_cv <- function(
     }
     stopifnot(is.function(fitter1) && is.function(fitter2))
     stopifnot(is.list(hyperparams1) && is.list(hyperparams2))
-    stopifnot(is.logical(oob) && length(oob) == 2)
     if (is.character(metric)) {
         metric <- match.arg(metric)
         metric_fun <- paste0("get_", metric)
@@ -91,12 +85,7 @@ nested_pseudo_cv <- function(
         stop("`metric` must be a character or a function.")
     }
     
-    val_predict_name <- ifelse(oob, "oob_predict", "cv_predict")
-    val_predict_name[1] <- paste0(val_predict_name[1], "_list")
-    early_bool <- get_early_bool(x) 
-    li_var_suffix <- attr(x, "li_var_suffix")
-    x_early <- x[, early_bool]
-    attr(x_early, "li_var_suffix") <- li_var_suffix
+    x_early <- get_early_x(x = x)
 
     # First stage
     fit <- do.call(
@@ -105,7 +94,7 @@ nested_pseudo_cv <- function(
     )
 
     # Second stage
-    n_lambda <- length(fit[[val_predict_name[1]]]) # Partition for-loop
+    n_lambda <- length(fit$val_predict_list) # Partition for-loop
     hyperparams <- expand.grid(
         c(hyperparams2, list("lambda1_index" = seq(n_lambda))),
         stringsAsFactors = FALSE
@@ -116,10 +105,11 @@ nested_pseudo_cv <- function(
     n_class_hyper2 <- length(hyperparams2)
     hyperparams[["lambda1"]] <- fit$lambda[hyperparams[["lambda1_index"]]]
     for (l in seq(n_lambda)) {
-        x_late <- cbind(fit[[val_predict_name[1]]][[l]], x[, !early_bool])
-        colnames(x_late) <- c("early_predict", colnames(x)[!early_bool])
-        attr(x_late, "li_var_suffix") <- li_var_suffix
-        if (ncol(x_late) != sum(!early_bool)+1)
+        x_late <- get_late_x(
+            early_predicted = fit$val_predict_list[[l]], 
+            x = x
+        )
+        if (ncol(x_late) != ncol(x)-ncol(x_early)+1)
             stop("Something went wrong with adding the early model's predictions.")
         for (m in seq(n_hyper2)) {
             idx <- (l-1)*n_hyper2 + m 
@@ -134,18 +124,17 @@ nested_pseudo_cv <- function(
                 metric_v[idx] <- -Inf
                 next
             }
-            y_hat <- fits[[idx]][[val_predict_name[2]]]
+            y_hat <- fits[[idx]]$val_predict
             if(length(y_hat) != length(y))
-                stop("The S3 object returned by `fitter2` must have a `", 
-                    val_predict_name[2], "` attribute.")
+                stop("The S3 object returned by `fitter2` must have a ", 
+                    "`val_predict` attribute.")
             metric_v[idx] <- do.call(metric_fun, list(y, y_hat))
         }
     } 
     if (all(sapply(fits, is.character)))
         stop("All fits were skipped. Check your `fitter2`.")
     best_idx <- which.max(metric_v)
-    cv_oob <- ifelse(oob[2], "oob", "cv")
-    hyperparams[[paste0("overall_", cv_oob, "_performance")]] <- metric_v
+    hyperparams[[paste0("overall_val_performance")]] <- metric_v
     hyperparams <- hyperparams[order(-metric_v), ]
 
     nested_fit(
@@ -219,13 +208,9 @@ predict.nested_fit <- function(
 ){
     stopifnot(inherits(newx, "matrix"))
     stopifnot(!is.null(colnames(newx)))
-    early_bool <- get_early_bool(newx)
-    x_early <- newx[, early_bool]
-    attr(x_early, "li_var_suffix") <- attr(newx, "li_var_suffix")
-    x_late <- cbind(
-        predict(object = object$model1, newx = x_early),
-        newx[, !early_bool]
-    )
+    x_early <- get_early_x(x = newx)
+    early_predicted <- predict(object = object$model1, newx = x_early)
+    x_late <- get_late_x(early_predicted = early_predicted, x = newx)
     y <- predict(object = object$model2, newx = x_late)
     if (!is.numeric(y)) 
         y <- y[[1]]

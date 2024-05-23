@@ -22,7 +22,3 @@ A named numeric vector of predictions from \code{newx}.
 Wrap \code{\link[ranger:predict.ranger]{ranger::predict.ranger()}} into a patroklos-compliant predict
 function
 }
-\details{
-A \emph{patroklos-compliant predict method} is a function with the same
-signature as this function.
-}

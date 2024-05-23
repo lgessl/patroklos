@@ -47,8 +47,7 @@ test_that("training_camp() works", {
               mtry = 2,
               min.node.size = 3, 
               classification = TRUE
-          ),
-          oob = c(FALSE, TRUE)
+          )
       ),
       response_type = "binary",
       include_from_continuous_pheno = "continuous_var",
