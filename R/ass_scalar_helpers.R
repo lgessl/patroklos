@@ -53,6 +53,7 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
     
     core <- function(i){
         model <- model_list[[i]]
+        if (!quiet) message("Assessing ", model$name)
         m <- length(model$time_cutoffs)
         res_tbl <- tibble::tibble(
             "model" = character(m),
