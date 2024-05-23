@@ -201,9 +201,13 @@ get_metric <- function(
             stop("Unknown metric: ", metrics[j])
         )
         max_idx <- which.max(ifelse(swap_sign, -1, 1) * j_res)
-        thresholds <- thresholds[max_idx]
-        res[j] <- j_res[max_idx]
         swap_sign <- FALSE
+        if (length(max_idx) == 1) {
+            thresholds <- thresholds[max_idx]
+            res[j] <- j_res[max_idx]
+        } else {
+            res[j] <- NA
+        }
     }
     res
 }

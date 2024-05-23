@@ -4,7 +4,7 @@
 \alias{ptk_ranger}
 \title{Wrap \code{\link[ranger:ranger]{ranger::ranger()}} into a patroklos-compliant fitter}
 \usage{
-ptk_ranger(x, y, mtry, skip_on_invalid_input = FALSE, ...)
+ptk_ranger(x, y, mtry = NULL, skip_on_invalid_input = FALSE, ...)
 }
 \arguments{
 \item{x}{Predictor data (independent variables), alternative interface to data with formula or dependent.variable.name.}
