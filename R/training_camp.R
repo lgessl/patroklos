@@ -48,8 +48,9 @@ training_camp <- function(
                 }, 
                 error = function(cnd){
                     warning("### Error while fitting ", model_tc$name, 
-                        " at time cutoff ", time_cutoff, "!\n### Condition message: ", 
-                        conditionMessage(cnd), "\n### Skipping to next model.")
+                        " at time cutoff ", time_cutoff, "!\n### Error message: ", 
+                        conditionMessage(cnd), "\n### Call: ", conditionCall(cnd), 
+                        "\n### Skipping to next model.", immediate. = TRUE)
                 }
             )
         }
