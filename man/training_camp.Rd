@@ -4,12 +4,15 @@
 \alias{training_camp}
 \title{Set up a training camp to fit models}
 \usage{
-training_camp(model_list, data, quiet = FALSE)
+training_camp(model_list, data, skip_on_error = TRUE, quiet = FALSE)
 }
 \arguments{
 \item{model_list}{list of Model objects. The models to fit.}
 
 \item{data}{Data object. The data set to fit on.}
+
+\item{skip_on_error}{logical. Whether to skip to the next model if an error
+occurs while fitting a model.}
 
 \item{quiet}{logical. Whether to suppress messages. Default is \code{FALSE}.}
 }

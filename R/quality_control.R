@@ -88,6 +88,8 @@ qc_preprocess <- function(
     )
     if(names(pheno_tbl)[1] != patient_id_col)
         stop("First column of pheno tibble must be ", patient_id_col)
+    if(is.numeric(pheno_tbl[[patient_id_col]]))
+        pheno_tbl[[patient_id_col]] <- as.character(pheno_tbl[[patient_id_col]])
     if(!is.character(pheno_tbl[[patient_id_col]]) || 
         !elements_unique(pheno_tbl[[patient_id_col]]))
         stop("Patient ids must be unique characters")
