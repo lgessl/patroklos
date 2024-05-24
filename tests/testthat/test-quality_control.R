@@ -12,84 +12,35 @@ test_that("qc_preprocess() works", {
     n_na_in_pheno = 0,
     to_csv = dir
   )
-  pheno_tbl <- data$pheno_tbl
   expr_tbl <- data$expr_mat |> t() |> tibble::as_tibble(rownames = "gene_id")
   data$expr_mat <- NULL
-  data$pheno_tbl <- NULL
 
-  qc_preprocess(
-    data = data,
-    expr_tbl = expr_tbl,
-    pheno_tbl = pheno_tbl
-  )
-  qc_preprocess(
-    data = data,
-    expr_tbl = expr_tbl,
-    pheno_tbl = pheno_tbl
-  )
+  data$qc_preprocess(expr_tbl = expr_tbl)
+  data$pheno_tbl[["patient_id"]] <- 1:nrow(pheno_tbl)
+  names(expr_tbl) <- c("gene_id", 1:nrow(pheno_tbl))
+  data$qc_preprocess(expr_tbl = expr_tbl)
+  expect_true(is.character(data$pheno_tbl[["patient_id"]]))
 
-  pheno_tbl[["progression"]][1] <- 2
-  expect_error(
-    qc_preprocess(
-      expr_tbl = expr_tbl,
-      pheno_tbl = pheno_tbl,
-      data = data
-    ),
-    regexp = "either 1"
-  )
-  pheno_tbl[["progression"]][1] <- 0
+  data$pheno_tbl[["progression"]][1] <- 2
+  expect_error(data$qc_preprocess(expr_tbl = expr_tbl), regexp = "either 1")
+  data$pheno_tbl[["progression"]][1] <- 0
 
-  pheno_tbl[["patient_id"]][1] <- "sample_2"
-  expect_error(
-    qc_preprocess(
-      expr_tbl = expr_tbl,
-      pheno_tbl = pheno_tbl,
-      data = data
-    ),
-    regexp = "Patient ids"
-  )
-  pheno_tbl[["patient_id"]][1] <- "sample_1"
+  data$pheno_tbl[["patient_id"]][1] <- "2"
+  expect_error(data$qc_preprocess(expr_tbl = expr_tbl), regexp = "Patient ids")
+  data$pheno_tbl[["patient_id"]][1] <- "1"
 
-  pheno_tbl[["pfs_years"]][1] <- NA
-  expect_warning(
-    qc_preprocess(
-      expr_tbl = expr_tbl,
-      pheno_tbl = pheno_tbl,
-      data = data
-    ),
-    regexp = "missing values"
-  )
-  pheno_tbl[["pfs_years"]][1] <- 1
+  data$pheno_tbl[["pfs_years"]][1] <- NA
+  expect_warning(data$qc_preprocess(expr_tbl = expr_tbl), regexp = "missing values")
+  data$pheno_tbl[["pfs_years"]][1] <- 1
 
   expr_tbl[[2]] <- "some char"
-  expect_error(
-    qc_preprocess(
-      expr_tbl = expr_tbl,
-      pheno_tbl = pheno_tbl,
-      data = data
-    ),
-    regexp = "numeric"
-  )
+  expect_error(data$qc_preprocess(expr_tbl = expr_tbl), regexp = "numeric")
   expr_tbl[[2]] <- 1
 
   expr_tbl[[2]][1] <- NA
-  expect_error(
-    qc_preprocess(
-      expr_tbl = expr_tbl,
-      pheno_tbl = pheno_tbl,
-      data = data
-    ),
-    regexp = "missing values"
-  )
+  expect_error(data$qc_preprocess(expr_tbl = expr_tbl), regexp = "missing values")
   expr_tbl[[2]][1] <- 1
 
-  pheno_tbl <- pheno_tbl[, c(2:ncol(pheno_tbl), 1)]
-  expect_error(
-    qc_preprocess(
-      expr_tbl = expr_tbl,
-      pheno_tbl = pheno_tbl,
-      data = data
-    ),
-    regexp = "First column"
-  )
+  data$pheno_tbl <- data$pheno_tbl[, c(2:ncol(data$pheno_tbl), 1)]
+  expect_error(data$qc_preprocess(expr_tbl = expr_tbl), regexp = "First column")
 })

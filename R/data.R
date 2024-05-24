@@ -80,9 +80,11 @@ Data <- R6::R6Class("Data",
         #' i.e., split columns are named `"split_1"`, `"split_2"`, etc.
         #' @return A Data object.
         #' @details The pheno csv file holds the samples as rows (with *unique* sample ids in the
-        #' first column called `patient_id_col`), the variables as columns. The expression
-        #'  csv file holds the genes as rows (with *unique* gene ids in the first 
-        #' column called `gene_id_col`), the samples as columns.
+        #' first (character) column called `patient_id_col`), the variables as columns. 
+        #' 
+        #' The expression csv file holds the genes as rows (with *unique* gene ids in the first 
+        #' (character) column called `gene_id_col`), the samples as columns.
+        #' 
         #' While the computational representation of both expression and pheno data will
         #' change over the course of the pipeline, a Data object will hold timeless
         #' information on the data.
@@ -124,7 +126,17 @@ Data <- R6::R6Class("Data",
         #' column, the time-to-event value in the second column.
         #' @details We take censoring into account. 
         survival_quantiles = function(round_digits = 3)
-            data_survival_quantiles(self, private, round_digits)
+            data_survival_quantiles(self, private, round_digits),
+
+        #' @description Quality control at the end of preprocessing
+        #' @param expr_tbl A tibble with the expression data, the product of 
+        #' reading in an expression csv file as described in the details of 
+        #' the initialize() method.
+        #' @details Check if the expression and pheno tibble are consistent 
+        #' with the other attributes of the Data object. You typically call this 
+        #' method at the end of preprocessing, and the read() method calls it. 
+        qc_preprocess = function(expr_tbl)
+            data_qc_preprocess(self, private, expr_tbl)
     ),
 
     private = list(

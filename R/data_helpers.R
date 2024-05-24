@@ -45,16 +45,10 @@ data_read <- function(self, private){
     gene_id_col <- self$gene_id_col
 
     # read
-    files <- c(expr_file, pheno_file)
-    tbls <- list()
-    for (i in 1:length(files)){
-        full_path <- file.path(directory, files[i])
-        tbls[[i]] <- readr::read_csv(full_path, show_col_types = FALSE)
-    }
-    expr_tbl <- tbls[[1]]
-    pheno_tbl <- tbls[[2]]
+    self$pheno_tbl <- readr::read_csv(file.path(directory, pheno_file), show_col_types = FALSE)
+    expr_tbl <- readr::read_csv(file.path(directory, expr_file), show_col_types = FALSE)
 
-    qc_preprocess(data = self, expr_tbl = expr_tbl, pheno_tbl = pheno_tbl)
+    self$qc_preprocess(expr_tbl = expr_tbl)
 
     # expression to matrix
     gene_names <- expr_tbl[[gene_id_col]]
@@ -66,9 +60,7 @@ data_read <- function(self, private){
         as.matrix() |> 
         t()
     colnames(expr_mat) <- gene_names
-
     self$expr_mat <- expr_mat
-    self$pheno_tbl <- pheno_tbl
 
     invisible(self)
 }

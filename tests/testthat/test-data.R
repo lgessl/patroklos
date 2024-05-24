@@ -37,13 +37,14 @@ test_that("Data$read() works", {
   n_genes <- 2
 
   dir <- withr::local_tempdir()
-  generate_mock_data(
+  data <- generate_mock_data(
     n_samples = n_samples,
     n_genes = n_genes,
     n_na_in_pheno = 3,
     to_csv = dir,
     split_index = 1:3
   ) 
+  ncol_pheno <- ncol(data$pheno_tbl)
   data <- Data$new(
     name = "mock",
     directory = dir,
@@ -68,6 +69,8 @@ test_that("Data$read() works", {
   expect_equal(colnames(data$expr_mat), paste0("gene_", 1:n_genes))
   expect_equal(rownames(data$expr_mat), paste0("sample_", 1:n_samples))
   expect_equal(data$pheno_tbl[[data$patient_id_col]], paste0("sample_", 1:n_samples))
+  expect_equal(dim(data$expr_mat), c(n_samples, n_genes))
+  expect_equal(dim(data$pheno_tbl), c(n_samples, ncol_pheno))
 
   # errors
   data$patient_id_col <- "missing_patient_id_col"

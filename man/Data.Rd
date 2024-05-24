@@ -58,6 +58,7 @@ for splitting the data into the train and test cohort.}
 \item \href{#method-Data-read}{\code{Data$read()}}
 \item \href{#method-Data-prepare}{\code{Data$prepare()}}
 \item \href{#method-Data-survival_quantiles}{\code{Data$survival_quantiles()}}
+\item \href{#method-Data-qc_preprocess}{\code{Data$qc_preprocess()}}
 \item \href{#method-Data-clone}{\code{Data$clone()}}
 }
 }
@@ -136,9 +137,11 @@ i.e., split columns are named \code{"split_1"}, \code{"split_2"}, etc.}
 }
 \subsection{Details}{
 The pheno csv file holds the samples as rows (with \emph{unique} sample ids in the
-first column called \code{patient_id_col}), the variables as columns. The expression
-csv file holds the genes as rows (with \emph{unique} gene ids in the first
-column called \code{gene_id_col}), the samples as columns.
+first (character) column called \code{patient_id_col}), the variables as columns.
+
+The expression csv file holds the genes as rows (with \emph{unique} gene ids in the first
+(character) column called \code{gene_id_col}), the samples as columns.
+
 While the computational representation of both expression and pheno data will
 change over the course of the pipeline, a Data object will hold timeless
 information on the data.
@@ -205,6 +208,31 @@ We take censoring into account.
 A tibble with two columns. For each quantile q in the first
 column, the time-to-event value in the second column.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Data-qc_preprocess"></a>}}
+\if{latex}{\out{\hypertarget{method-Data-qc_preprocess}{}}}
+\subsection{Method \code{qc_preprocess()}}{
+Quality control at the end of preprocessing
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Data$qc_preprocess(expr_tbl)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{expr_tbl}}{A tibble with the expression data, the product of
+reading in an expression csv file as described in the details of
+the initialize() method.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Check if the expression and pheno tibble are consistent
+with the other attributes of the Data object. You typically call this
+method at the end of preprocessing, and the read() method calls it.
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Data-clone"></a>}}
