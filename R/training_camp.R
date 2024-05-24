@@ -4,12 +4,14 @@
 #' a model, skip to next model.
 #' @param model_list list of Model objects. The models to fit.
 #' @param data Data object. The data set to fit on.
+#' @param skip_on_error logical. Whether to skip to the next model if an error
+#' occurs while fitting a model.
 #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
-#' @return NULL
 #' @export 
 training_camp <- function(
     model_list,
     data,
+    skip_on_error = TRUE,
     quiet = FALSE
 ){
     if(!inherits(data, "Data")){
@@ -42,17 +44,21 @@ training_camp <- function(
             if(!quiet) message("## At time cutoff ", time_cutoff, 
                 " (", round.POSIXt(Sys.time(), units = "secs"), ")")
             model_tc <- model$at_time_cutoff(time_cutoff)
-            tryCatch(
-                {
-                    model_tc$fit(data, quiet = quiet, msg_prefix = "### ")
-                }, 
-                error = function(cnd){
-                    warning("### Error while fitting ", model_tc$name, 
-                        " at time cutoff ", time_cutoff, "!\n### Error message: ", 
-                        conditionMessage(cnd), "\n### Call: ", conditionCall(cnd), 
-                        "\n### Skipping to next model.", immediate. = TRUE)
-                }
-            )
+            if (skip_on_error) {
+                tryCatch(
+                    {
+                        model_tc$fit(data, quiet = quiet, msg_prefix = "### ")
+                    }, 
+                    error = function(cnd){
+                        warning("### Error while fitting ", model_tc$name, 
+                            " at time cutoff ", time_cutoff, "!\n### Error message: ", 
+                            conditionMessage(cnd), "\n### Call: ", conditionCall(cnd), 
+                            "\n### Skipping to next model.", immediate. = TRUE)
+                    }
+                )
+            } else {
+                model_tc$fit(data, quiet = quiet, msg_prefix = "### ")
+            }
         }
     }
     if(!quiet) message("Training camp closes at ", round.POSIXt(Sys.time(), units = "secs"))
