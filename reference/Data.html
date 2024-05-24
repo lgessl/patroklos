@@ -131,6 +131,7 @@ for splitting the data into the train and test cohort.</p></dd>
 <li><p><a href="#method-Data-read"><code>Data$read()</code></a></p></li>
 <li><p><a href="#method-Data-prepare"><code>Data$prepare()</code></a></p></li>
 <li><p><a href="#method-Data-survival_quantiles"><code>Data$survival_quantiles()</code></a></p></li>
+<li><p><a href="#method-Data-qc_preprocess"><code>Data$qc_preprocess()</code></a></p></li>
 <li><p><a href="#method-Data-clone"><code>Data$clone()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-Data-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
@@ -231,10 +232,10 @@ i.e., split columns are named <code>"split_1"</code>, <code>"split_2"</code>, et
 <div class="section">
 <h4 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h4>
 <p>The pheno csv file holds the samples as rows (with <em>unique</em> sample ids in the
-first column called <code>patient_id_col</code>), the variables as columns. The expression
-csv file holds the genes as rows (with <em>unique</em> gene ids in the first
-column called <code>gene_id_col</code>), the samples as columns.
-While the computational representation of both expression and pheno data will
+first (character) column called <code>patient_id_col</code>), the variables as columns.</p>
+<p>The expression csv file holds the genes as rows (with <em>unique</em> gene ids in the first
+(character) column called <code>gene_id_col</code>), the samples as columns.</p>
+<p>While the computational representation of both expression and pheno data will
 change over the course of the pipeline, a Data object will hold timeless
 information on the data.</p>
 </div>
@@ -301,15 +302,40 @@ to this number of digits after the point.</p></dd>
 column, the time-to-event value in the second column.</p>
 </div>
 
-</div><p></p><hr><a id="method-Data-clone"></a><div class="section">
-<h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
-<p>The objects of this class are cloneable with this method.</p><div class="section">
+</div><p></p><hr><a id="method-Data-qc_preprocess"></a><div class="section">
+<h3 id="method-qc-preprocess-">Method <code>qc_preprocess()</code><a class="anchor" aria-label="anchor" href="#method-qc-preprocess-"></a></h3>
+<p>Quality control at the end of preprocessing</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Data</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Data</span><span class="op">$</span><span class="fu">qc_preprocess</span><span class="op">(</span><span class="va">expr_tbl</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>expr_tbl</code></dt>
+<dd><p>A tibble with the expression data, the product of
+reading in an expression csv file as described in the details of
+the initialize() method.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="details-3">Details<a class="anchor" aria-label="anchor" href="#details-3"></a></h4>
+<p>Check if the expression and pheno tibble are consistent
+with the other attributes of the Data object. You typically call this
+method at the end of preprocessing, and the read() method calls it.</p>
+</div>
+
+
+</div><p></p><hr><a id="method-Data-clone"></a><div class="section">
+<h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
+<p>The objects of this class are cloneable with this method.</p><div class="section">
+<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Data</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
