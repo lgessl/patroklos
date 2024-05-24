@@ -54,13 +54,7 @@ data_read <- function(self, private){
     expr_tbl <- tbls[[1]]
     pheno_tbl <- tbls[[2]]
 
-    # check if identifier columns are there
-    if(is.null(expr_tbl[[gene_id_col]])){
-        stop("There is no column named ", gene_id_col, " in ", expr_file)
-    }
-    if(is.null(pheno_tbl[[patient_id_col]])){
-        stop("There is no column named ", patient_id_col, " in ", pheno_file)
-    }
+    qc_preprocess(data = self, expr_tbl = expr_tbl, pheno_tbl = pheno_tbl)
 
     # expression to matrix
     gene_names <- expr_tbl[[gene_id_col]]
@@ -72,14 +66,6 @@ data_read <- function(self, private){
         as.matrix() |> 
         t()
     colnames(expr_mat) <- gene_names
-
-    # pheno: move patient ids into first column
-    patient_ids <- pheno_tbl[[patient_id_col]]
-    if(!elements_unique(patient_ids)){
-        stop("Column ", patient_id_col, " in ", pheno_file, " holds duplicate entries.")
-    }
-    pheno_tbl <- pheno_tbl |>
-        dplyr::relocate(dplyr::all_of(patient_id_col))
 
     self$expr_mat <- expr_mat
     self$pheno_tbl <- pheno_tbl

@@ -53,9 +53,9 @@ test_that("Data$read() works", {
     pheno_file = "pheno.csv",
     cohort = "train",
     patient_id_col = "patient_id",
-    time_to_event_col = "time_to_event",
-    event_col = "event",
-    benchmark_col = "benchmark",
+    time_to_event_col = "pfs_years",
+    event_col = "progression",
+    benchmark_col = "ipi",
     gene_id_col = "gene_id",
     split_col_prefix = "split"
   )
@@ -70,11 +70,10 @@ test_that("Data$read() works", {
   expect_equal(data$pheno_tbl[[data$patient_id_col]], paste0("sample_", 1:n_samples))
 
   # errors
-  # directory does not exist
   data$patient_id_col <- "missing_patient_id_col"
-  expect_error(data$read(), "no column named")
+  expect_error(data$read(), "does not exist in")
   data$gene_id_col <- "missing_gene_id"
-  expect_error(data$read(), "no column named")
+  expect_error(data$read(), "First column of expression")
 })
 
 test_that("Data$survival_quantiles()", {
