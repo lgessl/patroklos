@@ -51,8 +51,9 @@ data_qc_preprocess <- function(self, private, expr_tbl){
     # Expression tibble
     if(names(expr_tbl)[1] != self$gene_id_col)
         stop("First column of expression tibble must be ", self$gene_id_col)
-    if(!is.character(expr_tbl[[self$gene_id_col]]))
-        stop("Gene ids must be characters.")
+    if(!is.character(expr_tbl[[self$gene_id_col]]) || 
+        !elements_unique(expr_tbl[[self$gene_id_col]]))
+        stop("Gene ids must be unique characters.")
     if(!all(sapply(expr_tbl[, -1], is.numeric)))
         stop("Expression values must be numeric.")
     if(any(is.na(expr_tbl[, -1])))

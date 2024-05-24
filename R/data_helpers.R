@@ -51,15 +51,11 @@ data_read <- function(self, private){
     self$qc_preprocess(expr_tbl = expr_tbl)
 
     # expression to matrix
-    gene_names <- expr_tbl[[gene_id_col]]
-    if(!elements_unique(gene_names)){
-        stop("Column ", gene_id_col, " in ", expr_file, " holds duplicate entries.")
-    }
     expr_mat <- expr_tbl |>
         dplyr::select(!dplyr::all_of(gene_id_col)) |>
         as.matrix() |> 
         t()
-    colnames(expr_mat) <- gene_names
+    colnames(expr_mat) <- expr_tbl[[gene_id_col]]
     self$expr_mat <- expr_mat
 
     invisible(self)

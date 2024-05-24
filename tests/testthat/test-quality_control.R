@@ -16,8 +16,8 @@ test_that("qc_preprocess() works", {
   data$expr_mat <- NULL
 
   data$qc_preprocess(expr_tbl = expr_tbl)
-  data$pheno_tbl[["patient_id"]] <- 1:nrow(pheno_tbl)
-  names(expr_tbl) <- c("gene_id", 1:nrow(pheno_tbl))
+  data$pheno_tbl[["patient_id"]] <- 1:nrow(data$pheno_tbl)
+  names(expr_tbl) <- c("gene_id", 1:nrow(data$pheno_tbl))
   data$qc_preprocess(expr_tbl = expr_tbl)
   expect_true(is.character(data$pheno_tbl[["patient_id"]]))
 
