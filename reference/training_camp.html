@@ -48,7 +48,7 @@ a model, skip to next model.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">training_camp</span><span class="op">(</span><span class="va">model_list</span>, <span class="va">data</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">training_camp</span><span class="op">(</span><span class="va">model_list</span>, <span class="va">data</span>, skip_on_error <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -59,6 +59,11 @@ a model, skip to next model.</p>
 
 <dt>data</dt>
 <dd><p>Data object. The data set to fit on.</p></dd>
+
+
+<dt>skip_on_error</dt>
+<dd><p>logical. Whether to skip to the next model if an error
+occurs while fitting a model.</p></dd>
 
 
 <dt>quiet</dt>
