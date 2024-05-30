@@ -112,13 +112,11 @@ write_data_info <- function(
         "primary processing" = "",
         "normalization" = ""
     )
+    data$pheno_tbl <- pheno_tbl
     benchmark_list <- list(
         "name" = data$benchmark_col,
         "reference" = "",
-        "performance" = prec_from_scores(
-            pheno_tbl, 
-            data
-        )
+        "performance" = prec_from_scores(data)
     )
     info_list[["data"]][["pheno data"]] <- pheno_data_list
     if(!found_file){
@@ -138,14 +136,15 @@ write_data_info <- function(
 
 
 prec_from_scores <- function(
-    pheno_tbl,
     data,
     risk_scores = NULL
 ){
+    if (is.null(data$pheno_tbl))
+        stop("Data must have `pheno_tbl` read in")
     if(is.null(risk_scores)){
         if(!is.null(data$benchmark_col)){
-            risk_scores <- pheno_tbl[[data$benchmark_col]]
-            names(risk_scores) <- pheno_tbl[[data$patient_id_col]]
+            risk_scores <- data$pheno_tbl[[data$benchmark_col]]
+            names(risk_scores) <- data$pheno_tbl[[data$patient_id_col]]
         } else {
             message("No risk scores provided and no benchmark specified. 
                 Returning NULL.")
@@ -155,11 +154,7 @@ prec_from_scores <- function(
         "response_type" = "binary",
         "time_cutoffs" = data$pivot_time_cutoff
     )
-    true_risk <- generate_response(
-        pheno_tbl = pheno_tbl,
-        data = data,
-        model = model
-    )[, 1]
+    true_risk <- prepare_y(data = data, model = model)[, 1]
     tbl <- metric_with_rocr(
         estimate = risk_scores,
         actual = true_risk,

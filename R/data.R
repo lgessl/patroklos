@@ -44,6 +44,8 @@ Data <- R6::R6Class("Data",
         #' @field pivot_time_cutoff Pivotal time cutoff for the analysis and, explicitly,
         #' for splitting the data into the train and test cohort.
         pivot_time_cutoff = NULL,
+        #' @field imputer Function handling NAs in the predictor matrix.
+        imputer = NULL,
 
         #' @description A Data object specifies the location and format of the expression
         #' and pheno data of a single data set. This enables reading and preparing the data.
@@ -78,6 +80,11 @@ Data <- R6::R6Class("Data",
         #' train and test cohort. Some of these columns may be present in the pheno data already,
         #' others will be added during the training process if required. Default is `"split_"`, 
         #' i.e., split columns are named `"split_1"`, `"split_2"`, etc.
+        #' @param imputer function or NULL. Function handling NAs in the predictor matrix.
+        #' It takes a single argument `x`, the predictor matrix, a numeric with categorical 
+        #' variables dichotomized to binary dummy variables, and returns a matrix of the 
+        #' same shape with non-NAs left untouched.
+        #' in predicting features.
         #' @return A Data object.
         #' @details The pheno csv file holds the samples as rows (with *unique* sample ids in the
         #' first (character) column called `patient_id_col`), the variables as columns. 
@@ -101,12 +108,13 @@ Data <- R6::R6Class("Data",
             pheno_file = "pheno.csv",
             patient_id_col = "patient_id",
             gene_id_col = "gene_id",
-            split_col_prefix = "split_"
+            split_col_prefix = "split_",
+            imputer = NULL
         )
             data_initialize(self, private, name, directory, train_prop,              
                 pivot_time_cutoff, expr_file, pheno_file, cohort, patient_id_col, 
                 time_to_event_col, split_col_prefix, event_col, benchmark_col, 
-                gene_id_col),
+                gene_id_col, imputer),
 
         #' @description Read expression data into the matrix `expr_mat` and pheno 
         #' data into the tibble `pheno_tbl`. Both will hold patients as rows.
@@ -137,10 +145,6 @@ Data <- R6::R6Class("Data",
         #' method at the end of preprocessing, and the read() method calls it. 
         qc_preprocess = function(expr_tbl)
             data_qc_preprocess(self, private, expr_tbl)
-    ),
-
-    private = list(
-        dummy = "dummy"
     )
 )
 

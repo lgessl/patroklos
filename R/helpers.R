@@ -1,29 +1,23 @@
 # Internal helper functions
 
-# Convert a tibble with factor-like columns into binary indicator matrix 
-# using dummy variables
-tibble_to_binary <- function(
-    tbl
-){
-    # type checking
-    if(!is.data.frame(tbl)){
-        stop("tibble_to_binary: tbl must be a tibble or data frame")
-    }
+# Convert a tibble with factor-like columns into binary indicator matrix. 
+# level_list provides the possible levels for every column; the names of 
+# level_list coincide with the column names of tbl.
+dichotomize_tibble <- function(tbl, level_list){
 
+    stopifnot(identical(colnames(tbl), names(level_list)))
+    if (!all(sapply(level_list, length) > 1))
+        stop("Categorical variables included from pheno data must have at ", 
+            "two levels")
     # infer matrix shape and convert to factors
-    ncol <- 0
-    for(cname in colnames(tbl)){
-        fac <- as.factor(tbl[[cname]])
-        tbl[[cname]] <- fac
-        ncol <- ncol + length(levels(fac)) - 1
-    }
-    bin_matrix <- matrix(0, nrow = nrow(tbl), ncol = ncol)
+    n_col <- sum(sapply(level_list, function(l) length(l) - 1))
+    bin_matrix <- matrix(0, nrow = nrow(tbl), ncol = n_col)
 
     col_idx <- 1
-    bin_cnames <- character(ncol)
+    bin_cnames <- character(n_col)
     for(cname in colnames(tbl)){
-        lvls <- levels(tbl[[cname]])
-        for(lvl in lvls[2:length(lvls)]){ # first level is base level
+        lvls <- level_list[[cname]]
+        for(lvl in lvls[-1]){ # first level is base level
             bin_matrix[, col_idx] <- as.numeric(tbl[[cname]] == lvl)
             # new telling name for dummy variable
             bin_cnames[col_idx] <- paste(cname, lvl, sep = "_")
@@ -31,7 +25,7 @@ tibble_to_binary <- function(
         }
     }
     colnames(bin_matrix) <- bin_cnames
-    return(bin_matrix)
+    bin_matrix
 }
 
 

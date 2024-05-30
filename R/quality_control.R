@@ -4,8 +4,8 @@
 # consistency and availability.
 # @param x A numeric matrix with dimnames holding predictors (as rows).
 # @param y A numeric matrix with dimnames holding responses (as rows).
-# @details Intended to be used after `generate_predictor()` and 
-# `generate_response()`.
+# @details Intended to be used after `prepare_x()` and 
+# `prepare_y()`.
 qc_prefit <- function(
     x,
     y

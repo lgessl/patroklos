@@ -77,16 +77,10 @@ test_that("prec_from_scores() works", {
     event_col = "event",
     benchmark_col = "IPI"
   )
+  data$pheno_tbl <- pheno_tbl
 
-  tbl1 <- prec_from_scores(
-    pheno_tbl = pheno_tbl,
-    data = data,
-    risk_scores = risk_scores
-  )
-  tbl2 <- prec_from_scores(
-    pheno_tbl = pheno_tbl,
-    data = data
-  )
+  tbl1 <- prec_from_scores(data = data, risk_scores = risk_scores)
+  tbl2 <- prec_from_scores(data = data)
   expect_equal(ncol(tbl1), 3)
   expect_equal(colnames(tbl2), c("IPI >=", "rpp", "prec"))
 })

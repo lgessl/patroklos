@@ -48,6 +48,8 @@ train and test cohort.}
 
 \item{\code{pivot_time_cutoff}}{Pivotal time cutoff for the analysis and, explicitly,
 for splitting the data into the train and test cohort.}
+
+\item{\code{imputer}}{Function handling NAs in the predictor matrix.}
 }
 \if{html}{\out{</div>}}
 }
@@ -82,7 +84,8 @@ and pheno data of a single data set. This enables reading and preparing the data
   pheno_file = "pheno.csv",
   patient_id_col = "patient_id",
   gene_id_col = "gene_id",
-  split_col_prefix = "split_"
+  split_col_prefix = "split_",
+  imputer = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -132,6 +135,12 @@ the gene identifiers.}
 train and test cohort. Some of these columns may be present in the pheno data already,
 others will be added during the training process if required. Default is \code{"split_"},
 i.e., split columns are named \code{"split_1"}, \code{"split_2"}, etc.}
+
+\item{\code{imputer}}{function or NULL. Function handling NAs in the predictor matrix.
+It takes a single argument \code{x}, the predictor matrix, a numeric with categorical
+variables dichotomized to binary dummy variables, and returns a matrix of the
+same shape with non-NAs left untouched.
+in predicting features.}
 }
 \if{html}{\out{</div>}}
 }

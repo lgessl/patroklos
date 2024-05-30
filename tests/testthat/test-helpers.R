@@ -1,10 +1,11 @@
-test_that("tibble_to_binary works correctly", {
+test_that("dichotomize_tibble works correctly", {
   # Create a tibble for testing
   test_tibble <- tibble::tibble(
     column1 = factor(c("a", "b", "b", "c")),
     column2 = factor(c("d", "e", "f", "d"))
   )
-  result <- tibble_to_binary(test_tibble)
+  level_list <- lapply(test_tibble, function(c) levels(as.factor(c)))
+  result <- dichotomize_tibble(test_tibble, level_list = level_list)
 
   # Check the result
   expect_equal(
@@ -13,10 +14,10 @@ test_that("tibble_to_binary works correctly", {
     ) # 3 rows, 4 columns (2 original columns, each with 3-1 levels)
   expect_equal(colnames(result), c("column1_b", "column1_c", "column2_e", "column2_f"))
   expect_true(all(result %in% c(0., 1.)))
-  expect_error(tibble_to_binary(test_tibble[["column1"]]))
+  expect_error(dichotomize_tibble(test_tibble[["column1"]]))
 
   test_tibble[1, 2] <- NA
-  result <- tibble_to_binary(test_tibble)
+  result <- dichotomize_tibble(test_tibble, level_list = level_list)
   expect_true(all(is.na(result[1, 3:4])))
 })
 

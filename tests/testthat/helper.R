@@ -42,7 +42,9 @@ generate_mock_data <- function(
     # All in all, survival follows a linear model scaled according to the IPI
     x_cont <- cbind(expr_mat, pheno_tbl[["continuous_var"]])
     colnames(x_cont)[n_genes+1] <- "continuous_var++"
-    x_cat <- tibble_to_binary(pheno_tbl[, c("discrete_var", "ipi")])
+    level_list <- lapply(pheno_tbl[, c("discrete_var", "ipi")], function(c) 
+        levels(as.factor(c)))
+    x_cat <- dichotomize_tibble(pheno_tbl[, c("discrete_var", "ipi")], level_list)
     colnames(x_cat) <- paste0(colnames(x_cat), "++")
     x <- cbind(x_cont, x_cat)
     beta <- rnorm(ncol(x))
@@ -101,7 +103,6 @@ generate_mock_data <- function(
     data$pheno_tbl <- pheno_tbl
     return(data)
 }
-
 
 apb <- function(
     n_samples,

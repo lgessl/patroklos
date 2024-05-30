@@ -16,7 +16,7 @@ check_tbl_columns_exist <- function(
 }
 
 check_consistent_patient_ids <- function(
-    stage = c("preprocessing", "before_generate_predictor", "after_generate_xy"),
+    stage = c("preprocessing", "before_prepare_x", "after_generate_xy"),
     expr,
     pheno,
     data = NULL
@@ -33,14 +33,14 @@ check_consistent_patient_ids <- function(
         patient_ids_expr <- colnames(expr)[-1]
         patient_ids_pheno <- pheno[[patient_id_col]]
     }
-    # case 2: right before generate_predictor
-    if(stage == "before_generate_predictor"){
+    # case 2: right before prepare_x
+    if(stage == "before_prepare_x"){
         if(!is.matrix(expr)) stop("`expr` must be a matrix")
         if(!is.data.frame(pheno)) stop("`pheno` must be a tibble")
         patient_ids_expr <- rownames(expr)
         patient_ids_pheno <- pheno[[patient_id_col]]
     }
-    # case 3: after generate_predictor and generate_response
+    # case 3: after prepare_x and prepare_y
     if(stage == "after_generate_xy"){
         if(!is.matrix(expr)) stop("`expr` must be a matrix")
         if(!is.matrix(pheno)) stop("`pheno` must be a matrix")
