@@ -119,6 +119,10 @@ train and test cohort.</p></dd>
 for splitting the data into the train and test cohort.</p></dd>
 
 
+<dt><code>imputer</code></dt>
+<dd><p>Function handling NAs in the predictor matrix.</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div class="section level2">
@@ -151,7 +155,8 @@ and pheno data of a single data set. This enables reading and preparing the data
 <span>  pheno_file <span class="op">=</span> <span class="st">"pheno.csv"</span>,</span>
 <span>  patient_id_col <span class="op">=</span> <span class="st">"patient_id"</span>,</span>
 <span>  gene_id_col <span class="op">=</span> <span class="st">"gene_id"</span>,</span>
-<span>  split_col_prefix <span class="op">=</span> <span class="st">"split_"</span></span>
+<span>  split_col_prefix <span class="op">=</span> <span class="st">"split_"</span>,</span>
+<span>  imputer <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -225,6 +230,14 @@ the gene identifiers.</p></dd>
 train and test cohort. Some of these columns may be present in the pheno data already,
 others will be added during the training process if required. Default is <code>"split_"</code>,
 i.e., split columns are named <code>"split_1"</code>, <code>"split_2"</code>, etc.</p></dd>
+
+
+<dt><code>imputer</code></dt>
+<dd><p>function or NULL. Function handling NAs in the predictor matrix.
+It takes a single argument <code>x</code>, the predictor matrix, a numeric with categorical
+variables dichotomized to binary dummy variables, and returns a matrix of the
+same shape with non-NAs left untouched.
+in predicting features.</p></dd>
 
 
 </dl><p></p></div>
