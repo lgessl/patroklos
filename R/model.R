@@ -48,6 +48,12 @@ Model <- R6::R6Class("Model",
         fits = NULL,
         #' @field continuous_output Whether the output of the model is continous or binary.
         continuous_output = NULL,
+        #' @field combine_cat_features_n_max Maximum number of categorical features 
+        #' to combine 
+        combine_n_max_categorical_features = NULL,
+        #' @field combined_feature_min_positive_ratio Minimum ratio of positive
+        #' observations in a combined (categorical) feature
+        combined_feature_min_positive_ratio = NULL,
 
         #' @description Create a new Model instance.
         #' @param name string. A telling name for the model.
@@ -103,6 +109,12 @@ Model <- R6::R6Class("Model",
         #' is continous (like the conditional probabilities of a logistic regression) or
         #' binary (like with a random forest). This piece of information is helpful 
         #' when it comes to assessing a model (Ass2d$assess_center() uses it, e.g.).
+        #' @param combine_n_max_categorical_features integer. Maximum number of categorical features
+        #' to combine in predicting features.
+        #' @param combined_feature_min_positive_ratio numeric. Minimum ratio of positive
+        #' observations in a combined (categorical) feature. This attribute together 
+        #' with `combine_n_max_categorical_features` governs which combinatorial 
+        #' features the predicitor matrix will contain.
         #' @return A `Model` R6 object.
         #' @details Strictly speaking, one `Model` instance specifies
         #' `length(time_cutoffs) * length(split_index)` models. In terms of storing 
@@ -129,13 +141,17 @@ Model <- R6::R6Class("Model",
             plot_ncols = 2,
             plot_title_line = 2.5,
             fit_file = "models.rds",
-            continuous_output = NULL
+            continuous_output = NULL,
+            combine_n_max_categorical_features = 1L,
+            combined_feature_min_positive_ratio = 0.04
         )
             model_initialize(self, private, name, fitter, directory, split_index, 
                 time_cutoffs, hyperparams, response_type, response_colnames, 
                 include_from_continuous_pheno, include_from_discrete_pheno, 
                 include_expr, li_var_suffix, create_directory, plot_file, plot_ncols,
-                plot_title_line, fit_file, continuous_output),  
+                plot_title_line, fit_file, continuous_output,
+                combine_n_max_categorical_features, 
+                combined_feature_min_positive_ratio),  
 
         #' @description Fit the model to a data set for all splits into training 
         #' and test cohort. However, we do not support multiple time 

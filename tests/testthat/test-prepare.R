@@ -160,3 +160,40 @@ test_that("mean_impute() works", {
   expect_equal(rownames(x), rownames(x_imp))
   expect_equal(x_imp[!is.na(x)], x[!is.na(x)])
 })
+
+test_that("combine_features() works", {
+
+  set.seed(134)
+
+  x <- matrix(c(c(1,0,1), c(0.7, 1, 1), c(1,0.6, 0)), ncol = 3)
+  colnames(x) <- c("var_1", "var_2", "var_3")
+  rownames(x) <- paste0("sample_", seq(nrow(x)))
+  x_wide <- combine_features(x, combine_n_max_features = 3, 
+    combined_feature_positive_ratio = 0.4)
+  expect_equal(colnames(x_wide), c("var_1", "var_1&var_2", "var_2", "var_2&var_3", 
+    "var_3"))
+  exp <- c(0.7, 0.6, 0)
+  names(exp) <- rownames(x)
+  expect_equal(x_wide[, "var_2&var_3"], exp)
+  expect_equal(rownames(x), rownames(x_wide))
+
+  x_wide <- combine_features(x, combine_n_max_features = 3, 
+    combined_feature_positive_ratio = 0)
+  expect_equal(colnames(x_wide), c("var_1", "var_1&var_2", "var_1&var_3",
+    "var_1&var_2&var_3", "var_2", "var_2&var_3", "var_3"))
+  exp <- c(0.7, 0, 0)
+  names(exp) <- rownames(x)
+  expect_equal(x_wide[, "var_1&var_2&var_3"], exp)
+
+  x <- as.matrix(c(1, 0, 1))
+  colnames(x) <- "var_1"
+  x_wide <- combine_features(x, combine_n_max_features = 1, 
+    combined_feature_positive_ratio = 0.4)
+  expect_equal(x, x_wide)
+
+  x <- matrix(c(c(1,0,1), c(0,1,1)), ncol = 2)
+  colnames(x) <- c("var_1", "var_2")
+  x_wide <- combine_features(x, combine_n_max_features = 1, 
+    combined_feature_positive_ratio = 0.4)
+  expect_equal(x, x_wide)
+})

@@ -54,24 +54,6 @@ prepare_x <- function(
     # Check
     check_tbl_columns_exist(pheno_tbl, "pheno_tbl", c(include_from_discrete_pheno, 
         include_from_continuous_pheno))
-    # Store levels of included discrete pheno variables for dichotomization
-    pheno_tbl_ifdp <- pheno_tbl[, include_from_discrete_pheno, drop = FALSE]
-    level_list <- lapply(pheno_tbl_ifdp, function(c) levels(as.factor(c)))
-
-    # Subset pheno data ...
-    # ... to cohort
-    split_colname <- paste0(data$split_col_prefix, model$split_index)
-    if(!split_colname %in% colnames(data$pheno_tbl))
-        stop("Column ", split_colname, " not found in pheno table.")
-    in_cohort_bool <- data$pheno_tbl[[split_colname]] == data$cohort
-    if(all(in_cohort_bool) || all(!in_cohort_bool))
-        stop("All patients are in the same cohort")
-    x <- x[in_cohort_bool, , drop = FALSE]
-    rnames_x <- rownames(x)
-    pheno_tbl <- pheno_tbl[in_cohort_bool, , drop = FALSE]
-    # ... to included variables
-    pheno_tbl <- pheno_tbl[, c(include_from_continuous_pheno, 
-        include_from_discrete_pheno), drop = FALSE]
 
     bind_continuous <- NULL
     bind_discrete <- NULL
@@ -86,20 +68,32 @@ prepare_x <- function(
     # Discrete pheno second
     if(!is.null(include_from_discrete_pheno)){
         pheno_tbl_ifdp <- pheno_tbl[, include_from_discrete_pheno, drop = FALSE]
-        bind_discrete <- dichotomize_tibble(tbl = pheno_tbl_ifdp, level_list = 
-            level_list)
-        colnames(bind_discrete) <- paste0(colnames(bind_discrete), model$li_var_suffix)
+        bind_discrete <- dichotomize_tibble(tbl = pheno_tbl_ifdp)
     }
 
-    # Combine into numeric matrix, the predictor matrix    
+    # Combine into numeric matrix (the first time: for imputation)
+    rnames_x <- rownames(x)
     if(!model$include_expr)
         x <- NULL
+    discrete_col_bool <- c(!logical(ncol(x) + ncol(bind_continuous)), 
+        logical(ncol(bind_discrete)))
     x <- cbind(x, bind_continuous, bind_discrete)
     rownames(x) <- rnames_x
 
+    # Prepare subsetting to cohort
+    split_colname <- paste0(data$split_col_prefix, model$split_index)
+    if(!split_colname %in% colnames(data$pheno_tbl))
+        stop("Column ", split_colname, " not found in pheno table.")
+    in_cohort_bool <- data$pheno_tbl[[split_colname]] == data$cohort
+    if(all(in_cohort_bool) || all(!in_cohort_bool))
+        stop("All patients are in the same cohort")
+
     # Impute
     if(!is.null(data$imputer)) {
-        x_imp <- data$imputer(x)
+        x_imp[in_cohort_bool, , drop = FALSE] <- data$imputer(x[in_cohort_bool, 
+            , drop = FALSE])
+        x_imp[!in_cohort_bool, , drop = FALSE] <- data$imputer(x[!in_cohort_bool, 
+            , drop = FALSE])
         if (!all(colnames(x) == colnames(x_imp)) || 
             !all(rownames(x) == rownames(x_imp)))
             stop("Data$imputer() must return a matrix with the same dim names as ",
@@ -108,6 +102,20 @@ prepare_x <- function(
             stop("Data$imputer() must not change non-NA values in input matrix")
         x <- x_imp
     }
+
+    # Combine discrete features
+    if (!is.null(include_from_discrete_pheno)) {
+        bind_discrete_wide <- combine_features(x[, discrete_col_bool, 
+            drop = FALSE], model$combine_n_max_categorical_features, 
+            model$combined_feature_min_positive_ratio)
+        colnames(bind_discrete_wide) <- paste0(colnames(bind_discrete_wide),
+            model$li_var_suffix)
+        x <- cbind(x[, !discrete_col_bool, drop = FALSE], bind_discrete_wide)
+        rownames(x) <- rnames_x
+    } 
+    
+    # Actually and finally subset to cohort
+    x <- x[in_cohort_bool, , drop = FALSE]
 
     x <- x[stats::complete.cases(x), , drop = FALSE]
     attr(x, "li_var_suffix") <- model$li_var_suffix
@@ -183,4 +191,24 @@ mean_impute <- function(x) {
     })
     colnames(x_imp) <- colnames(x)
     x_imp
+}
+
+combine_features <- function(x, combine_n_max_features, 
+    combined_feature_positive_ratio) {
+
+    # Get list of all possible combinations of columns
+    cand_comb <- replicate(combine_n_max_features, seq(ncol(x)), simplify = FALSE)
+    cand_comb <- expand.grid(cand_comb)
+    cand_comb <- apply(cand_comb, 1, function(r) sort(unique(r)), simplify = FALSE)
+    cand_comb <- unique(cand_comb)
+
+    # Muliplication equates to AND
+    x_wide <- sapply(cand_comb, function(comb) apply(x[, comb, drop = FALSE], 1, 
+        prod))
+    x_wide <- as.matrix(x_wide)
+    colnames(x_wide) <- sapply(cand_comb, function(c) paste(colnames(x)[c], 
+        collapse = "&"))
+
+    # Only keep columns with sufficient positive ratio
+    x_wide[, colMeans(x_wide) >= combined_feature_positive_ratio, drop = FALSE]
 }

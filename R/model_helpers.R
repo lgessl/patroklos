@@ -2,7 +2,8 @@ model_initialize <- function(self, private, name, fitter, directory, split_index
     time_cutoffs, hyperparams, response_type, response_colnames, 
     include_from_continuous_pheno, include_from_discrete_pheno, include_expr, 
     li_var_suffix, create_directory, plot_file, plot_ncols,
-    plot_title_line, fit_file, continuous_output){
+    plot_title_line, fit_file, continuous_output, 
+    combine_n_max_categorical_features, combined_feature_min_positive_ratio){
 
     response_type <- match.arg(response_type, c("binary", "survival_censored"))
     stopifnot(all(time_cutoffs >= 0))
@@ -25,6 +26,12 @@ model_initialize <- function(self, private, name, fitter, directory, split_index
     stopifnot(is.numeric(plot_title_line) || is.null(plot_title_line))
     stopifnot(is.character(fit_file))
     stopifnot(is.logical(continuous_output) || is.null(continuous_output))
+    combine_n_max_categorical_features <- as.integer(round(combine_n_max_categorical_features))
+    if (combine_n_max_categorical_features < 1)
+        stop("combine_n_max_categorical_features must be at least 1.")
+    stopifnot(is.numeric(combined_feature_min_positive_ratio) && 
+        combined_feature_min_positive_ratio > 0 && 
+        combined_feature_min_positive_ratio < 1)
 
     self$name <- name
     self$directory <- directory
@@ -45,6 +52,8 @@ model_initialize <- function(self, private, name, fitter, directory, split_index
     self$fit_file <- fit_file
     self$fits <- vector("list", length(split_index))
     self$continuous_output <- continuous_output
+    self$combine_n_max_categorical_features <- combine_n_max_categorical_features
+    self$combined_feature_min_positive_ratio <- combined_feature_min_positive_ratio
 
     invisible(self)
 }

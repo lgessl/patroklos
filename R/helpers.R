@@ -3,8 +3,10 @@
 # Convert a tibble with factor-like columns into binary indicator matrix. 
 # level_list provides the possible levels for every column; the names of 
 # level_list coincide with the column names of tbl.
-dichotomize_tibble <- function(tbl, level_list){
+dichotomize_tibble <- function(tbl, level_list = NULL){
 
+    if (is.null(level_list))
+        level_list <- lapply(tbl, function(c) levels(as.factor(c)))
     stopifnot(identical(colnames(tbl), names(level_list)))
     if (!all(sapply(level_list, length) > 1))
         stop("Categorical variables included from pheno data must have at ", 
