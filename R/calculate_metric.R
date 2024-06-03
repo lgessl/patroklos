@@ -21,8 +21,8 @@ ass2d_calculate_2d_metric <- function(self, private, data, model){
         for(estimate_name in names(estimate_list)){
             estimate <- estimate_list[[estimate_name]]
             if(length(table(actual[[i]])) != 2)
-                stop("Actual values in split ", i, " are not binary. We have ", 
-                    actual[[i]])
+                stop("Actual values in split ", i, " are not binary. We have (", 
+                    paste(actual[[i]], collapse = ", "), ")")
             if(self$y_metric == "logrank"){
                 tbl <- logrank_metric(
                     estimate = estimate[[i]],

@@ -55,8 +55,8 @@ prepare_x <- function(
     check_tbl_columns_exist(pheno_tbl, "pheno_tbl", c(include_from_discrete_pheno, 
         include_from_continuous_pheno))
 
-    bind_continuous <- NULL
-    bind_discrete <- NULL
+    bind_continuous <- x[, 0, drop = FALSE]
+    bind_discrete <- x[, 0, drop = FALSE]
     # Continuous pheno first
     if(!is.null(include_from_continuous_pheno)){
         bind_continuous <- as.matrix(pheno_tbl[, include_from_continuous_pheno, 
@@ -74,9 +74,9 @@ prepare_x <- function(
     # Combine into numeric matrix (the first time: for imputation)
     rnames_x <- rownames(x)
     if(!model$include_expr)
-        x <- NULL
-    discrete_col_bool <- c(!logical(ncol(x) + ncol(bind_continuous)), 
-        logical(ncol(bind_discrete)))
+        x <- x[, 0, drop = FALSE]
+    discrete_col_bool <- c(logical(ncol(x) + ncol(bind_continuous)), 
+        !logical(ncol(bind_discrete)))
     x <- cbind(x, bind_continuous, bind_discrete)
     rownames(x) <- rnames_x
 
@@ -90,10 +90,11 @@ prepare_x <- function(
 
     # Impute
     if(!is.null(data$imputer)) {
-        x_imp[in_cohort_bool, , drop = FALSE] <- data$imputer(x[in_cohort_bool, 
+        x_imp <- x
+        x_imp[in_cohort_bool, ] <- data$imputer(x[in_cohort_bool, 
             , drop = FALSE])
-        x_imp[!in_cohort_bool, , drop = FALSE] <- data$imputer(x[!in_cohort_bool, 
-            , drop = FALSE])
+        x_imp[!in_cohort_bool, ] <- data$imputer(x[!in_cohort_bool, 
+           , drop = FALSE])
         if (!all(colnames(x) == colnames(x_imp)) || 
             !all(rownames(x) == rownames(x_imp)))
             stop("Data$imputer() must return a matrix with the same dim names as ",
@@ -210,5 +211,6 @@ combine_features <- function(x, combine_n_max_features,
         collapse = "&"))
 
     # Only keep columns with sufficient positive ratio
-    x_wide[, colMeans(x_wide) >= combined_feature_positive_ratio, drop = FALSE]
+    x_wide[, colMeans(x_wide, na.rm = TRUE) >= combined_feature_positive_ratio, 
+        drop = FALSE]
 }

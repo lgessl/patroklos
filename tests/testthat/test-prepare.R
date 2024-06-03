@@ -159,6 +159,7 @@ test_that("mean_impute() works", {
   expect_equal(colnames(x), colnames(x_imp))
   expect_equal(rownames(x), rownames(x_imp))
   expect_equal(x_imp[!is.na(x)], x[!is.na(x)])
+  expect_true(is.matrix(x_imp))
 })
 
 test_that("combine_features() works", {
@@ -177,11 +178,12 @@ test_that("combine_features() works", {
   expect_equal(x_wide[, "var_2&var_3"], exp)
   expect_equal(rownames(x), rownames(x_wide))
 
+  x[1, 1] <- NA
   x_wide <- combine_features(x, combine_n_max_features = 3, 
     combined_feature_positive_ratio = 0)
   expect_equal(colnames(x_wide), c("var_1", "var_1&var_2", "var_1&var_3",
     "var_1&var_2&var_3", "var_2", "var_2&var_3", "var_3"))
-  exp <- c(0.7, 0, 0)
+  exp <- c(NA, 0, 0)
   names(exp) <- rownames(x)
   expect_equal(x_wide[, "var_1&var_2&var_3"], exp)
 
@@ -191,7 +193,7 @@ test_that("combine_features() works", {
     combined_feature_positive_ratio = 0.4)
   expect_equal(x, x_wide)
 
-  x <- matrix(c(c(1,0,1), c(0,1,1)), ncol = 2)
+  x <- matrix(c(c(1,0,NA), c(0,1,1)), ncol = 2)
   colnames(x) <- c("var_1", "var_2")
   x_wide <- combine_features(x, combine_n_max_features = 1, 
     combined_feature_positive_ratio = 0.4)

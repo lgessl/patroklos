@@ -15,6 +15,7 @@ test_that("training_camp() works", {
     n_na_in_pheno = n_na_in_pheno,
     to_csv = dir
   )
+  data$imputer <- mean_impute
   
   model_1 <- Model$new(
     name = "model1",
@@ -43,7 +44,7 @@ test_that("training_camp() works", {
               lambda = c(0.5, 1)
           ),
           hyperparams2 = list(
-              num.trees = 10, # If chosen too small, OOB predictions can be NA
+              num.trees = 15, # If chosen too small, OOB predictions can be NaN
               mtry = 2,
               min.node.size = 3, 
               classification = TRUE

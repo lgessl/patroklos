@@ -99,7 +99,7 @@ test_that("Model$fit() works", {
       ),
       response_type = "binary",
       include_from_continuous_pheno = "continuous_var",
-      include_from_discrete_pheno = "discrete_var"   
+      include_from_discrete_pheno = "discrete_var"
   )
   model$fit(data, quiet = TRUE)
 })

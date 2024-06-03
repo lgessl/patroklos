@@ -61,7 +61,7 @@ test_that("Ass2d$assess() works", {
   
   set.seed(132)
 
-  n <- 25
+  n <- 40
   n_fold <- 3
   lambda <- 1
   n_genes <- 5
@@ -187,9 +187,12 @@ test_that("Ass2d$assess_center() works", {
     split_index = 1,
     time_cutoffs = 2,
     response_type = "binary",
-    continuous_output = FALSE
+    continuous_output = FALSE,
+    include_from_discrete_pheno = c("discrete_var", "abc_gcb", "ipi_age"),
+    combine_n_max_categorical_features = 3,
+    combined_feature_min_positive_ratio = 0.1
   )
-  model_list <- list(model_1, model_2)
+  model_list <- list(model_1, model_2, model_3)
 
   training_camp(
     data = data,
@@ -197,7 +200,6 @@ test_that("Ass2d$assess_center() works", {
     quiet = TRUE
   )
 
-  model_list[[3]] <- model_3
   data$cohort <- c("train", "test")
   res_dir <- file.path(dir, "results")
   ass2d <- Ass2d$new(

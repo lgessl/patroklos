@@ -87,8 +87,10 @@ test_that("AssScalar$assess_center() works", {
     split_index = 1,
     time_cutoffs = c(1.5, 2),
     response_type = "binary",
-    include_from_discrete_pheno = "discrete_var",
-    fit_file = "model2.rds"
+    include_from_discrete_pheno = c("discrete_var", "abc_gcb", "ipi_age"),
+    fit_file = "model2.rds",
+    combine_n_max_categorical_features = 3,
+    combined_feature_min_positive_ratio = 0.04
   )
   model2 <- Model$new(
     name = "rf",

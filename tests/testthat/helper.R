@@ -22,6 +22,10 @@ generate_mock_data <- function(
     pheno_tbl[["progression"]] <- rep(1, n_samples)
     pheno_tbl[["pfs_years"]] <- rep(0, n_samples)
     pheno_tbl[["discrete_var"]] <- sample(1:3, size = n_samples, replace = TRUE)
+    pheno_tbl[["ipi_age"]] <- sample(0:1, size = n_samples, replace = TRUE, 
+        prob = c(0.27, 0.73))
+    pheno_tbl[["abc_gcb"]] <- sample(c("ABC", "GCB", "Unclassified"), 
+        size = n_samples, prob = c(0.18, 0.52, 0.30), replace = TRUE)
     pheno_tbl[["continuous_var"]] <- rnorm(n_samples, 10, 10)
     pheno_tbl[["ipi"]] <- sample(1:5, size = n_samples, replace = TRUE)
     for(i in split_index){
@@ -42,9 +46,7 @@ generate_mock_data <- function(
     # All in all, survival follows a linear model scaled according to the IPI
     x_cont <- cbind(expr_mat, pheno_tbl[["continuous_var"]])
     colnames(x_cont)[n_genes+1] <- "continuous_var++"
-    level_list <- lapply(pheno_tbl[, c("discrete_var", "ipi")], function(c) 
-        levels(as.factor(c)))
-    x_cat <- dichotomize_tibble(pheno_tbl[, c("discrete_var", "ipi")], level_list)
+    x_cat <- dichotomize_tibble(pheno_tbl[, c("discrete_var", "ipi")])
     colnames(x_cat) <- paste0(colnames(x_cat), "++")
     x <- cbind(x_cont, x_cat)
     beta <- rnorm(ncol(x))
@@ -54,7 +56,9 @@ generate_mock_data <- function(
         y[pheno_tbl[["ipi"]] == i] <- runif(sum(pheno_tbl[["ipi"]] == i), 
             (10-i)/10, (11-i)/10) * y[pheno_tbl[["ipi"]] == i]
     }
-    y <- (y-median(y)) / abs(min(y)) * 2 + 2 + rnorm(n_samples, 0, .5) 
+    y <- y - quantile(y, 0.76) # 0.76 quantile is 0
+    y <- y/(-min(y)) * 2 # Scale into [-2, \infty)
+    y <- y + 2 # 0.76 quantile is 2, minimum is 0
     attr(x, "li_var_suffix") <- "++"
     if (return_type == "fitter") 
         return(list("x" = x, "y" = as.numeric(y<2)))
