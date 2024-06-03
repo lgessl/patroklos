@@ -56,6 +56,12 @@ when calling \code{plot(fit_obj)}.}
 \item{\code{fits}}{A list holding fits (e.g. zeroSum objects).}
 
 \item{\code{continuous_output}}{Whether the output of the model is continous or binary.}
+
+\item{\code{combine_n_max_categorical_features}}{Maximum number of categorical features
+to combine}
+
+\item{\code{combined_feature_min_positive_ratio}}{Minimum ratio of positive
+observations in a combined (categorical) feature}
 }
 \if{html}{\out{</div>}}
 }
@@ -93,7 +99,9 @@ Create a new Model instance.
   plot_ncols = 2,
   plot_title_line = 2.5,
   fit_file = "models.rds",
-  continuous_output = NULL
+  continuous_output = NULL,
+  combine_n_max_categorical_features = 1L,
+  combined_feature_min_positive_ratio = 0.04
 )}\if{html}{\out{</div>}}
 }
 
@@ -174,6 +182,14 @@ Default is \code{"fit_obj.rds"}.}
 is continous (like the conditional probabilities of a logistic regression) or
 binary (like with a random forest). This piece of information is helpful
 when it comes to assessing a model (Ass2d$assess_center() uses it, e.g.).}
+
+\item{\code{combine_n_max_categorical_features}}{integer. Maximum number of categorical features
+to combine in predicting features.}
+
+\item{\code{combined_feature_min_positive_ratio}}{numeric. Minimum ratio of positive
+observations in a combined (categorical) feature. This attribute together
+with \code{combine_n_max_categorical_features} governs which combinatorial
+features the predicitor matrix will contain.}
 }
 \if{html}{\out{</div>}}
 }

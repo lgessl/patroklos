@@ -48,7 +48,7 @@ Model <- R6::R6Class("Model",
         fits = NULL,
         #' @field continuous_output Whether the output of the model is continous or binary.
         continuous_output = NULL,
-        #' @field combine_cat_features_n_max Maximum number of categorical features 
+        #' @field combine_n_max_categorical_features Maximum number of categorical features 
         #' to combine 
         combine_n_max_categorical_features = NULL,
         #' @field combined_feature_min_positive_ratio Minimum ratio of positive

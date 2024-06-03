@@ -53,10 +53,11 @@ test_that("ptk_zerosum() works", {
   fit <- ptk_zerosum(x = x, y = y, exclude_pheno_from_lasso = FALSE, 
     binarize_predictions = NULL, lambda = lambda, nFold = 2, zeroSum = FALSE, 
     family = "binomial")
-  expect_false(as.logical(fit$useZeroSum))
+  expect_false(is.logical(fit$useZeroSum))
   expect_true(is.null(fit$zeroSumWeights))
   expect_true(is.null(fit$penaltyFactor))
   expect_true(is.null(fit$binarizePredictions))
+  expect_false(is.null(fit$val_predict))
   expect_true(all(vapply(fit$val_predict_list, function(v) 
     all(v >= 0 & v <= 1), logical(1))), logical(n_samples))
   expect_true(all(fit$val_predict <= 1 & fit$val_predict >= 0))

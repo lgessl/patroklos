@@ -43,7 +43,7 @@ test_that("nested_pseudo_cv() works", {
     ), regexp = "mtry must be less than the number of features.")
     # logistic regression as late model
     # with binomial log-likelihood
-    hyperparams2 <- list(family = "binomial", lambda = 0, zeroSum = FALSE)
+    hyperparams2 <- list(family = "binomial", lambda = lambda, zeroSum = FALSE)
     fit <- nested_pseudo_cv(x = x, y = y, fitter1 = ptk_zerosum, fitter2 = 
         ptk_zerosum, hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
         metric = "binomial_log_likelihood")
