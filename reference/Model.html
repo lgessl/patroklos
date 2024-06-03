@@ -132,6 +132,16 @@ when calling <code>plot(fit_obj)</code>.</p></dd>
 <dd><p>Whether the output of the model is continous or binary.</p></dd>
 
 
+<dt><code>combine_n_max_categorical_features</code></dt>
+<dd><p>Maximum number of categorical features
+to combine</p></dd>
+
+
+<dt><code>combined_feature_min_positive_ratio</code></dt>
+<dd><p>Minimum ratio of positive
+observations in a combined (categorical) feature</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div class="section level2">
@@ -167,7 +177,9 @@ when calling <code>plot(fit_obj)</code>.</p></dd>
 <span>  plot_ncols <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  plot_title_line <span class="op">=</span> <span class="fl">2.5</span>,</span>
 <span>  fit_file <span class="op">=</span> <span class="st">"models.rds"</span>,</span>
-<span>  continuous_output <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  continuous_output <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  combine_n_max_categorical_features <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  combined_feature_min_positive_ratio <span class="op">=</span> <span class="fl">0.04</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -278,6 +290,18 @@ Default is <code>"fit_obj.rds"</code>.</p></dd>
 is continous (like the conditional probabilities of a logistic regression) or
 binary (like with a random forest). This piece of information is helpful
 when it comes to assessing a model (Ass2d$assess_center() uses it, e.g.).</p></dd>
+
+
+<dt><code>combine_n_max_categorical_features</code></dt>
+<dd><p>integer. Maximum number of categorical features
+to combine in predicting features.</p></dd>
+
+
+<dt><code>combined_feature_min_positive_ratio</code></dt>
+<dd><p>numeric. Minimum ratio of positive
+observations in a combined (categorical) feature. This attribute together
+with <code>combine_n_max_categorical_features</code> governs which combinatorial
+features the predicitor matrix will contain.</p></dd>
 
 
 </dl><p></p></div>
