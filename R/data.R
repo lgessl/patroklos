@@ -123,9 +123,10 @@ Data <- R6::R6Class("Data",
 
         #' @description Prepare the read-in data for a model.
         #' @param model A Model object.
+        #' @param quiet logical. If TRUE, suppress messages.
         #' @details You need to set the cohort before calling this method.
-        prepare = function(model)
-            data_prepare(self, private, model),
+        prepare = function(model, quiet = FALSE)
+            data_prepare(self, private, model, quiet),
 
         #' @description Calculate the quantiles of the survival times.
         #' @param round_digits integer. Round the numbers in the returned tibble 

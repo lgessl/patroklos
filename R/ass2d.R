@@ -228,9 +228,10 @@ Ass2d <- R6::R6Class("Ass2d",
         # Part of assess method
         calculate_2d_metric = function(
             data,
-            model
+            model,
+            quiet = FALSE
         )
-            ass2d_calculate_2d_metric(self, private, data, model),
+            ass2d_calculate_2d_metric(self, private, data, model, quiet),
 
         # Infer reasonable values for a new Ass2d object
         infer = function(

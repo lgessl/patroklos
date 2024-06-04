@@ -57,6 +57,14 @@ test_that("nested_pseudo_cv() works", {
     metric_v <- fit$search_grid[["overall_model_performance"]]
     expect_true(all(metric_v >= 0 & metric_v <= 1))
 
+    # Cox and cox
+    # y <- cbind(runif(n_samples), sample(c(0, 1), n_samples, replace = TRUE))
+    # hyperparams1[["family"]] <- "cox"
+    # hyperparams2[["family"]] <- "cox"
+    # fit <- nested_pseudo_cv(x = x, y = y, fitter1 = ptk_zerosum, fitter2 = 
+    #     ptk_zerosum, hyperparams1 = hyperparams1, hyperparams2 = hyperparams2,
+    #     metric = "auc")
+
     # Errors
     x_small <- x[1:(n_samples-1), ]
     attr(x_small, "li_var_suffix") <- attr(x, "li_var_suffix")

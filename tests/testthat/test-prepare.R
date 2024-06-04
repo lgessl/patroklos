@@ -16,7 +16,7 @@ test_that("prepare_x() works", {
   pheno_tbl <- data$pheno_tbl
   
   # Include both continuous and discrete pheno variables
-  x <- prepare_x(data = data, model = model)
+  x <- prepare_x(data = data, model = model, quiet = TRUE)
   expect_identical(
     colnames(x)[5:7], 
     c("continuous_varAPP", "discrete_var_2APP", "discrete_var_3APP")
@@ -30,7 +30,7 @@ test_that("prepare_x() works", {
   data$expr_mat <- data$expr_mat[5:35, ]
   data$pheno_tbl <- data$pheno_tbl[5:35, ]
   data$imputer <- mean_impute
-  x_small <- prepare_x(data = data, model = model)
+  x_small <- prepare_x(data = data, model = model, quiet = TRUE)
   pheno_tbl <- data$pheno_tbl
   rnames <- pheno_tbl[["patient_id"]][pheno_tbl[["split_1"]] == data$cohort]
   expect_identical(colnames(x), colnames(x_small))
@@ -38,7 +38,7 @@ test_that("prepare_x() works", {
 
   # Include only continuous pheno variables
   model$include_from_discrete_pheno <- NULL
-  x <- prepare_x(data = data, model = model)
+  x <- prepare_x(data = data, model = model, quiet = TRUE)
   expect_identical(colnames(x)[5], "continuous_varAPP")
   expect_identical(colnames(x)[1:4], colnames(data$expr_mat))
   rnames <- pheno_tbl[["patient_id"]][pheno_tbl[["split_1"]] == data$cohort]
@@ -48,7 +48,7 @@ test_that("prepare_x() works", {
   # Include only discrete pheno variables
   model$include_from_continuous_pheno <- NULL
   model$include_from_discrete_pheno <- "discrete_var"
-  x <- prepare_x(data = data, model = model)
+  x <- prepare_x(data = data, model = model, quiet = TRUE)
   expect_equal(ncol(x), ncol(data$expr_mat)+2)
   expect_identical(colnames(x)[5], "discrete_var_2APP")
   expect_identical(colnames(x)[1:4], colnames(data$expr_mat))
@@ -60,7 +60,7 @@ test_that("prepare_x() works", {
   model$split_index <- 3
   model$include_from_continuous_pheno <- NULL
   model$include_from_discrete_pheno <- NULL
-  x <- prepare_x(data = data, model = model)
+  x <- prepare_x(data = data, model = model, quiet = TRUE)
   expect_identical(colnames(x), colnames(data$expr_mat))
   rnames <- pheno_tbl[["patient_id"]][pheno_tbl[["split_3"]] == data$cohort]
   expect_identical(rownames(x), rnames)
@@ -70,13 +70,13 @@ test_that("prepare_x() works", {
   model$include_expr <- FALSE
   model$include_from_continuous_pheno <- "continuous_var"
   model$include_from_discrete_pheno <- "discrete_var"
-  x <- prepare_x(data = data, model = model)
+  x <- prepare_x(data = data, model = model, quiet = TRUE)
   expect_equal(ncol(x), 3)
 
   # Error: include categorical pheno variable as continuous
   data$pheno_tbl[["discrete_var"]] <- as.character(data$pheno_tbl[["discrete_var"]])
   model$include_from_continuous_pheno <- "discrete_var"
-  expect_error(prepare_x(data = data, model = model), "must be numeric")
+  expect_error(prepare_x(data = data, model = model, quiet = TRUE), "must be numeric")
 })
 
 test_that("prepare_y() works", {

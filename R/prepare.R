@@ -1,7 +1,8 @@
 data_prepare <- function(
     self,
     private,    
-    model
+    model,
+    quiet
 ){
     if(length(model$split_index) != 1)
         stop("Model must specify exactly one split index, but we have ", 
@@ -17,7 +18,8 @@ data_prepare <- function(
 
     x <- prepare_x(
         data = self,
-        model = model
+        model = model,
+        quiet = quiet
     )
     y <- prepare_y(
         data = self,
@@ -43,7 +45,8 @@ data_prepare <- function(
 # `NA`s in it.
 prepare_x <- function(
     data,
-    model
+    model,
+    quiet
 ){
     # Extract
     patient_id_col <- data$patient_id_col
@@ -109,6 +112,9 @@ prepare_x <- function(
         bind_discrete_wide <- combine_features(x[, discrete_col_bool, 
             drop = FALSE], model$combine_n_max_categorical_features, 
             model$combined_feature_min_positive_ratio)
+        if (!quiet)
+            message("---- Including ", ncol(bind_discrete_wide), 
+                " combined features.")
         colnames(bind_discrete_wide) <- paste0(colnames(bind_discrete_wide),
             model$li_var_suffix)
         x <- cbind(x[, !discrete_col_bool, drop = FALSE], bind_discrete_wide)

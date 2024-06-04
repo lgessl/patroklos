@@ -21,8 +21,9 @@ ass_scalar_initialize <- function(self, private, metrics, pivot_time_cutoff,
 ass_scalar_assess <- function(self, private, data, model, quiet){
 
     prep <- model$predict(
-        data = data, 
-        pivot_time_cutoff = self$pivot_time_cutoff
+        data = data,
+        pivot_time_cutoff = self$pivot_time_cutoff,
+        quiet = quiet
     )
     res_mat <- matrix(.0, nrow = length(model$split_index), 
         ncol = length(self$metrics), byrow = TRUE)

@@ -251,7 +251,7 @@ return the true values of the response and, if the \code{benchmark_col}
 attribute of the \code{Data} object is not \code{NULL}, the values of the
 benchmark.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Model$predict(data, pivot_time_cutoff)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Model$predict(data, pivot_time_cutoff, quiet = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -263,6 +263,8 @@ needed.}
 \item{\code{pivot_time_cutoff}}{numeric. Time-to-event threshold that divides
 samples into a high/low-risk (time to event below/above
 \code{pivot_time_cutoff}) group.}
+
+\item{\code{quiet}}{logical. Whether to suppress messages. Default is \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }

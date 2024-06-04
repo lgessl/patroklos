@@ -30,7 +30,7 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
         split_model <- self$clone()
         split_model$split_index <- i
         # Prepare and fit
-        x_y <- data$prepare(split_model)
+        x_y <- data$prepare(split_model, quiet = quiet)
         x_y <- intersect_by_names(x_y[[1]], x_y[[2]], rm_na = TRUE)
         x <- x_y[[1]]
         y <- x_y[[2]]

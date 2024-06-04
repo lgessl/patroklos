@@ -88,7 +88,8 @@ ass2d_assess <- function(self, private, data, model, quiet, msg_prefix){
         dir.create(directory, recursive = TRUE)
     private$calculate_2d_metric(
         data = data, 
-        model = model
+        model = model,
+        quiet = quiet
     )
     plot_2d_metric(
         ass2d = self,
