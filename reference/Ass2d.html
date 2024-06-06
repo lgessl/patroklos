@@ -196,7 +196,6 @@ including cutoffs.</p></dd>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/Ass2d.html">Ass2d</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
 <span>  <span class="va">x_metric</span>,</span>
 <span>  <span class="va">y_metric</span>,</span>
-<span>  <span class="va">pivot_time_cutoff</span>,</span>
 <span>  benchmark <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ci_level <span class="op">=</span> <span class="fl">0.95</span>,</span>
@@ -243,13 +242,6 @@ valid.</p></li>
 <li><p><code>"precision_ci"</code> for the lower bound of the <code>ci_level</code> (see below) confidence interval
 of the precision according to Clopper-Pearson.</p></li>
 </ul></dd>
-
-
-<dt><code>pivot_time_cutoff</code></dt>
-<dd><p>numeric. Time-to-event threshold that divides samples into a
-high/low-risk (time to event below/above <code>pivot_time_cutoff</code>) group. Model performance
-will be measured in terms of how well it can separate these two groups as a binary
-classifier.</p></dd>
 
 
 <dt><code>benchmark</code></dt>
@@ -361,6 +353,13 @@ The theme of the plot. Default is <code>NULL</code>, which means the default the
 
 <dt><code>dpi</code></dt>
 <dd><p>numeric. Plot resolution in dots per inch.</p></dd>
+
+
+<dt><code>pivot_time_cutoff</code></dt>
+<dd><p>numeric. Time-to-event threshold that divides samples into a
+high/low-risk (time to event below/above <code>pivot_time_cutoff</code>) group. Model performance
+will be measured in terms of how well it can separate these two groups as a binary
+classifier.</p></dd>
 
 
 </dl><p></p></div>
