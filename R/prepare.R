@@ -114,7 +114,7 @@ prepare_x <- function(
             model$combined_feature_min_positive_ratio)
         if (!quiet)
             message("---- Including ", ncol(bind_discrete_wide), 
-                " combined features.")
+                " combined categorical features.")
         colnames(bind_discrete_wide) <- paste0(colnames(bind_discrete_wide),
             model$li_var_suffix)
         x <- cbind(x[, !discrete_col_bool, drop = FALSE], bind_discrete_wide)
