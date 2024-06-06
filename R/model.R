@@ -180,9 +180,6 @@ Model <- R6::R6Class("Model",
         #' benchmark.
         #' @param data Data object. Specifications on the data. Read it in if 
         #' needed.
-        #' @param pivot_time_cutoff numeric. Time-to-event threshold that divides 
-        #' samples into a high/low-risk (time to event below/above 
-        #' `pivot_time_cutoff`) group. 
         #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
         #' @return A list holding:
         #' 
@@ -200,10 +197,9 @@ Model <- R6::R6Class("Model",
         #' @export
         predict = function(
             data,
-            pivot_time_cutoff,
             quiet = FALSE
         )
-            model_predict(self, private, data, pivot_time_cutoff, quiet),
+            model_predict(self, private, data, quiet),
 
         #' @description Infer the model at a specific time cutoff.
         #' @param time_cutoff numeric. The time cutoff to set.

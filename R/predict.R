@@ -1,4 +1,4 @@
-model_predict <- function(self, private, data, pivot_time_cutoff, quiet){
+model_predict <- function(self, private, data, quiet){
 
     if(length(self$time_cutoffs) > 1L)
         stop("Multiple time cutoffs are not supported")
@@ -28,7 +28,7 @@ model_predict <- function(self, private, data, pivot_time_cutoff, quiet){
         split_name <- paste0(data$split_col_prefix, i)
         split_model <- self$clone()
         split_model$split_index <- i
-        split_model$time_cutoffs <- pivot_time_cutoff
+        split_model$time_cutoffs <- data$pivot_time_cutoff
         x_y <- data$prepare(split_model, quiet = quiet)
         actual <- x_y[["y"]][, 1]
         fit <- fits[[split_name]]

@@ -92,7 +92,7 @@ generate_mock_data <- function(
         name = "mock",
         directory = to_csv,
         train_prop = 0.7,
-        pivot_time_cutoff = 0.5,
+        pivot_time_cutoff = 2,
         expr_file = "expr.csv",
         pheno_file = "pheno.csv",
         cohort = "train",

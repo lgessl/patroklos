@@ -2,19 +2,16 @@ test_that("AssScalar$new() works", {
 
     ass_scalar <- AssScalar$new(
         metrics = c("auc", "accuracy", "prevalence", "n_true"),
-        pivot_time_cutoff = 2,
         benchmark = "ipi",
         file = "some file",
         round_digits = 4
     )
     expect_equal(ass_scalar$metrics, c("auc", "accuracy", "prevalence", "n_true"))
-    expect_equal(ass_scalar$pivot_time_cutoff, 2)
     expect_equal(ass_scalar$benchmark, "ipi")
     expect_equal(ass_scalar$round_digits, 4)
     expect_equal(ass_scalar$file, "some file")
 
-    expect_error(AssScalar$new(metrics = c("auc", "blabla"), pivot_time_cutoff = 
-      1.5))
+    expect_error(AssScalar$new(metrics = c("auc", "blabla")))
 })
 
 test_that("AssScalar$assess() works", {
@@ -46,7 +43,6 @@ test_that("AssScalar$assess() works", {
     )
     ass_scalar <- AssScalar$new(
       metrics = metrics,
-      pivot_time_cutoff = 2,
       benchmark = "ipi",
       round_digits = 4
     )
@@ -110,7 +106,6 @@ test_that("AssScalar$assess_center() works", {
   training_camp(model_list, data, quiet = TRUE) 
   ass_scalar <- AssScalar$new(
     metrics = "auc", # just for the moment
-    pivot_time_cutoff = 2,
     file = file.path(dir, "models/eval.csv")
   )
   dir.create(dir, "results")
@@ -122,6 +117,12 @@ test_that("AssScalar$assess_center() works", {
   expect_equal(nrow(eval_tbl), length(data$cohort) * (2+2))  
   expect_equal(colnames(eval_tbl), c("model", "cohort", "cutoff", "mean", 
     "sd", "min", "max"))
+  csv_path <- file.path(dir, "results/eval.csv")
+  first_2 <- readr::read_lines(csv_path, n_max = 2)
+  expect_equal(first_2[1], "# mock, pfs_years < 2")
+  expect_equal(first_2[2], paste0(colnames(eval_tbl), collapse = ","))
+  eval_tbl_read <- readr::read_csv(csv_path, comment = "#", show_col_types = FALSE)
+  expect_equal(dim(eval_tbl), dim(eval_tbl_read))
 
   # Case 2: multiple metrics
   data$cohort <- c("train", "test")
@@ -138,8 +139,7 @@ test_that("AssScalar$assess_center() works", {
 
 test_that("prepend_to_filename works", {
 
-  ass_scalar1 <- AssScalar$new(metrics = "accuracy", pivot_time_cutoff = 2, 
-    file = "file1")
+  ass_scalar1 <- AssScalar$new(metrics = "accuracy", file = "file1")
   ass_scalar2 <- ass_scalar1$clone()
   ass_scalar2$file <- "file2"
   as_list <- list(ass_scalar1, ass_scalar2)

@@ -39,7 +39,7 @@ test_that("model$predict() works", {
   model2$fit(data, quiet = TRUE)
 
   data$cohort <- "test"
-  res <- model1$predict(data, pivot_time_cutoff = 2)
+  res <- model1$predict(data)
   expect_true(is.list(res))
   expect_equal(length(res), 3)
   expect_true(all(sapply(res, is.list)))
@@ -49,7 +49,7 @@ test_that("model$predict() works", {
 
   data$cohort <- "train"
   data$benchmark_col <- NULL
-  res <- model2$predict(data, pivot_time_cutoff = 2)
+  res <- model2$predict(data)
   expect_true(is.list(res))
   expect_equal(length(res), 3)
   expect_true(all(sapply(res[1:2], is.list))) # third list element is NULL

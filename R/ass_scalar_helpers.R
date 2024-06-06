@@ -1,16 +1,13 @@
-ass_scalar_initialize <- function(self, private, metrics, pivot_time_cutoff, 
-    benchmark, file, round_digits){
+ass_scalar_initialize <- function(self, private, metrics, benchmark, file, 
+    round_digits){
 
     stopifnot(is.character(metrics))
     available_metrics <- eval(formals(self$initialize)[["metrics"]])
     stopifnot(all(metrics %in% available_metrics))
-    stopifnot(is.numeric(pivot_time_cutoff))
-    stopifnot(pivot_time_cutoff > 0)
     stopifnot(is.null(benchmark) || is.character(benchmark))
     stopifnot(is.null(file) || is.character(file))
     stopifnot(is.numeric(round_digits) && round_digits >= 0)
     self$metrics <- metrics
-    self$pivot_time_cutoff <- pivot_time_cutoff
     self$benchmark <- benchmark
     self$file <- file
     self$round_digits <- round_digits
@@ -22,7 +19,6 @@ ass_scalar_assess <- function(self, private, data, model, quiet){
 
     prep <- model$predict(
         data = data,
-        pivot_time_cutoff = self$pivot_time_cutoff,
         quiet = quiet
     )
     res_mat <- matrix(.0, nrow = length(model$split_index), 
@@ -116,7 +112,11 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
                 )
             if(!dir.exists(dirname(file)))
                 dir.create(dirname(file))
-            readr::write_csv(res_tbl, file = file)
+            comment <- paste0("# ", data$name, ", ", data$time_to_event_col, " < ", 
+                data$pivot_time_cutoff)
+            header <- paste0(colnames(res_tbl), collapse = ",")
+            readr::write_lines(c(comment, header), file = file)
+            readr::write_csv(res_tbl, file = file, append = TRUE)
             if(!quiet)
                 message("Writing ", file)
         }

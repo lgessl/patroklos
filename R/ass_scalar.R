@@ -8,9 +8,6 @@ AssScalar <- R6::R6Class("AssScalar",
         #' @field metrics Assess the model for these scalar metrics. Check out the 
         #' initializer for possible choices.
         metrics = NULL,
-        #' @field pivot_time_cutoff Assess classifying time to event less than 
-        #' pivot_time_cutoff.
-        pivot_time_cutoff = NULL,
         #' @field benchmark Incorporate the benchmark into the assessment.
         benchmark = NULL,
         #' @field round_digits Round the results in tables to round_digits digits 
@@ -31,8 +28,6 @@ AssScalar <- R6::R6Class("AssScalar",
         #' `"accuracy"`). If this cannot be done reasonably (e.g., `"precision"` 
         #' would usually give you a very high threshold with very low prevalence), 
         #' we throw an error.
-        #' @param pivot_time_cutoff numeric. Assess for classifying time to event < 
-        #' `pivot_time_cutoff`.
         #' @param benchmark character or NULL. If not NULL, include `benchmark` (the name of column 
         #' in the pheno data) in the assessment.
         #' @param file string or NULL. The name of the csv file to save the 
@@ -43,13 +38,12 @@ AssScalar <- R6::R6Class("AssScalar",
         initialize = function(
             metrics = c("auc", "accuracy", "precision", "prevalence", "n_true", 
                 "perc_true", "n_samples", "logrank", "threshold"),
-            pivot_time_cutoff,
             benchmark = NULL,
             file = NULL,
             round_digits = 3
         )
-            ass_scalar_initialize(self, private, metrics, pivot_time_cutoff, 
-                benchmark, file, round_digits), 
+            ass_scalar_initialize(self, private, metrics, benchmark, file, 
+                round_digits), 
 
         #' @description Assess a *single* model (with multiple splits) on a data set.
         #' @param data Data object. Assess on this data. Data must already be read in 

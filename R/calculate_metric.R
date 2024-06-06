@@ -2,7 +2,6 @@ ass2d_calculate_2d_metric <- function(self, private, data, model, quiet){
 
     prep <- model$predict(
         data = data,
-        pivot_time_cutoff = self$pivot_time_cutoff,
         quiet = quiet
     )
     actual <- prep[["actual"]]
