@@ -127,7 +127,6 @@ Ass2d <- R6::R6Class("Ass2d",
         initialize = function(
             x_metric,
             y_metric,
-            pivot_time_cutoff,
             benchmark = NULL,
             file = NULL,
             ci_level = 0.95,
@@ -156,8 +155,8 @@ Ass2d <- R6::R6Class("Ass2d",
             units = "in",
             dpi = 300
         )
-            ass2d_initialize(self, private, x_metric, y_metric, pivot_time_cutoff, 
-                benchmark, file, ci_level, fellow_csv, scores_plot, show_plots, title, 
+            ass2d_initialize(self, private, x_metric, y_metric, benchmark, 
+                file, ci_level, fellow_csv, scores_plot, show_plots, title, 
                 x_lab, y_lab, xlim, ylim, smooth_method, smooth_benchmark, smooth_se, 
                 scale_x, scale_y, vline, hline, text_size, text, alpha, colors, theme, 
                 width, height, units, dpi),

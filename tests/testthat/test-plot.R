@@ -9,7 +9,6 @@ test_that("plot_2d_metric() works", {
     file = file.path(dir, "test.jpeg"),
     x_metric = "rpp",
     y_metric = "prec",
-    pivot_time_cutoff = 2.,
     benchmark = "bm",
     show_plots = FALSE,
     title = "this title",

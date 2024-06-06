@@ -1,4 +1,4 @@
-ass2d_initialize <- function(self, private, x_metric, y_metric, pivot_time_cutoff, 
+ass2d_initialize <- function(self, private, x_metric, y_metric, 
     benchmark, file, ci_level, fellow_csv, scores_plot, show_plots, title, 
     x_lab, y_lab, xlim, ylim, smooth_method, smooth_benchmark, smooth_se, 
     scale_x, scale_y, vline, hline, text_size, text, alpha, colors, theme, 
@@ -17,7 +17,6 @@ ass2d_initialize <- function(self, private, x_metric, y_metric, pivot_time_cutof
     stopifnot(is.character(file) || is.null(file))
     stopifnot(is.character(x_metric))
     stopifnot(is.character(y_metric))
-    stopifnot(is.null(pivot_time_cutoff) || is.numeric(pivot_time_cutoff))
     stopifnot(is.character(benchmark) || is.null(benchmark))
     stopifnot(is.numeric(ci_level) && ci_level >= 0 && ci_level <= 1)
     stopifnot(is.logical(fellow_csv))
@@ -47,7 +46,6 @@ ass2d_initialize <- function(self, private, x_metric, y_metric, pivot_time_cutof
 
     self$x_metric <- x_metric
     self$y_metric <- y_metric
-    self$pivot_time_cutoff <- pivot_time_cutoff
     self$benchmark <- benchmark
     self$file <- file
     self$ci_level <- ci_level
@@ -154,7 +152,7 @@ ass2d_assess_center <- function(self, private, data, model_list, model_tree_mirr
             if(is.null(cohort_as2$title))
                 cohort_as2$title <- paste0(
                     data$name, " ", data$cohort, ", ", data$time_to_event_col,
-                    " < ", cohort_as2$pivot_time_cutoff
+                    " < ", data$pivot_time_cutoff
                 )
             plot_2d_metric(
                 ass2d = cohort_as2,
@@ -183,7 +181,7 @@ ass2d_infer <- function(self, private, model, data, model_tree_mirror){
         )
     this_as2$title <- paste0(
         data$name, " ", data$cohort, ", ",
-        data$time_to_event_col, " < ", this_as2$pivot_time_cutoff
+        data$time_to_event_col, " < ", data$pivot_time_cutoff
     )
     return(this_as2)
 }

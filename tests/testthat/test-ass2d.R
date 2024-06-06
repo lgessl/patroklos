@@ -3,7 +3,6 @@ test_that("Ass2d$new() works", {
   ass2d <- Ass2d$new(
     x_metric = "rpp",
     y_metric = "prec",
-    pivot_time_cutoff = 2,
     benchmark = "ipi",
     file = "some-file",
     ci_level = .66,
@@ -31,7 +30,6 @@ test_that("Ass2d$new() works", {
   expect_s3_class(ass2d, "Ass2d")
   expect_equal(ass2d$x_metric, "rpp")
   expect_equal(ass2d$y_metric, "prec")
-  expect_equal(ass2d$pivot_time_cutoff, 2)
   expect_equal(ass2d$benchmark, "ipi")
   expect_equal(ass2d$file, "some-file")
   expect_equal(ass2d$ci_level, .66)
@@ -102,7 +100,6 @@ test_that("Ass2d$assess() works", {
     file = file.path(dir, "rpp.jpeg"),
     x_metric = "rpp",
     y_metric = "prec",
-    pivot_time_cutoff = 2.,
     benchmark = "ipi",
     smooth_se = TRUE,
     show_plots = FALSE,
@@ -208,7 +205,6 @@ test_that("Ass2d$assess_center() works", {
     y_metric = "prec",
     show_plots = FALSE,
     smooth_method = "loess",
-    pivot_time_cutoff = 2.,
     benchmark = "ipi",
     fellow_csv = TRUE,
     scores_plot = TRUE,

@@ -13,9 +13,6 @@ threshold with a \emph{scalar} metric (like the ROC-AUC).
 \item{\code{metrics}}{Assess the model for these scalar metrics. Check out the
 initializer for possible choices.}
 
-\item{\code{pivot_time_cutoff}}{Assess classifying time to event less than
-pivot_time_cutoff.}
-
 \item{\code{benchmark}}{Incorporate the benchmark into the assessment.}
 
 \item{\code{round_digits}}{Round the results in tables to round_digits digits
@@ -46,7 +43,6 @@ Create a new AssScalar instance.
 \if{html}{\out{<div class="r">}}\preformatted{AssScalar$new(
   metrics = c("auc", "accuracy", "precision", "prevalence", "n_true", "perc_true",
     "n_samples", "logrank", "threshold"),
-  pivot_time_cutoff,
   benchmark = NULL,
   file = NULL,
   round_digits = 3
@@ -64,9 +60,6 @@ classifiers with binary output} (often this is
 \code{"accuracy"}). If this cannot be done reasonably (e.g., \code{"precision"}
 would usually give you a very high threshold with very low prevalence),
 we throw an error.}
-
-\item{\code{pivot_time_cutoff}}{numeric. Assess for classifying time to event <
-\code{pivot_time_cutoff}.}
 
 \item{\code{benchmark}}{character or NULL. If not NULL, include \code{benchmark} (the name of column
 in the pheno data) in the assessment.}
