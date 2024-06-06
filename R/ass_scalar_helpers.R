@@ -1,13 +1,16 @@
-ass_scalar_initialize <- function(self, private, metrics, benchmark, file, 
-    round_digits){
+ass_scalar_initialize <- function(self, private, metrics, prev_range, benchmark, 
+    file, round_digits){
 
     stopifnot(is.character(metrics))
     available_metrics <- eval(formals(self$initialize)[["metrics"]])
     stopifnot(all(metrics %in% available_metrics))
+    stopifnot(is.numeric(prev_range) && prev_range[1] >= 0 && 
+        prev_range[2] <= 1 && prev_range[1] < prev_range[2])
     stopifnot(is.null(benchmark) || is.character(benchmark))
     stopifnot(is.null(file) || is.character(file))
     stopifnot(is.numeric(round_digits) && round_digits >= 0)
     self$metrics <- metrics
+    self$prev_range <- prev_range
     self$benchmark <- benchmark
     self$file <- file
     self$round_digits <- round_digits
@@ -28,7 +31,7 @@ ass_scalar_assess <- function(self, private, data, model, quiet){
         actual <- prep[["actual"]][[i]]
         pa <- intersect_by_names(predicted, actual, rm_na = TRUE)
         res_mat[i, ] <- get_metric(
-            metrics = self$metrics,
+            ass_scalar = self,
             predicted = pa[[1]],
             actual = pa[[2]],
             data = data
@@ -126,29 +129,38 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
 }
 
 get_metric <- function(
-    metrics,
+    ass_scalar,
     predicted,
     actual,
     data
 ){
     # Some metrics want binary data, i.e. in {0, 1} 
     binary_bool <- all(predicted %in% c(0, 1))
-    res <- numeric(length(metrics))
-    thresholds <- ifelse(binary_bool, 1, unique(predicted))
+    res <- numeric(length(ass_scalar$metrics))
+    thresholds <- 1
+    if (!binary_bool) {
+        thresholds <- unique(predicted)
+        prevs <- vapply(thresholds, function(t) mean(predicted >= t), numeric(1))
+        thresholds <- thresholds[prevs >= ass_scalar$prev_range[1] & 
+            prevs <= ass_scalar$prev_range[2]]
+        if (length(thresholds) == 0)
+            stop("No prevalences in the range (", 
+                paste(ass_scalar$prev_range, collapse = ", "), ").")
+    }
     swap_sign <- FALSE
 
     check_one_threshold <- function(){
         if(length(thresholds) != 1)
-            stop(metrics[j], "is only defined for truly binary classfiers",
-                " and it's nonsense to threshold a classfier with ", 
-                " continous predictions by maximizing the", metrics[j], 
+            stop(ass_scalar$metrics[j], "is only defined for truly binary classfiers ",
+                "and it's nonsense to threshold a classfier with ", 
+                "continous predictions by maximizing the", ass_scalar$metrics[j], 
                 ". So provide a binary classifier or make sure that ",
                 "something reasonable to tune the threshold with (like accuracy) comes ",
-                "before \"", metrics[j], "\" in the `metrics` attribute of the ",
+                "before \"", ass_scalar$metrics[j], "\" in the `metrics` attribute of the ",
                 "AssScalar object.")
     }
-    for (j in seq_along(metrics)) {
-        switch(metrics[j],
+    for (j in seq_along(ass_scalar$metrics)) {
+        switch(ass_scalar$metrics[j],
             "auc" = {
                 pred_obj <- ROCR::prediction(predictions = predicted, labels = actual)
                 j_res <- ROCR::performance(pred_obj, measure = "auc")@y.values[[1]]
@@ -158,7 +170,6 @@ get_metric <- function(
                     function(t) mean(as.numeric(predicted >= t) == actual), numeric(1))
             },
             "precision" = {
-                check_one_threshold()
                 j_res <- vapply(thresholds, 
                     function(t) mean(actual[predicted >= t]), numeric(1))
             },
@@ -199,7 +210,7 @@ get_metric <- function(
                 check_one_threshold()
                 j_res <- thresholds
             },
-            stop("Unknown metric: ", metrics[j])
+            stop("Unknown metric: ", ass_scalar$metrics[j])
         )
         max_idx <- which.max(ifelse(swap_sign, -1, 1) * j_res)
         swap_sign <- FALSE

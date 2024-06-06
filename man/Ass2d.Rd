@@ -100,7 +100,6 @@ Create a new Ass2d instance.
 \if{html}{\out{<div class="r">}}\preformatted{Ass2d$new(
   x_metric,
   y_metric,
-  pivot_time_cutoff,
   benchmark = NULL,
   file = NULL,
   ci_level = 0.95,
@@ -147,11 +146,6 @@ valid.
 \item \code{"precision_ci"} for the lower bound of the \code{ci_level} (see below) confidence interval
 of the precision according to Clopper-Pearson.
 }}
-
-\item{\code{pivot_time_cutoff}}{numeric. Time-to-event threshold that divides samples into a
-high/low-risk (time to event below/above \code{pivot_time_cutoff}) group. Model performance
-will be measured in terms of how well it can separate these two groups as a binary
-classifier.}
 
 \item{\code{benchmark}}{string. Incorporate this benchmark (from pheno data) into the
 assessment if \code{benchmark} is not \code{NULL}.}
@@ -217,6 +211,11 @@ The theme of the plot. Default is \code{NULL}, which means the default theme of 
 \item{\code{units}}{string. The units of \code{width} and \code{height}. Default is \code{"in"} (inches).}
 
 \item{\code{dpi}}{numeric. Plot resolution in dots per inch.}
+
+\item{\code{pivot_time_cutoff}}{numeric. Time-to-event threshold that divides samples into a
+high/low-risk (time to event below/above \code{pivot_time_cutoff}) group. Model performance
+will be measured in terms of how well it can separate these two groups as a binary
+classifier.}
 }
 \if{html}{\out{</div>}}
 }

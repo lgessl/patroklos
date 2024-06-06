@@ -2,11 +2,13 @@ test_that("AssScalar$new() works", {
 
     ass_scalar <- AssScalar$new(
         metrics = c("auc", "accuracy", "prevalence", "n_true"),
+        prev_range = c(0.15, 0.30),
         benchmark = "ipi",
         file = "some file",
         round_digits = 4
     )
     expect_equal(ass_scalar$metrics, c("auc", "accuracy", "prevalence", "n_true"))
+    expect_equal(ass_scalar$prev_range, c(0.15, 0.30))
     expect_equal(ass_scalar$benchmark, "ipi")
     expect_equal(ass_scalar$round_digits, 4)
     expect_equal(ass_scalar$file, "some file")
@@ -41,17 +43,35 @@ test_that("AssScalar$assess() works", {
       response_type = "binary",
       fit_file = "model.rds"
     )
+    model$fit(data, quiet = TRUE)
     ass_scalar <- AssScalar$new(
       metrics = metrics,
       benchmark = "ipi",
       round_digits = 4
     )
-    model$fit(data, quiet = TRUE)
 
     res <- ass_scalar$assess(data, model, quiet = TRUE)
     expect_true(is.numeric(res))
     expect_true(is.matrix(res))
     expect_equal(dim(res), c(length(split_index), length(metrics)))
+
+    ass_scalar$metrics <- c("precision", "prevalence")
+    ass_scalar$prev_range <- c(0.15, 0.30)
+    res <- ass_scalar$assess(data, model, quiet = TRUE)
+
+    model <- Model$new(
+      name = "log",
+      directory = file.path(model_dir, "log"),
+      fitter = ptk_zerosum,
+      hyperparams = list(family = "gaussian", lambda = 0, zeroSum = FALSE, 
+        nFold = 1),
+      split_index = 1:2,
+      time_cutoffs = 2,
+      response_type = "binary"
+    )
+    model$fit(data, quiet = TRUE)
+    res <- ass_scalar$assess(data, model, quiet = TRUE)
+    expect_true(all(res[, 2] >= 0.15 & res[, 2] <= 0.30))
 })
 
 test_that("AssScalar$assess_center() works", {
@@ -63,7 +83,7 @@ test_that("AssScalar$assess_center() works", {
   n_na_in_pheno <- 5
   n_fold <- 1
   lambda <- 1
-  multiple_metrics <- c("accuracy", "precision", "n_true", "perc_true", "n_samples", 
+  multiple_metrics <- c("precision", "accuracy", "n_true", "perc_true", "n_samples", 
     "logrank", "threshold")
   single_metric <- "auc"
 
@@ -106,7 +126,8 @@ test_that("AssScalar$assess_center() works", {
   training_camp(model_list, data, quiet = TRUE) 
   ass_scalar <- AssScalar$new(
     metrics = "auc", # just for the moment
-    file = file.path(dir, "models/eval.csv")
+    file = file.path(dir, "models/eval.csv"),
+    prev_range = c(0.15, 0.45)
   )
   dir.create(dir, "results")
   
