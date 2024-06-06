@@ -51,11 +51,6 @@ threshold with a <em>scalar</em> metric (like the ROC-AUC).</p>
 initializer for possible choices.</p></dd>
 
 
-<dt><code>pivot_time_cutoff</code></dt>
-<dd><p>Assess classifying time to event less than
-pivot_time_cutoff.</p></dd>
-
-
 <dt><code>benchmark</code></dt>
 <dd><p>Incorporate the benchmark into the assessment.</p></dd>
 
@@ -91,7 +86,6 @@ for more details.</p></dd>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/AssScalar.html">AssScalar</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
 <span>  metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auc"</span>, <span class="st">"accuracy"</span>, <span class="st">"precision"</span>, <span class="st">"prevalence"</span>, <span class="st">"n_true"</span>, <span class="st">"perc_true"</span>,</span>
 <span>    <span class="st">"n_samples"</span>, <span class="st">"logrank"</span>, <span class="st">"threshold"</span><span class="op">)</span>,</span>
-<span>  <span class="va">pivot_time_cutoff</span>,</span>
 <span>  benchmark <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  round_digits <span class="op">=</span> <span class="fl">3</span></span>
@@ -109,11 +103,6 @@ classifiers with binary output</em> (often this is
 <code>"accuracy"</code>). If this cannot be done reasonably (e.g., <code>"precision"</code>
 would usually give you a very high threshold with very low prevalence),
 we throw an error.</p></dd>
-
-
-<dt><code>pivot_time_cutoff</code></dt>
-<dd><p>numeric. Assess for classifying time to event &lt;
-<code>pivot_time_cutoff</code>.</p></dd>
 
 
 <dt><code>benchmark</code></dt>
