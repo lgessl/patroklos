@@ -45,6 +45,8 @@ test_that("ptk_zerosum() works", {
   expect_false(is.null(fit$val_predict_list))
   expect_true(is.numeric(fit$val_metric))
   expect_equal(length(fit$val_metric), length(lambda))
+  expect_true(is.numeric(fit$best_lambda_index) && length(fit$best_lambda_index) == 1)
+  expect_true(is.character(fit$lambda) && length(fit$lambda) == length(lambda))
   expect_true(all(vapply(fit$val_predict_list, function(v) v %in% c(0, 1), 
     logical(n_samples))))
   expect_s3_class(fit, "ptk_zerosum")

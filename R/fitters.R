@@ -84,6 +84,9 @@ ptk_zerosum <- function(
         family = family, ...)
     fit_obj$val_predict_list <- fit_obj$cv_predict
     fit_obj$cv_predict <- NULL
+    fit_obj$best_lambda_index <- fit_obj$lambdaMinIndex
+    fit_obj$lambda <- paste("lambda", fit_obj$lambda, sep = "=")
+
     if (family == "binomial") {
         fit_obj$val_predict_list <- lapply(fit_obj$val_predict_list,
             function(v) 1/(1+exp(-v)))
