@@ -61,7 +61,6 @@ nested_pseudo_cv <- function(
     # Input checks
     stopifnot(is.matrix(x) && is.numeric(x))
     stopifnot(is.numeric(y) || is.factor(y))
-    stopifnot()
     if (is.vector(y)) {
         stopifnot(length(y) == nrow(x))
     } else if (is.matrix(y)) {

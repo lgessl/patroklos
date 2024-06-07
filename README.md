@@ -208,7 +208,7 @@ It returns an S3 object with a patroklos-compliant predict method.
 
 A *patroklos-compliant fitter with validated predictions* is a patroklos-compliant
 fitter whose S3 return value has an attribute `val_predict`, a 
-numeric vector holding some form of validated predictions. "Validated predictions 
+numeric vector holding some form of validated predictions. Validated predictions 
 are predictions made on independent data like cross-validated (CV) predictions 
 or out-of-bag (OOB) predictions in the case of random forests.
 

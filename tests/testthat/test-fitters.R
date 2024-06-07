@@ -43,6 +43,8 @@ test_that("ptk_zerosum() works", {
   expect_equal(fit$binarizePredictions, 0.5)
   expect_false(is.null(fit$val_predict))
   expect_false(is.null(fit$val_predict_list))
+  expect_true(is.numeric(fit$val_metric))
+  expect_equal(length(fit$val_metric), length(lambda))
   expect_true(all(vapply(fit$val_predict_list, function(v) v %in% c(0, 1), 
     logical(n_samples))))
   expect_s3_class(fit, "ptk_zerosum")
