@@ -101,6 +101,7 @@ ptk_zerosum <- function(
         fit_obj$penaltyFactor <- penalty.factor
     fit_obj$binarizePredictions <- binarize_predictions
     fit_obj$val_metric <- fit_obj$cv_stats[, "CV error"]
+    fit_obj$best_metric <- fit_obj$val_metric[fit_obj$lambdaMinIndex]
     class(fit_obj) <- "ptk_zerosum"
     return(fit_obj)
 }
