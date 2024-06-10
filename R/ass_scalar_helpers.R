@@ -145,7 +145,8 @@ get_metric <- function(
             prevs <= ass_scalar$prev_range[2]]
         if (length(thresholds) == 0)
             stop("No prevalences in the range (", 
-                paste(ass_scalar$prev_range, collapse = ", "), ").")
+                paste(ass_scalar$prev_range, collapse = ", "), ").",
+                "Available prevalences are (", paste(prevs, collapse = ", "), ")")
     }
     swap_sign <- FALSE
 
