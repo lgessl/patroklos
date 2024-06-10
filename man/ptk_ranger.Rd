@@ -4,7 +4,14 @@
 \alias{ptk_ranger}
 \title{Wrap \code{\link[ranger:ranger]{ranger::ranger()}} into a patroklos-compliant fitter}
 \usage{
-ptk_ranger(x, y, mtry = NULL, skip_on_invalid_input = FALSE, ...)
+ptk_ranger(
+  x,
+  y,
+  mtry = NULL,
+  rel_mtry = FALSE,
+  skip_on_invalid_input = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{Predictor data (independent variables), alternative interface to data with formula or dependent.variable.name.}
@@ -12,6 +19,10 @@ ptk_ranger(x, y, mtry = NULL, skip_on_invalid_input = FALSE, ...)
 \item{y}{Response vector (dependent variable), alternative interface to data with formula or dependent.variable.name. For survival use a \code{Surv()} object or a matrix with time and status.}
 
 \item{mtry}{Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Alternatively, a single argument function returning an integer, given the number of independent variables.}
+
+\item{rel_mtry}{logical. If \code{TRUE}, interprete \code{mtry} as the relative to
+\code{sqrt(ncol(x))} (the recommended value) rounded to the next integer.
+Otherwise, take \code{mtry} directly.}
 
 \item{skip_on_invalid_input}{Logical. If \code{TRUE} and invalid input is detected,
 return \code{NA} instead of an error. This is useful when calling this function

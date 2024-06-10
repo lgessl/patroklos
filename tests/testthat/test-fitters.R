@@ -21,6 +21,10 @@ test_that("ptk_ranger() works", {
   fit <- ptk_ranger(x = x, y = y, mtry = ncol(x)+1, 
     skip_on_invalid_input = TRUE)
   expect_true(is.na(fit))
+
+  fit <- ptk_ranger(x = x, y = y, mtry = 1.5, rel_mtry = TRUE, 
+    num.trees = 1, min.node.size = 1, classification = TRUE)
+  expect_equal(fit$mtry, round(sqrt(ncol(x)) * 1.5))  
 })
 
 test_that("ptk_zerosum() works", {

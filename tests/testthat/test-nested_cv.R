@@ -13,7 +13,7 @@ test_that("nested_pseudo_cv() works", {
     y <- x_y$y
     hyperparams1 <- list(family = "binomial", nFold = n_fold, lambda = lambda, 
         zeroSum = FALSE)
-    hyperparams2 <- list(mtry = c(3, 4, ncol(x)+1), min.node.size = c(4, 5), 
+    hyperparams2 <- list(mtry = c(1, 1.5, n_samples^2), min.node.size = c(4, 5), 
         classification = TRUE, num.trees = 100, skip_on_invalid_input = TRUE)
 
     fit <- nested_pseudo_cv(
@@ -63,7 +63,9 @@ test_that("nested_fit() works", {
     n_genes <- 5
     n_fold <- 3
     lambda <- 1
-    search_grid <- expand.grid(list(lambda = 1:2, mtry = 3:4))
+    metric_grid <- matrix(1:9, nrow = 3)
+    rownames(metric_grid) <- c("a", "b", "c")
+    colnames(metric_grid) <- c("d", "e", "f")
 
     x_y <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
         return_type = "fitter")
@@ -72,14 +74,14 @@ test_that("nested_fit() works", {
 
     fit1 <- structure(1, class = c("zeroSum", "list")) 
     fit2 <- structure(2, class = c("ranger", "list")) 
-    fit <- nested_fit(model1 = fit1, model2 = fit2, search_grid = search_grid, 
+    fit <- nested_fit(model1 = fit1, model2 = fit2, metric_grid = metric_grid, 
         best_hyperparams = list(lambda = 123))
     expect_s3_class(fit, "nested_fit")
 
     # Errors
     class(fit1) <- "nonesense"
     expect_error(nested_fit(model1 = fit1, model2 = fit2,
-        search_grid = search_grid, best_hyperparams = list(lambda = lambda, 
+        metric_grid = metric_grid, best_hyperparams = list(lambda = lambda, 
         mtry = 3, min.node.size = 4, classification = TRUE, num.trees = 100))
     )
 })
@@ -92,8 +94,10 @@ test_that("predict.nested_fit() works", {
     n_genes <- 5
     n_fold <- 1 
     lambda <- 1
-    search_grid <- expand.grid(list(num.trees = 100, mtry = 3, lambda = lambda))
 
+    metric_grid <- matrix(1:9, nrow = 3)
+    rownames(metric_grid) <- c("a", "b", "c")
+    colnames(metric_grid) <- c("d", "e", "f")
     x_y <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
         return_type = "fitter")
     x <- x_y$x
@@ -105,7 +109,7 @@ test_that("predict.nested_fit() works", {
     fit1 <- ptk_zerosum(x = x_early, y = y, nFold = n_fold, lambda = lambda)
     fit2 <- ptk_ranger(x = cbind(fit1$cv.predict[[1]], x_late), y = y, 
         mtry = 3, min.node.size = 4, classification = TRUE, num.trees = 100) 
-    n_fit <- nested_fit(fit1, fit2, search_grid = search_grid, 
+    n_fit <- nested_fit(fit1, fit2, metric_grid = metric_grid, 
         list(lambda_index = seq_along(lambda), lambda = lambda, mtry = 3, 
         min.node.size = 4, classification = TRUE, num.trees = 100)) 
     proj <- predict(n_fit, x)
