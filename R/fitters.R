@@ -92,6 +92,8 @@ ptk_zerosum <- function(
     fit_obj$val_predict_list <- fit_obj$cv_predict
     fit_obj$cv_predict <- NULL
     fit_obj$best_lambda_index <- fit_obj$lambdaMinIndex
+    # Lambda seq is often too long because of early stopping
+    fit_obj$lambda <- fit_obj$lambda[seq_along(fit_obj$val_predict_list)]
     fit_obj$lambda <- paste("lambda", fit_obj$lambda, sep = "=")
 
     if (family == "binomial") {
