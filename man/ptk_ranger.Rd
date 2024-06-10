@@ -20,8 +20,8 @@ ptk_ranger(
 
 \item{mtry}{Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Alternatively, a single argument function returning an integer, given the number of independent variables.}
 
-\item{rel_mtry}{logical. If \code{TRUE}, interprete \code{mtry} as the relative to
-\code{sqrt(ncol(x))} (the recommended value) rounded to the next integer.
+\item{rel_mtry}{logical. If \code{TRUE}, interprete \code{mtry} as relative to
+\code{sqrt(ncol(x))} (the recommended value), rounded to the next integer.
 Otherwise, take \code{mtry} directly.}
 
 \item{skip_on_invalid_input}{Logical. If \code{TRUE} and invalid input is detected,

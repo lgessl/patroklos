@@ -9,6 +9,7 @@
 #' scalar. The returned fitter will use it to calculate the goodness of validated 
 #' predictions. The higher, the better.
 #' @return A patroklos-compliant fitter with integrated cross-validation tuning.
+#' @export
 hypertune <- function(
     fitter, 
     metric = c("accuracy", "roc_auc", "binomial_log_likelihood")
