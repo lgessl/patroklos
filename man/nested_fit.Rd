@@ -4,17 +4,17 @@
 \alias{nested_fit}
 \title{Construct a nested_fit S3 object}
 \usage{
-nested_fit(model1, model2, search_grid, best_hyperparams)
+nested_fit(model1, model2, metric_grid, best_hyperparams)
 }
 \arguments{
 \item{model1}{An S3 object with a \code{predict} method. The early model.}
 
 \item{model2}{An S3 object with a \code{predict} method. The late model.}
 
-\item{search_grid}{A data frame with the hyperparamters for the early
-(\code{lambda}) and the late model, i.e., one row corresponds to one trained
-model or to one combinations of hyperparameters. Plus an extra column for the
-cross-validated or out-of-bag (OOB) accuracy.}
+\item{metric_grid}{named numeric matrix. Entry (i, j) is the validated metric
+of the nested model with the early model having the i-th and the late model
+having the j-th of their respective hyperparameters (which are given as
+dimnames).}
 
 \item{best_hyperparams}{A named list with the best hyperparameters.}
 }

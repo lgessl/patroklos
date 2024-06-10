@@ -91,9 +91,15 @@ nested_pseudo_cv <- function(
         model1 <- cv1$fit_obj_list[[cv1$best_lambda_index]]
     if (inherits(cv2, "ptk_hypertune"))
         model2 <- cv2$fit_obj_list[[cv2$best_lambda_index]]
+    # Report on hypertuning
+    metric_grid <- sapply(cv2_list, function(x) x$val_metric)
+    dim(metric_grid) <- c(length(cv2$lambda), length(cv1$lambda))
+    metric_grid <- t(metric_grid)
+    rownames(metric_grid) <- cv1$lambda
+    colnames(metric_grid) <- cv2$lambda
 
     nested_fit(model1 = model1, model2 = model2, 
-        search_grid = list(model1 = hyperparams1, model2 = hyperparams2), 
+        metric_grid = metric_grid, 
         best_hyperparams = list(model1 = cv1$best_lambda, model2 = cv2$best_lambda))
 }
 
@@ -102,10 +108,10 @@ nested_pseudo_cv <- function(
 #' plus their hyperparameters.
 #' @param model1 An S3 object with a `predict` method. The early model.
 #' @param model2 An S3 object with a `predict` method. The late model.
-#' @param search_grid A data frame with the hyperparamters for the early
-#' (`lambda`) and the late model, i.e., one row corresponds to one trained 
-#' model or to one combinations of hyperparameters. Plus an extra column for the
-#' cross-validated or out-of-bag (OOB) accuracy.
+#' @param metric_grid named numeric matrix. Entry (i, j) is the validated metric 
+#' of the nested model with the early model having the i-th and the late model 
+#' having the j-th of their respective hyperparameters (which are given as 
+#' dimnames).
 #' @param best_hyperparams A named list with the best hyperparameters.
 #' @return An S3 object with class `nested_fit'.
 #' @details Nest two models. The first model takes part of the features (those 
@@ -116,7 +122,7 @@ nested_pseudo_cv <- function(
 nested_fit <- function(
     model1,
     model2,
-    search_grid,
+    metric_grid,
     best_hyperparams
 ){
     methods1 <- unlist(lapply(class(model1), function(cl) sloop::s3_methods_class(
@@ -129,13 +135,15 @@ nested_fit <- function(
     if (!("predict" %in% methods2)) {
         stop("`model2` must have a predict method.")
     }
-    stopifnot(is.list(search_grid))
+    stopifnot(is.matrix(metric_grid))
+    stopifnot(!is.null(dimnames(metric_grid)))
+    stopifnot(is.numeric(metric_grid))
     stopifnot(is.list(best_hyperparams))
     structure(
         list(
             "model1" = model1,
             "model2" = model2,
-            "search_grid" = search_grid,
+            "metric_grid" = metric_grid,
             "best_hyperparams" = best_hyperparams
         ),
         class = c("nested_fit", "list")
