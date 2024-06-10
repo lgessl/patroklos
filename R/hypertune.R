@@ -7,9 +7,9 @@
 #' must be one of "accuracy", "roc_auc", or "binomial_log_likelihood". If a
 #' function, it must take two arguments: `y` and `y_hat`, and return a numeric
 #' scalar. The returned fitter will use it to calculate the goodness of validated 
-#' predictions.
-#' @return A patroklos-compliant fitter with integrated cross-validation.
-integrated_cv <- function(
+#' predictions. The higher, the better.
+#' @return A patroklos-compliant fitter with integrated cross-validation tuning.
+hypertune <- function(
     fitter, 
     metric = c("accuracy", "roc_auc", "binomial_log_likelihood")
 ){
@@ -30,29 +30,33 @@ integrated_cv <- function(
         fit_obj_list <- lapply(seq(nrow(grid)), function(i) {
             do.call(fitter, c(list(x = x, y = y), as.list(grid[i, ])))
         })
-        # Build ptk_cv S3 object
-        ptk_cv <- list()
-        ptk_cv$fit_obj_list <- fit_obj_list
+        # Get rid of NAs, i.e. invalid hyperparameters
+        na_bool <- is.na(fit_obj_list)
+        fit_obj_list <- fit_obj_list[!na_bool]
+        grid <- grid[!na_bool, ]
+        # Build ptk_hypertune S3 object
+        ptk_hypertune <- list()
+        ptk_hypertune$fit_obj_list <- fit_obj_list
         # Promote validated predictions to top level
-        ptk_cv$val_predict_list <- lapply(fit_obj_list, function(x) x$val_predict)
-        ptk_cv$lambda <- apply(grid, 1, function(r) paste(names(grid), r, 
+        ptk_hypertune$val_predict_list <- lapply(fit_obj_list, function(x) x$val_predict)
+        ptk_hypertune$lambda <- apply(grid, 1, function(r) paste(names(grid), r, 
             sep = "=", collapse = ", "))
         # Evaluate according to metric
-        metric_v <- sapply(ptk_cv$val_predict_list, function(y_hat) 
+        metric_v <- sapply(ptk_hypertune$val_predict_list, function(y_hat) 
             do.call(metric_fun, list(y, y_hat)))
-        ptk_cv$best_lambda_index <- which.max(metric_v)
-        ptk_cv$best_lambda <- ptk_cv$lambda[ptk_cv$best_lambda_index]
-        ptk_cv$val_predict <- ptk_cv$val_predict_list[[ptk_cv$best_lambda_index]]
-        ptk_cv$val_metric <- metric_v
-        ptk_cv$best_metric <- metric_v[ptk_cv$best_lambda_index]
-        ptk_cv$metric_name <- metric_fun
-        class(ptk_cv) <- "ptk_cv"
-        ptk_cv
+        ptk_hypertune$best_lambda_index <- which.max(metric_v)
+        ptk_hypertune$best_lambda <- ptk_hypertune$lambda[ptk_hypertune$best_lambda_index]
+        ptk_hypertune$val_predict <- ptk_hypertune$val_predict_list[[ptk_hypertune$best_lambda_index]]
+        ptk_hypertune$val_metric <- metric_v
+        ptk_hypertune$best_metric <- metric_v[ptk_hypertune$best_lambda_index]
+        ptk_hypertune$metric_name <- metric_fun
+        class(ptk_hypertune) <- "ptk_hypertune"
+        ptk_hypertune
     }
 }
 
 #' @export
-predict.ptk_cv <- function(
+predict.ptk_hypertune <- function(
     object,
     newx,
     lambda_index = object$best_lambda_index,

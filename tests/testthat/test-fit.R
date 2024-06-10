@@ -83,7 +83,7 @@ test_that("Model$fit() works", {
       time_cutoffs = 2.,
       hyperparams = list(
         fitter1 = ptk_zerosum,
-        fitter2 = ptk_ranger,
+        fitter2 = hypertune(ptk_ranger, metric = "accuracy"),
         hyperparams1 = list(
           family = "binomial",
           alpha = 1,

@@ -4,15 +4,7 @@
 \alias{nested_pseudo_cv}
 \title{Nested cross-validation for second-stage OOB predictions}
 \usage{
-nested_pseudo_cv(
-  x,
-  y,
-  fitter1,
-  fitter2,
-  hyperparams1,
-  hyperparams2,
-  metric = c("accuracy", "roc_auc", "binomial_log_likelihood")
-)
+nested_pseudo_cv(x, y, fitter1, fitter2, hyperparams1, hyperparams2)
 }
 \arguments{
 \item{x}{A numeric matrix holding the predictor features: rows are samples and
@@ -32,19 +24,6 @@ combination of hyperparameters and set its metric to \code{-Inf}.}
 \item{hyperparams2}{A named list with hyperparameters for the late model.
 Unlike \code{hyperparams1}, we call \code{fitter2} for every combination of values in
 \code{hyperparams2} and lambda value from \code{fitter1}.}
-
-\item{metric}{A character string or a function. The optimal combination of
-hyperparameters yield the model whose pseudo-cv predictions maximize this
-metric.
-\itemize{
-\item If a character string, it must be one of \code{"accuracy"}, \code{"roc_auc"}, or
-\code{"binomial_log_likelihood"}. Make sure that the \code{val_predict} attribute
-of the fit object returned by \code{fitter2} holds predictions in
-\code{c(0, 1)} if \code{metric == "accuracy"}, and probabilities in $(0, 1)$ if
-\code{metric == "binomial_log_likelihood"}.
-\item If a function, it must take two arguments (the true outcome and the predicted
-outcome) and return a numeric. Do this if you want to provide a custom metric.
-}}
 }
 \value{
 An S3 object with class \code{nested_fit}, the model with the best

@@ -20,7 +20,7 @@ test_that("ptk_ranger() works", {
   
   fit <- ptk_ranger(x = x, y = y, mtry = ncol(x)+1, 
     skip_on_invalid_input = TRUE)
-  expect_equal(fit, "next")
+  expect_true(is.na(fit))
 })
 
 test_that("ptk_zerosum() works", {

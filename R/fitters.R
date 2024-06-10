@@ -3,7 +3,7 @@
 #' predictions, it has a return value with a `val_predict` attribute.
 #' @inheritParams ranger::ranger
 #' @param skip_on_invalid_input Logical. If `TRUE` and invalid input is detected,
-#' return `"next"` instead of an error. This is useful when calling this function 
+#' return `NA` instead of an error. This is useful when calling this function 
 #' from inside [`nested_pseudo_cv()`].
 #' @param ... Further arguments passed to the wrapped function.
 #' @return A `ptk_ranger` S3 object, a `ranger` S3 object with the (OOB) 
@@ -11,7 +11,7 @@
 #' @export
 ptk_ranger <- function(x, y, mtry = NULL, skip_on_invalid_input = FALSE, ...){
     if (!is.null(mtry) && ncol(x) < mtry) {
-        if (skip_on_invalid_input) return("next")
+        if (skip_on_invalid_input) return(NA)
         stop("mtry must be less than the number of features.")
     }
     ptk_ranger_obj <- ranger::ranger(x = x, y = y, mtry = mtry, ...)

@@ -17,16 +17,6 @@
 #' @param hyperparams2 A named list with hyperparameters for the late model. 
 #' Unlike `hyperparams1`, we call `fitter2` for every combination of values in 
 #' `hyperparams2` and lambda value from `fitter1`.
-#' @param metric A character string or a function. The optimal combination of 
-#' hyperparameters yield the model whose pseudo-cv predictions maximize this 
-#' metric. 
-#' * If a character string, it must be one of `"accuracy"`, `"roc_auc"`, or
-#' `"binomial_log_likelihood"`. Make sure that the `val_predict` attribute 
-#' of the fit object returned by `fitter2` holds predictions in 
-#' `c(0, 1)` if `metric == "accuracy"`, and probabilities in $(0, 1)$ if 
-#' `metric == "binomial_log_likelihood"`.
-#' * If a function, it must take two arguments (the true outcome and the predicted 
-#' outcome) and return a numeric. Do this if you want to provide a custom metric.
 #' @return An S3 object with class `nested_fit`, the model with the best 
 #' performance according to validated predictions assessed with `metric`. 
 #' @export
@@ -55,8 +45,7 @@ nested_pseudo_cv <- function(
     fitter1,
     fitter2,
     hyperparams1,
-    hyperparams2,
-    metric = c("accuracy", "roc_auc", "binomial_log_likelihood")
+    hyperparams2
 ){
     # Input checks
     stopifnot(is.matrix(x) && is.numeric(x))
@@ -75,73 +64,37 @@ nested_pseudo_cv <- function(
     }
     stopifnot(is.function(fitter1) && is.function(fitter2))
     stopifnot(is.list(hyperparams1) && is.list(hyperparams2))
-    if (is.character(metric)) {
-        metric <- match.arg(metric)
-        metric_fun <- paste0("get_", metric)
-    } else if (is.function(metric)) {
-        metric_fun <- metric
-    } else {
-        stop("`metric` must be a character or a function.")
-    }
     
     x_early <- get_early_x(x = x)
 
     # First stage
-    fit <- do.call(
+    cv1 <- do.call(
         fitter1,
         c(list(x = x_early, y = y), hyperparams1)
     )
-
     # Second stage
-    n_lambda <- length(fit$val_predict_list) # Partition for-loop
-    hyperparams <- expand.grid(
-        c(hyperparams2, list("lambda1_index" = seq(n_lambda))),
-        stringsAsFactors = FALSE
-    )
-    metric_v <- rep(NA, nrow(hyperparams)) 
-    fits <- vector("list", nrow(hyperparams))
-    n_hyper2 <- as.integer(nrow(hyperparams)/n_lambda)
-    n_class_hyper2 <- length(hyperparams2)
-    hyperparams[["lambda1"]] <- fit$lambda[hyperparams[["lambda1_index"]]]
-    for (l in seq(n_lambda)) {
-        x_late <- get_late_x(
-            early_predicted = fit$val_predict_list[[l]], 
-            x = x
-        )
+    second_cv <- function(i) {
+        x_late <- get_late_x(early_predicted = cv1$val_predict_list[[i]], x = x)    
         if (ncol(x_late) != ncol(x)-ncol(x_early)+1)
             stop("Something went wrong with adding the early model's predictions.")
-        for (m in seq(n_hyper2)) {
-            idx <- (l-1)*n_hyper2 + m 
-            fits[[idx]] <- do.call(
-                fitter2,
-                c(
-                    list(x = x_late, y = y), 
-                    as.list(hyperparams[m, seq(n_class_hyper2)])
-                )
-            ) 
-            if (is.character(fits[[idx]]) && fits[[idx]] == "next") {
-                metric_v[idx] <- -Inf
-                next
-            }
-            y_hat <- fits[[idx]]$val_predict
-            if(length(y_hat) != length(y))
-                stop("The S3 object returned by `fitter2` must have a ", 
-                    "`val_predict` attribute.")
-            metric_v[idx] <- do.call(metric_fun, list(y, y_hat))
-        }
-    } 
-    if (all(sapply(fits, is.character)))
-        stop("All fits were skipped. Check your `fitter2`.")
-    best_idx <- which.max(metric_v)
-    hyperparams[[paste0("overall_val_performance")]] <- metric_v
-    hyperparams <- hyperparams[order(-metric_v), ]
+        do.call(fitter2, c(list(x = x_late, y = y), hyperparams2))
+    }
+    cv2_list <- lapply(seq_along(cv1$val_predict_list), second_cv)
+    # Choose the best combination
+    cv1$best_lambda_index <- which.max(vapply(cv2_list, function(x) x$best_metric, 
+        numeric(1)))
+    cv1$best_lambda <- cv1$lambda[cv1$best_lambda_index]
+    cv2 <- cv2_list[[cv1$best_lambda_index]]
+    model1 <- cv1
+    model2 <- cv2
+    if (inherits(cv1, "ptk_hypertune"))
+        model1 <- cv1$fit_obj_list[[cv1$best_lambda_index]]
+    if (inherits(cv2, "ptk_hypertune"))
+        model2 <- cv2$fit_obj_list[[cv2$best_lambda_index]]
 
-    nested_fit(
-        model1 = fit, 
-        model2 = fits[[best_idx]], 
-        search_grid = hyperparams,
-        best_hyperparams = hyperparams[best_idx, ]
-    )
+    nested_fit(model1 = model1, model2 = model2, 
+        search_grid = list(model1 = hyperparams1, model2 = hyperparams2), 
+        best_hyperparams = list(model1 = cv1$best_lambda, model2 = cv2$best_lambda))
 }
 
 #' @title Construct a nested_fit S3 object
@@ -176,7 +129,7 @@ nested_fit <- function(
     if (!("predict" %in% methods2)) {
         stop("`model2` must have a predict method.")
     }
-    stopifnot(is.data.frame(search_grid))
+    stopifnot(is.list(search_grid))
     stopifnot(is.list(best_hyperparams))
     structure(
         list(
