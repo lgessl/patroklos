@@ -143,10 +143,13 @@ get_metric <- function(
         prevs <- vapply(thresholds, function(t) mean(predicted >= t), numeric(1))
         thresholds <- thresholds[prevs >= ass_scalar$prev_range[1] & 
             prevs <= ass_scalar$prev_range[2]]
-        if (length(thresholds) == 0)
-            stop("No prevalences in the range (", 
-                paste(ass_scalar$prev_range, collapse = ", "), ").",
-                "Available prevalences are (", paste(prevs, collapse = ", "), ")")
+        if (length(thresholds) == 0) {
+            message("No prevalences in the range (", 
+                paste(ass_scalar$prev_range, collapse = ", "), "). ",
+                "Available prevalences are (", paste(prevs, collapse = ", "), ").", 
+                "Taking these.")
+            threholds <- unique(predicted)
+        }
     }
     swap_sign <- FALSE
 
