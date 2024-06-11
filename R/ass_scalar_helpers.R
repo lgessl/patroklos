@@ -34,7 +34,9 @@ ass_scalar_assess <- function(self, private, data, model, quiet){
             ass_scalar = self,
             predicted = pa[[1]],
             actual = pa[[2]],
-            data = data
+            data = data,
+            split_index = i,
+            quiet = quiet
         )
     }
     colnames(res_mat) <- self$metrics
@@ -84,6 +86,11 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
             )
             if (length(self$metrics) == 1) {
                 metric <- metric_mat[, 1]
+                metric <- metric[!is.na(metric)]
+                if (length(metric) == 0) {
+                    res_tbl[j, 4:7] <- NA
+                    next
+                }
                 res_tbl[j, 4] <- round(mean(metric), digits = digits) 
                 res_tbl[j, 5] <- round(stats::sd(metric), digits = digits)
                 res_tbl[j, 6] <- round(min(metric), digits = digits)
@@ -91,6 +98,11 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
             } else {
                 for(k in seq_along(self$metrics)){
                     metric <- metric_mat[, k]
+                    metric <- metric[!is.na(metric)]
+                    if (length(metric) == 0) {
+                        res_tbl[j, 3 + k] <- NA
+                        next
+                    }
                     res_tbl[j, 3 + k] <- round(mean(metric), digits = digits)
                 }
             }
@@ -132,7 +144,9 @@ get_metric <- function(
     ass_scalar,
     predicted,
     actual,
-    data
+    data,
+    split_index,
+    quiet
 ){
     # Some metrics want binary data, i.e. in {0, 1} 
     binary_bool <- all(predicted %in% c(0, 1))
@@ -144,11 +158,12 @@ get_metric <- function(
         thresholds <- thresholds[prevs >= ass_scalar$prev_range[1] & 
             prevs <= ass_scalar$prev_range[2]]
         if (length(thresholds) == 0) {
-            message("No prevalences in the range (", 
-                paste(ass_scalar$prev_range, collapse = ", "), "). ",
-                "Available prevalences are (", paste(prevs, collapse = ", "), ").", 
-                "Taking these.")
-            threholds <- unique(predicted)
+            if (!quiet)
+                message("In split ", split_index, ": No prevalences in the range (", 
+                    paste(ass_scalar$prev_range, collapse = ", "), "). ",
+                    "Available prevalences are (", 
+                    paste(round(prevs, 3), collapse = ", "), ").")
+            return(rep(NA, length(res)))
         }
     }
     swap_sign <- FALSE

@@ -59,6 +59,7 @@ test_that("AssScalar$assess() works", {
     ass_scalar$prev_range <- c(0.15, 0.30)
     res <- ass_scalar$assess(data, model, quiet = TRUE)
 
+    ass_scalar$prev_range <- c(0.15, 0.30)
     model <- Model$new(
       name = "log",
       directory = file.path(model_dir, "log"),
@@ -72,6 +73,10 @@ test_that("AssScalar$assess() works", {
     model$fit(data, quiet = TRUE)
     res <- ass_scalar$assess(data, model, quiet = TRUE)
     expect_true(all(res[, 2] >= 0.15 & res[, 2] <= 0.30))
+
+    ass_scalar$prev_range <- c(0.1000, 0.10000)
+    res <- ass_scalar$assess(data, model, quiet = TRUE)
+    expect_true(all(is.na(res)))
 })
 
 test_that("AssScalar$assess_center() works", {
