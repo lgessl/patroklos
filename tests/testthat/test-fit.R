@@ -6,7 +6,7 @@ test_that("Model$fit() works", {
   n_genes <- 5
   n_na_in_pheno <- 2
   n_fold <- 3
-  lambda <- 1
+  lambda <- c(1, 2)
 
   data <- generate_mock_data(
     n_samples = n_samples,

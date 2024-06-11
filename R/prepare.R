@@ -21,13 +21,15 @@ data_prepare <- function(
         model = model,
         quiet = quiet
     )
-    y <- prepare_y(
+    y <- prepare_y( # list of y_bin and y_cox
         data = self,
         model = model
     )
-    y <- y[rownames(x), , drop = FALSE]
+    # Subset y a bit: we don't need outcomes we can't predict for
+    y[[1]] <- y[[1]][rownames(x), , drop = FALSE]
+    y[[2]] <- y[[2]][rownames(x), , drop = FALSE]
 
-    return(list("x" = x, "y" = y))
+    c(list("x" = x), y)
 }
 
 # @title Generate the predictor matrix in a model-specific way
@@ -123,16 +125,16 @@ prepare_x <- function(
     
     # Actually and finally subset to cohort
     x <- x[in_cohort_bool, , drop = FALSE]
-
-    x <- x[stats::complete.cases(x), , drop = FALSE]
     attr(x, "li_var_suffix") <- model$li_var_suffix
-    if(nrow(x) == 0){
-        msg <- "No samples left in predictor matrix after "
-        if (is.null(data$imputer))
-            msg <- paste0(msg, "imputing and ")
-        msg <- paste0(msg, "removing samples with NA.")
-        stop(msg)
-    }
+
+    # x <- x[stats::complete.cases(x), , drop = FALSE]
+    # if(nrow(x) == 0){
+    #     msg <- "No samples left in predictor matrix after "
+    #     if (is.null(data$imputer))
+    #         msg <- paste0(msg, "imputing and ")
+    #     msg <- paste0(msg, "removing samples with NA.")
+    #     stop(msg)
+    # }
     return(x)
 }
 
@@ -169,25 +171,25 @@ prepare_y <- function(
     if(length(time_cutoff) > 1)
         stop("Can only handle one cutoff time.")
 
-    if(response_type == "binary"){
-        # flag patients censored before time_cutoff as NA
-        na_bool <- (pheno_tbl[[time_to_event_col]] <= time_cutoff) & (pheno_tbl[[event_col]] == 0)
-        y <- as.numeric(pheno_tbl[[time_to_event_col]] <= time_cutoff)
-        dim(y) <- c(length(y), 1)
-        rownames(y) <- pheno_tbl[[patient_id_col]]
-        colnames(y) <- stringr::str_c("time_cutoff_", round(time_cutoff, 1))
-        y[na_bool, ] <- NA
-    } else if(response_type == "survival_censored"){
-        y <- pheno_tbl[, c(time_to_event_col, event_col)] |> as.matrix()
-        # Censor patients with time_to_event > time_cutoff at time_cutoff
-        censor_bool <- y[, time_to_event_col] > time_cutoff
-        y[censor_bool, 1] <- time_cutoff
-        y[censor_bool, 2] <- 0
-        rownames(y) <- pheno_tbl[[patient_id_col]]
-        colnames(y) <- model$response_colnames
-    }
+    # Binary response
+    # Flag patients censored before time_cutoff as NA
+    na_bool <- (pheno_tbl[[time_to_event_col]] <= time_cutoff) & (pheno_tbl[[event_col]] == 0)
+    y_bin <- as.numeric(pheno_tbl[[time_to_event_col]] <= time_cutoff)
+    dim(y_bin) <- c(length(y_bin), 1)
+    rownames(y_bin) <- pheno_tbl[[patient_id_col]]
+    colnames(y_bin) <- stringr::str_c("time_cutoff_", round(time_cutoff, 1))
+    y_bin[na_bool, ] <- NA
 
-    return(y)
+    # Cox response (time to event, censoring status)
+    # Censor patients with time_to_event > time_cutoff at time_cutoff
+    y_cox <- pheno_tbl[, c(time_to_event_col, event_col)] |> as.matrix()
+    censor_bool <- y_cox[, time_to_event_col] > time_cutoff
+    y_cox[censor_bool, 1] <- time_cutoff
+    y_cox[censor_bool, 2] <- 0
+    rownames(y_cox) <- pheno_tbl[[patient_id_col]]
+    colnames(y_cox) <- model$response_colnames
+
+    list("y_bin" = y_bin, "y_cox" = y_cox)
 }
 
 mean_impute <- function(x) {

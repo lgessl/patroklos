@@ -12,7 +12,7 @@
 #' @return A `ptk_ranger` S3 object, a `ranger` S3 object with the (OOB) 
 #' `predictions` attribute renamed to `val_predict`.
 #' @export
-ptk_ranger <- function(x, y, mtry = NULL, rel_mtry = FALSE, 
+ptk_ranger <- function(x, y_bin, y_cox, mtry = NULL, rel_mtry = FALSE, 
     skip_on_invalid_input = FALSE, ...){
     if (!is.null(mtry)) {
         if (rel_mtry) mtry <- round(sqrt(ncol(x)) * mtry)
@@ -21,7 +21,8 @@ ptk_ranger <- function(x, y, mtry = NULL, rel_mtry = FALSE,
             stop("mtry must be less than the number of features.")
         }
     }
-    ptk_ranger_obj <- ranger::ranger(x = x, y = y, mtry = mtry, ...)
+    x_y <- intersect_by_names(x, y_bin, rm_na = c(TRUE, TRUE))
+    ptk_ranger_obj <- ranger::ranger(x = x_y[[1]], y = x_y[[2]], mtry = mtry, ...)
     # Rename OOB predictions
     ptk_ranger_obj$val_predict <- ptk_ranger_obj$predictions
     ptk_ranger_obj$predictions <- NULL
@@ -60,7 +61,8 @@ predict.ptk_ranger <- function(object, newx, ...){
 #' @export
 ptk_zerosum <- function(
     x,
-    y,
+    y_bin,
+    y_cox,
     exclude_pheno_from_lasso = TRUE,
     binarize_predictions = NULL,    
     ...,
@@ -86,10 +88,29 @@ ptk_zerosum <- function(
             penalty.factor[!early_bool] <- 0
         }
     }
-    fit_obj <- zeroSum::zeroSum(x = x, y = y, nFold = nFold, 
+
+    # Finally prepare y
+    if (family == "cox") {
+        y <- y_cox
+        # Remove censored samples with time lower than the first event
+        ord <- order(y[, 1], y[, 2])
+        i <- 1
+        while (y[ord[i], 2] == 0) i <- i + 1
+        ord <- ord[i:length(ord)]
+        y <- y[ord, , drop = FALSE]
+    } else {
+        y <- y_bin
+    }
+    x_y <- intersect_by_names(x, y, rm_na = c(TRUE, TRUE))
+
+    fit_obj <- zeroSum::zeroSum(x = x_y[[1]], y = x_y[[2]], nFold = nFold, 
         zeroSum.weights = zeroSum.weights, penalty.factor = penalty.factor, 
         family = family, ...)
-    fit_obj$val_predict_list <- fit_obj$cv_predict
+
+    fit_obj$val_predict_list <- lapply(fit_obj$cv_predict, function(v) {
+        rownames(v) <- rownames(x_y[[1]])
+        v
+    })
     fit_obj$cv_predict <- NULL
     fit_obj$best_lambda_index <- fit_obj$lambdaMinIndex
     # Lambda seq is often too long because of early stopping

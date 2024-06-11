@@ -12,7 +12,6 @@ model_predict <- function(self, private, data, quiet){
     }
     fits <- readRDS(fit_path)$fits
 
-    self$response_type <- "binary" # Always evaluate for descretized response
     predicted_list <- vector("list", length(self$split_index))
     actual_list <- vector("list", length(self$split_index))
 
@@ -29,12 +28,12 @@ model_predict <- function(self, private, data, quiet){
         split_model <- self$clone()
         split_model$split_index <- i
         split_model$time_cutoffs <- data$pivot_time_cutoff
-        x_y <- data$prepare(split_model, quiet = quiet)
-        actual <- x_y[["y"]][, 1]
+        prep <- data$prepare(split_model, quiet = quiet)
+        actual <- prep[["y_bin"]][, 1]
         fit <- fits[[split_name]]
         if(is.null(fit))
             stop("No fit found for split ", split)
-        predicted <- predict(fit, newx = x_y[["x"]])
+        predicted <- predict(fit, newx = prep[["x"]])
 
         # Check what predict method did
         if(!is.numeric(predicted)){

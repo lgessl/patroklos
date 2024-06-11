@@ -25,11 +25,12 @@ hypertune <- function(
     force(fitter)
     force(metric_fun)
 
-    cv_fitter <- function(x, y, ...) {
+    cv_fitter <- function(x, y_bin, y_cox, ...) {
         # Get all possible combinations of hyperparameters
         grid <- expand.grid(list(...), stringsAsFactors = FALSE)
         fit_obj_list <- lapply(seq(nrow(grid)), function(i) {
-            do.call(fitter, c(list(x = x, y = y), as.list(grid[i, ])))
+            do.call(fitter, c(list(x = x, y_bin = y_bin, y_cox = y_cox), 
+                as.list(grid[i, ])))
         })
         # Get rid of NAs, i.e. invalid hyperparameters
         na_bool <- is.na(fit_obj_list)

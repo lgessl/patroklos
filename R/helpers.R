@@ -66,20 +66,22 @@ create_data_partition <- function(
 intersect_by_names <- function(
     a,
     b,
-    rm_na = FALSE
+    rm_na = c(FALSE, FALSE)
 ){
     li_var_suffix_a <- attr(a, "li_var_suffix")
     li_var_suffix_b <- attr(b, "li_var_suffix")
     if(is.matrix(a) && is.matrix(b)){
+        complete_rows_a <- !logical(nrow(a))
+        complete_rows_b <- !logical(nrow(b))
         if(is.null(rownames(a))) stop("intersect_by_names(): a has no row names")
         if(is.null(rownames(b))) stop("intersect_by_names(): b has no row names")
-        if(rm_na){
+        if(rm_na[1])
             complete_rows_a <- apply(a, 1, function(row) all(!is.na(row)))
+        if(rm_na[2])
             complete_rows_b <- apply(b, 1, function(row) all(!is.na(row)))
-            a <- a[complete_rows_a, , drop = FALSE]
-            b <- b[complete_rows_b, , drop = FALSE]
-        }
-        intersect_names <- intersect(rownames(a), rownames(b)) |> sort()
+        a <- a[complete_rows_a, , drop = FALSE]
+        b <- b[complete_rows_b, , drop = FALSE]
+        intersect_names <- sort(intersect(rownames(a), rownames(b)))
         if(length(intersect_names) == 0){
             stop("intersect_by_names(): no common row names")
         }
@@ -91,10 +93,10 @@ intersect_by_names <- function(
     } else if(is.vector(a) && is.vector(b)){
         if(is.null(names(a))) stop("intersect_by_names(): a has no names")
         if(is.null(names(b))) stop("intersect_by_names(): b has no names")
-        if(rm_na){
+        if(rm_na[1])
             a <- a[!is.na(a)]
+        if(rm_na[2])
             b <- b[!is.na(b)]
-        }
         intersect_names <- intersect(names(a), names(b))
         if(length(intersect_names) == 0){
             stop("intersect_by_names(): no common names")
@@ -157,7 +159,9 @@ get_early_x <- function(x){
 
 get_late_x <- function(early_predicted, x){
     early_bool <- get_early_bool(x, for_li = TRUE)
-    x_late <- cbind(early_predicted, x[, !early_bool, drop = FALSE])
+    px <- intersect_by_names(early_predicted, x[, !early_bool, drop = FALSE], 
+        rm_na = c(FALSE, FALSE))
+    x_late <- cbind(px[[1]], px[[2]])
     attr(x_late, "li_var_suffix") <- attr(x, "li_var_suffix")
     x_late
 }

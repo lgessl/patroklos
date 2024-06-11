@@ -30,18 +30,13 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
         split_model <- self$clone()
         split_model$split_index <- i
         # Prepare and fit
-        x_y <- data$prepare(split_model, quiet = quiet)
-        x_y <- intersect_by_names(x_y[[1]], x_y[[2]], rm_na = TRUE)
-        x <- x_y[[1]]
-        y <- x_y[[2]]
-        qc_prefit(
-            x = x,
-            y = y
-        )
+        prep <- data$prepare(split_model, quiet = quiet)
+        qc_prefit(prep)
         fits[[split_name]] <- do.call(
             self$fitter, 
             args = c(
-                list("x" = x, "y" = y),
+                list("x" = prep[["x"]], "y_bin" = prep[["y_bin"]], 
+                    "y_cox" = prep[["y_cox"]]),
                 self$hyperparams
             )
         )

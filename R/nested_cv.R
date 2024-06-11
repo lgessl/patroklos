@@ -41,7 +41,8 @@
 #' compared to a full nested cross-validation.  
 nested_pseudo_cv <- function(
     x,
-    y,
+    y_bin,
+    y_cox,
     fitter1,
     fitter2,
     hyperparams1,
@@ -49,17 +50,11 @@ nested_pseudo_cv <- function(
 ){
     # Input checks
     stopifnot(is.matrix(x) && is.numeric(x))
-    stopifnot(is.numeric(y) || is.factor(y))
-    if (is.vector(y)) {
-        stopifnot(length(y) == nrow(x))
-    } else if (is.matrix(y)) {
-        stopifnot(nrow(y) == nrow(x))
-    } else {
-        stop("y must be a vector or a matrix.")
-    }
-    if (!all(y %in% c(0, 1))) {
-        stop("y must be binary. But your y has the unique elements: ", 
-            paste(unique(y), collapse = ", "), " (length(y) = ", length(y), 
+    stopifnot(is.numeric(y_bin) || is.factor(y_bin))
+    stopifnot(is.numeric(y_cox) || is.factor(y_cox))
+    if (!all(y_bin %in% c(0, 1, NA))) {
+        stop("y_bin must be binary. But your y_bin has the unique elements: ", 
+            paste(unique(y_bin), collapse = ", "), " (length(y_bin) = ", length(y_bin), 
             ").")
     }
     stopifnot(is.function(fitter1) && is.function(fitter2))
@@ -70,14 +65,15 @@ nested_pseudo_cv <- function(
     # First stage
     cv1 <- do.call(
         fitter1,
-        c(list(x = x_early, y = y), hyperparams1)
+        c(list(x = x_early, y_bin = y_bin, y_cox = y_cox), hyperparams1)
     )
     # Second stage
     second_cv <- function(i) {
         x_late <- get_late_x(early_predicted = cv1$val_predict_list[[i]], x = x)    
         if (ncol(x_late) != ncol(x)-ncol(x_early)+1)
             stop("Something went wrong with adding the early model's predictions.")
-        do.call(fitter2, c(list(x = x_late, y = y), hyperparams2))
+        do.call(fitter2, c(list(x = x_late, y_bin = y_bin, y_cox = y_cox), 
+            hyperparams2))
     }
     cv2_list <- lapply(seq_along(cv1$val_predict_list), second_cv)
     # Choose the best combination

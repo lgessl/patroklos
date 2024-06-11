@@ -6,40 +6,28 @@
 # @param y A numeric matrix with dimnames holding responses (as rows).
 # @details Intended to be used after `prepare_x()` and 
 # `prepare_y()`.
-qc_prefit <- function(
-    x,
-    y
-){
+qc_prefit <- function(prep){
+
     # check class and type of x and y
-    x_y_list <- list("x" = x, "y" = y)
-    for(x_y in names(x_y_list)){
-        obj <- x_y_list[[x_y]]
+    for(name in names(prep)){
+        obj <- prep[[name]]
         if(!is.matrix(obj))
             stop(
-                x_y, " must be a matrix. But its S3 class is (", 
+                name, " must be a matrix. But its S3 class is (", 
                 stringr::str_c(sloop::s3_class(obj), collapse = ", "), ")"
             )
         if(!is.numeric(obj))
             stop(
-                x_y, " must be a numeric. But its S3 class is (", 
+                name, " must be a numeric. But its S3 class is (", 
                 stringr::str_c(sloop::s3_class(obj), collapse = ", "), ")"
             )
+        if(is.null(rownames(obj)))
+            stop(name, " has no row names")
     }
-    check_consistent_patient_ids(
-        stage = "after_generate_xy",
-        expr = x,
-        pheno = y
-    )
-    check_available(
-        x = x,
-        y = y
-    )
-    if (is.null(colnames(x))) {
+    if (is.null(colnames(prep[["x"]])))
         stop("x has no column names")
-    }
-    if (is.null(attr(x, "li_var_suffix"))) {
+    if (is.null(attr(prep[["x"]], "li_var_suffix")))
         stop("x has no li_var_suffix attribute")
-    }
 }
 
 

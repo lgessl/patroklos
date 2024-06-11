@@ -79,7 +79,7 @@ precision_ci <- function(
     estimate_actual <- intersect_by_names(
         estimate, 
         actual, 
-        rm_na = TRUE
+        rm_na = c(TRUE, TRUE)
     )
     estimate <- estimate_actual[[1]]
     actual <- estimate_actual[[2]]
@@ -123,7 +123,7 @@ metric_with_rocr <- function(
     estimate_actual <- intersect_by_names(
         estimate, 
         actual, 
-        rm_na = TRUE
+        rm_na = c(TRUE, TRUE)
     )
     # Calculate performance measures
     rocr_prediction <- ROCR::prediction(

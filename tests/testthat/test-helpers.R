@@ -23,10 +23,10 @@ test_that("dichotomize_tibble works correctly", {
 
 test_that("intersect_by_names() works", {
 
-  a <- 1:3
-  names(a) <- 1:3
-  b <- 1:3
-  names(b) <- 2:4
+  a <- 1:4
+  names(a) <- 1:4
+  b <- 1:4
+  names(b) <- 2:5
 
   # Vectors
   # without NA
@@ -34,28 +34,29 @@ test_that("intersect_by_names() works", {
   expect_equal(names(a_b[[1]]), names(a_b[[2]]))
   # with NA
   a[2] <- NA
-  a_b <- intersect_by_names(a, b, rm_na = TRUE)
+  a_b <- intersect_by_names(a, b, rm_na = c(TRUE, TRUE))
   expect_equal(names(a_b[[1]]), names(a_b[[2]]))
-  expect_length(a_b[[1]], 1)
+  expect_length(a_b[[1]], 2)
 
   # Matrices
   # without NA
   a <- as.matrix(a)
   b <- as.matrix(b)
-  a_b <- intersect_by_names(a, b)
-  expect_equal(rownames(a_b[[1]]), c("2", "3"))
-  expect_equal(rownames(a_b[[2]]), c("2", "3"))
+  b[2,1] <- NA
+  a_b <- intersect_by_names(a, b, rm_na = c(TRUE, FALSE))
+  expect_equal(rownames(a_b[[1]]), c("3", "4"))
+  expect_equal(rownames(a_b[[2]]), c("3", "4"))
   # with NA
   a[2, 1] <- NA
-  a_b <- intersect_by_names(a, b, rm_na = TRUE)
-  expect_equal(rownames(a_b[[2]]), c("3"))
+  a_b <- intersect_by_names(a, b, rm_na = c(TRUE, TRUE))
+  expect_equal(rownames(a_b[[2]]), c("4"))
   expect_equal(rownames(a_b[[1]]), rownames(a_b[[2]]))
 
   # Errors
   # input types
   expect_error(intersect_by_names(a, b[1, ]), "both matrices or")
   # matrices
-  rownames(a) <- 5:7
+  rownames(a) <- 10:13
   expect_error(intersect_by_names(a, b), "no common row names")
   rownames(a) <- NULL
   expect_error(intersect_by_names(a, b), "a has no row names")
@@ -63,7 +64,8 @@ test_that("intersect_by_names() works", {
   a <- a[, 1]
   b <- b[, 1]
   expect_error(intersect_by_names(a, b), "no names")
-  names(a) <- 5:7
+  names(a) <- 5:8
+  names(b) <- 1:4
   expect_error(intersect_by_names(a, b), "no common names")
 })
 
