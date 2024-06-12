@@ -57,7 +57,7 @@ predictions made on independent data like out-of-bag (OOB) or cross-validated
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nested_pseudo_cv</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">fitter1</span>, <span class="va">fitter2</span>, <span class="va">hyperparams1</span>, <span class="va">hyperparams2</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nested_pseudo_cv</span><span class="op">(</span><span class="va">x</span>, <span class="va">y_bin</span>, <span class="va">y_cox</span>, <span class="va">fitter1</span>, <span class="va">fitter2</span>, <span class="va">hyperparams1</span>, <span class="va">hyperparams2</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -67,8 +67,14 @@ predictions made on independent data like out-of-bag (OOB) or cross-validated
 columns are features.</p></dd>
 
 
-<dt>y</dt>
-<dd><p>A numeric vector holding the response variable.</p></dd>
+<dt>y_bin</dt>
+<dd><p>Named numeric matrix with one column. Binary response.</p></dd>
+
+
+<dt>y_cox</dt>
+<dd><p>Named numeric matrix with two columns. The first column is the
+time to event, the second column indicates censoring (1 for event, 0 for
+censored).</p></dd>
 
 
 <dt>fitter1</dt>

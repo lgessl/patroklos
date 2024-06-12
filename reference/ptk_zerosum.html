@@ -50,7 +50,8 @@ validated predictions.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ptk_zerosum</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
-<span>  <span class="va">y</span>,</span>
+<span>  <span class="va">y_bin</span>,</span>
+<span>  <span class="va">y_cox</span>,</span>
 <span>  exclude_pheno_from_lasso <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  binarize_predictions <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span>,</span>
@@ -69,8 +70,14 @@ regression requires data on the log scale, i.e. x should be
 log-transformed data.</p></dd>
 
 
-<dt>y</dt>
-<dd><p>response vector to be predicted by x (length(y)==nrow(x))</p></dd>
+<dt>y_bin</dt>
+<dd><p>Named numeric matrix with one column. Binary response.</p></dd>
+
+
+<dt>y_cox</dt>
+<dd><p>Named numeric matrix with two columns. The first column is the
+time to event, the second column indicates censoring (1 for event, 0 for
+censored).</p></dd>
 
 
 <dt>exclude_pheno_from_lasso</dt>
