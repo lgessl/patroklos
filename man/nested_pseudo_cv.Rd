@@ -4,13 +4,17 @@
 \alias{nested_pseudo_cv}
 \title{Nested cross-validation for second-stage OOB predictions}
 \usage{
-nested_pseudo_cv(x, y, fitter1, fitter2, hyperparams1, hyperparams2)
+nested_pseudo_cv(x, y_bin, y_cox, fitter1, fitter2, hyperparams1, hyperparams2)
 }
 \arguments{
 \item{x}{A numeric matrix holding the predictor features: rows are samples and
 columns are features.}
 
-\item{y}{A numeric vector holding the response variable.}
+\item{y_bin}{Named numeric matrix with one column. Binary response.}
+
+\item{y_cox}{Named numeric matrix with two columns. The first column is the
+time to event, the second column indicates censoring (1 for event, 0 for
+censored).}
 
 \item{fitter1}{A \emph{patroklos-compliant fitter with CV tuning} (see README for
 more details).}

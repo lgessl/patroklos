@@ -6,7 +6,8 @@
 \usage{
 ptk_ranger(
   x,
-  y,
+  y_bin,
+  y_cox,
   mtry = NULL,
   rel_mtry = FALSE,
   skip_on_invalid_input = FALSE,
@@ -16,7 +17,11 @@ ptk_ranger(
 \arguments{
 \item{x}{Predictor data (independent variables), alternative interface to data with formula or dependent.variable.name.}
 
-\item{y}{Response vector (dependent variable), alternative interface to data with formula or dependent.variable.name. For survival use a \code{Surv()} object or a matrix with time and status.}
+\item{y_bin}{Named numeric matrix with one column. Binary response.}
+
+\item{y_cox}{Named numeric matrix with two columns. The first column is the
+time to event, the second column indicates censoring (1 for event, 0 for
+censored).}
 
 \item{mtry}{Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Alternatively, a single argument function returning an integer, given the number of independent variables.}
 

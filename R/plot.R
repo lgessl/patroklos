@@ -141,7 +141,7 @@ as2_plot_risk_scores <- function(self, private, data, model, quiet, msg_prefix){
         pred_act <- intersect_by_names(
             predicted[[i]], 
             actual[[i]], 
-            rm_na = TRUE
+            rm_na = c(TRUE, TRUE)
         )
         predicted[[i]] <- pred_act[[1]]
         actual[[i]] <- pred_act[[2]]

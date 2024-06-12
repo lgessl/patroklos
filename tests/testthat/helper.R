@@ -49,6 +49,7 @@ generate_mock_data <- function(
     x_cat <- dichotomize_tibble(pheno_tbl[, c("discrete_var", "ipi")])
     colnames(x_cat) <- paste0(colnames(x_cat), "++")
     x <- cbind(x_cont, x_cat)
+    attr(x, "li_var_suffix") <- "++"
     beta <- rnorm(ncol(x))
     y <- x %*% beta 
     y <- y[, 1]
@@ -56,20 +57,26 @@ generate_mock_data <- function(
         y[pheno_tbl[["ipi"]] == i] <- runif(sum(pheno_tbl[["ipi"]] == i), 
             (10-i)/10, (11-i)/10) * y[pheno_tbl[["ipi"]] == i]
     }
-    y <- y - quantile(y, 0.76) # 0.76 quantile is 0
+    y <- y - quantile(y, 0.76) # 0.76 quantile will become 0
     y <- y/(-min(y)) * 2 # Scale into [-2, \infty)
     y <- y + 2 # 0.76 quantile is 2, minimum is 0
-    attr(x, "li_var_suffix") <- "++"
-    if (return_type == "fitter") 
-        return(list("x" = x, "y" = as.numeric(y<2)))
+    # y_bin as you can give it to fitter
+    y_bin <- as.matrix(as.numeric(y < 2))
+    y_bin[1, 1] <- NA
+    rownames(y_bin) <- rownames(expr_mat)
+    # Censor
     progression <- rep(1, n_samples)
     censored <- sample(seq(n_samples), floor(0.2*n_samples))
     progression[censored] <- 0
     y_uncensored <- y
     y[censored] <- runif(length(censored), 0, 1) * y[censored] 
+    y_cox <- cbind(y, progression)
+    rownames(y_cox) <- rownames(expr_mat)
+    if (return_type == "fitter") 
+        return(list("x" = x, "y_bin" = y_bin, "y_cox" = y_cox))
+
     pheno_tbl[["pfs_years"]] <- y
     pheno_tbl[["progression"]] <- progression
-
     # insert NAs
     pheno_tbl[["ipi"]][1] <- NA
     na_rows <- sample(1:n_samples, n_na_in_pheno, replace = TRUE)

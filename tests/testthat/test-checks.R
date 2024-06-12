@@ -1,7 +1,7 @@
 test_that("check_fitter() works correctly", {
 
   valid_fitter1 <- ptk_zerosum
-  valid_fitter2 <- function(x, y, beta) {}
+  valid_fitter2 <- function(x, y_bin, y_cox, beta) {}
   invalid_fitter <- function(y, ...) {}
   
   check_fitter(valid_fitter1)

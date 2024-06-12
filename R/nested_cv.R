@@ -7,7 +7,10 @@
 #' (CV) predictions.
 #' @param x A numeric matrix holding the predictor features: rows are samples and
 #' columns are features.
-#' @param y A numeric vector holding the response variable. 
+#' @param y_bin Named numeric matrix with one column. Binary response.
+#' @param y_cox Named numeric matrix with two columns. The first column is the
+#' time to event, the second column indicates censoring (1 for event, 0 for
+#' censored).
 #' @param fitter1 A *patroklos-compliant fitter with CV tuning* (see README for 
 #' more details).
 #' @param fitter2 A *patroklos-compliant fitter with validated predictions* (see 

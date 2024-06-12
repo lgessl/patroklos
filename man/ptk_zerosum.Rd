@@ -6,7 +6,8 @@
 \usage{
 ptk_zerosum(
   x,
-  y,
+  y_bin,
+  y_cox,
   exclude_pheno_from_lasso = TRUE,
   binarize_predictions = NULL,
   ...,
@@ -21,7 +22,11 @@ ptk_zerosum(
 regression requires data on the log scale, i.e. x should be
 log-transformed data.}
 
-\item{y}{response vector to be predicted by x (length(y)==nrow(x))}
+\item{y_bin}{Named numeric matrix with one column. Binary response.}
+
+\item{y_cox}{Named numeric matrix with two columns. The first column is the
+time to event, the second column indicates censoring (1 for event, 0 for
+censored).}
 
 \item{exclude_pheno_from_lasso}{Logical. If \code{TRUE}, set LASSO penalty weights
 corresponding to features from the pheno data to zero.}

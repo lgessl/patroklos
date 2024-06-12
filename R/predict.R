@@ -25,33 +25,22 @@ model_predict <- function(self, private, data, quiet){
 
     for(i in self$split_index){
         split_name <- paste0(data$split_col_prefix, i)
+        fit <- fits[[split_name]]
         split_model <- self$clone()
         split_model$split_index <- i
         split_model$time_cutoffs <- data$pivot_time_cutoff
         prep <- data$prepare(split_model, quiet = quiet)
-        actual <- prep[["y_bin"]][, 1]
-        fit <- fits[[split_name]]
+        x_y <- intersect_by_names(prep[["x"]], prep[["y_bin"]], rm_na = c(TRUE, TRUE))
+        x <- x_y[[1]]
+        actual <- x_y[[2]][, 1]
         if(is.null(fit))
             stop("No fit found for split ", split)
-        predicted <- predict(fit, newx = prep[["x"]])
-
-        # Check what predict method did
-        if(!is.numeric(predicted)){
-            stop("predict method for class ", class(fit), " does not return a ", 
-            "numeric matrix or vector. Instead it has class ", class(predicted), 
-            ".")
-        }
-        if(is.matrix(predicted)){
-            if(ncol(predicted) > 1L){
-                stop("predict method for class ", class(fit), " returns a matrix ",
-                "with more than one column")
-            }
+        predicted <- predict(fit, newx = x)
+        if(is.matrix(predicted)) {
+            if (ncol(predicted) != 1)
+                stop("Predicted matrix must have only one column")
             predicted <- predicted[, 1]
-        }
-        if(is.null(names(predicted))){
-            names(predicted) <- rownames(x_y[["x"]])
-        }
-        
+        }   
         predicted_list[[i]] <- predicted
         actual_list[[i]] <- actual
         if(!is.null(benchmark))

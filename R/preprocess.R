@@ -154,10 +154,11 @@ prec_from_scores <- function(
         "response_type" = "binary",
         "time_cutoffs" = data$pivot_time_cutoff
     )
-    true_risk <- prepare_y(data = data, model = model)[, 1]
+    true_risk <- prepare_y(data = data, model = model)[["y_bin"]][, 1]
+    ea <- intersect_by_names(risk_scores, true_risk, rm_na = c(TRUE, TRUE))
     tbl <- metric_with_rocr(
-        estimate = risk_scores,
-        actual = true_risk,
+        estimate = ea[[1]],
+        actual = ea[[2]],
         x_metric = "rpp",
         y_metric = "prec"
     )

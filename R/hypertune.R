@@ -44,8 +44,10 @@ hypertune <- function(
         ptk_hypertune$lambda <- apply(grid, 1, function(r) paste(names(grid), r, 
             sep = "=", collapse = ", "))
         # Evaluate according to metric
-        metric_v <- sapply(ptk_hypertune$val_predict_list, function(y_hat) 
-            do.call(metric_fun, list(y, y_hat)))
+        metric_v <- vapply(ptk_hypertune$val_predict_list, function(y_hat) {
+            y_yhat <- intersect_by_names(y_bin, y_hat, rm_na = c(TRUE, FALSE))
+            do.call(metric_fun, y_yhat)
+        }, numeric(1))
         ptk_hypertune$best_lambda_index <- which.max(metric_v)
         ptk_hypertune$best_lambda <- ptk_hypertune$lambda[ptk_hypertune$best_lambda_index]
         ptk_hypertune$val_predict <- ptk_hypertune$val_predict_list[[ptk_hypertune$best_lambda_index]]

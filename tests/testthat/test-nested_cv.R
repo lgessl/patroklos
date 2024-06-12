@@ -7,17 +7,15 @@ test_that("nested_pseudo_cv() works", {
     n_fold <- 3
     lambda <- c(1, 2)
 
-    x_y <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
+    xyy <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
         return_type = "fitter")
-    x <- x_y$x
-    y <- x_y$y
     hyperparams1 <- list(family = "binomial", nFold = n_fold, lambda = lambda, 
         zeroSum = FALSE)
     hyperparams2 <- list(mtry = c(1, 1.5, n_samples^2), min.node.size = c(4, 5), 
         classification = TRUE, num.trees = 100, skip_on_invalid_input = TRUE)
 
     fit <- nested_pseudo_cv(
-        x = x, y = y, fitter1 = ptk_zerosum, fitter2 = hypertune(ptk_ranger, 
+        x = xyy[[1]], y_bin = xyy[[2]], y_cox = xyy[[2]], fitter1 = ptk_zerosum, fitter2 = hypertune(ptk_ranger, 
         metric = "accuracy"), hyperparams1 = hyperparams1, hyperparams2 = hyperparams2
     )
     expect_s3_class(fit, "nested_fit")
@@ -30,8 +28,9 @@ test_that("nested_pseudo_cv() works", {
 
     # Logistic regression as late model
     hyperparams2 <- list(family = "binomial", lambda = lambda, zeroSum = FALSE)
-    fit <- nested_pseudo_cv(x = x, y = y, fitter1 = ptk_zerosum, fitter2 = 
-        ptk_zerosum, hyperparams1 = hyperparams1, hyperparams2 = hyperparams2)
+    fit <- nested_pseudo_cv(x = xyy[[1]], y_bin = xyy[[2]], y_cox = xyy[[3]], 
+        fitter1 = ptk_zerosum, fitter2 = ptk_zerosum, hyperparams1 = hyperparams1, 
+        hyperparams2 = hyperparams2)
 
     # Cox and cox
     # y <- cbind(runif(n_samples), sample(c(0, 1), n_samples, replace = TRUE))
@@ -42,16 +41,10 @@ test_that("nested_pseudo_cv() works", {
     #     metric = "auc")
 
     # Errors
-    x_small <- x[1:(n_samples-1), ]
-    attr(x_small, "li_var_suffix") <- attr(x, "li_var_suffix")
+    attr(xyy[[1]], "li_var_suffix") <- "--"
     expect_error(nested_pseudo_cv(
-        x = x_small, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
-        hyperparams1 = hyperparams1, hyperparams2 = hyperparams2
-    ), regexp = "is not TRUE")
-    attr(x, "li_var_suffix") <- "--"
-    expect_error(nested_pseudo_cv(
-        x = x, y = y, fitter1 = ptk_zerosum, fitter2 = ptk_ranger,
-        hyperparams1 = hyperparams1, hyperparams2 = hyperparams2 
+        x = xyy[[1]], y_bin = xyy[[2]], y_cox = xyy[[2]], fitter1 = ptk_zerosum, 
+        fitter2 = ptk_ranger, hyperparams1 = hyperparams1, hyperparams2 = hyperparams2 
     ), regexp = "All features are for the early model")
 })
 
@@ -66,11 +59,6 @@ test_that("nested_fit() works", {
     metric_grid <- matrix(1:9, nrow = 3)
     rownames(metric_grid) <- c("a", "b", "c")
     colnames(metric_grid) <- c("d", "e", "f")
-
-    x_y <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
-        return_type = "fitter")
-    x <- x_y$x
-    y <- x_y$y
 
     fit1 <- structure(1, class = c("zeroSum", "list")) 
     fit2 <- structure(2, class = c("ranger", "list")) 
@@ -98,21 +86,22 @@ test_that("predict.nested_fit() works", {
     metric_grid <- matrix(1:9, nrow = 3)
     rownames(metric_grid) <- c("a", "b", "c")
     colnames(metric_grid) <- c("d", "e", "f")
-    x_y <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
+    xyy <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
         return_type = "fitter")
-    x <- x_y$x
-    y <- x_y$y
-    x_early <- x[, seq(n_genes)]
-    attr(x_early, "li_var_suffix") <- attr(x, "li_var_suffix")
-    x_late <- x[, -seq(n_genes)]
+    x_early <- xyy[[1]][, seq(n_genes)]
+    attr(x_early, "li_var_suffix") <- attr(xyy[[1]], "li_var_suffix")
+    x_late <- xyy[[1]][, -seq(n_genes)]
 
-    fit1 <- ptk_zerosum(x = x_early, y = y, nFold = n_fold, lambda = lambda)
-    fit2 <- ptk_ranger(x = cbind(fit1$cv.predict[[1]], x_late), y = y, 
-        mtry = 3, min.node.size = 4, classification = TRUE, num.trees = 100) 
+    fit1 <- ptk_zerosum(x = x_early, y_bin = xyy[[2]], y_cox = xyy[[3]], 
+        nFold = n_fold, lambda = lambda)
+    xx <- intersect_by_names(fit1$val_predict_list[[1]], x_late)
+    fit2 <- ptk_ranger(x = cbind(xx[[1]], xx[[2]]), 
+        y_bin = xyy[[2]], y_cox = xyy[[3]], mtry = 3, min.node.size = 4, 
+        classification = TRUE, num.trees = 100) 
     n_fit <- nested_fit(fit1, fit2, metric_grid = metric_grid, 
         list(lambda_index = seq_along(lambda), lambda = lambda, mtry = 3, 
         min.node.size = 4, classification = TRUE, num.trees = 100)) 
-    proj <- predict(n_fit, x)
+    proj <- predict(n_fit, xyy[[1]])
 
     expect_equal(length(proj), n_samples)
     expect_true(all(proj %in% c(0, 1)))

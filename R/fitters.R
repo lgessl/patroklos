@@ -2,6 +2,10 @@
 #' @description This function is a patroklos-compliant fitter with validated 
 #' predictions, it has a return value with a `val_predict` attribute.
 #' @inheritParams ranger::ranger
+#' @param y_bin Named numeric matrix with one column. Binary response.
+#' @param y_cox Named numeric matrix with two columns. The first column is the
+#' time to event, the second column indicates censoring (1 for event, 0 for
+#' censored).
 #' @param skip_on_invalid_input Logical. If `TRUE` and invalid input is detected,
 #' return `NA` instead of an error. This is useful when calling this function 
 #' from inside [`nested_pseudo_cv()`].
@@ -24,7 +28,9 @@ ptk_ranger <- function(x, y_bin, y_cox, mtry = NULL, rel_mtry = FALSE,
     x_y <- intersect_by_names(x, y_bin, rm_na = c(TRUE, TRUE))
     ptk_ranger_obj <- ranger::ranger(x = x_y[[1]], y = x_y[[2]], mtry = mtry, ...)
     # Rename OOB predictions
-    ptk_ranger_obj$val_predict <- ptk_ranger_obj$predictions
+    val_predict <- as.matrix(ptk_ranger_obj$predictions)
+    rownames(val_predict) <- rownames(x_y[[1]])
+    ptk_ranger_obj$val_predict <- val_predict
     ptk_ranger_obj$predictions <- NULL
     class(ptk_ranger_obj) <- c("ptk_ranger", class(ptk_ranger_obj))
     ptk_ranger_obj
@@ -51,6 +57,10 @@ predict.ptk_ranger <- function(object, newx, ...){
 #' CV and, if `length(lambda) == 1`, also a patroklos-compliant fitter with 
 #' validated predictions.
 #' @inheritParams zeroSum::zeroSum
+#' @param y_bin Named numeric matrix with one column. Binary response.
+#' @param y_cox Named numeric matrix with two columns. The first column is the
+#' time to event, the second column indicates censoring (1 for event, 0 for
+#' censored).
 #' @param exclude_pheno_from_lasso Logical. If `TRUE`, set LASSO penalty weights
 #' corresponding to features from the pheno data to zero.
 #' @param binarize_predictions numeric or NULL. If not NULL, the predict method 
@@ -169,6 +179,7 @@ predict.ptk_zerosum <- function(
         type <- "response"     
     y <- predict(object = object, newx = newx, type = type, ...)
     if (!is.null(object$binarizePredictions))
-        y <- as.numeric(y > object$binarizePredictions)
+        y <- as.matrix(as.numeric(y > object$binarizePredictions))
+    rownames(y) <- rownames(newx)
     return(y)
 }
