@@ -40,7 +40,6 @@ test_that("AssScalar$assess() works", {
         classification = TRUE, rel_mtry = TRUE),
       split_index = 1:2,
       time_cutoffs = 2,
-      response_type = "binary",
       fit_file = "model.rds"
     )
     model$fit(data, quiet = TRUE)
@@ -68,7 +67,6 @@ test_that("AssScalar$assess() works", {
         nFold = 1),
       split_index = 1:2,
       time_cutoffs = 2,
-      response_type = "binary"
     )
     model$fit(data, quiet = TRUE)
     res <- ass_scalar$assess(data, model, quiet = TRUE)
@@ -107,7 +105,6 @@ test_that("AssScalar$assess_center() works", {
       lambda = lambda, zeroSum = FALSE),
     split_index = 1,
     time_cutoffs = c(1.5, 2),
-    response_type = "binary",
     include_from_discrete_pheno = c("discrete_var", "abc_gcb", "ipi_age"),
     fit_file = "model2.rds",
     combine_n_max_categorical_features = 3,
@@ -121,7 +118,6 @@ test_that("AssScalar$assess_center() works", {
       classification = TRUE),
     split_index = 1:2,
     time_cutoffs = c(1.5, 2),
-    response_type = "binary",
     fit_file = "model3.rds",
     include_from_discrete_pheno = "discrete_var"
   )

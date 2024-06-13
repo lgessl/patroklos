@@ -1,18 +1,16 @@
 model_initialize <- function(self, private, name, fitter, directory, split_index, 
-    time_cutoffs, hyperparams, response_type, response_colnames, 
+    time_cutoffs, hyperparams, response_colnames, 
     include_from_continuous_pheno, include_from_discrete_pheno, include_expr, 
     li_var_suffix, create_directory, plot_file, plot_ncols,
     plot_title_line, fit_file, continuous_output, 
     combine_n_max_categorical_features, combined_feature_min_positive_ratio){
 
-    response_type <- match.arg(response_type, c("binary", "survival_censored"))
     stopifnot(all(time_cutoffs >= 0))
     stopifnot(split_index >= 1)
     stopifnot(is.character(name))
     check_fitter(fitter, hyperparams)
     stopifnot(is.numeric(time_cutoffs))
     stopifnot(is.numeric(split_index))
-    stopifnot(is.character(response_type))
     stopifnot(is.character(response_colnames))
     stopifnot(is.character(include_from_continuous_pheno) || is.null(include_from_continuous_pheno))
     stopifnot(is.character(include_from_discrete_pheno) || is.null(include_from_discrete_pheno))
@@ -39,7 +37,6 @@ model_initialize <- function(self, private, name, fitter, directory, split_index
     self$split_index <- split_index
     self$time_cutoffs <- time_cutoffs
     self$hyperparams <- hyperparams
-    self$response_type <- response_type
     self$response_colnames <- response_colnames
     self$include_from_continuous_pheno <- include_from_continuous_pheno
     self$include_from_discrete_pheno <- include_from_discrete_pheno

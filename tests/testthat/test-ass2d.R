@@ -78,8 +78,7 @@ test_that("Ass2d$assess() works", {
     split_index = 1:2,
     time_cutoffs = 2.,
     hyperparams = list(family = "cox", alpha = 1, nFold = n_fold, 
-      lambda = lambda, zeroSum = FALSE),
-    response_type = "survival_censored"
+      lambda = lambda, zeroSum = FALSE)
   )
   model_2 <- Model$new(
     name = "logistic",
@@ -88,8 +87,7 @@ test_that("Ass2d$assess() works", {
     split_index = 1,
     time_cutoffs = 2.,
     hyperparams = list(family = "binomial", alpha = 1, 
-      nFold = n_fold, lambda = lambda, zeroSum = FALSE),
-    response_type = "binary"
+      nFold = n_fold, lambda = lambda, zeroSum = FALSE)
   )
   training_camp(list(model_1, model_2), data, quiet = TRUE)
   model_1 <- model_1$at_time_cutoff(2)
@@ -161,8 +159,7 @@ test_that("Ass2d$assess_center() works", {
     split_index = 1:2,
     time_cutoffs = Inf,
     hyperparams = list(family = "cox", alpha = 1, nFold = n_fold, 
-      lambda = lambda, zeroSum = FALSE),
-    response_type = "survival_censored"
+      lambda = lambda, zeroSum = FALSE)
   )
   model_2 <- Model$new(
     name = "binomial",
@@ -172,7 +169,6 @@ test_that("Ass2d$assess_center() works", {
       lambda = lambda, zeroSum = FALSE),
     split_index = 1,
     time_cutoffs = c(1.5, 2),
-    response_type = "binary",
     include_from_continuous_pheno = "continuous_var",
     include_from_discrete_pheno = "discrete_var"
   )
@@ -183,7 +179,6 @@ test_that("Ass2d$assess_center() works", {
     hyperparams = list(mtry = 2, num.trees = 10),
     split_index = 1,
     time_cutoffs = 2,
-    response_type = "binary",
     continuous_output = FALSE,
     include_from_discrete_pheno = c("discrete_var", "abc_gcb", "ipi_age"),
     combine_n_max_categorical_features = 3,

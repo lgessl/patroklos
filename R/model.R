@@ -17,8 +17,6 @@ Model <- R6::R6Class("Model",
         time_cutoffs = NULL,
         #' @field hyperparams Optional arguments passed to `fitter`.
         hyperparams = NULL,
-        #' @field response_type The type of response to be used.
-        response_type = NULL,
         #' @field response_colnames Use as column names for the response matrix.
         response_colnames = NULL,
         #' @field include_from_continuous_pheno The names of the continuous variables in the
@@ -63,22 +61,24 @@ Model <- R6::R6Class("Model",
         #' `y` as first two positional arguments. Further arguments can be passed via
         #' `hyperparams` (below). Its return value must be an S3 object with a `plot()` 
         #' method, and (ideally, for assessment) with a `predict()` method. Default is `NULL`.
-        #' @param time_cutoffs numeric vector.
-        #' * If `response_type == "survival_censored"`: For every value in `time_cutoffs`, censor
-        #' all patients where the event ouccured after `time_cutoffs` at this value and train the 
-        #' specified model.
-        #' * If `response_type == "binary"`: For every value in `time_cutoffs`, binarize the 
-        #' outcome depending on whether it occured before or after this value, and train the 
-        #' specified model.
+        #' @param time_cutoffs numeric vector. This governs how the provided 
+        #' response looks like. For every value of `time_cutoffs`, specify a model 
+        #' on the following response data:
+        #' * For Cox response, censor all patients where the event ouccured after 
+        #' `time_cutoffs` at this value and train the specified model.
+        #' * For binary response, binarize the outcome depending on whether it 
+        #' occured before or after this value.
+        #' 
+        #' When fitting models to the data, you find every of the 
+        #' `length(time_cutoffs)` models in a subdirectory of `directory` named 
+        #' after the respective value in `time_cutoffs`.
         #' @param split_index integer vector. Split the given data into training and test samples 
         #' `length(split_index)` times, i.e., every index in `split_index` will get its own split. 
         #' @param hyperparams list. Optional arguments passed to `fitter`, e.g. alpha 
         #' in case of an elastic net. Default is `list()`, i.e., no arguments other than `x`, `y`
         #' passed to `fitter`.
-        #' @param response_type string. The type of response to be used. One of `"binary"` or
-        #' `"survival_censored"`. Default is `NULL`.
-        #' @param response_colnames string vector of length 2. If `response_type == "survival_censored"`,
-        #' use as column names for the response matrix. 
+        #' @param response_colnames string vector of length 2. Column names for 
+        #' the Cox response matrix.
         #' * The first element is the name of the column holding the time until the event or 
         #' censoring, and 
         #' * the second one is the anme of the column holding the event status (1 = event, 0 =
@@ -130,7 +130,6 @@ Model <- R6::R6Class("Model",
             split_index,
             time_cutoffs,
             hyperparams = NULL,
-            response_type = c("binary", "survival_censored"),
             response_colnames = c("time", "status"),
             include_from_continuous_pheno = NULL,
             include_from_discrete_pheno = NULL,
@@ -146,7 +145,7 @@ Model <- R6::R6Class("Model",
             combined_feature_min_positive_ratio = 0.04
         )
             model_initialize(self, private, name, fitter, directory, split_index, 
-                time_cutoffs, hyperparams, response_type, response_colnames, 
+                time_cutoffs, hyperparams, response_colnames, 
                 include_from_continuous_pheno, include_from_discrete_pheno, 
                 include_expr, li_var_suffix, create_directory, plot_file, plot_ncols,
                 plot_title_line, fit_file, continuous_output,

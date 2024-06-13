@@ -24,8 +24,7 @@ test_that("Model$fit() works", {
     split_index = 1,
     time_cutoffs = 2,
     hyperparams = list(family = "cox", nFold = n_fold, lambda = lambda, 
-      zeroSum = FALSE),
-    response_type = "survival_censored"
+      zeroSum = FALSE)
   )
 
   model$fit(data, quiet = TRUE)
@@ -56,8 +55,7 @@ test_that("Model$fit() works", {
     split_index = 1:2,
     time_cutoffs = 2,
     hyperparams = list(family = "binomial", nFold = n_fold, lambda = lambda, 
-      zeroSum = FALSE),
-    response_type = "binary"
+      zeroSum = FALSE)
   )
 
   model$fit(data, quiet = TRUE)
@@ -97,7 +95,6 @@ test_that("Model$fit() works", {
           classification = TRUE
         )
       ),
-      response_type = "binary",
       include_from_continuous_pheno = "continuous_var",
       include_from_discrete_pheno = "discrete_var"
   )

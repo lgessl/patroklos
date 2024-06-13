@@ -24,8 +24,7 @@ test_that("training_camp() works", {
     split_index = 1,
     time_cutoffs = c(1.5, 2),
     hyperparams = list(family = "cox", nFold = n_fold, lambda = lambda, 
-      zeroSum = FALSE),
-    response_type = "survival_censored"
+      zeroSum = FALSE)
   )
 
   model_2 <- Model$new(
@@ -50,7 +49,6 @@ test_that("training_camp() works", {
               classification = TRUE
           )
       ),
-      response_type = "binary",
       include_from_continuous_pheno = "continuous_var",
       include_from_discrete_pheno = "discrete_var"
   )
@@ -61,7 +59,6 @@ test_that("training_camp() works", {
   model_3$directory <- file.path(dir, "model3")
   model_3$time_cutoffs <- 2
   model_3$hyperparams[["family"]] <- "binomial"
-  model_3$response_type <- "binary"
   
   model_4 <- model_3$clone()
   model_4$name <- "problem model"

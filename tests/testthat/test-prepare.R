@@ -102,8 +102,7 @@ test_that("prepare_y() works", {
     directory = "some_dir",
     fitter = ptk_zerosum,
     split_index = 1,
-    time_cutoffs = 1.9,
-    response_type = "binary"
+    time_cutoffs = 1.9
   )
 
   # Binary response
@@ -121,7 +120,6 @@ test_that("prepare_y() works", {
   expect_equal(y, y_expected)
   
   # survival_censored response
-  model$response_type <- "survival_censored"
   model$time_cutoffs <- Inf
   y <- prepare_y(data = data, model = model)[["y_cox"]]
   y_expected <- pheno_tbl[, c("pfs", "prog")] |> as.matrix()

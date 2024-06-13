@@ -22,8 +22,7 @@ test_that("model$predict() works", {
     split_index = 1:2,
     time_cutoffs = Inf,
     hyperparams = list(family = "cox", alpha = 1, nFold = n_fold, 
-    lambda = lambda, zeroSum = FALSE),
-    response_type = "survival_censored"
+    lambda = lambda, zeroSum = FALSE)
   )
   model1$fit(data, quiet = TRUE)
   model2 <- Model$new(
@@ -33,8 +32,7 @@ test_that("model$predict() works", {
     split_index = 1:2,
     time_cutoffs = 2,
     hyperparams = list(family = "binomial", alpha = 1, nFold = n_fold, 
-      lambda = lambda, zeroSum = FALSE),
-    response_type = "binary"
+      lambda = lambda, zeroSum = FALSE)
   )
   model2$fit(data, quiet = TRUE)
 

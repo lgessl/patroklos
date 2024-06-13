@@ -151,7 +151,6 @@ prec_from_scores <- function(
         }
     }
     model <- list(
-        "response_type" = "binary",
         "time_cutoffs" = data$pivot_time_cutoff
     )
     true_risk <- prepare_y(data = data, model = model)[["y_bin"]][, 1]

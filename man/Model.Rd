@@ -26,8 +26,6 @@ stores it and predicts from it.
 
 \item{\code{hyperparams}}{Optional arguments passed to \code{fitter}.}
 
-\item{\code{response_type}}{The type of response to be used.}
-
 \item{\code{response_colnames}}{Use as column names for the response matrix.}
 
 \item{\code{include_from_continuous_pheno}}{The names of the continuous variables in the
@@ -88,7 +86,6 @@ Create a new Model instance.
   split_index,
   time_cutoffs,
   hyperparams = NULL,
-  response_type = c("binary", "survival_censored"),
   response_colnames = c("time", "status"),
   include_from_continuous_pheno = NULL,
   include_from_discrete_pheno = NULL,
@@ -121,25 +118,26 @@ method, and (ideally, for assessment) with a \code{predict()} method. Default is
 \item{\code{split_index}}{integer vector. Split the given data into training and test samples
 \code{length(split_index)} times, i.e., every index in \code{split_index} will get its own split.}
 
-\item{\code{time_cutoffs}}{numeric vector.
+\item{\code{time_cutoffs}}{numeric vector. This governs how the provided
+response looks like. For every value of \code{time_cutoffs}, specify a model
+on the following response data:
 \itemize{
-\item If \code{response_type == "survival_censored"}: For every value in \code{time_cutoffs}, censor
-all patients where the event ouccured after \code{time_cutoffs} at this value and train the
-specified model.
-\item If \code{response_type == "binary"}: For every value in \code{time_cutoffs}, binarize the
-outcome depending on whether it occured before or after this value, and train the
-specified model.
-}}
+\item For Cox response, censor all patients where the event ouccured after
+\code{time_cutoffs} at this value and train the specified model.
+\item For binary response, binarize the outcome depending on whether it
+occured before or after this value.
+}
+
+When fitting models to the data, you find every of the
+\code{length(time_cutoffs)} models in a subdirectory of \code{directory} named
+after the respective value in \code{time_cutoffs}.}
 
 \item{\code{hyperparams}}{list. Optional arguments passed to \code{fitter}, e.g. alpha
 in case of an elastic net. Default is \code{list()}, i.e., no arguments other than \code{x}, \code{y}
 passed to \code{fitter}.}
 
-\item{\code{response_type}}{string. The type of response to be used. One of \code{"binary"} or
-\code{"survival_censored"}. Default is \code{NULL}.}
-
-\item{\code{response_colnames}}{string vector of length 2. If \code{response_type == "survival_censored"},
-use as column names for the response matrix.
+\item{\code{response_colnames}}{string vector of length 2. Column names for
+the Cox response matrix.
 \itemize{
 \item The first element is the name of the column holding the time until the event or
 censoring, and

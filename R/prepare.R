@@ -126,35 +126,11 @@ prepare_x <- function(
     # Actually and finally subset to cohort
     x <- x[in_cohort_bool, , drop = FALSE]
     attr(x, "li_var_suffix") <- model$li_var_suffix
-
-    # x <- x[stats::complete.cases(x), , drop = FALSE]
-    # if(nrow(x) == 0){
-    #     msg <- "No samples left in predictor matrix after "
-    #     if (is.null(data$imputer))
-    #         msg <- paste0(msg, "imputing and ")
-    #     msg <- paste0(msg, "removing samples with NA.")
-    #     stop(msg)
-    # }
     return(x)
 }
 
-
-# @title Generate the response matrix in a model-specific way
-# @description Generate the numeric response matrix from the pheno data for a
-# certain model
-# @param pheno_tbl tibble. The pheno data, with patients as rows and variables as
-# columns.
-# @param data Data S3 object. Specifications on the data (`pheno_tbl`). See
-# the constructor `Data()` for details.
-# @param model Model S3 object. Specifications on the model to prepare for.
-# See the constructor `Model$new()` for details.
-# @return Named response matrix: a numeric matrix with patients as rows and variables 
-# as columns.
-# @details If `model$response_type == "binary"`, the response matrix will have one 
-# column filled with 
-# * `1` if progress is observed at a time <= `time_cutoff`,
-# * `0` if progress or censoring is observed at a time > `time_cutoff`,
-# * `NA` if censoring without progression is observed at a time <= `time_cutoff`.
+# Prepare the response matrix y in two ways: binary and Cox.
+# No subsetting to cohort, yet
 prepare_y <- function(
     data,
     model
@@ -165,7 +141,6 @@ prepare_y <- function(
     event_col <- data$event_col
     patient_id_col <- data$patient_id_col
     time_cutoff <- model$time_cutoffs
-    response_type <- model$response_type
     pheno_tbl <- data$pheno_tbl
 
     if(length(time_cutoff) > 1)
