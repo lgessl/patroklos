@@ -80,26 +80,32 @@ nested_pseudo_cv <- function(
     }
     cv2_list <- lapply(seq_along(cv1$val_predict_list), second_cv)
     # Choose the best combination
-    cv1$best_lambda_index <- which.max(vapply(cv2_list, function(x) x$best_metric, 
+    cv1$min_lambda_index <- which.min(vapply(cv2_list, function(x) x$min_error, 
         numeric(1)))
-    cv1$best_lambda <- cv1$lambda[cv1$best_lambda_index]
-    cv2 <- cv2_list[[cv1$best_lambda_index]]
+    cv1$min_lambda <- cv1$lambda[cv1$min_lambda_index]
+    cv2 <- cv2_list[[cv1$min_lambda_index]]
     model1 <- cv1
     model2 <- cv2
     if (inherits(cv1, "ptk_hypertune"))
-        model1 <- cv1$fit_obj_list[[cv1$best_lambda_index]]
+        model1 <- cv1$fit_obj_list[[cv1$min_lambda_index]]
     if (inherits(cv2, "ptk_hypertune"))
-        model2 <- cv2$fit_obj_list[[cv2$best_lambda_index]]
+        model2 <- cv2$fit_obj_list[[cv2$min_lambda_index]]
     # Report on hypertuning
-    metric_grid <- sapply(cv2_list, function(x) x$val_metric)
-    dim(metric_grid) <- c(length(cv2$lambda), length(cv1$lambda))
-    metric_grid <- t(metric_grid)
-    rownames(metric_grid) <- cv1$lambda
-    colnames(metric_grid) <- cv2$lambda
+    # lambda sequence in cv2 may depend on lambda sequence in cv1, in particular 
+    # lengths may differ (e.g. because of early stopping), hence we need 
+    # to pad the error_grid with -Inf
+    cv2_n_lambda_max <- max(sapply(cv2_list, function(x) length(x$lambda)))
+    error_grid <- sapply(cv2_list, function(x) {
+        c(x$val_error, rep(Inf, cv2_n_lambda_max - length(x$val_error)))
+    })
+    dim(error_grid) <- c(cv2_n_lambda_max, length(cv1$lambda))
+    error_grid <- t(error_grid)
+    rownames(error_grid) <- cv1$lambda
+    colnames(error_grid) <- paste0("lambda2_", seq(cv2_n_lambda_max)) 
 
     nested_fit(model1 = model1, model2 = model2, 
-        metric_grid = metric_grid, 
-        best_hyperparams = list(model1 = cv1$best_lambda, model2 = cv2$best_lambda))
+        error_grid = error_grid, 
+        best_hyperparams = list(model1 = cv1$min_lambda, model2 = cv2$min_lambda))
 }
 
 #' @title Construct a nested_fit S3 object
@@ -107,7 +113,7 @@ nested_pseudo_cv <- function(
 #' plus their hyperparameters.
 #' @param model1 An S3 object with a `predict` method. The early model.
 #' @param model2 An S3 object with a `predict` method. The late model.
-#' @param metric_grid named numeric matrix. Entry (i, j) is the validated metric 
+#' @param error_grid named numeric matrix. Entry (i, j) is the validated metric 
 #' of the nested model with the early model having the i-th and the late model 
 #' having the j-th of their respective hyperparameters (which are given as 
 #' dimnames).
@@ -121,7 +127,7 @@ nested_pseudo_cv <- function(
 nested_fit <- function(
     model1,
     model2,
-    metric_grid,
+    error_grid,
     best_hyperparams
 ){
     methods1 <- unlist(lapply(class(model1), function(cl) sloop::s3_methods_class(
@@ -134,15 +140,15 @@ nested_fit <- function(
     if (!("predict" %in% methods2)) {
         stop("`model2` must have a predict method.")
     }
-    stopifnot(is.matrix(metric_grid))
-    stopifnot(!is.null(dimnames(metric_grid)))
-    stopifnot(is.numeric(metric_grid))
+    stopifnot(is.matrix(error_grid))
+    stopifnot(!is.null(dimnames(error_grid)))
+    stopifnot(is.numeric(error_grid))
     stopifnot(is.list(best_hyperparams))
     structure(
         list(
             "model1" = model1,
             "model2" = model2,
-            "metric_grid" = metric_grid,
+            "error_grid" = error_grid,
             "best_hyperparams" = best_hyperparams
         ),
         class = c("nested_fit", "list")
@@ -182,17 +188,17 @@ predict.nested_fit <- function(
     y
 }
 
-get_accuracy <- function(y, y_hat){
+get_error_rate <- function(y, y_hat){
     stopifnot(all(y_hat %in% c(0, 1)))
-    mean(y == y_hat)
+    mean(y != y_hat)
 }
 
-get_roc_auc <- function(y, y_hat){
+get_neg_roc_auc <- function(y, y_hat){
     pred_obj <- ROCR::prediction(predictions = y_hat, labels = y)
-    ROCR::performance(pred_obj, measure = "auc")@y.values[[1]]
+    -ROCR::performance(pred_obj, measure = "auc")@y.values[[1]]
 }
 
-get_binomial_log_likelihood <- function(y, y_hat){
+get_neg_binomial_log_likelihood <- function(y, y_hat){
     stopifnot(all(y_hat > 0) & all(y_hat < 1))
-    sum(y * log(y_hat) + (1-y) * log(1-y_hat))
+    -sum(y * log(y_hat) + (1-y) * log(1-y_hat))
 }

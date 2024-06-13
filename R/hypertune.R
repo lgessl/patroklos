@@ -3,27 +3,27 @@
 #' builds a patroklos-compliant fitter with integrated cross validation from 
 #' it.
 #' @param fitter A patroklos-compliant fitter.
-#' @param metric A character string or a function. If a character string, it
-#' must be one of "accuracy", "roc_auc", or "binomial_log_likelihood". If a
-#' function, it must take two arguments: `y` and `y_hat`, and return a numeric
-#' scalar. The returned fitter will use it to calculate the goodness of validated 
-#' predictions. The higher, the better.
+#' @param error A string or a function. How to measure the prediction 
+#' error. If a character string, it must be one of "error_rate", "neg_roc_auc", or 
+#' "neg_binomial_log_likelihood". If a function, it must take two arguments: `y` 
+#' and `y_hat`, and return a numeric scalar. The returned fitter will use it to 
+#' calculate the goodness of validated predictions. 
 #' @return A patroklos-compliant fitter with integrated cross-validation tuning.
 #' @export
 hypertune <- function(
     fitter, 
-    metric = c("accuracy", "roc_auc", "binomial_log_likelihood")
+    error = c("error_rate", "neg_roc_auc", "neg_binomial_log_likelihood")
 ){
-    if (is.character(metric)) {
-        metric <- match.arg(metric)
-        metric_fun <- paste0("get_", metric)
-    } else if (is.function(metric)) {
-        metric_fun <- metric
+    if (is.character(error)) {
+        error <- match.arg(error)
+        error_fun <- paste0("get_", error)
+    } else if (is.function(error)) {
+        error_fun <- error
     } else {
-        stop("`metric` must be a character or a function.")
+        stop("`error` must be a character or a function.")
     }
     force(fitter)
-    force(metric_fun)
+    force(error_fun)
 
     cv_fitter <- function(x, y_bin, y_cox, ...) {
         # Get all possible combinations of hyperparameters
@@ -43,17 +43,17 @@ hypertune <- function(
         ptk_hypertune$val_predict_list <- lapply(fit_obj_list, function(x) x$val_predict)
         ptk_hypertune$lambda <- apply(grid, 1, function(r) paste(names(grid), r, 
             sep = "=", collapse = ", "))
-        # Evaluate according to metric
-        metric_v <- vapply(ptk_hypertune$val_predict_list, function(y_hat) {
+        # Evaluate according to error
+        error_v <- vapply(ptk_hypertune$val_predict_list, function(y_hat) {
             y_yhat <- intersect_by_names(y_bin, y_hat, rm_na = c(TRUE, FALSE))
-            do.call(metric_fun, y_yhat)
+            do.call(error_fun, y_yhat)
         }, numeric(1))
-        ptk_hypertune$best_lambda_index <- which.max(metric_v)
-        ptk_hypertune$best_lambda <- ptk_hypertune$lambda[ptk_hypertune$best_lambda_index]
-        ptk_hypertune$val_predict <- ptk_hypertune$val_predict_list[[ptk_hypertune$best_lambda_index]]
-        ptk_hypertune$val_metric <- metric_v
-        ptk_hypertune$best_metric <- metric_v[ptk_hypertune$best_lambda_index]
-        ptk_hypertune$metric_name <- metric_fun
+        ptk_hypertune$min_lambda_index <- which.min(error_v)
+        ptk_hypertune$min_lambda <- ptk_hypertune$lambda[ptk_hypertune$min_lambda_index]
+        ptk_hypertune$val_predict <- ptk_hypertune$val_predict_list[[ptk_hypertune$min_lambda_index]]
+        ptk_hypertune$val_error <- error_v
+        ptk_hypertune$min_error <- error_v[ptk_hypertune$min_lambda_index]
+        ptk_hypertune$error_name <- error_fun
         class(ptk_hypertune) <- "ptk_hypertune"
         ptk_hypertune
     }
@@ -63,7 +63,7 @@ hypertune <- function(
 predict.ptk_hypertune <- function(
     object,
     newx,
-    lambda_index = object$best_lambda_index,
+    lambda_index = object$min_lambda_index,
     ...
 ){
     predict(object = object$fit_obj_list[[lambda_index]], newx = newx, ...)

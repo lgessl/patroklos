@@ -4,16 +4,19 @@
 \alias{hypertune}
 \title{Build a fitter with integrated cross-validation from a fitter}
 \usage{
-hypertune(fitter, metric = c("accuracy", "roc_auc", "binomial_log_likelihood"))
+hypertune(
+  fitter,
+  error = c("error_rate", "neg_roc_auc", "neg_binomial_log_likelihood")
+)
 }
 \arguments{
 \item{fitter}{A patroklos-compliant fitter.}
 
-\item{metric}{A character string or a function. If a character string, it
-must be one of "accuracy", "roc_auc", or "binomial_log_likelihood". If a
-function, it must take two arguments: \code{y} and \code{y_hat}, and return a numeric
-scalar. The returned fitter will use it to calculate the goodness of validated
-predictions. The higher, the better.}
+\item{error}{A string or a function. How to measure the prediction
+error. If a character string, it must be one of "error_rate", "neg_roc_auc", or
+"neg_binomial_log_likelihood". If a function, it must take two arguments: \code{y}
+and \code{y_hat}, and return a numeric scalar. The returned fitter will use it to
+calculate the goodness of validated predictions.}
 }
 \value{
 A patroklos-compliant fitter with integrated cross-validation tuning.

@@ -4,14 +4,14 @@
 \alias{nested_fit}
 \title{Construct a nested_fit S3 object}
 \usage{
-nested_fit(model1, model2, metric_grid, best_hyperparams)
+nested_fit(model1, model2, error_grid, best_hyperparams)
 }
 \arguments{
 \item{model1}{An S3 object with a \code{predict} method. The early model.}
 
 \item{model2}{An S3 object with a \code{predict} method. The late model.}
 
-\item{metric_grid}{named numeric matrix. Entry (i, j) is the validated metric
+\item{error_grid}{named numeric matrix. Entry (i, j) is the validated metric
 of the nested model with the early model having the i-th and the late model
 having the j-th of their respective hyperparameters (which are given as
 dimnames).}

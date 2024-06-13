@@ -122,7 +122,7 @@ ptk_zerosum <- function(
         v
     })
     fit_obj$cv_predict <- NULL
-    fit_obj$best_lambda_index <- fit_obj$lambdaMinIndex
+    fit_obj$min_lambda_index <- fit_obj$lambdaMinIndex
     # Lambda seq is often too long because of early stopping
     fit_obj$lambda <- fit_obj$lambda[seq_along(fit_obj$val_predict_list)]
     fit_obj$lambda <- paste("lambda", fit_obj$lambda, sep = "=")
@@ -140,8 +140,8 @@ ptk_zerosum <- function(
     if (fit_obj$standardize == 0)
         fit_obj$penaltyFactor <- penalty.factor
     fit_obj$binarizePredictions <- binarize_predictions
-    fit_obj$val_metric <- fit_obj$cv_stats[, "CV error"]
-    fit_obj$best_metric <- fit_obj$val_metric[fit_obj$lambdaMinIndex]
+    fit_obj$val_error <- fit_obj$cv_stats[, "CV error"]
+    fit_obj$min_error <- fit_obj$val_error[fit_obj$lambdaMinIndex]
     class(fit_obj) <- "ptk_zerosum"
     return(fit_obj)
 }
