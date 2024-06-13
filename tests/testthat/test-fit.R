@@ -78,15 +78,16 @@ test_that("Model$fit() works", {
       fitter = nested_pseudo_cv,
       directory = file.path(dir, "model5"),
       split_index = 1,
-      time_cutoffs = 2.,
+      time_cutoffs = Inf,
       hyperparams = list(
         fitter1 = ptk_zerosum,
         fitter2 = hypertune(ptk_ranger, error = "error_rate"),
         hyperparams1 = list(
-          family = "binomial",
+          family = "cox",
           alpha = 1,
           zeroSum = FALSE,
-          lambda = lambda
+          lambdaSteps = 2,
+          standardize = TRUE
         ),
         hyperparams2 = list(
           num.trees = 100, 

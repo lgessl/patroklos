@@ -1,3 +1,24 @@
+test_that("prepare() works", {
+
+  set.seed(343)
+
+  data <- generate_mock_data(n_samples = 50, n_genes = 4, n_na_in_pheno = 10)
+  model <- Model$new(
+    name = "cox",
+    fitter = ptk_zerosum,
+    directory = "some_dir",
+    split_index = 1,
+    time_cutoffs = Inf,
+    hyperparams = list(family = "cox", zeroSum = FALSE),
+    include_from_continuous_pheno = c("continuous_var"),
+    include_from_discrete_pheno = c("discrete_var", "abc_gcb", "ipi_age"),
+    combine_n_max_categorical_features = 2,
+    combined_feature_min_positive_ratio = 0.04
+  )
+  xyy <- data$prepare(model, quiet = TRUE)
+  expect_true(setequal(unique(xyy[[2]]), c(0, 1, NA)))
+})
+
 test_that("prepare_x() works", {
 
   set.seed(349)
@@ -112,6 +133,11 @@ test_that("prepare_y() works", {
   colnames(y_expected) <- "time_cutoff_1.9"
   expect_equal(y, y_expected)
   expect_type(y, "double")
+
+  model$time_cutoffs <- Inf
+  y <- prepare_y(data = data, model = model)[["y_bin"]]
+  colnames(y_expected) <- "time_cutoff_2"
+  expect_equal(y, y_expected)
 
   model$time_cutoffs <- 3.5
   y_expected[, 1] <- c(NA, 1, NA, 0)
