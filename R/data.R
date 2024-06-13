@@ -54,7 +54,7 @@ Data <- R6::R6Class("Data",
         #' files lie.
         #' @param train_prop numeric in (0, 1). The proportion of samples to draw for the 
         #' training cohort in every splitting run.
-        #' @param pivot_time_cutoff numeric or NULL. Pivotal time cutoff for the analysis and, explicitly,
+        #' @param pivot_time_cutoff numeric. Pivotal time cutoff for the analysis and, explicitly,
         #' for splitting the data into the train and test cohort: If a numeric in (0, 1), preserve 
         #' the the proportion of individuals below and above `time_cutoff` in both cohorts. Default 
         #' is `NULL`, i.e. no further constraints on splitting.

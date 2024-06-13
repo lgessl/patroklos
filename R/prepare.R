@@ -148,11 +148,14 @@ prepare_y <- function(
 
     # Binary response
     # Flag patients censored before time_cutoff as NA
-    na_bool <- (pheno_tbl[[time_to_event_col]] <= time_cutoff) & (pheno_tbl[[event_col]] == 0)
-    y_bin <- as.numeric(pheno_tbl[[time_to_event_col]] <= time_cutoff)
+    bin_time_cutoff <- time_cutoff
+    if (is.infinite(bin_time_cutoff))
+        bin_time_cutoff <- data$pivot_time_cutoff
+    na_bool <- (pheno_tbl[[time_to_event_col]] <= bin_time_cutoff) & (pheno_tbl[[event_col]] == 0)
+    y_bin <- as.numeric(pheno_tbl[[time_to_event_col]] <= bin_time_cutoff)
     dim(y_bin) <- c(length(y_bin), 1)
     rownames(y_bin) <- pheno_tbl[[patient_id_col]]
-    colnames(y_bin) <- stringr::str_c("time_cutoff_", round(time_cutoff, 1))
+    colnames(y_bin) <- stringr::str_c("time_cutoff_", round(bin_time_cutoff, 1))
     y_bin[na_bool, ] <- NA
 
     # Cox response (time to event, censoring status)
