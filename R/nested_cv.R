@@ -175,16 +175,13 @@ predict.nested_fit <- function(
     stopifnot(!is.null(colnames(newx)))
     x_early <- get_early_x(x = newx)
     early_predicted <- predict(object = object$model1, newx = x_early)
+    rownames(early_predicted) <- rownames(x_early)
     x_late <- get_late_x(early_predicted = early_predicted, x = newx)
     y <- predict(object = object$model2, newx = x_late)
-    if (!is.numeric(y)) 
-        y <- y[[1]]
     if (!is.numeric(y) || length(y) != nrow(newx))
         stop("The predict method of `model2` must return a numeric vector of same 
             length as the number of rows in `newx` or a list with the first element 
             being the former.")
-    dim(y) <- NULL
-    names(y) <- rownames(newx)
     y
 }
 

@@ -40,7 +40,8 @@ model_predict <- function(self, private, data, quiet){
             if (ncol(predicted) != 1)
                 stop("Predicted matrix must have only one column")
             predicted <- predicted[, 1]
-        }   
+        } 
+        names(predicted) <- rownames(x)
         predicted_list[[i]] <- predicted
         actual_list[[i]] <- actual
         if(!is.null(benchmark))

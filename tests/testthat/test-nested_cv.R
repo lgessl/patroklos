@@ -119,7 +119,6 @@ test_that("predict.nested_fit() works", {
 
     expect_equal(length(proj), n_samples)
     expect_true(all(proj %in% c(0, 1)))
-    expect_false(is.null(names(proj)))
 })
 
 test_that("get_<metric> works", {

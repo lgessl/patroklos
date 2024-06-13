@@ -29,11 +29,11 @@ ass_scalar_assess <- function(self, private, data, model, quiet){
     for (i in seq_along(model$split_index)) {
         predicted <- prep[["predicted"]][[i]]
         actual <- prep[["actual"]][[i]]
-        pa <- intersect_by_names(predicted, actual, rm_na = c(TRUE, TRUE))
+        stopifnot(all(names(predicted) == names(actual)))
         res_mat[i, ] <- get_metric(
             ass_scalar = self,
-            predicted = pa[[1]],
-            actual = pa[[2]],
+            predicted = predicted,
+            actual = actual,
             data = data,
             split_index = i,
             quiet = quiet

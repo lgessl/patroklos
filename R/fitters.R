@@ -47,9 +47,7 @@ ptk_ranger <- function(x, y_bin, y_cox, mtry = NULL, rel_mtry = FALSE,
 predict.ptk_ranger <- function(object, newx, ...){
     class(object) <- "ranger"
     y <- predict(object, data = newx, ...)[[1]]
-    dim(y) <- NULL
-    names(y) <- rownames(newx)
-    y
+    as.matrix(y)
 }
 
 #' @title Wrap [`zeroSum::zeroSum()`] into a patroklos-compliant fit function
@@ -180,6 +178,5 @@ predict.ptk_zerosum <- function(
     y <- predict(object = object, newx = newx, type = type, ...)
     if (!is.null(object$binarizePredictions))
         y <- as.matrix(as.numeric(y > object$binarizePredictions))
-    rownames(y) <- rownames(newx)
     return(y)
 }
