@@ -45,7 +45,7 @@ plus their hyperparameters.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nested_fit</span><span class="op">(</span><span class="va">model1</span>, <span class="va">model2</span>, <span class="va">metric_grid</span>, <span class="va">best_hyperparams</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nested_fit</span><span class="op">(</span><span class="va">model1</span>, <span class="va">model2</span>, <span class="va">error_grid</span>, <span class="va">best_hyperparams</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -58,7 +58,7 @@ plus their hyperparameters.</p>
 <dd><p>An S3 object with a <code>predict</code> method. The late model.</p></dd>
 
 
-<dt>metric_grid</dt>
+<dt>error_grid</dt>
 <dd><p>named numeric matrix. Entry (i, j) is the validated metric
 of the nested model with the early model having the i-th and the late model
 having the j-th of their respective hyperparameters (which are given as
