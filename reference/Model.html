@@ -75,10 +75,6 @@ stores it and predicts from it.</p>
 <dd><p>Optional arguments passed to <code>fitter</code>.</p></dd>
 
 
-<dt><code>response_type</code></dt>
-<dd><p>The type of response to be used.</p></dd>
-
-
 <dt><code>response_colnames</code></dt>
 <dd><p>Use as column names for the response matrix.</p></dd>
 
@@ -166,7 +162,6 @@ observations in a combined (categorical) feature</p></dd>
 <span>  <span class="va">split_index</span>,</span>
 <span>  <span class="va">time_cutoffs</span>,</span>
 <span>  hyperparams <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  response_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"binary"</span>, <span class="st">"survival_censored"</span><span class="op">)</span>,</span>
 <span>  response_colnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"time"</span>, <span class="st">"status"</span><span class="op">)</span>,</span>
 <span>  include_from_continuous_pheno <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  include_from_discrete_pheno <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -207,13 +202,15 @@ method, and (ideally, for assessment) with a <code><a href="https://rdrr.io/r/st
 
 
 <dt><code>time_cutoffs</code></dt>
-<dd><p>numeric vector.</p><ul><li><p>If <code>response_type == "survival_censored"</code>: For every value in <code>time_cutoffs</code>, censor
-all patients where the event ouccured after <code>time_cutoffs</code> at this value and train the
-specified model.</p></li>
-<li><p>If <code>response_type == "binary"</code>: For every value in <code>time_cutoffs</code>, binarize the
-outcome depending on whether it occured before or after this value, and train the
-specified model.</p></li>
-</ul></dd>
+<dd><p>numeric vector. This governs how the provided
+response looks like. For every value of <code>time_cutoffs</code>, specify a model
+on the following response data:</p><ul><li><p>For Cox response, censor all patients where the event ouccured after
+<code>time_cutoffs</code> at this value and train the specified model.</p></li>
+<li><p>For binary response, binarize the outcome depending on whether it
+occured before or after this value.</p></li>
+</ul><p>When fitting models to the data, you find every of the
+<code>length(time_cutoffs)</code> models in a subdirectory of <code>directory</code> named
+after the respective value in <code>time_cutoffs</code>.</p></dd>
 
 
 <dt><code>hyperparams</code></dt>
@@ -222,14 +219,9 @@ in case of an elastic net. Default is <code><a href="https://rdrr.io/r/base/list
 passed to <code>fitter</code>.</p></dd>
 
 
-<dt><code>response_type</code></dt>
-<dd><p>string. The type of response to be used. One of <code>"binary"</code> or
-<code>"survival_censored"</code>. Default is <code>NULL</code>.</p></dd>
-
-
 <dt><code>response_colnames</code></dt>
-<dd><p>string vector of length 2. If <code>response_type == "survival_censored"</code>,
-use as column names for the response matrix.</p><ul><li><p>The first element is the name of the column holding the time until the event or
+<dd><p>string vector of length 2. Column names for
+the Cox response matrix.</p><ul><li><p>The first element is the name of the column holding the time until the event or
 censoring, and</p></li>
 <li><p>the second one is the anme of the column holding the event status (1 = event, 0 =
 censoring).</p></li>
