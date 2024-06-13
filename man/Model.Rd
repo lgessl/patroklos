@@ -51,7 +51,8 @@ when calling \code{plot(fit_obj)}.}
 
 \item{\code{fit_file}}{Store this Model object under this name in \code{directory}.}
 
-\item{\code{fits}}{A list holding fits (e.g. zeroSum objects).}
+\item{\code{fits}}{A list holding fits (something returned by a fitter like
+a \code{ptk_zerosum} S3 object).}
 
 \item{\code{continuous_output}}{Whether the output of the model is continous or binary.}
 

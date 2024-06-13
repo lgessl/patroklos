@@ -42,7 +42,8 @@ Model <- R6::R6Class("Model",
         plot_title_line = NULL,
         #' @field fit_file Store this Model object under this name in `directory`.
         fit_file = NULL,
-        #' @field fits A list holding fits (e.g. zeroSum objects).
+        #' @field fits A list holding fits (something returned by a fitter like 
+        #' a `ptk_zerosum` S3 object).
         fits = NULL,
         #' @field continuous_output Whether the output of the model is continous or binary.
         continuous_output = NULL,
