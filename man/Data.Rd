@@ -85,7 +85,7 @@ and pheno data of a single data set. This enables reading and preparing the data
   patient_id_col = "patient_id",
   gene_id_col = "gene_id",
   split_col_prefix = "split_",
-  imputer = NULL
+  imputer = mean_impute
 )}\if{html}{\out{</div>}}
 }
 
@@ -139,8 +139,8 @@ i.e., split columns are named \code{"split_1"}, \code{"split_2"}, etc.}
 \item{\code{imputer}}{function or NULL. Function handling NAs in the predictor matrix.
 It takes a single argument \code{x}, the predictor matrix, a numeric with categorical
 variables dichotomized to binary dummy variables, and returns a matrix of the
-same shape with non-NAs left untouched.
-in predicting features.}
+same shape with non-NAs left untouched. Default is \code{\link[=mean_impute]{mean_impute()}}.
+NULL means no imputation (or applying the identity function on \code{x}).}
 }
 \if{html}{\out{</div>}}
 }

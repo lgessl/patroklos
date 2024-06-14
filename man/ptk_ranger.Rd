@@ -8,8 +8,8 @@ ptk_ranger(
   x,
   y_bin,
   y_cox,
+  rel_mtry,
   mtry = NULL,
-  rel_mtry = TRUE,
   skip_on_invalid_input = FALSE,
   ...
 )
@@ -23,11 +23,11 @@ ptk_ranger(
 time to event, the second column indicates censoring (1 for event, 0 for
 censored).}
 
-\item{mtry}{Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Alternatively, a single argument function returning an integer, given the number of independent variables.}
-
 \item{rel_mtry}{logical. If \code{TRUE}, interprete \code{mtry} as relative to
 \code{sqrt(ncol(x))} (the recommended value), rounded to the next integer.
 Otherwise, take \code{mtry} directly.}
+
+\item{mtry}{Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Alternatively, a single argument function returning an integer, given the number of independent variables.}
 
 \item{skip_on_invalid_input}{Logical. If \code{TRUE} and invalid input is detected,
 return \code{NA} instead of an error. This is useful when calling this function

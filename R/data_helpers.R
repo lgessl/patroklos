@@ -19,7 +19,7 @@ data_initialize <- function(self, private, name, directory, train_prop,
     stopifnot(is.character(gene_id_col))
     stopifnot(is.character(split_col_prefix))
     stopifnot(is.null(imputer) || is.function(imputer))
-    if (!is.null(imputer) && !all(names(formals(imputer)), c("x")))
+    if (!is.null(imputer) && !setequal(names(formals(imputer)), c("x")))
         stop("Imputer must be NULL or a function with a single argument `x`.")
 
     self$name <- name

@@ -170,6 +170,13 @@ prepare_y <- function(
     list("y_bin" = y_bin, "y_cox" = y_cox)
 }
 
+#' @title Impute missing values in a matrix by column means
+#' @description For categorical variables (which we expect to be dichotomized 
+#' already), we also simply compute the mean, which is the (marginal) Bernoullie 
+#' probability to be in the positive class (1).
+#' @param x numeric matrix. Sample as rows, variables as columns. Impute for 
+#' `NA`s in the columns.
+#' @export
 mean_impute <- function(x) {
     x_imp <- sapply(seq(ncol(x)), function(j) {
         col <- x[, j]

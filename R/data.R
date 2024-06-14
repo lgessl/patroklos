@@ -83,8 +83,8 @@ Data <- R6::R6Class("Data",
         #' @param imputer function or NULL. Function handling NAs in the predictor matrix.
         #' It takes a single argument `x`, the predictor matrix, a numeric with categorical 
         #' variables dichotomized to binary dummy variables, and returns a matrix of the 
-        #' same shape with non-NAs left untouched.
-        #' in predicting features.
+        #' same shape with non-NAs left untouched. Default is [`mean_impute()`]. 
+        #' NULL means no imputation (or applying the identity function on `x`).
         #' @return A Data object.
         #' @details The pheno csv file holds the samples as rows (with *unique* sample ids in the
         #' first (character) column called `patient_id_col`), the variables as columns. 
@@ -109,7 +109,7 @@ Data <- R6::R6Class("Data",
             patient_id_col = "patient_id",
             gene_id_col = "gene_id",
             split_col_prefix = "split_",
-            imputer = NULL
+            imputer = mean_impute
         )
             data_initialize(self, private, name, directory, train_prop,              
                 pivot_time_cutoff, expr_file, pheno_file, cohort, patient_id_col, 
