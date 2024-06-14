@@ -123,7 +123,7 @@ ptk_zerosum <- function(
         v
     })
     fit_obj$cv_predict <- NULL
-    fit_obj$min_lambda_index <- fit_obj$lambdaMinIndex
+    fit_obj$lambda_min_index <- fit_obj$lambdaMinIndex
     # Lambda seq is often too long because of early stopping
     fit_obj$lambda <- fit_obj$lambda[seq_along(fit_obj$val_predict_list)]
     fit_obj$lambda <- paste("lambda", fit_obj$lambda, sep = "=")
@@ -178,6 +178,7 @@ predict.ptk_zerosum <- function(
     if(object$type %in% c(2, 4)) # 2 \mapsto binomial, 4 \mapsto cox
         # get probabilities (binomial), exp(beta_0 + beta^T x) (cox)
         type <- "response"     
+    object$lambdaMinIndex <- object$lambda_min_index
     y <- predict(object = object, newx = newx, type = type, ...)
     if (!is.null(object$binarizePredictions))
         y <- as.matrix(as.numeric(y > object$binarizePredictions))

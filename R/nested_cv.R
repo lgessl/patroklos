@@ -80,16 +80,16 @@ nested_pseudo_cv <- function(
     }
     cv2_list <- lapply(seq_along(cv1$val_predict_list), second_cv)
     # Choose the best combination
-    cv1$min_lambda_index <- which.min(vapply(cv2_list, function(x) x$min_error, 
+    cv1$lambda_min_index <- which.min(vapply(cv2_list, function(x) x$min_error, 
         numeric(1)))
-    cv1$min_lambda <- cv1$lambda[cv1$min_lambda_index]
-    cv2 <- cv2_list[[cv1$min_lambda_index]]
+    cv1$min_lambda <- cv1$lambda[cv1$lambda_min_index]
+    cv2 <- cv2_list[[cv1$lambda_min_index]]
     model1 <- cv1
     model2 <- cv2
     if (inherits(cv1, "ptk_hypertune"))
-        model1 <- cv1$fit_obj_list[[cv1$min_lambda_index]]
+        model1 <- cv1$fit_obj_list[[cv1$lambda_min_index]]
     if (inherits(cv2, "ptk_hypertune"))
-        model2 <- cv2$fit_obj_list[[cv2$min_lambda_index]]
+        model2 <- cv2$fit_obj_list[[cv2$lambda_min_index]]
     # Report on hypertuning
     # lambda sequence in cv2 may depend on lambda sequence in cv1, in particular 
     # lengths may differ (e.g. because of early stopping), hence we need 

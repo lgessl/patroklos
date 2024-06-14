@@ -96,7 +96,6 @@ test_that("predict.nested_fit() works", {
     n_samples <- 50
     n_genes <- 5
     n_fold <- 1 
-    lambda <- 1
 
     error_grid <- matrix(1:9, nrow = 3)
     rownames(error_grid) <- c("a", "b", "c")
@@ -108,18 +107,34 @@ test_that("predict.nested_fit() works", {
     x_late <- xyy[[1]][, -seq(n_genes)]
 
     fit1 <- ptk_zerosum(x = x_early, y_bin = xyy[[2]], y_cox = xyy[[3]], 
-        nFold = n_fold, lambda = lambda)
+        nFold = n_fold, lambdaSteps = 5)
     xx <- intersect_by_names(fit1$val_predict_list[[1]], x_late)
     fit2 <- ptk_ranger(x = cbind(xx[[1]], xx[[2]]), 
         rel_mtry = FALSE, y_bin = xyy[[2]], y_cox = xyy[[3]], mtry = 3, 
         min.node.size = 4, classification = TRUE, num.trees = 100) 
     n_fit <- nested_fit(fit1, fit2, error_grid = error_grid, best_hyperparams = 
-        list(lambda_index = seq_along(lambda), lambda = lambda, mtry = 3, 
-        min.node.size = 4, classification = TRUE, num.trees = 100)) 
+        list(model1 = "lambda=1.5", model2 = "mtry = 3"))
     proj <- predict(n_fit, xyy[[1]])
 
     expect_equal(length(proj), n_samples)
     expect_true(all(proj %in% c(0, 1)))
+
+    # Check if predictions are sensitive to lambda_min_index
+    x_late <- cbind(xx[[1]], xx[[2]])
+    attr(x_late, "li_var_suffix") <- attr(xyy[[1]], "li_var_suffix")
+    fit2 <- ptk_zerosum(x = x_late, y_bin = xyy[[2]], y_cox = xyy[[3]], 
+        nFold = n_fold, lambdaSteps = 2)
+    # Make sure second model actually uses prediction of model 1, and that it 
+    # does so differently
+    fit2$coef[[1]][2, 1] <- 1
+    fit2$coef[[2]][2, 1] <- -1
+    n_fit <- nested_fit(fit1, fit2, error_grid = error_grid, best_hyperparams = 
+        list(model1 = "lambda=1.5", model2 = "lambda=1.5"))
+    n_fit$model1$lambda_min_index <- 1
+    proj1 <- predict(n_fit, xyy[[1]])
+    n_fit$model1$lambda_min_index <- 2
+    proj2 <- predict(n_fit, xyy[[1]])
+    expect_false(all(proj1 == proj2))
 })
 
 test_that("get_<metric> works", {

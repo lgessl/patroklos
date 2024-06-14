@@ -48,11 +48,11 @@ hypertune <- function(
             y_yhat <- intersect_by_names(y_bin, y_hat, rm_na = c(TRUE, FALSE))
             do.call(error_fun, y_yhat)
         }, numeric(1))
-        ptk_hypertune$min_lambda_index <- which.min(error_v)
-        ptk_hypertune$min_lambda <- ptk_hypertune$lambda[ptk_hypertune$min_lambda_index]
-        ptk_hypertune$val_predict <- ptk_hypertune$val_predict_list[[ptk_hypertune$min_lambda_index]]
+        ptk_hypertune$lambda_min_index <- which.min(error_v)
+        ptk_hypertune$min_lambda <- ptk_hypertune$lambda[ptk_hypertune$lambda_min_index]
+        ptk_hypertune$val_predict <- ptk_hypertune$val_predict_list[[ptk_hypertune$lambda_min_index]]
         ptk_hypertune$val_error <- error_v
-        ptk_hypertune$min_error <- error_v[ptk_hypertune$min_lambda_index]
+        ptk_hypertune$min_error <- error_v[ptk_hypertune$lambda_min_index]
         ptk_hypertune$error_name <- error_fun
         class(ptk_hypertune) <- "ptk_hypertune"
         ptk_hypertune
@@ -63,7 +63,7 @@ hypertune <- function(
 predict.ptk_hypertune <- function(
     object,
     newx,
-    lambda_index = object$min_lambda_index,
+    lambda_index = object$lambda_min_index,
     ...
 ){
     predict(object = object$fit_obj_list[[lambda_index]], newx = newx, ...)
