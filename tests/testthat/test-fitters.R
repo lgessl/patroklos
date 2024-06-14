@@ -8,19 +8,19 @@ test_that("ptk_ranger() works", {
   xyy <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
     return_type = "fitter")
 
-  fit <- ptk_ranger(xyy[[1]], xyy[[2]], xyy[[3]], mtry = 1, num.trees = 1, 
-    min.node.size = 1, classification = TRUE)
+  fit <- ptk_ranger(xyy[[1]], xyy[[2]], xyy[[3]], rel_mtry = FALSE, mtry = 1, 
+    num.trees = 1, min.node.size = 1, classification = TRUE)
   expect_false(is.null(fit$val_predict))
   expect_true(is.null(fit$predictions))
 
-  expect_error(ptk_ranger(xyy[[1]], xyy[[2]], xyy[[3]], mtry = ncol(xyy[[1]])+1, 
-    skip_on_invalid_input = FALSE), regexp = "mtry must be")
+  expect_error(ptk_ranger(xyy[[1]], xyy[[2]], xyy[[3]], rel_mtry = FALSE, 
+    mtry = ncol(xyy[[1]])+1, skip_on_invalid_input = FALSE), regexp = "mtry must be")
   
-  fit <- ptk_ranger(xyy[[1]], xyy[[2]], xyy[[3]], mtry = ncol(xyy[[1]])+1, 
-    skip_on_invalid_input = TRUE)
+  fit <- ptk_ranger(xyy[[1]], xyy[[2]], xyy[[3]], rel_mtry = FALSE, 
+    mtry = ncol(xyy[[1]])+1, skip_on_invalid_input = TRUE)
   expect_true(is.na(fit))
 
-  fit <- ptk_ranger(xyy[[1]], xyy[[2]], xyy[[3]], mtry = 1.5, rel_mtry = TRUE, 
+  fit <- ptk_ranger(xyy[[1]], xyy[[2]], xyy[[3]], rel_mtry = TRUE, mtry = 1.5, 
     num.trees = 1, min.node.size = 1, classification = TRUE)
   expect_equal(fit$mtry, round(sqrt(ncol(xyy[[1]])) * 1.5))  
 })

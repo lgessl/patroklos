@@ -176,7 +176,7 @@ test_that("Ass2d$assess_center() works", {
     name = "rf",
     directory = file.path(model_dir, "rf"),
     fitter = ptk_ranger,
-    hyperparams = list(mtry = 2, num.trees = 10),
+    hyperparams = list(rel_mtry = FALSE, mtry = 2, num.trees = 10),
     split_index = 1,
     time_cutoffs = 2,
     continuous_output = FALSE,

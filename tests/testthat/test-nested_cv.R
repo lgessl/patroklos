@@ -11,8 +11,9 @@ test_that("nested_pseudo_cv() works", {
         return_type = "fitter")
     hyperparams1 <- list(family = "binomial", nFold = n_fold, lambda = lambda, 
         zeroSum = FALSE)
-    hyperparams2 <- list(mtry = c(1, 1.5, n_samples^2), min.node.size = c(4, 5), 
-        classification = TRUE, num.trees = 100, skip_on_invalid_input = TRUE)
+    hyperparams2 <- list(rel_mtry = TRUE, mtry = c(1, 1.5, n_samples^2), 
+        min.node.size = c(4, 5), classification = TRUE, num.trees = 100, 
+        skip_on_invalid_input = TRUE)
 
     fit <- nested_pseudo_cv(
         x = xyy[[1]], y_bin = xyy[[2]], y_cox = xyy[[2]], fitter1 = ptk_zerosum, 
@@ -48,8 +49,8 @@ test_that("nested_pseudo_cv() works", {
     # Cox and rf
     hyperparams1 <- list(family = "cox", lambdaSteps = 2, zeroSum = FALSE, 
         nFold = n_fold)
-    hyperparams2 <- list(mtry = 1, min.node.size = c(4, 5), classification = TRUE, 
-        num.trees = 100, skip_on_invalid_input = TRUE)
+    hyperparams2 <- list(rel_mtry = FALSE, mtry = 1, min.node.size = c(4, 5), 
+        classification = TRUE, num.trees = 100, skip_on_invalid_input = TRUE)
     fit <- nested_pseudo_cv(x = xyy[[1]], y_bin = xyy[[2]], y_cox = xyy[[3]],
         fitter1 = ptk_zerosum, fitter2 = hypertune(ptk_ranger, error = "error_rate"), 
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2)
@@ -110,9 +111,9 @@ test_that("predict.nested_fit() works", {
         nFold = n_fold, lambda = lambda)
     xx <- intersect_by_names(fit1$val_predict_list[[1]], x_late)
     fit2 <- ptk_ranger(x = cbind(xx[[1]], xx[[2]]), 
-        y_bin = xyy[[2]], y_cox = xyy[[3]], mtry = 3, min.node.size = 4, 
-        classification = TRUE, num.trees = 100) 
-    n_fit <- nested_fit(fit1, fit2, error_grid = error_grid, 
+        rel_mtry = FALSE, y_bin = xyy[[2]], y_cox = xyy[[3]], mtry = 3, 
+        min.node.size = 4, classification = TRUE, num.trees = 100) 
+    n_fit <- nested_fit(fit1, fit2, error_grid = error_grid, best_hyperparams = 
         list(lambda_index = seq_along(lambda), lambda = lambda, mtry = 3, 
         min.node.size = 4, classification = TRUE, num.trees = 100)) 
     proj <- predict(n_fit, xyy[[1]])

@@ -100,7 +100,7 @@ files lie.}
 \item{\code{train_prop}}{numeric in (0, 1). The proportion of samples to draw for the
 training cohort in every splitting run.}
 
-\item{\code{pivot_time_cutoff}}{numeric or NULL. Pivotal time cutoff for the analysis and, explicitly,
+\item{\code{pivot_time_cutoff}}{numeric. Pivotal time cutoff for the analysis and, explicitly,
 for splitting the data into the train and test cohort: If a numeric in (0, 1), preserve
 the the proportion of individuals below and above \code{time_cutoff} in both cohorts. Default
 is \code{NULL}, i.e. no further constraints on splitting.}

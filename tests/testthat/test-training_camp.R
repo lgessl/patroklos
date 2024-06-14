@@ -44,6 +44,7 @@ test_that("training_camp() works", {
           ),
           hyperparams2 = list(
               num.trees = 15, # If chosen too small, OOB predictions can be NaN
+              rel_mtry = FALSE,
               mtry = 2,
               min.node.size = 3, 
               classification = TRUE

@@ -9,7 +9,7 @@ ptk_ranger(
   y_bin,
   y_cox,
   mtry = NULL,
-  rel_mtry = FALSE,
+  rel_mtry = TRUE,
   skip_on_invalid_input = FALSE,
   ...
 )

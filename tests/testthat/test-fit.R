@@ -91,6 +91,7 @@ test_that("Model$fit() works", {
         ),
         hyperparams2 = list(
           num.trees = 100, 
+          rel_mtry = FALSE,
           mtry = 2:3,
           min.node.size = 3, 
           classification = TRUE

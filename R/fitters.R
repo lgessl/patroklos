@@ -6,18 +6,19 @@
 #' @param y_cox Named numeric matrix with two columns. The first column is the
 #' time to event, the second column indicates censoring (1 for event, 0 for
 #' censored).
-#' @param skip_on_invalid_input Logical. If `TRUE` and invalid input is detected,
-#' return `NA` instead of an error. This is useful when calling this function 
-#' from inside [`nested_pseudo_cv()`].
 #' @param rel_mtry logical. If `TRUE`, interprete `mtry` as relative to
 #' `sqrt(ncol(x))` (the recommended value), rounded to the next integer. 
 #' Otherwise, take `mtry` directly. 
+#' @param skip_on_invalid_input Logical. If `TRUE` and invalid input is detected,
+#' return `NA` instead of an error. This is useful when calling this function 
+#' from inside [`nested_pseudo_cv()`].
 #' @param ... Further arguments passed to the wrapped function.
 #' @return A `ptk_ranger` S3 object, a `ranger` S3 object with the (OOB) 
 #' `predictions` attribute renamed to `val_predict`.
 #' @export
-ptk_ranger <- function(x, y_bin, y_cox, mtry = NULL, rel_mtry = FALSE, 
+ptk_ranger <- function(x, y_bin, y_cox, rel_mtry, mtry = NULL, 
     skip_on_invalid_input = FALSE, ...){
+    stopifnot(is.logical(rel_mtry))
     if (!is.null(mtry)) {
         if (rel_mtry) mtry <- round(sqrt(ncol(x)) * mtry)
         if (ncol(x) < mtry) {
@@ -98,25 +99,27 @@ ptk_zerosum <- function(
     }
 
     # Finally prepare y
+    y <- y_bin
+    if (family == "cox") y <- y_cox
+    x_y <- intersect_by_names(x, y, rm_na = c(TRUE, TRUE))
+    x <- x_y[[1]]
+    y <- x_y[[2]]
     if (family == "cox") {
-        y <- y_cox
-        # Remove censored samples with time lower than the first event
+        # zeroSum removes censored samples with time lower than the first event
         ord <- order(y[, 1], y[, 2])
         i <- 1
         while (y[ord[i], 2] == 0) i <- i + 1
         ord <- ord[i:length(ord)]
+        x <- x[ord, , drop = FALSE]
         y <- y[ord, , drop = FALSE]
-    } else {
-        y <- y_bin
-    }
-    x_y <- intersect_by_names(x, y, rm_na = c(TRUE, TRUE))
+    } 
 
-    fit_obj <- zeroSum::zeroSum(x = x_y[[1]], y = x_y[[2]], nFold = nFold, 
+    fit_obj <- zeroSum::zeroSum(x = x, y = y, nFold = nFold, 
         zeroSum.weights = zeroSum.weights, penalty.factor = penalty.factor, 
         family = family, ...)
 
     fit_obj$val_predict_list <- lapply(fit_obj$cv_predict, function(v) {
-        rownames(v) <- rownames(x_y[[1]])
+        rownames(v) <- rownames(y)
         v
     })
     fit_obj$cv_predict <- NULL
