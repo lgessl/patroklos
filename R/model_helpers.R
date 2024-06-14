@@ -93,5 +93,11 @@ prepend_to_directory <- function(
         stopifnot(inherits(model, "Model"))
         model$directory <- file.path(prefix, model$directory)
     })
+    n_unique_dir <- length(unique(sapply(model_list, function(x) x$directory)))
+    if (n_unique_dir != length(model_list)) 
+        stop("Model directories are not unique.")
+    n_unique_names <- length(unique(sapply(model_list, function(x) x$name)))
+    if (n_unique_names != length(model_list)) 
+        stop("Model names are not unique.")
     invisible(NULL)
 }
