@@ -50,7 +50,8 @@ it.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">hypertune</span><span class="op">(</span></span>
 <span>  <span class="va">fitter</span>,</span>
-<span>  error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"error_rate"</span>, <span class="st">"neg_roc_auc"</span>, <span class="st">"neg_binomial_log_likelihood"</span><span class="op">)</span></span>
+<span>  error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"error_rate"</span>, <span class="st">"neg_roc_auc"</span>, <span class="st">"neg_binomial_log_likelihood"</span><span class="op">)</span>,</span>
+<span>  select <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -66,6 +67,12 @@ error. If a character string, it must be one of "error_rate", "neg_roc_auc", or
 "neg_binomial_log_likelihood". If a function, it must take two arguments: <code>y</code>
 and <code>y_hat</code>, and return a numeric scalar. The returned fitter will use it to
 calculate the goodness of validated predictions.</p></dd>
+
+
+<dt>select</dt>
+<dd><p>logical. If <code>TRUE</code>, fitter will only return the model that
+minimizes the error. If <code>FALSE</code>, fitter will return a <code>ptk_hypertune</code> object
+with all models and their errors.</p></dd>
 
 </dl></div>
     <div class="section level2">

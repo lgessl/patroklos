@@ -105,10 +105,8 @@ for more details.</p></dd>
 currently offered choices see "Usage" above. If you have a model with
 non-binary output (like a logistic regression), we choose a threshold
 by maximizing the left-most metric in <code>metrics</code> <em>that is made for
-classifiers with binary output</em> (often this is
-<code>"accuracy"</code>). If this cannot be done reasonably (e.g., <code>"precision"</code>
-would usually give you a very high threshold with very low prevalence),
-we throw an error.</p></dd>
+classifiers with binary output</em> (e.g. precision within prev_range below).
+If this cannot be done reasonably, throw an error.</p></dd>
 
 
 <dt><code>prev_range</code></dt>
@@ -118,8 +116,9 @@ this range.</p></dd>
 
 
 <dt><code>benchmark</code></dt>
-<dd><p>character or NULL. If not NULL, include <code>benchmark</code> (the name of column
-in the pheno data) in the assessment.</p></dd>
+<dd><p>character or NULL. If not NULL, include <code>benchmark</code>
+(the name of column in the pheno data) in the assessment. Not
+implemented yet.</p></dd>
 
 
 <dt><code>file</code></dt>
