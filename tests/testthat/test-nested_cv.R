@@ -37,7 +37,7 @@ test_that("nested_pseudo_cv() works", {
         fitter1 = ptk_zerosum, fitter2 = ptk_zerosum, hyperparams1 = hyperparams1, 
         hyperparams2 = hyperparams2)
 
-    # Cox and cox
+    # Binarized cox and cox
     hyperparams1 <- list(family = "binomial", lambdaSteps = 2, zeroSum = FALSE,
         nFold = n_fold)
     hyperparams2 <- list(family = "binomial", lambdaSteps = 2, zeroSum = FALSE, 
@@ -46,9 +46,9 @@ test_that("nested_pseudo_cv() works", {
         fitter1 = ptk_zerosum, fitter2 = ptk_zerosum, hyperparams1 = hyperparams1, 
         hyperparams2 = hyperparams2)
 
-    # Cox and rf
-    hyperparams1 <- list(family = "cox", lambdaSteps = 2, zeroSum = FALSE, 
-        nFold = n_fold)
+    # Binarized logistic and rf
+    hyperparams1 <- list(family = "binomial", lambdaSteps = 2, zeroSum = FALSE, 
+        nFold = n_fold, binarize_predictions = 0.5)
     hyperparams2 <- list(rel_mtry = FALSE, mtry = 1, min.node.size = c(4, 5), 
         classification = TRUE, num.trees = 100, skip_on_invalid_input = TRUE)
     fit <- nested_pseudo_cv(x = xyy[[1]], y_bin = xyy[[2]], y_cox = xyy[[3]],

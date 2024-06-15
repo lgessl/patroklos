@@ -134,7 +134,7 @@ ptk_zerosum <- function(
     }
     if (is.numeric(binarize_predictions))
         fit_obj$val_predict_list <- lapply(fit_obj$val_predict_list,
-            function(v) as.numeric(v > binarize_predictions))
+            function(v) 1 * (v > binarize_predictions))
     fit_obj$val_predict <- fit_obj$val_predict_list[[fit_obj$lambdaMinIndex]]
     if (fit_obj$useZeroSum)
         fit_obj$zeroSumWeights <- zeroSum.weights
@@ -181,6 +181,6 @@ predict.ptk_zerosum <- function(
     object$lambdaMinIndex <- object$lambda_min_index
     y <- predict(object = object, newx = newx, type = type, ...)
     if (!is.null(object$binarizePredictions))
-        y <- as.matrix(as.numeric(y > object$binarizePredictions))
+        y <- 1 * (y > object$binarizePredictions)
     return(y)
 }
