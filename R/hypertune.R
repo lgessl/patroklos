@@ -8,11 +8,15 @@
 #' "neg_binomial_log_likelihood". If a function, it must take two arguments: `y` 
 #' and `y_hat`, and return a numeric scalar. The returned fitter will use it to 
 #' calculate the goodness of validated predictions. 
+#' @param select logical. If `TRUE`, fitter will only return the model that 
+#' minimizes the error. If `FALSE`, fitter will return a `ptk_hypertune` object
+#' with all models and their errors.
 #' @return A patroklos-compliant fitter with integrated cross-validation tuning.
 #' @export
 hypertune <- function(
     fitter, 
-    error = c("error_rate", "neg_roc_auc", "neg_binomial_log_likelihood")
+    error = c("error_rate", "neg_roc_auc", "neg_binomial_log_likelihood"),
+    select = FALSE
 ){
     if (is.character(error)) {
         error <- match.arg(error)
@@ -22,6 +26,7 @@ hypertune <- function(
     } else {
         stop("`error` must be a character or a function.")
     }
+    stopifnot(is.logical(select))
     force(fitter)
     force(error_fun)
 
@@ -38,7 +43,6 @@ hypertune <- function(
         grid <- grid[!na_bool, ]
         # Build ptk_hypertune S3 object
         ptk_hypertune <- list()
-        ptk_hypertune$fit_obj_list <- fit_obj_list
         # Promote validated predictions to top level
         ptk_hypertune$val_predict_list <- lapply(fit_obj_list, function(x) x$val_predict)
         ptk_hypertune$lambda <- apply(grid, 1, function(r) paste(names(grid), r, 
@@ -49,12 +53,15 @@ hypertune <- function(
             do.call(error_fun, y_yhat)
         }, numeric(1))
         ptk_hypertune$lambda_min_index <- which.min(error_v)
-        ptk_hypertune$min_lambda <- ptk_hypertune$lambda[ptk_hypertune$lambda_min_index]
+        ptk_hypertune$lambda_min <- ptk_hypertune$lambda[ptk_hypertune$lambda_min_index]
         ptk_hypertune$val_predict <- ptk_hypertune$val_predict_list[[ptk_hypertune$lambda_min_index]]
         ptk_hypertune$val_error <- error_v
         ptk_hypertune$min_error <- error_v[ptk_hypertune$lambda_min_index]
         ptk_hypertune$error_name <- error_fun
         class(ptk_hypertune) <- "ptk_hypertune"
+        if (select)
+            fit_obj_list[-ptk_hypertune$lambda_min_index] <- NA
+        ptk_hypertune$fit_obj_list <- fit_obj_list
         ptk_hypertune
     }
 }

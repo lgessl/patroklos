@@ -27,15 +27,14 @@ AssScalar <- R6::R6Class("AssScalar",
         #' currently offered choices see "Usage" above. If you have a model with 
         #' non-binary output (like a logistic regression), we choose a threshold 
         #' by maximizing the left-most metric in `metrics` *that is made for 
-        #' classifiers with binary output* (often this is 
-        #' `"accuracy"`). If this cannot be done reasonably (e.g., `"precision"` 
-        #' would usually give you a very high threshold with very low prevalence), 
-        #' we throw an error.
+        #' classifiers with binary output* (e.g. precision within prev_range below). 
+        #' If this cannot be done reasonably, throw an error.
         #' @param prev_range numeric numeric vector of length 2. For metrics that
         #' need thresholding only consider thresholds that yield a prevalence in
         #' this range.
-        #' @param benchmark character or NULL. If not NULL, include `benchmark` (the name of column 
-        #' in the pheno data) in the assessment.
+        #' @param benchmark character or NULL. If not NULL, include `benchmark` 
+        #' (the name of column in the pheno data) in the assessment. Not 
+        #' implemented yet.
         #' @param file string or NULL. The name of the csv file to save the 
         #' results to for the *train* cohort.
         #' the results are not saved.

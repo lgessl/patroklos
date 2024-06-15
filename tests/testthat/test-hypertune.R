@@ -15,7 +15,7 @@ test_that("hypertune() and its return value's predict method work", {
   expect_true(is.character(ptk_hypertune$lambda) && length(ptk_hypertune$lambda) == 4)
   expect_true(is.numeric(ptk_hypertune$val_error) && length(ptk_hypertune$val_error) == 4)
   expect_true(is.numeric(ptk_hypertune$lambda_min_index) && length(ptk_hypertune$lambda_min_index) == 1)
-  expect_true(is.character(ptk_hypertune$min_lambda) && length(ptk_hypertune$min_lambda) == 1)
+  expect_true(is.character(ptk_hypertune$lambda_min) && length(ptk_hypertune$lambda_min) == 1)
   expect_true(is.numeric(ptk_hypertune$min_error) && length(ptk_hypertune$min_error) == 1)
   expect_true(is.character(ptk_hypertune$error_name) && length(ptk_hypertune$error_name) == 1)
   expect_true(is.list(ptk_hypertune$fit_obj_list) && length(ptk_hypertune$fit_obj_list) == 4)
@@ -34,7 +34,7 @@ test_that("hypertune() and its return value's predict method work", {
   expect_true(is.character(ptk_hypertune$lambda) && length(ptk_hypertune$lambda) == 2)
   expect_true(is.numeric(ptk_hypertune$val_error) && length(ptk_hypertune$val_error) == 2)
   expect_true(is.numeric(ptk_hypertune$lambda_min_index) && length(ptk_hypertune$lambda_min_index) == 1)
-  expect_true(is.character(ptk_hypertune$min_lambda) && length(ptk_hypertune$min_lambda) == 1)
+  expect_true(is.character(ptk_hypertune$lambda_min) && length(ptk_hypertune$lambda_min) == 1)
   expect_true(is.numeric(ptk_hypertune$min_error) && length(ptk_hypertune$min_error) == 1)
   expect_true(is.character(ptk_hypertune$error_name) && length(ptk_hypertune$error_name) == 1)
   expect_true(is.list(ptk_hypertune$fit_obj_list) && length(ptk_hypertune$fit_obj_list) == 2)
@@ -51,4 +51,11 @@ test_that("hypertune() and its return value's predict method work", {
     rel_mtry = FALSE, mtry = c(2, 20), classification = TRUE, 
     skip_on_invalid_input = TRUE)
   expect_equal(length(ptk_hypertune$fit_obj_list), 2)
+
+  # select = TRUE
+  tune_fitter <- hypertune(ptk_ranger, error = "error_rate", select = TRUE)
+  ptk_hypertune <-  tune_fitter(xyy[[1]], xyy[[2]], xyy[[3]], num.trees = c(30, 35), 
+    rel_mtry = FALSE, mtry = c(2, 3), classification = TRUE)
+  expect_true(all(is.na(ptk_hypertune$fit_obj_list[-ptk_hypertune$lambda_min_index])))
+  expect_s3_class(ptk_hypertune$fit_obj_list[[ptk_hypertune$lambda_min_index]], "ranger")
 })

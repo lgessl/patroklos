@@ -60,17 +60,16 @@ Create a new AssScalar instance.
 currently offered choices see "Usage" above. If you have a model with
 non-binary output (like a logistic regression), we choose a threshold
 by maximizing the left-most metric in \code{metrics} \emph{that is made for
-classifiers with binary output} (often this is
-\code{"accuracy"}). If this cannot be done reasonably (e.g., \code{"precision"}
-would usually give you a very high threshold with very low prevalence),
-we throw an error.}
+classifiers with binary output} (e.g. precision within prev_range below).
+If this cannot be done reasonably, throw an error.}
 
 \item{\code{prev_range}}{numeric numeric vector of length 2. For metrics that
 need thresholding only consider thresholds that yield a prevalence in
 this range.}
 
-\item{\code{benchmark}}{character or NULL. If not NULL, include \code{benchmark} (the name of column
-in the pheno data) in the assessment.}
+\item{\code{benchmark}}{character or NULL. If not NULL, include \code{benchmark}
+(the name of column in the pheno data) in the assessment. Not
+implemented yet.}
 
 \item{\code{file}}{string or NULL. The name of the csv file to save the
 results to for the \emph{train} cohort.

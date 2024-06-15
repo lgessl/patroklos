@@ -82,7 +82,7 @@ nested_pseudo_cv <- function(
     # Choose the best combination
     cv1$lambda_min_index <- which.min(vapply(cv2_list, function(x) x$min_error, 
         numeric(1)))
-    cv1$min_lambda <- cv1$lambda[cv1$lambda_min_index]
+    cv1$lambda_min <- cv1$lambda[cv1$lambda_min_index]
     cv2 <- cv2_list[[cv1$lambda_min_index]]
     model1 <- cv1
     model2 <- cv2
@@ -105,7 +105,7 @@ nested_pseudo_cv <- function(
 
     nested_fit(model1 = model1, model2 = model2, 
         error_grid = error_grid, 
-        best_hyperparams = list(model1 = cv1$min_lambda, model2 = cv2$min_lambda))
+        best_hyperparams = list(model1 = cv1$lambda_min, model2 = cv2$lambda_min))
 }
 
 #' @title Construct a nested_fit S3 object
