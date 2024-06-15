@@ -57,5 +57,6 @@ test_that("hypertune() and its return value's predict method work", {
   ptk_hypertune <-  tune_fitter(xyy[[1]], xyy[[2]], xyy[[3]], num.trees = c(30, 35), 
     rel_mtry = FALSE, mtry = c(2, 3), classification = TRUE)
   expect_true(all(is.na(ptk_hypertune$fit_obj_list[-ptk_hypertune$lambda_min_index])))
+  expect_true(is.na(ptk_hypertune$val_predict_list))
   expect_s3_class(ptk_hypertune$fit_obj_list[[ptk_hypertune$lambda_min_index]], "ranger")
 })

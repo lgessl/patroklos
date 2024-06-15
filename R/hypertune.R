@@ -59,8 +59,10 @@ hypertune <- function(
         ptk_hypertune$min_error <- error_v[ptk_hypertune$lambda_min_index]
         ptk_hypertune$error_name <- error_fun
         class(ptk_hypertune) <- "ptk_hypertune"
-        if (select)
+        if (select) {
             fit_obj_list[-ptk_hypertune$lambda_min_index] <- NA
+            ptk_hypertune$val_predict_list <- NA
+        }
         ptk_hypertune$fit_obj_list <- fit_obj_list
         ptk_hypertune
     }
@@ -73,5 +75,8 @@ predict.ptk_hypertune <- function(
     lambda_index = object$lambda_min_index,
     ...
 ){
-    predict(object = object$fit_obj_list[[lambda_index]], newx = newx, ...)
+    obj <- object$fit_obj_list[[lambda_index]]
+    if (length(obj) == 1 && is.na(obj)) 
+        stop("Desired model is NA. Did accidentally you set `select = TRUE`?")
+    predict(object = obj, newx = newx, ...)
 }
