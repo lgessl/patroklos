@@ -122,7 +122,7 @@ test_that("Ass2d$assess() works", {
   # Precision CI
   ass2d$y_metric <- "precision_ci"
   ass2d$ci_level <- .95
-  ass2d$file <- file.path(dir, "precision_ci.jpeg")
+  ass2d$file <- NULL
   ass2d$scale_y <- "identity"
   ass2d$title <- "Lower precision CI boundary (upper for ipi)"
   ass2d$show_plots <- FALSE

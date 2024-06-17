@@ -79,11 +79,12 @@ ass2d_initialize <- function(self, private, x_metric, y_metric,
 
 ass2d_assess <- function(self, private, data, model, quiet, msg_prefix){
 
-    directory <- dirname(self$file)
+    if (!is.null(self$file)) {
+        directory <- dirname(self$file)
+        if(!dir.exists(directory))
+            dir.create(directory, recursive = TRUE)
+    }
     if(is.null(data$expr_mat) || is.null(data$pheno_tbl)) data$read()
-    # Has at_time_cutoff() been called already? Skip in this case
-    if(!dir.exists(directory))
-        dir.create(directory, recursive = TRUE)
     private$calculate_2d_metric(
         data = data, 
         model = model,

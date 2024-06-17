@@ -130,12 +130,7 @@ as2_plot_risk_scores <- function(self, private, data, model, quiet, msg_prefix){
     )
     predicted <- prep[["predicted"]]
     actual <- prep[["actual"]]
-    as2_scores <- self$clone()
-    as2_scores$title <- paste0(model$name, " | ", self$title)
-    as2_scores$file <- file.path(
-        dirname(self$file),
-        paste0("scores", stringr::str_extract(self$file, "\\..+$"))
-    )
+
     # Get rid of NAs
     for(i in seq_along(predicted)){
         pred_act <- intersect_by_names(
