@@ -111,9 +111,12 @@ prepare_x <- function(
 
     # Combine discrete features
     if (!is.null(include_from_discrete_pheno)) {
-        bind_discrete_wide <- combine_features(x[, discrete_col_bool, 
-            drop = FALSE], model$combine_n_max_categorical_features, 
-            model$combined_feature_min_positive_ratio)
+        bind_discrete_wide <- combine_features(
+                x = x[, discrete_col_bool, drop = FALSE], 
+                combine_n_max_features = model$combine_n_max_categorical_features,
+                combined_feature_positive_ratio = model$combined_feature_min_positive_ratio, 
+                original_cnames = include_from_discrete_pheno
+        )
         if (!quiet)
             message("---- Including ", ncol(bind_discrete_wide), 
                 " combined categorical features.")
@@ -188,7 +191,7 @@ mean_impute <- function(x) {
 }
 
 combine_features <- function(x, combine_n_max_features, 
-    combined_feature_positive_ratio) {
+    combined_feature_positive_ratio, original_cnames) {
 
     # Get list of all possible combinations of columns
     cand_comb <- replicate(combine_n_max_features, seq(ncol(x)), simplify = FALSE)
@@ -196,12 +199,19 @@ combine_features <- function(x, combine_n_max_features,
     cand_comb <- apply(cand_comb, 1, function(r) sort(unique(r)), simplify = FALSE)
     cand_comb <- unique(cand_comb)
 
+    # No intra-feature combinations
+    comb_cnames_list <- lapply(cand_comb, function(c) colnames(x)[c])
+    only_inter_feat <- sapply(comb_cnames_list, function(cc) 
+        all(sapply(original_cnames, function(oc) sum(stringr::str_detect(cc, oc)) <= 1)))
+    cand_comb <- cand_comb[only_inter_feat]
+    comb_cnames_list <- comb_cnames_list[only_inter_feat]
+    comb_cnames <- sapply(comb_cnames_list, function(c) paste(c, collapse = "&"))
+
     # Muliplication equates to AND
     x_wide <- sapply(cand_comb, function(comb) apply(x[, comb, drop = FALSE], 1, 
         prod))
     x_wide <- as.matrix(x_wide)
-    colnames(x_wide) <- sapply(cand_comb, function(c) paste(colnames(x)[c], 
-        collapse = "&"))
+    colnames(x_wide) <- comb_cnames
 
     # Only keep columns with sufficient positive ratio
     x_wide[, colMeans(x_wide, na.rm = TRUE) >= combined_feature_positive_ratio, 

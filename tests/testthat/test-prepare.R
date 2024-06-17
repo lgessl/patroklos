@@ -77,7 +77,14 @@ test_that("prepare_x() works", {
   expect_identical(rownames(x), rnames)
   expect_type(x, "double")
 
+  model$combine_n_max_categorical_features <- 2
+  model$combined_feature_min_positive_ratio <- 0
+  model$include_from_discrete_pheno <- c("discrete_var", "abc_gcb")
+  x <- prepare_x(data = data, model = model, quiet = TRUE)
+  expect_equal(ncol(x), 4+4+4)
+
   # Include no pheno variables
+  model$include_from_discrete_pheno <- NULL
   model$split_index <- 3
   model$include_from_continuous_pheno <- NULL
   model$include_from_discrete_pheno <- NULL
@@ -194,7 +201,7 @@ test_that("combine_features() works", {
   colnames(x) <- c("var_1", "var_2", "var_3")
   rownames(x) <- paste0("sample_", seq(nrow(x)))
   x_wide <- combine_features(x, combine_n_max_features = 3, 
-    combined_feature_positive_ratio = 0.4)
+    combined_feature_positive_ratio = 0.4, original_cnames = c("var_1", "var_2", "var_3"))
   expect_equal(colnames(x_wide), c("var_1", "var_1&var_2", "var_2", "var_2&var_3", 
     "var_3"))
   exp <- c(0.7, 0.6, 0)
@@ -204,7 +211,7 @@ test_that("combine_features() works", {
 
   x[1, 1] <- NA
   x_wide <- combine_features(x, combine_n_max_features = 3, 
-    combined_feature_positive_ratio = 0)
+    combined_feature_positive_ratio = 0, original_cnames = c("var_1", "var_2", "var_3"))
   expect_equal(colnames(x_wide), c("var_1", "var_1&var_2", "var_1&var_3",
     "var_1&var_2&var_3", "var_2", "var_2&var_3", "var_3"))
   exp <- c(NA, 0, 0)
@@ -214,12 +221,18 @@ test_that("combine_features() works", {
   x <- as.matrix(c(1, 0, 1))
   colnames(x) <- "var_1"
   x_wide <- combine_features(x, combine_n_max_features = 1, 
-    combined_feature_positive_ratio = 0.4)
+    combined_feature_positive_ratio = 0.4, original_cnames = "var_1")
   expect_equal(x, x_wide)
 
   x <- matrix(c(c(1,0,NA), c(0,1,1)), ncol = 2)
   colnames(x) <- c("var_1", "var_2")
   x_wide <- combine_features(x, combine_n_max_features = 1, 
-    combined_feature_positive_ratio = 0.4)
+    combined_feature_positive_ratio = 0.4, original_cnames = c("var_1", "var_2"))
   expect_equal(x, x_wide)
+
+  x <- matrix(c(c(0.5,0,1), c(0.5,1,0), c(1,0,1)), ncol = 3)
+  colnames(x) <- c("a_1", "a_2", "b_1")
+  x_wide <- combine_features(x, combine_n_max_features = 3, 
+    combined_feature_positive_ratio = 0, original_cnames = c("a", "b"))
+  expect_equal(colnames(x_wide), c("a_1", "a_1&b_1", "a_2", "a_2&b_1", "b_1"))
 })
