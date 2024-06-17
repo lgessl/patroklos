@@ -173,7 +173,7 @@ predict.ptk_zerosum <- function(
     args <- list(...)
     if(!is.null(args[["type"]]))
         stop("`type` argument is not allowed.") 
-    stopifnot(all(names(coef(object)) == colnames(newx)))
+    stopifnot(all(object$variables.names[-1] == colnames(newx)))
     type <- NULL
     if(object$type %in% c(2, 4)) # 2 \mapsto binomial, 4 \mapsto cox
         # get probabilities (binomial), exp(beta_0 + beta^T x) (cox)
