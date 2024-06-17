@@ -95,10 +95,9 @@ plot_2d_metric <- function(
 
     if(ass2d$show_plots) print(plt)
 
-    if(!quiet)
-        message(msg_prefix, "Saving 2D metric plot to ", ass2d$file)
-
     if(!is.null(ass2d$file)){
+        if(!quiet)
+            message(msg_prefix, "Saving 2D metric plot to ", ass2d$file)
         ggplot2::ggsave(
             ass2d$file, 
             plt, 
