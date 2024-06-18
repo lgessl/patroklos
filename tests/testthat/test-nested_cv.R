@@ -117,7 +117,8 @@ test_that("predict.nested_fit() works", {
     proj <- predict(n_fit, xyy[[1]])
 
     expect_equal(length(proj), n_samples)
-    expect_true(all(proj %in% c(0, 1)))
+    expect_true(all(proj <= 1 & proj >= 0))
+    expect_false(all(proj %in% c(0, 1)))
 
     # Check if predictions are sensitive to lambda_min_index
     x_late <- cbind(xx[[1]], xx[[2]])

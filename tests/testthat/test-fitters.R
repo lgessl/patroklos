@@ -21,8 +21,12 @@ test_that("ptk_ranger() works", {
   expect_true(is.na(fit))
 
   fit <- ptk_ranger(xyy[[1]], xyy[[2]], xyy[[3]], rel_mtry = TRUE, mtry = 1.5, 
-    num.trees = 1, min.node.size = 1, classification = TRUE)
+    num.trees = 5, min.node.size = 1, classification = TRUE)
   expect_equal(fit$mtry, round(sqrt(ncol(xyy[[1]])) * 1.5))  
+  y_hat <- predict(fit, xyy[[1]])
+  expect_false(all(y_hat %in% c(0, 1)))
+  expect_true(all(y_hat >= 0 & y_hat <= 1))
+  expect_equal(nrow(y_hat), nrow(xyy[[1]]))
 })
 
 test_that("ptk_zerosum() works", {
