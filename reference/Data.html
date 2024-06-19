@@ -173,13 +173,13 @@ files lie.</p></dd>
 
 <dt><code>train_prop</code></dt>
 <dd><p>numeric in (0, 1). The proportion of samples to draw for the
-training cohort in every splitting run.</p></dd>
+training cohort when a new split into train and test cohort is performed.</p></dd>
 
 
 <dt><code>pivot_time_cutoff</code></dt>
 <dd><p>numeric. Pivotal time cutoff for the analysis and, explicitly,
 for splitting the data into the train and test cohort: If a numeric in (0, 1), preserve
-the the proportion of individuals below and above <code>time_cutoff</code> in both cohorts. Default
+the proportion of individuals below and above <code>time_cutoff</code> in both cohorts. Default
 is <code>NULL</code>, i.e. no further constraints on splitting.</p></dd>
 
 
@@ -199,10 +199,10 @@ holds the benchmark risk score (like the IPI).</p></dd>
 
 
 <dt><code>cohort</code></dt>
-<dd><p>string in <code>c("train", "test")</code> or <code>NULL</code>. The cohort, train or test, to
-prepare the data for. If NULL, the default, some functions will set it themselves
-(e.g. <code><a href="training_camp.html">training_camp()</a></code> to <code>"train"</code>, <code>assess_2d()</code> to <code>"test"</code>), others will
-throw an error.</p></dd>
+<dd><p>string or NULL. At the end of preparing the data, subset it to those
+samples whose value in the split column matches <code>cohort</code>. Default is <code>NULL</code>,
+in which case some methods will infer a reasonable value (like <code>"train"</code>
+for training, <code>"test"</code> for assessment), some will throw an error.</p></dd>
 
 
 <dt><code>expr_file</code></dt>
@@ -226,10 +226,11 @@ the gene identifiers.</p></dd>
 
 
 <dt><code>split_col_prefix</code></dt>
-<dd><p>string. Column-name prefix for those columns holding splits into
-train and test cohort. Some of these columns may be present in the pheno data already,
-others will be added during the training process if required. Default is <code>"split_"</code>,
-i.e., split columns are named <code>"split_1"</code>, <code>"split_2"</code>, etc.</p></dd>
+<dd><p>string. Column-name prefix for those columns in the pheno
+tibble holding splits into cohorts (like train and test). Some of
+these columns may be present in the pheno data already, non-present ones will be
+added during the training process if required. Default is <code>"split_"</code>, i.e.,
+split columns are named <code>"split_1"</code>, <code>"split_2"</code>, etc.</p></dd>
 
 
 <dt><code>imputer</code></dt>
