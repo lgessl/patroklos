@@ -16,7 +16,8 @@ rows, an attribute \code{li_var_suffix} is expected to be present.}
 \item{...}{Further arguments passed to the wrapped function.}
 }
 \value{
-A named numeric vector of predictions from \code{newx}.
+A named numeric vector of ensemble vote share for every sample (
+i.e. a continuous value between 0 and 1).
 }
 \description{
 Wrap \code{\link[ranger:predict.ranger]{ranger::predict.ranger()}} into a patroklos-compliant predict

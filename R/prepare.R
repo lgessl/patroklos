@@ -89,7 +89,7 @@ prepare_x <- function(
     split_colname <- paste0(data$split_col_prefix, model$split_index)
     if(!split_colname %in% colnames(data$pheno_tbl))
         stop("Column ", split_colname, " not found in pheno table.")
-    in_cohort_bool <- data$pheno_tbl[[split_colname]] == data$cohort
+    in_cohort_bool <- stringr::str_detect(data$pheno_tbl[[split_colname]], data$cohort)
     if(all(in_cohort_bool) || all(!in_cohort_bool))
         stop("All patients are in the same cohort")
 

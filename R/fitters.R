@@ -43,7 +43,8 @@ ptk_ranger <- function(x, y_bin, y_cox, rel_mtry, mtry = NULL,
 #' @param newx Predictor data as a named numeric matrix. Samples correspond to 
 #' rows, an attribute `li_var_suffix` is expected to be present.
 #' @param ... Further arguments passed to the wrapped function.
-#' @return A named numeric vector of predictions from `newx`. 
+#' @return A named numeric vector of ensemble vote share for every sample (
+#' i.e. a continuous value between 0 and 1).
 #' @export
 predict.ptk_ranger <- function(object, newx, ...){
     class(object) <- "ranger"

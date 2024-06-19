@@ -53,10 +53,10 @@ Data <- R6::R6Class("Data",
         #' @param directory string. The directory where both expression and pheno csv
         #' files lie.
         #' @param train_prop numeric in (0, 1). The proportion of samples to draw for the 
-        #' training cohort in every splitting run.
+        #' training cohort when a new split into train and test cohort is performed.
         #' @param pivot_time_cutoff numeric. Pivotal time cutoff for the analysis and, explicitly,
         #' for splitting the data into the train and test cohort: If a numeric in (0, 1), preserve 
-        #' the the proportion of individuals below and above `time_cutoff` in both cohorts. Default 
+        #' the proportion of individuals below and above `time_cutoff` in both cohorts. Default 
         #' is `NULL`, i.e. no further constraints on splitting.
         #' @param time_to_event_col string. The name of the column in the pheno data that holds the 
         #' time-to-event values.
@@ -64,10 +64,10 @@ Data <- R6::R6Class("Data",
         #' the event status encoded as 1 = occurrence, 0 = censoring.
         #' @param benchmark_col string or `NULL`. The name of the column in the pheno data that 
         #' holds the benchmark risk score (like the IPI).
-        #' @param cohort string in `c("train", "test")` or `NULL`. The cohort, train or test, to 
-        #' prepare the data for. If NULL, the default, some functions will set it themselves
-        #' (e.g. `training_camp()` to `"train"`, `assess_2d()` to `"test"`), others will
-        #' throw an error.
+        #' @param cohort string or NULL. At the end of preparing the data, subset it to those 
+        #' samples whose value in the split column matches `cohort`. Default is `NULL`, 
+        #' in which case some methods will infer a reasonable value (like `"train"` 
+        #' for training, `"test"` for assessment), some will throw an error.
         #' @param expr_file string. The name of the expression csv file inside `directory`.
         #' Default is `"expr.csv"`. See details for the expected format.
         #' @param pheno_file string. The name of the pheno data csv inside `directory`.
@@ -76,10 +76,11 @@ Data <- R6::R6Class("Data",
         #' the patient identifiers.
         #' @param gene_id_col string. The name of the column in the expression data that holds
         #' the gene identifiers.
-        #' @param split_col_prefix string. Column-name prefix for those columns holding splits into 
-        #' train and test cohort. Some of these columns may be present in the pheno data already,
-        #' others will be added during the training process if required. Default is `"split_"`, 
-        #' i.e., split columns are named `"split_1"`, `"split_2"`, etc.
+        #' @param split_col_prefix string. Column-name prefix for those columns in the pheno 
+        #' tibble holding splits into cohorts (like train and test). Some of 
+        #' these columns may be present in the pheno data already, non-present ones will be 
+        #' added during the training process if required. Default is `"split_"`, i.e., 
+        #' split columns are named `"split_1"`, `"split_2"`, etc.
         #' @param imputer function or NULL. Function handling NAs in the predictor matrix.
         #' It takes a single argument `x`, the predictor matrix, a numeric with categorical 
         #' variables dichotomized to binary dummy variables, and returns a matrix of the 

@@ -3,8 +3,6 @@ data_initialize <- function(self, private, name, directory, train_prop,
     time_to_event_col, split_col_prefix, event_col, benchmark_col, gene_id_col, 
     imputer){
     
-    if(!is.null(cohort))
-        cohort <- match.arg(cohort, c("train", "test"))
     stopifnot(is.character(name))
     stopifnot(is.character(directory))
     stopifnot(is.numeric(train_prop))
