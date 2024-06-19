@@ -51,7 +51,7 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
     if(is.null(cohorts)) cohorts <- "test"
     digits <- self$round_digits
 
-    data$read()
+    if (is.null(data$expr_mat) || is.null(data$pheno_tbl)) data$read()
     
     core <- function(i){
         model <- model_list[[i]]
