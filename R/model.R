@@ -32,14 +32,6 @@ Model <- R6::R6Class("Model",
         li_var_suffix = NULL,
         #' @field create_directory Whether to create `directory` if it does not exist, yet.
         create_directory = NULL,
-        #' @field plot_file Store the plots resulting from `plot(fit_obj)` in `directory` under
-        #' this name.
-        plot_file = NULL,
-        #' @field plot_ncols Arrange the above mentioned plots in this number of columns. 
-        plot_ncols = NULL,
-        #' @field plot_title_line Pass this as the `line` argument to [`graphics::title()`]
-        #' when calling `plot(fit_obj)`.
-        plot_title_line = NULL,
         #' @field fit_file Store this Model object under this name in `directory`.
         fit_file = NULL,
         #' @field fits A list holding fits (something returned by a fitter like 
@@ -98,12 +90,6 @@ Model <- R6::R6Class("Model",
         #' data when adding them to the predictor matrix. Default is `"++"`.
         #' @param create_directory logical. Whether to create `directory` if it does not exist, yet. 
         #' Default is `TRUE`.
-        #' @param plot_file string. Store the plot resulting from `plot(fit_obj)` in `directory`
-        #' under this name. Default is `"training_error.pdf"`.
-        #' @param plot_ncols integer. The number of columns in the plot. Default is `2`.
-        #' @param plot_title_line numeric or NULL. Pass this as the `line` argument to [`graphics::title()`] 
-        #' after calling `plot(fit_obj)`. This is the distance (in inches) between the title text and 
-        #' the upper limit of the figure. Default is `2.5`.
         #' @param fit_file string. The name of the model-fits file inside `directory`.
         #' Default is `"fit_obj.rds"`.
         #' @param continuous_output logical or NULL. Whether the output of the model 
@@ -137,9 +123,6 @@ Model <- R6::R6Class("Model",
             include_expr = TRUE,
             li_var_suffix = "++",
             create_directory = TRUE,
-            plot_file = "training_error.pdf",
-            plot_ncols = 2,
-            plot_title_line = 2.5,
             fit_file = "models.rds",
             continuous_output = NULL,
             combine_n_max_categorical_features = 1L,
@@ -148,8 +131,8 @@ Model <- R6::R6Class("Model",
             model_initialize(self, private, name, fitter, directory, split_index, 
                 time_cutoffs, hyperparams, response_colnames, 
                 include_from_continuous_pheno, include_from_discrete_pheno, 
-                include_expr, li_var_suffix, create_directory, plot_file, plot_ncols,
-                plot_title_line, fit_file, continuous_output,
+                include_expr, li_var_suffix, create_directory, 
+                fit_file, continuous_output,
                 combine_n_max_categorical_features, 
                 combined_feature_min_positive_ratio),  
 

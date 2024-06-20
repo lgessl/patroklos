@@ -76,7 +76,7 @@ test_that("nested_fit() works", {
     colnames(error_grid) <- c("d", "e", "f")
 
     fit1 <- structure(1, class = c("zeroSum", "list")) 
-    fit2 <- structure(2, class = c("ranger", "list")) 
+    fit2 <- structure(list(min_error = 1.1), class = c("ranger", "list")) 
     fit <- nested_fit(model1 = fit1, model2 = fit2, error_grid = error_grid, 
         best_hyperparams = list(lambda = 123))
     expect_s3_class(fit, "nested_fit")

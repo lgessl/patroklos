@@ -35,7 +35,7 @@ test_that("AssScalar$assess() works", {
     model <- Model$new(
       name = "rf",
       directory = file.path(model_dir, "rf"),
-      fitter = ptk_ranger,
+      fitter = hypertune(ptk_ranger, "error_rate", select = TRUE),
       hyperparams = list(rel_mtry = TRUE, mtry = 0.98, num.trees = 100, 
         min.node.size = 3, classification = TRUE),
       split_index = 1:2,

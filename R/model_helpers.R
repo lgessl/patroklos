@@ -1,9 +1,8 @@
 model_initialize <- function(self, private, name, fitter, directory, split_index, 
-    time_cutoffs, hyperparams, response_colnames, 
-    include_from_continuous_pheno, include_from_discrete_pheno, include_expr, 
-    li_var_suffix, create_directory, plot_file, plot_ncols,
-    plot_title_line, fit_file, continuous_output, 
-    combine_n_max_categorical_features, combined_feature_min_positive_ratio){
+    time_cutoffs, hyperparams, response_colnames, include_from_continuous_pheno, 
+    include_from_discrete_pheno, include_expr, li_var_suffix, create_directory, 
+    fit_file, continuous_output, combine_n_max_categorical_features, 
+    combined_feature_min_positive_ratio){
 
     stopifnot(all(time_cutoffs >= 0))
     stopifnot(split_index >= 1)
@@ -19,17 +18,14 @@ model_initialize <- function(self, private, name, fitter, directory, split_index
     stopifnot(is.character(directory))
     stopifnot(is.logical(create_directory))
     stopifnot(is.numeric(time_cutoffs) || is.null(time_cutoffs))
-    stopifnot(is.character(plot_file))
-    stopifnot(is.numeric(plot_ncols))
-    stopifnot(is.numeric(plot_title_line) || is.null(plot_title_line))
     stopifnot(is.character(fit_file))
     stopifnot(is.logical(continuous_output) || is.null(continuous_output))
     combine_n_max_categorical_features <- as.integer(round(combine_n_max_categorical_features))
-    if (combine_n_max_categorical_features < 1)
+    if (any(combine_n_max_categorical_features < 1))
         stop("combine_n_max_categorical_features must be at least 1.")
     stopifnot(is.numeric(combined_feature_min_positive_ratio) && 
-        combined_feature_min_positive_ratio > 0 && 
-        combined_feature_min_positive_ratio < 1)
+        combined_feature_min_positive_ratio >= 0 && 
+        combined_feature_min_positive_ratio <= 1)
 
     self$name <- name
     self$directory <- directory
@@ -43,9 +39,6 @@ model_initialize <- function(self, private, name, fitter, directory, split_index
     self$include_expr <- include_expr
     self$li_var_suffix <- li_var_suffix
     self$create_directory <- create_directory
-    self$plot_file <- plot_file
-    self$plot_ncols <- plot_ncols
-    self$plot_title_line <- plot_title_line
     self$fit_file <- fit_file
     self$fits <- vector("list", length(split_index))
     self$continuous_output <- continuous_output

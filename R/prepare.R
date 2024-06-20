@@ -113,7 +113,7 @@ prepare_x <- function(
     if (!is.null(include_from_discrete_pheno)) {
         bind_discrete_wide <- combine_features(
                 x = x[, discrete_col_bool, drop = FALSE], 
-                combine_n_max_features = model$combine_n_max_categorical_features,
+                combine_n_max_features = max(model$combine_n_max_categorical_features),
                 combined_feature_positive_ratio = model$combined_feature_min_positive_ratio, 
                 original_cnames = include_from_discrete_pheno
         )

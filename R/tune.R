@@ -80,3 +80,31 @@ predict.ptk_hypertune <- function(
         stop("Desired model is NA. Did accidentally you set `select = TRUE`?")
     predict(object = obj, newx = newx, ...)
 }
+
+# A decorator to tune those hyperparameters one can tune for any fitter (or 
+# for a *uni*versal fitter). Right now, this concerns 
+# combine_n_max_categorical_features; time_cutoffs should follow.
+unitune <- function(fitter) {
+
+    unifitter <- function(x, y_bin, y_cox, combine_n_max_categorical_features, ...) {
+        core <- function(n_max_combo) {
+            x <- trim_combos(x, n_max_combo) 
+            fit_obj <- fitter(x, y_bin, y_cox, ...)
+            fit_obj$combine_n_max_categorical_features <- n_max_combo
+            fit_obj
+        }
+        fit_obj_list <- lapply(combine_n_max_categorical_features, core)
+        fit_obj_list[[which.min(sapply(fit_obj_list, function(x)
+            x$min_error))]]
+    }
+}
+
+# Remove columns with combinations of comprising more than
+# combine_n_max_categorical_features
+trim_combos <- function(x, combine_n_max_categorical_features) {
+    keep <- sapply(stringr::str_split(colnames(x), "&"), length) <= 
+        combine_n_max_categorical_features
+    x_slim <- x[, keep]
+    attr(x_slim, "li_var_suffix") <- attr(x, "li_var_suffix")
+    x_slim
+}

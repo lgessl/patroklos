@@ -33,10 +33,14 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
         prep <- data$prepare(split_model, quiet = quiet)
         qc_prefit(prep)
         fits[[split_name]] <- do.call(
-            self$fitter, 
+            unitune(self$fitter), 
             args = c(
-                list("x" = prep[["x"]], "y_bin" = prep[["y_bin"]], 
-                    "y_cox" = prep[["y_cox"]]),
+                list(
+                    x = prep[["x"]], 
+                    y_bin = prep[["y_bin"]], 
+                    y_cox = prep[["y_cox"]], 
+                    combine_n_max_categorical_features = self$combine_n_max_categorical_features
+                ),
                 self$hyperparams
             )
         )
@@ -46,20 +50,6 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
                 round.POSIXt(Sys.time(), units = "secs"), ")")
     }
     self$fits <- fits
-
     saveRDS(self, stored_models_file)
-
-    # Plots about fitting as a grid
-    if (any(class(self$fits[[1]]) %in% sloop::s3_methods_generic("plot")[["class"]])) {
-        grDevices::pdf(file = file.path(self$directory, self$plot_file))
-        graphics::par(mfrow = c(1, self$plot_ncols))
-        for(i in self$split_index){
-            split_name <- paste0(data$split_col_prefix, i)
-            fit <- fits[[split_name]]
-            plot(fit)
-            graphics::title(main = paste0("Split ", i), line = self$plot_title_line)
-        }
-        grDevices::dev.off()
-    }
     invisible(self)
 }

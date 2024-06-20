@@ -88,8 +88,10 @@ nested_pseudo_cv <- function(
     model2 <- cv2
     if (inherits(cv1, "ptk_hypertune"))
         model1 <- cv1$fit_obj_list[[cv1$lambda_min_index]]
-    if (inherits(cv2, "ptk_hypertune"))
+    if (inherits(cv2, "ptk_hypertune")) {
         model2 <- cv2$fit_obj_list[[cv2$lambda_min_index]]
+        model2$min_error <- cv2$min_error
+    }
     # Report on hypertuning
     # lambda sequence in cv2 may depend on lambda sequence in cv1, in particular 
     # lengths may differ (e.g. because of early stopping), hence we need 
@@ -149,7 +151,8 @@ nested_fit <- function(
             "model1" = model1,
             "model2" = model2,
             "error_grid" = error_grid,
-            "best_hyperparams" = best_hyperparams
+            "best_hyperparams" = best_hyperparams,
+            "min_error" = model2$min_error
         ),
         class = c("nested_fit", "list")
     )

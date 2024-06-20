@@ -32,7 +32,9 @@ ptk_ranger <- function(x, y_bin, y_cox, rel_mtry, mtry = NULL,
     val_predict <- as.matrix(ptk_ranger_obj$predictions)
     rownames(val_predict) <- rownames(x_y[[1]])
     ptk_ranger_obj$val_predict <- val_predict
+    ptk_ranger_obj$min_error <- ptk_ranger_obj$prediction.error
     ptk_ranger_obj$predictions <- NULL
+    ptk_ranger_obj$prediction.error <- NULL
     class(ptk_ranger_obj) <- c("ptk_ranger", class(ptk_ranger_obj))
     ptk_ranger_obj
 }

@@ -29,6 +29,12 @@ model_predict <- function(self, private, data, quiet){
         split_model <- self$clone()
         split_model$split_index <- i
         split_model$time_cutoffs <- data$pivot_time_cutoff
+        max_combo <- 0
+        if (!is.null(split_model$include_from_discrete_pheno))
+            max_combo <- fit$combine_n_max_categorical_features
+        if (is.null(max_combo))
+            stop("No max_combo attribute found in fit object for split ", split)
+        split_model$combine_n_max_categorical_features <- max_combo
         prep <- data$prepare(split_model, quiet = quiet)
         x_y <- intersect_by_names(prep[["x"]], prep[["y_bin"]], rm_na = c(TRUE, TRUE))
         x <- x_y[[1]]

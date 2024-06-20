@@ -12,10 +12,11 @@ test_that("prepare() works", {
     hyperparams = list(family = "cox", zeroSum = FALSE),
     include_from_continuous_pheno = c("continuous_var"),
     include_from_discrete_pheno = c("discrete_var", "abc_gcb", "ipi_age"),
-    combine_n_max_categorical_features = 2,
+    combine_n_max_categorical_features = 1:2,
     combined_feature_min_positive_ratio = 0.04
   )
   xyy <- data$prepare(model, quiet = TRUE)
+  expect_true(any(stringr::str_detect(colnames(xyy[[1]]), "&")))
   expect_true(setequal(unique(xyy[[2]]), c(0, 1, NA)))
 })
 
@@ -77,7 +78,7 @@ test_that("prepare_x() works", {
   expect_identical(rownames(x), rnames)
   expect_type(x, "double")
 
-  model$combine_n_max_categorical_features <- 2
+  model$combine_n_max_categorical_features <- 1:2
   model$combined_feature_min_positive_ratio <- 0
   model$include_from_discrete_pheno <- c("discrete_var", "abc_gcb")
   x <- prepare_x(data = data, model = model, quiet = TRUE)

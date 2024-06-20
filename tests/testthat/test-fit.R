@@ -55,11 +55,14 @@ test_that("Model$fit() works", {
     split_index = 1:2,
     time_cutoffs = 2,
     hyperparams = list(family = "binomial", nFold = n_fold, lambda = lambda, 
-      zeroSum = FALSE)
+      zeroSum = FALSE),
+    include_from_discrete_pheno = c("ipi_age", "abc_gcb"),
+    combine_n_max_categorical_features = 1:2,
+    combined_feature_min_positive_ratio = 0
   )
 
   model$fit(data, quiet = TRUE)
-  expect_equal(nrow(model$fits[[1]]$coef[[1]]), n_genes+1)
+  expect_true(nrow(model$fits[[1]]$coef[[1]]) %in% (1 + n_genes + c(3, 5))) 
   expect_s3_class(model$fits[[2]], "ptk_zerosum")
 
   model$directory <- file.path(dir, "model4")

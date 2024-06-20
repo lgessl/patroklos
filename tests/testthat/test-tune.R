@@ -60,3 +60,31 @@ test_that("hypertune() and its return value's predict method work", {
   expect_true(is.na(ptk_hypertune$val_predict_list))
   expect_s3_class(ptk_hypertune$fit_obj_list[[ptk_hypertune$lambda_min_index]], "ranger")
 })
+
+test_that("unitune() works", {
+
+  set.seed(213)
+
+  n_samples <- 10
+  n_genes <- 2
+
+  xyy <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
+    return_type = "fitter")
+  combos <- matrix(sample(0:1, n_samples * 3, replace = TRUE), ncol = 3)
+  rownames(combos) <- rownames(xyy[[1]])
+  colnames(combos) <- c("a&b", "a&c", "a&b&c")
+  xyy[[1]] <- cbind(xyy[[1]], combos)
+  attr(xyy[[1]], "li_var_suffix") <- "++"
+
+  fit_obj <- unitune(ptk_zerosum)(xyy[[1]], xyy[[2]], xyy[[3]], lambdaSteps = 2, 
+    nFold = 2, family = "binomial", combine_n_max_categorical_features = c(2, 3))
+  expect_s3_class(fit_obj, "ptk_zerosum")
+  expect_true(fit_obj$combine_n_max_categorical_features %in% c(2, 3))
+  expect_equal(length(fit_obj$val_predict_list), 2)
+  expect_equal(length(unique(fit_obj$foldid)), 2)
+  expect_true("a&b" %in% fit_obj$variables.names)
+
+  fit_obj <- unitune(ptk_zerosum)(xyy[[1]], xyy[[2]], xyy[[3]], lambdaSteps = 2, 
+    nFold = 2, family = "binomial", combine_n_max_categorical_features = 1:2)
+  expect_false("a&b&c" %in% fit_obj$variables.names)
+})
