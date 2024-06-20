@@ -102,20 +102,6 @@ when adding them to the predictor matrix.</p></dd>
 <dd><p>Whether to create <code>directory</code> if it does not exist, yet.</p></dd>
 
 
-<dt><code>plot_file</code></dt>
-<dd><p>Store the plots resulting from <code>plot(fit_obj)</code> in <code>directory</code> under
-this name.</p></dd>
-
-
-<dt><code>plot_ncols</code></dt>
-<dd><p>Arrange the above mentioned plots in this number of columns.</p></dd>
-
-
-<dt><code>plot_title_line</code></dt>
-<dd><p>Pass this as the <code>line</code> argument to <code><a href="https://rdrr.io/r/graphics/title.html" class="external-link">graphics::title()</a></code>
-when calling <code>plot(fit_obj)</code>.</p></dd>
-
-
 <dt><code>fit_file</code></dt>
 <dd><p>Store this Model object under this name in <code>directory</code>.</p></dd>
 
@@ -169,9 +155,6 @@ observations in a combined (categorical) feature</p></dd>
 <span>  include_expr <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  li_var_suffix <span class="op">=</span> <span class="st">"++"</span>,</span>
 <span>  create_directory <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  plot_file <span class="op">=</span> <span class="st">"training_error.pdf"</span>,</span>
-<span>  plot_ncols <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  plot_title_line <span class="op">=</span> <span class="fl">2.5</span>,</span>
 <span>  fit_file <span class="op">=</span> <span class="st">"models.rds"</span>,</span>
 <span>  continuous_output <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  combine_n_max_categorical_features <span class="op">=</span> <span class="fl">1L</span>,</span>
@@ -256,21 +239,6 @@ data when adding them to the predictor matrix. Default is <code>"++"</code>.</p>
 <dt><code>create_directory</code></dt>
 <dd><p>logical. Whether to create <code>directory</code> if it does not exist, yet.
 Default is <code>TRUE</code>.</p></dd>
-
-
-<dt><code>plot_file</code></dt>
-<dd><p>string. Store the plot resulting from <code>plot(fit_obj)</code> in <code>directory</code>
-under this name. Default is <code>"training_error.pdf"</code>.</p></dd>
-
-
-<dt><code>plot_ncols</code></dt>
-<dd><p>integer. The number of columns in the plot. Default is <code>2</code>.</p></dd>
-
-
-<dt><code>plot_title_line</code></dt>
-<dd><p>numeric or NULL. Pass this as the <code>line</code> argument to <code><a href="https://rdrr.io/r/graphics/title.html" class="external-link">graphics::title()</a></code>
-after calling <code>plot(fit_obj)</code>. This is the distance (in inches) between the title text and
-the upper limit of the figure. Default is <code>2.5</code>.</p></dd>
 
 
 <dt><code>fit_file</code></dt>
