@@ -96,10 +96,11 @@ prepare_x <- function(
     # Impute
     if(!is.null(data$imputer)) {
         x_imp <- x
-        x_imp[in_cohort_bool, ] <- data$imputer(x[in_cohort_bool, 
-            , drop = FALSE])
-        x_imp[!in_cohort_bool, ] <- data$imputer(x[!in_cohort_bool, 
-           , drop = FALSE])
+        cohort_col <- data$pheno_tbl[[split_colname]]
+        for (cohort in unique(cohort_col)) {
+            take_bool <- cohort_col == cohort
+            x_imp[take_bool, ] <- data$imputer(x[take_bool, , drop = FALSE])
+        }
         if (!all(colnames(x) == colnames(x_imp)) || 
             !all(rownames(x) == rownames(x_imp)))
             stop("Data$imputer() must return a matrix with the same dim names as ",

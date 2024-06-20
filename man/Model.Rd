@@ -41,14 +41,6 @@ when adding them to the predictor matrix.}
 
 \item{\code{create_directory}}{Whether to create \code{directory} if it does not exist, yet.}
 
-\item{\code{plot_file}}{Store the plots resulting from \code{plot(fit_obj)} in \code{directory} under
-this name.}
-
-\item{\code{plot_ncols}}{Arrange the above mentioned plots in this number of columns.}
-
-\item{\code{plot_title_line}}{Pass this as the \code{line} argument to \code{\link[graphics:title]{graphics::title()}}
-when calling \code{plot(fit_obj)}.}
-
 \item{\code{fit_file}}{Store this Model object under this name in \code{directory}.}
 
 \item{\code{fits}}{A list holding fits (something returned by a fitter like
@@ -93,9 +85,6 @@ Create a new Model instance.
   include_expr = TRUE,
   li_var_suffix = "++",
   create_directory = TRUE,
-  plot_file = "training_error.pdf",
-  plot_ncols = 2,
-  plot_title_line = 2.5,
   fit_file = "models.rds",
   continuous_output = NULL,
   combine_n_max_categorical_features = 1L,
@@ -164,15 +153,6 @@ data when adding them to the predictor matrix. Default is \code{"++"}.}
 
 \item{\code{create_directory}}{logical. Whether to create \code{directory} if it does not exist, yet.
 Default is \code{TRUE}.}
-
-\item{\code{plot_file}}{string. Store the plot resulting from \code{plot(fit_obj)} in \code{directory}
-under this name. Default is \code{"training_error.pdf"}.}
-
-\item{\code{plot_ncols}}{integer. The number of columns in the plot. Default is \code{2}.}
-
-\item{\code{plot_title_line}}{numeric or NULL. Pass this as the \code{line} argument to \code{\link[graphics:title]{graphics::title()}}
-after calling \code{plot(fit_obj)}. This is the distance (in inches) between the title text and
-the upper limit of the figure. Default is \code{2.5}.}
 
 \item{\code{fit_file}}{string. The name of the model-fits file inside \code{directory}.
 Default is \code{"fit_obj.rds"}.}
