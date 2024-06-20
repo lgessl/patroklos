@@ -75,7 +75,8 @@ test_that("prec_from_scores() works", {
     patient_id_col = "patient",
     time_to_event_col = "time_to_event",
     event_col = "event",
-    benchmark_col = "IPI"
+    benchmark_col = "IPI",
+    cohort = "."
   )
   data$pheno_tbl <- pheno_tbl
 
@@ -106,6 +107,7 @@ test_that("write_data_info() works", {
     directory = "mock", 
     train_prop = 0.8,
     pivot_time_cutoff = 2,
+    cohort = "train",
     patient_id_col = "patient",
     time_to_event_col = "time_to_event",
     event_col = "event",

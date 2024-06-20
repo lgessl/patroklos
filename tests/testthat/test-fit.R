@@ -2,7 +2,7 @@ test_that("Model$fit() works", {
 
   set.seed(4352)
 
-  n_samples <- 30
+  n_samples <- 50
   n_genes <- 5
   n_na_in_pheno <- 2
   n_fold <- 3
@@ -14,6 +14,7 @@ test_that("Model$fit() works", {
     n_na_in_pheno = n_na_in_pheno,
     split_index = 1:2
   )
+  data$imputer <- mean_impute
   dir <- withr::local_tempdir()
 
   # Survival response
@@ -90,7 +91,8 @@ test_that("Model$fit() works", {
           alpha = 1,
           zeroSum = FALSE,
           lambdaSteps = 2,
-          standardize = TRUE
+          standardize = TRUE,
+          nFold = n_fold
         ),
         hyperparams2 = list(
           num.trees = 100, 

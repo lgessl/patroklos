@@ -7,10 +7,8 @@ data_prepare <- function(
     if(length(model$split_index) != 1)
         stop("Model must specify exactly one split index, but we have ", 
             length(model$split_index))
-    if(length(model$time_cutoffs) != 1)
-        stop("Model must specify exactly one time cutoff")
-    if(is.null(self$cohort))
-        stop("Cohort must be set to `'train'` or `'test'`")
+    if(!is.character(self$cohort))
+        stop("data$cohort must be set")
     if(is.null(self$expr_mat) || is.null(self$pheno_tbl))
         stop("Data must have `expr_mat` and `pheno_tbl` read in")
     if(!all(rownames(self$expr_mat) == self$pheno_tbl[[self$patient_id_col]]))
@@ -21,15 +19,14 @@ data_prepare <- function(
         model = model,
         quiet = quiet
     )
-    y <- prepare_y( # list of y_bin and y_cox
-        data = self,
-        model = model
-    )
-    # Subset y a bit: we don't need outcomes we can't predict for
-    y[[1]] <- y[[1]][rownames(x), , drop = FALSE]
-    y[[2]] <- y[[2]][rownames(x), , drop = FALSE]
+    y_cox <- as.matrix(data$pheno_tbl[, c(data$time_to_event_col, data$event_col)])
+    rownames(y_cox) <- data$pheno_tbl[[data$patient_id_col]]
+    colnames(y_cox) <- model$response_colnames
 
-    c(list("x" = x), y)
+    # Subset y_cox a bit: we don't need outcomes we can't predict for
+    y_cox <- y_cox[rownames(x), , drop = FALSE]
+
+    list(x = x, y_cox = y_cox)
 }
 
 # @title Generate the predictor matrix in a model-specific way
@@ -135,45 +132,22 @@ prepare_x <- function(
     return(x)
 }
 
-# Prepare the response matrix y in two ways: binary and Cox.
-# No subsetting to cohort, yet
-prepare_y <- function(
-    data,
-    model
-){
-
-    # Extract
-    time_to_event_col <- data$time_to_event_col
-    event_col <- data$event_col
-    patient_id_col <- data$patient_id_col
-    time_cutoff <- model$time_cutoffs
-    pheno_tbl <- data$pheno_tbl
-
-    if(length(time_cutoff) > 1)
-        stop("Can only handle one cutoff time.")
-
-    # Binary response
+# Turn y_cox into binary response y_bin according to time_cutoff
+binarize_y <- function(y_cox, time_cutoff, pivot_time_cutoff) {
     # Flag patients censored before time_cutoff as NA
-    bin_time_cutoff <- time_cutoff
-    if (is.infinite(bin_time_cutoff))
-        bin_time_cutoff <- data$pivot_time_cutoff
-    na_bool <- (pheno_tbl[[time_to_event_col]] <= bin_time_cutoff) & (pheno_tbl[[event_col]] == 0)
-    y_bin <- as.numeric(pheno_tbl[[time_to_event_col]] <= bin_time_cutoff)
-    dim(y_bin) <- c(length(y_bin), 1)
-    rownames(y_bin) <- pheno_tbl[[patient_id_col]]
-    colnames(y_bin) <- stringr::str_c("time_cutoff_", round(bin_time_cutoff, 1))
+    if (is.infinite(time_cutoff)) time_cutoff <- pivot_time_cutoff
+    na_bool <- (y_cox[, 1] <= time_cutoff) & (y_cox[, 2] == 0)
+    y_bin <- as.matrix((y_cox[, 1] <= time_cutoff) * 1)
     y_bin[na_bool, ] <- NA
+    y_bin
+}
 
-    # Cox response (time to event, censoring status)
-    # Censor patients with time_to_event > time_cutoff at time_cutoff
-    y_cox <- pheno_tbl[, c(time_to_event_col, event_col)] |> as.matrix()
-    censor_bool <- y_cox[, time_to_event_col] > time_cutoff
+# In y_cox, censor samples with time to event > time_cutoff at time cutoff
+censor_y <- function(y_cox, time_cutoff) {
+    censor_bool <- y_cox[, 1] > time_cutoff
     y_cox[censor_bool, 1] <- time_cutoff
     y_cox[censor_bool, 2] <- 0
-    rownames(y_cox) <- pheno_tbl[[patient_id_col]]
-    colnames(y_cox) <- model$response_colnames
-
-    list("y_bin" = y_bin, "y_cox" = y_cox)
+    y_cox
 }
 
 #' @title Impute missing values in a matrix by column means

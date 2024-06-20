@@ -31,34 +31,26 @@ training_camp <- function(
         data = data,
         model_list = model_list
     )
-    expr_mat <- data$expr_mat
-    pheno_tbl <- data$pheno_tbl
 
     for(i in seq_along(model_list)){
         model <- model_list[[i]]
-        if(!quiet) message("# ", model$name)
-        if(!inherits(model, "Model")){
+        if(!quiet) message("* ", model$name)
+        if(!inherits(model, "Model"))
             stop("model_list must be a list of Model objects")
-        }
-        for(time_cutoff in model$time_cutoffs){
-            if(!quiet) message("## At time cutoff ", time_cutoff, 
-                " (", round.POSIXt(Sys.time(), units = "secs"), ")")
-            model_tc <- model$at_time_cutoff(time_cutoff)
-            if (skip_on_error) {
-                tryCatch(
-                    {
-                        model_tc$fit(data, quiet = quiet, msg_prefix = "### ")
-                    }, 
-                    error = function(cnd){
-                        warning("### Error while fitting ", model_tc$name, 
-                            " at time cutoff ", time_cutoff, "!\n### Error message: ", 
-                            conditionMessage(cnd), "\n### Call: ", conditionCall(cnd), 
-                            "\n### Skipping to next model.")
-                    }
-                )
-            } else {
-                model_tc$fit(data, quiet = quiet, msg_prefix = "### ")
-            }
+        if (skip_on_error) {
+            tryCatch(
+                {
+                    model$fit(data, quiet = quiet, msg_prefix = "*** ")
+                }, 
+                error = function(cnd){
+                    warning("*** Error while fitting ", model$name, 
+                        "!\n*** Error message: ", conditionMessage(cnd), 
+                        "\n*** Call: ", conditionCall(cnd), 
+                        "\n*** Skipping to next model.")
+                }
+            )
+        } else {
+            model$fit(data, quiet = quiet, msg_prefix = "*** ")
         }
     }
     if(!quiet) message("Training camp closes at ", round.POSIXt(Sys.time(), units = "secs"))

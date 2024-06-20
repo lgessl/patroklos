@@ -42,6 +42,7 @@ test_that("AssScalar$assess() works", {
       time_cutoffs = 2,
       fit_file = "model.rds"
     )
+    data$cohort <- "train"
     model$fit(data, quiet = TRUE)
     ass_scalar <- AssScalar$new(
       metrics = metrics,
@@ -49,6 +50,7 @@ test_that("AssScalar$assess() works", {
       round_digits = 4
     )
 
+    data$cohort <- "test"
     res <- ass_scalar$assess(data, model, quiet = TRUE)
     expect_true(is.numeric(res))
     expect_true(is.matrix(res))
@@ -124,7 +126,7 @@ test_that("AssScalar$assess_center() works", {
   model1_list <- list(model1, model1)
   model2_list <- list(model1, model2)
   model_list <- list(model1, model2)
-  training_camp(model_list, data, quiet = TRUE) 
+  training_camp(model_list, data, quiet = TRUE, skip_on_error = FALSE) 
   ass_scalar <- AssScalar$new(
     metrics = "auc", # just for the moment
     file = file.path(dir, "models/eval.csv"),
@@ -136,26 +138,22 @@ test_that("AssScalar$assess_center() works", {
   data$cohort <- "test"
   ass_scalar$metrics <- single_metric 
   eval_tbl <- ass_scalar$assess_center(data, model1_list, quiet = TRUE)
-  expect_equal(nrow(eval_tbl), length(data$cohort) * (2+2))  
-  expect_equal(colnames(eval_tbl), c("model", "cohort", "cutoff", "mean", 
-    "sd", "min", "max"))
-  csv_path <- file.path(dir, "results/eval.csv")
+  expect_equal(nrow(eval_tbl), length(model1_list))  
+  expect_equal(colnames(eval_tbl), c("model", "cohort", "mean", "sd", "min", "max"))
+  csv_path <- ass_scalar$file
   first_2 <- readr::read_lines(csv_path, n_max = 2)
-  expect_equal(first_2[1], "# mock, pfs_years < 2")
+  expect_equal(first_2[1], "# mock | pfs_years < 2")
   expect_equal(first_2[2], paste0(colnames(eval_tbl), collapse = ","))
   eval_tbl_read <- readr::read_csv(csv_path, comment = "#", show_col_types = FALSE)
   expect_equal(dim(eval_tbl), dim(eval_tbl_read))
 
   # Case 2: multiple metrics
-  data$cohort <- c("train", "test")
+  data$cohort <- "train"
   ass_scalar$metrics <- multiple_metrics
   eval_tbl <- ass_scalar$assess_center(data, model2_list, quiet = TRUE)
-  expect_true(
-    file.exists(file.path(dir, "models/eval.csv")) &&
-    file.exists(file.path(dir, "results/eval.csv"))
-  )
-  expect_equal(nrow(eval_tbl), length(data$cohort) * (2+2))  
-  expect_equal(colnames(eval_tbl), c("model", "cohort", "cutoff", multiple_metrics))
+  expect_true(file.exists(file.path(dir, "models/eval.csv")))
+  expect_equal(nrow(eval_tbl), length(model2_list))  
+  expect_equal(colnames(eval_tbl), c("model", "cohort", multiple_metrics))
   expect_true(is.numeric(as.matrix(eval_tbl[, 4:ncol(eval_tbl)])))
 })
 

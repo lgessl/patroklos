@@ -151,9 +151,13 @@ prec_from_scores <- function(
         }
     }
     model <- list(
-        "time_cutoffs" = data$pivot_time_cutoff
+        "time_cutoffs" = data$pivot_time_cutoff,
+        "split_index" = 1
     )
-    true_risk <- prepare_y(data = data, model = model)[["y_bin"]][, 1]
+    y_cox <- as.matrix(data$pheno_tbl[, c(data$time_to_event_col, data$event_col)])
+    rownames(y_cox) <- data$pheno_tbl[[data$patient_id_col]]
+    true_risk <- binarize_y(y_cox, time_cutoff = data$pivot_time_cutoff, 
+        pivot_time_cutoff = data$pivot_time_cutoff)[, 1]
     ea <- intersect_by_names(risk_scores, true_risk, rm_na = c(TRUE, TRUE))
     tbl <- metric_with_rocr(
         estimate = ea[[1]],

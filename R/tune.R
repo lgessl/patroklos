@@ -83,19 +83,38 @@ predict.ptk_hypertune <- function(
 
 # A decorator to tune those hyperparameters one can tune for any fitter (or 
 # for a *uni*versal fitter). Right now, this concerns 
-# combine_n_max_categorical_features; time_cutoffs should follow.
+# combine_n_max_categorical_features and time_cutoffs.
 unitune <- function(fitter) {
 
-    unifitter <- function(x, y_bin, y_cox, combine_n_max_categorical_features, ...) {
-        core <- function(n_max_combo) {
-            x <- trim_combos(x, n_max_combo) 
-            fit_obj <- fitter(x, y_bin, y_cox, ...)
-            fit_obj$combine_n_max_categorical_features <- n_max_combo
+    force(fitter)
+
+    unifitter <- function(x, y_cox, time_cutoffs, 
+        combine_n_max_categorical_features, pivot_time_cutoff, ...) {
+        # Get all possible combinations of time_cutoffs, combine_n_max_categorical_features
+        grid <- expand.grid(list(
+                "time cutoff" = time_cutoffs, 
+                "n combo max" = combine_n_max_categorical_features
+            ), stringsAsFactors = FALSE)
+
+        core <- function(i) {
+            n_combo_max <- grid[i, "n combo max"]
+            time_cutoff <- grid[i, "time cutoff"]
+            x <- trim_combos(x, n_combo_max) 
+            y_bin <- binarize_y(y_cox = y_cox, time_cutoff = time_cutoff, 
+                pivot_time_cutoff = pivot_time_cutoff)
+            y_cox_censor <- censor_y(y_cox, time_cutoff)
+            fit_obj <- fitter(x = x, y_bin = y_bin, y_cox = y_cox_censor, ...)
+            fit_obj$combine_n_max_categorical_features <- n_combo_max
+            fit_obj$time_cutoff <- time_cutoff
             fit_obj
         }
-        fit_obj_list <- lapply(combine_n_max_categorical_features, core)
-        fit_obj_list[[which.min(sapply(fit_obj_list, function(x)
-            x$min_error))]]
+
+        fit_obj_list <- lapply(seq(nrow(grid)), core)
+        errors <- sapply(fit_obj_list, function(x) x$min_error)
+        grid[["min error"]] <- errors
+        fit_obj <- fit_obj_list[[which.min(errors)]]
+        fit_obj$unitune_grid <- grid
+        fit_obj
     }
 }
 

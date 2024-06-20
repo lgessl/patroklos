@@ -58,16 +58,16 @@ Data <- R6::R6Class("Data",
         #' for splitting the data into the train and test cohort: If a numeric in (0, 1), preserve 
         #' the proportion of individuals below and above `time_cutoff` in both cohorts. Default 
         #' is `NULL`, i.e. no further constraints on splitting.
+        #' @param cohort string. At the end of preparing the data, subset it to those 
+        #' samples whose value in the split column matches `cohort`. Default is `NULL`, 
+        #' in which case some methods will infer a reasonable value (like `"train"` 
+        #' for training, `"test"` for assessment), some will throw an error.
         #' @param time_to_event_col string. The name of the column in the pheno data that holds the 
         #' time-to-event values.
         #' @param event_col string. The name of the column in the pheno data that holds
         #' the event status encoded as 1 = occurrence, 0 = censoring.
         #' @param benchmark_col string or `NULL`. The name of the column in the pheno data that 
         #' holds the benchmark risk score (like the IPI).
-        #' @param cohort string or NULL. At the end of preparing the data, subset it to those 
-        #' samples whose value in the split column matches `cohort`. Default is `NULL`, 
-        #' in which case some methods will infer a reasonable value (like `"train"` 
-        #' for training, `"test"` for assessment), some will throw an error.
         #' @param expr_file string. The name of the expression csv file inside `directory`.
         #' Default is `"expr.csv"`. See details for the expected format.
         #' @param pheno_file string. The name of the pheno data csv inside `directory`.
@@ -102,9 +102,9 @@ Data <- R6::R6Class("Data",
             train_prop,
             pivot_time_cutoff,
             time_to_event_col,
+            cohort,
             event_col = "progression",
             benchmark_col = NULL,
-            cohort = NULL,
             expr_file = "expr.csv",
             pheno_file = "pheno.csv",
             patient_id_col = "patient_id",

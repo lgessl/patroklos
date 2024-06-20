@@ -15,9 +15,11 @@ test_that("prepare() works", {
     combine_n_max_categorical_features = 1:2,
     combined_feature_min_positive_ratio = 0.04
   )
-  xyy <- data$prepare(model, quiet = TRUE)
-  expect_true(any(stringr::str_detect(colnames(xyy[[1]]), "&")))
-  expect_true(setequal(unique(xyy[[2]]), c(0, 1, NA)))
+  xy <- data$prepare(model, quiet = TRUE)
+  expect_true(any(stringr::str_detect(colnames(xy[[1]]), "&")))
+  expect_equal(ncol(xy[[2]]), 2)
+  expect_equal(length(unique(xy[[2]][, 1])), nrow(xy[[2]]))
+  expect_true(all(xy[[2]][, 2] %in% c(0, 1)))
 })
 
 test_that("prepare_x() works", {
@@ -38,6 +40,7 @@ test_that("prepare_x() works", {
   pheno_tbl <- data$pheno_tbl
   
   # Include both continuous and discrete pheno variables
+  data$cohort <- "train"
   x <- prepare_x(data = data, model = model, quiet = TRUE)
   expect_identical(
     colnames(x)[5:7], 
@@ -49,6 +52,7 @@ test_that("prepare_x() works", {
   expect_type(x, "double")
 
   # Less samples, mean impute
+  data$cohort <- "test"
   data$expr_mat <- data$expr_mat[5:35, ]
   data$pheno_tbl <- data$pheno_tbl[5:35, ]
   data$imputer <- mean_impute
@@ -106,66 +110,43 @@ test_that("prepare_x() works", {
   data$pheno_tbl[["discrete_var"]] <- as.character(data$pheno_tbl[["discrete_var"]])
   model$include_from_continuous_pheno <- "discrete_var"
   expect_error(prepare_x(data = data, model = model, quiet = TRUE), "must be numeric")
+
+  model$include_from_continuous_pheno <- NULL
+  data$cohort <- "test|train"
+  expect_error(prepare_x(data = data, model = model, quiet = TRUE), 
+    "All patients are in the same cohort")
 })
 
-test_that("prepare_y() works", {
+test_that("binarize_y() works", {
 
-  pheno_tbl <- tibble::tibble(
-    "pfs" = c(1.5, 2.5, 3.0, 4.0),
-    "prog" = c(0, 1, 0, 0),
-    "use_column" = c("A", "B", "C", "D"),
-    "patient" = 1:4
-  )
-  data <- Data$new(
-    name = "Mock et al. (2023)",
-    directory = "some_dir",
-    train_prop = 0.8,
-    patient_id_col = "patient",
-    pivot_time_cutoff = 2,
-    time_to_event_col = "pfs",
-    event_col = "prog"
-  )
-  data$pheno_tbl <- pheno_tbl
-  model <- Model$new(
-    name = "zerosum",
-    directory = "some_dir",
-    fitter = ptk_zerosum,
-    split_index = 1,
-    time_cutoffs = 1.9
-  )
+  y_cox <- matrix(c(c(1.5, 2.5, 1, 3, 2.1), c(0, 1, 1, 0, 1)), ncol = 2)
+  rownames(y_cox) <- paste0("sample_", 1:nrow(y_cox))
+  y_bin <- binarize_y(y_cox, time_cutoff = 2, pivot_time_cutoff = 2)
+  y_exp <- as.matrix(c(NA, 0, 1, 0, 0))
+  rownames(y_exp) <- rownames(y_cox)
+  expect_equal(y_bin, y_exp)
 
-  # Binary response
-  y <- prepare_y(data = data, model = model)[["y_bin"]]
-  y_expected <- matrix(c(NA, 0, 0, 0), ncol = 1)
-  rownames(y_expected) <- pheno_tbl[["patient"]]
-  colnames(y_expected) <- "time_cutoff_1.9"
-  expect_equal(y, y_expected)
-  expect_type(y, "double")
+  y_bin <- binarize_y(y_cox, time_cutoff = Inf, pivot_time_cutoff = 2)
+  expect_equal(y_bin, y_exp)
 
-  model$time_cutoffs <- Inf
-  y <- prepare_y(data = data, model = model)[["y_bin"]]
-  colnames(y_expected) <- "time_cutoff_2"
-  expect_equal(y, y_expected)
+  y_bin <- binarize_y(y_cox, time_cutoff = 2.2, pivot_time_cutoff = 2)
+  y_exp[, 1] <- c(NA, 0, 1, 0, 1)
+  expect_equal(y_bin, y_exp)
+})
 
-  model$time_cutoffs <- 3.5
-  y_expected[, 1] <- c(NA, 1, NA, 0)
-  colnames(y_expected) <- "time_cutoff_3.5"
-  y <- prepare_y(data = data, model = model)[["y_bin"]]
-  expect_equal(y, y_expected)
-  
-  # survival_censored response
-  model$time_cutoffs <- Inf
-  y <- prepare_y(data = data, model = model)[["y_cox"]]
-  y_expected <- pheno_tbl[, c("pfs", "prog")] |> as.matrix()
-  rownames(y_expected) <- pheno_tbl[["patient"]]
-  colnames(y_expected) <- model$response_colnames
-  expect_equal(y, y_expected)
+test_that("censor_y() works", {
 
-  model$time_cutoffs <- 2.7
-  y <- prepare_y(data = data, model = model)[["y_cox"]]
-  y_expected[c(3, 4), 1] <- model$time_cutoffs
-  y_expected[c(3, 4), 2] <- 0
-  expect_equal(y, y_expected)
+  y_cox <- matrix(c(c(1.5, 2.5, 1, 3, 2.1), c(0, 1, 1, 0, 1)), ncol = 2)
+  rownames(y_cox) <- paste0("sample_", 1:nrow(y_cox))
+  y_cox_cens <- censor_y(y_cox, time_cutoff = 2)
+  y_exp <- matrix(c(c(1.5, 2, 1, 2, 2), c(0, 0, 1, 0, 0)), ncol = 2)
+  rownames(y_exp) <- rownames(y_cox)
+  expect_equal(y_cox_cens, y_exp)
+
+  y_cox_cens <- censor_y(y_cox, time_cutoff = 2.2)
+  y_exp[, 1] <- c(1.5, 2.2, 1, 2.2, 2.1)
+  y_exp[, 2] <- c(0, 0, 1, 0, 1)
+  expect_equal(y_cox_cens, y_exp)
 })
 
 test_that("mean_impute() works", {

@@ -9,7 +9,7 @@ data_initialize <- function(self, private, name, directory, train_prop,
     stopifnot(is.numeric(pivot_time_cutoff))
     stopifnot(is.character(expr_file))
     stopifnot(is.character(pheno_file))
-    stopifnot(is.null(cohort) || is.character(cohort))
+    stopifnot(is.character(cohort))
     stopifnot(is.character(patient_id_col))
     stopifnot(is.character(time_to_event_col))
     stopifnot(is.character(event_col))

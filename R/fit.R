@@ -37,9 +37,10 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
             args = c(
                 list(
                     x = prep[["x"]], 
-                    y_bin = prep[["y_bin"]], 
                     y_cox = prep[["y_cox"]], 
-                    combine_n_max_categorical_features = self$combine_n_max_categorical_features
+                    time_cutoffs = model$time_cutoffs,
+                    combine_n_max_categorical_features = self$combine_n_max_categorical_features,
+                    pivot_time_cutoff = data$pivot_time_cutoff
                 ),
                 self$hyperparams
             )

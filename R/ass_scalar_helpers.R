@@ -47,20 +47,15 @@ ass_scalar_assess <- function(self, private, data, model, quiet){
 ass_scalar_assess_center <- function(self, private, data, model_list,
     mirror, quiet){
 
-    cohorts <- data$cohort
-    if(is.null(cohorts)) cohorts <- "test"
-    digits <- self$round_digits
-
     if (is.null(data$expr_mat) || is.null(data$pheno_tbl)) data$read()
     
+    # One model corresponds to one row in result tibble
     core <- function(i){
         model <- model_list[[i]]
         if (!quiet) message("Assessing ", model$name)
-        m <- length(model$time_cutoffs)
         res_tbl <- tibble::tibble(
-            "model" = character(m),
-            "cohort" = character(m),
-            "cutoff" = numeric(m)
+            "model" = model$name,
+            "cohort" = data$cohort
         )
         if (length(self$metrics) == 1) {
             ncol_addon <- 4
@@ -69,75 +64,55 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
             ncol_addon <- length(self$metrics)
             colnames_addon <- self$metrics
         }
-        addon_mat <- matrix(.0, nrow = m, ncol = ncol_addon)
+        addon_mat <- matrix(.0, nrow = 1, ncol = ncol_addon)
         colnames(addon_mat) <- colnames_addon
         addon_tbl <- tibble::as_tibble(addon_mat)
         res_tbl <- dplyr::bind_cols(res_tbl, addon_tbl)
-        for(j in 1:m){
-            time_cutoff <- model$time_cutoffs[j]
-            model_cutoff <- model$at_time_cutoff(time_cutoff)
-            res_tbl[j, 1] <- model$name
-            res_tbl[j, 2] <- data$cohort
-            res_tbl[j, 3] <- time_cutoff
-            metric_mat <- self$assess(
-                data,
-                model = model_cutoff,
-                quiet = quiet
-            )
-            if (length(self$metrics) == 1) {
-                metric <- metric_mat[, 1]
+        metric_mat <- self$assess(
+            data,
+            model = model,
+            quiet = quiet
+        )
+        if (length(self$metrics) == 1) {
+            metric <- metric_mat[, 1]
+            metric <- metric[!is.na(metric)]
+            if (length(metric) == 0) {
+                res_tbl[1, 3:6] <- NA
+                next
+            }
+            res_tbl[1, 3] <- round(mean(metric), digits = self$round_digits) 
+            res_tbl[1, 4] <- round(stats::sd(metric), digits = self$round_digits)
+            res_tbl[1, 5] <- round(min(metric), digits = self$round_digits)
+            res_tbl[1, 6] <- round(max(metric), digits = self$round_digits)
+        } else {
+            for(k in seq_along(self$metrics)){
+                metric <- metric_mat[, k]
                 metric <- metric[!is.na(metric)]
                 if (length(metric) == 0) {
-                    res_tbl[j, 4:7] <- NA
+                    res_tbl[1, 2 + k] <- NA
                     next
                 }
-                res_tbl[j, 4] <- round(mean(metric), digits = digits) 
-                res_tbl[j, 5] <- round(stats::sd(metric), digits = digits)
-                res_tbl[j, 6] <- round(min(metric), digits = digits)
-                res_tbl[j, 7] <- round(max(metric), digits = digits)
-            } else {
-                for(k in seq_along(self$metrics)){
-                    metric <- metric_mat[, k]
-                    metric <- metric[!is.na(metric)]
-                    if (length(metric) == 0) {
-                        res_tbl[j, 3 + k] <- NA
-                        next
-                    }
-                    res_tbl[j, 3 + k] <- round(mean(metric), digits = digits)
-                }
+                res_tbl[1, 2 + k] <- round(mean(metric), digits = self$round_digits)
             }
         }
         res_tbl
     }
 
-    res_tbl_list <- list()
-    for(cohort in cohorts){
-        data$cohort <- cohort
-        tbl_list <- lapply(seq_along(model_list), core)
-        res_tbl <- dplyr::bind_rows(tbl_list)
-        sortby <- ifelse(length(self$metrics) == 1, "mean", self$metrics[1])
-        res_tbl <- res_tbl[order(-res_tbl[[sortby]]), ]
-        res_tbl_list[[cohort]] <- res_tbl
-        file <- self$file
-        if(!is.null(file)){
-            if(cohort == "test")
-                file <- mirror_path(
-                    filepath = file,
-                    mirror = mirror
-                )
-            if(!dir.exists(dirname(file)))
-                dir.create(dirname(file))
-            comment <- paste0("# ", data$name, ", ", data$time_to_event_col, " < ", 
-                data$pivot_time_cutoff)
-            header <- paste0(colnames(res_tbl), collapse = ",")
-            readr::write_lines(c(comment, header), file = file)
-            readr::write_csv(res_tbl, file = file, append = TRUE)
-            if(!quiet)
-                message("Writing ", file)
-        }
+    tbl_list <- lapply(seq_along(model_list), core)
+    res_tbl <- dplyr::bind_rows(tbl_list)
+    sortby <- ifelse(length(self$metrics) == 1, "mean", self$metrics[1])
+    res_tbl <- res_tbl[order(-res_tbl[[sortby]]), ]
+    if(!is.null(self$file)){
+        if(!dir.exists(dirname(self$file))) dir.create(dirname(self$file))
+        comment <- paste0("# ", data$name, " | ", data$time_to_event_col, " < ", 
+            data$pivot_time_cutoff)
+        header <- paste0(colnames(res_tbl), collapse = ",")
+        readr::write_lines(c(comment, header), file = self$file)
+        readr::write_csv(res_tbl, file = self$file, append = TRUE)
+        if(!quiet)
+            message("Writing ", self$file)
     }
-    data$cohort <- cohorts # No side effects
-    return(dplyr::bind_rows(res_tbl_list))
+    return(res_tbl)
 }
 
 get_metric <- function(

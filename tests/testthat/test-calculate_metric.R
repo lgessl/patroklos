@@ -74,7 +74,8 @@ test_that("logrank_metric() works", {
     directory = "mock",
     train_prop = .66,
     pivot_time_cutoff = 2,
-    time_to_event_col = "pfs_years"
+    time_to_event_col = "pfs_years",
+    cohort = "train"
   )
 
   estimate <- rnorm(n_samples)

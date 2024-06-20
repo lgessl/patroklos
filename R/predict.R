@@ -1,10 +1,5 @@
 model_predict <- function(self, private, data, quiet){
 
-    if(length(self$time_cutoffs) > 1L)
-        stop("Multiple time cutoffs are not supported")
-    if(is.null(data$cohort))
-        stop("You need to specify the cohort in the Data object")
-
     # Retrieve model
     fit_path <- file.path(self$directory, self$fit_file)
     if(!file.exists(fit_path)){
@@ -26,6 +21,8 @@ model_predict <- function(self, private, data, quiet){
     for(i in self$split_index){
         split_name <- paste0(data$split_col_prefix, i)
         fit <- fits[[split_name]]
+        if(is.null(fit))
+            stop("No fit found for split ", split)
         split_model <- self$clone()
         split_model$split_index <- i
         split_model$time_cutoffs <- data$pivot_time_cutoff
@@ -36,18 +33,17 @@ model_predict <- function(self, private, data, quiet){
             stop("No max_combo attribute found in fit object for split ", split)
         split_model$combine_n_max_categorical_features <- max_combo
         prep <- data$prepare(split_model, quiet = quiet)
-        x_y <- intersect_by_names(prep[["x"]], prep[["y_bin"]], rm_na = c(TRUE, TRUE))
-        x <- x_y[[1]]
-        actual <- x_y[[2]][, 1]
-        if(is.null(fit))
-            stop("No fit found for split ", split)
-        predicted <- predict(fit, newx = x)
+        y_bin <- binarize_y(y_cox = prep[["y_cox"]], time_cutoff = 
+            data$pivot_time_cutoff, pivot_time_cutoff = data$pivot_time_cutoff)
+        xy <- intersect_by_names(prep[["x"]], y_bin, rm_na = c(TRUE, TRUE))
+        actual <- xy[[2]][, 1]
+        predicted <- predict(fit, newx = xy[[1]])
         if(is.matrix(predicted)) {
             if (ncol(predicted) != 1)
                 stop("Predicted matrix must have only one column")
             predicted <- predicted[, 1]
         } 
-        names(predicted) <- rownames(x)
+        names(predicted) <- rownames(xy[[1]])
         predicted_list[[i]] <- predicted
         actual_list[[i]] <- actual
         if(!is.null(benchmark))
