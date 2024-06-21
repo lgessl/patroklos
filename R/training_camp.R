@@ -40,7 +40,7 @@ training_camp <- function(
         if (skip_on_error) {
             tryCatch(
                 {
-                    model$fit(data, quiet = quiet, msg_prefix = "*** ")
+                    model$fit(data, quiet = quiet, msg_prefix = "** ")
                 }, 
                 error = function(cnd){
                     warning("*** Error while fitting ", model$name, 

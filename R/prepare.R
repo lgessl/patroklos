@@ -127,7 +127,7 @@ prepare_x <- function(
     # Actually and finally subset to cohort
     x <- x[in_cohort_bool, , drop = FALSE]
     if (!quiet)
-        message("Dimensions of prepared x: (", paste(dim(x), collapse = ", "), ").")
+        message("** Dimensions of prepared x: (", paste(dim(x), collapse = ", "), ").")
     attr(x, "li_var_suffix") <- model$li_var_suffix
     return(x)
 }
