@@ -40,7 +40,8 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
                     y_cox = prep[["y_cox"]], 
                     time_cutoffs = split_model$time_cutoffs,
                     combine_n_max_categorical_features = self$combine_n_max_categorical_features,
-                    pivot_time_cutoff = data$pivot_time_cutoff
+                    pivot_time_cutoff = data$pivot_time_cutoff,
+                    val_error_fun = self$val_error_fun
                 ),
                 self$hyperparams
             )

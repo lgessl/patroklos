@@ -5,12 +5,7 @@
 #' validated predictions made by the late model. "Validated prediction" means 
 #' predictions made on independent data like out-of-bag (OOB) or cross-validated 
 #' (CV) predictions.
-#' @param x A numeric matrix holding the predictor features: rows are samples and
-#' columns are features.
-#' @param y_bin Named numeric matrix with one column. Binary response.
-#' @param y_cox Named numeric matrix with two columns. The first column is the
-#' time to event, the second column indicates censoring (1 for event, 0 for
-#' censored).
+#' @inheritParams ptk_zerosum
 #' @param fitter1 A *patroklos-compliant fitter with CV tuning* (see README for 
 #' more details).
 #' @param fitter2 A *patroklos-compliant fitter with validated predictions* (see 
@@ -44,8 +39,8 @@
 #' compared to a full nested cross-validation.  
 nested_pseudo_cv <- function(
     x,
-    y_bin,
-    y_cox,
+    y,
+    val_error_fun,
     fitter1,
     fitter2,
     hyperparams1,
@@ -53,11 +48,11 @@ nested_pseudo_cv <- function(
 ){
     # Input checks
     stopifnot(is.matrix(x) && is.numeric(x))
-    stopifnot(is.numeric(y_bin) || is.factor(y_bin))
-    stopifnot(is.numeric(y_cox) || is.factor(y_cox))
-    if (!all(y_bin %in% c(0, 1, NA))) {
-        stop("y_bin must be binary. But your y_bin has the unique elements: ", 
-            paste(unique(y_bin), collapse = ", "), " (length(y_bin) = ", length(y_bin), 
+    stopifnot(is.numeric(y[["bin"]]) || is.factor(y[["bin"]]))
+    stopifnot(is.numeric(y[["cox"]]) || is.factor(y[["cox"]]))
+    if (!all(y[["bin"]] %in% c(0, 1, NA))) {
+        stop("y[['bin']] must be binary. But your y[['bin']] has the unique elements: ", 
+            paste(unique(y[["bin"]]), collapse = ", "), " (length(y[['bin']]) = ", length(y[["bin"]]), 
             ").")
     }
     stopifnot(is.function(fitter1) && is.function(fitter2))
@@ -68,14 +63,14 @@ nested_pseudo_cv <- function(
     # First stage
     cv1 <- do.call(
         fitter1,
-        c(list(x = x_early, y_bin = y_bin, y_cox = y_cox), hyperparams1)
+        c(list(x = x_early, y = y, val_error_fun = function(y, y_hat) 0), hyperparams1)
     )
     # Second stage
     second_cv <- function(i) {
         x_late <- get_late_x(early_predicted = cv1$val_predict_list[[i]], x = x)    
         if (ncol(x_late) != ncol(x)-ncol(x_early)+1)
             stop("Something went wrong with adding the early model's predictions.")
-        do.call(fitter2, c(list(x = x_late, y_bin = y_bin, y_cox = y_cox), 
+        do.call(fitter2, c(list(x = x_late, y = y, val_error_fun = val_error_fun), 
             hyperparams2))
     }
     cv2_list <- lapply(seq_along(cv1$val_predict_list), second_cv)
@@ -188,17 +183,31 @@ predict.nested_fit <- function(
     y
 }
 
-get_error_rate <- function(y, y_hat){
+#' @title Error rate of a binary classifier
+#' @param y A numeric vector with binary entries, the true outcomes.
+#' @param y_hat A numeric vector with binary entries, the predicted outcomes.
+#' @return Numeric scalar, the error rate.
+#' @export
+error_rate <- function(y, y_hat){
     stopifnot(all(y_hat %in% c(0, 1)))
     mean(y != y_hat)
 }
 
-get_neg_roc_auc <- function(y, y_hat){
+#' @title Negative ROC AUC
+#' @inheritParams error_rate
+#' @param y_hat A numeric vector with continuous entries, the predicted outcomes.
+#' @return Numeric scalar, the negative ROC AUC.
+#' @export
+neg_roc_auc <- function(y, y_hat){
     pred_obj <- ROCR::prediction(predictions = y_hat, labels = y)
     -ROCR::performance(pred_obj, measure = "auc")@y.values[[1]]
 }
 
-get_neg_binomial_log_likelihood <- function(y, y_hat){
-    stopifnot(all(y_hat > 0) & all(y_hat < 1))
-    -sum(y * log(y_hat) + (1-y) * log(1-y_hat))
+#' @title Negative binomial log-likelihood
+#' @inheritParams neg_roc_auc
+#' @return Numeric scalar, the negative binomial log-likelihood.
+#' @export
+neg_binomial_log_likelihood <- function(y, y_hat){
+    stopifnot(all(y_hat >= 0 & y_hat <= 1))
+    -mean(y * log(y_hat) + (1-y) * log(1-y_hat))
 }

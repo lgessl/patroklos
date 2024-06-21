@@ -59,10 +59,18 @@ predict.ptk_ranger <- function(object, newx, ...){
 #' CV and, if `length(lambda) == 1`, also a patroklos-compliant fitter with 
 #' validated predictions.
 #' @inheritParams zeroSum::zeroSum
-#' @param y_bin Named numeric matrix with one column. Binary response.
-#' @param y_cox Named numeric matrix with two columns. The first column is the
-#' time to event, the second column indicates censoring (1 for event, 0 for
-#' censored).
+#' @param y Named list with entries
+#' * `"bin"`, a named numeric one-column matrix, binary response to be used 
+#' for training,
+#' * `"cox"`, a named numeric two-column matrix to be used for training, time to 
+#' event and event (0 = censoring, 1 = event) in first and second column, respectively.
+#' * `"true"`, a named numeric one-column matrix, binary response to be used for
+#' calculating the CV error.
+#' @param val_error_fun Function used to calculate the error of independently 
+#' validated predictions. Must take two numeric vector of equal length:
+#' `y` and `y_hat`, the true and predicted outcomes, respectively, and 
+#' return a numeric scalar; the lower, the better the model. See
+#' [`error_rate()`] or [`neg_roc_auc()`] for examples. 
 #' @param exclude_pheno_from_lasso Logical. If `TRUE`, set LASSO penalty weights
 #' corresponding to features from the pheno data to zero.
 #' @param binarize_predictions numeric or NULL. If not NULL, the predict method 
@@ -73,8 +81,8 @@ predict.ptk_ranger <- function(object, newx, ...){
 #' @export
 ptk_zerosum <- function(
     x,
-    y_bin,
-    y_cox,
+    y,
+    val_error_fun,
     exclude_pheno_from_lasso = TRUE,
     binarize_predictions = NULL,    
     ...,
@@ -101,40 +109,42 @@ ptk_zerosum <- function(
         }
     }
 
+    y4f <- y[["bin"]] # y for fitter
     # Finally prepare y
-    y <- y_bin
-    if (family == "cox") y <- y_cox
-    x_y <- intersect_by_names(x, y, rm_na = c(TRUE, TRUE))
+    if (family == "cox") y4f <- y[["cox"]]
+    x_y <- intersect_by_names(x, y4f, rm_na = c(TRUE, TRUE))
     x <- x_y[[1]]
-    y <- x_y[[2]]
+    y4f <- x_y[[2]]
     if (family == "cox") {
         # zeroSum removes censored samples with time lower than the first event
-        ord <- order(y[, 1], y[, 2])
+        ord <- order(y4f[, 1], y4f[, 2])
         i <- 1
-        while (y[ord[i], 2] == 0) i <- i + 1
+        while (y4f[ord[i], 2] == 0) i <- i + 1
         ord <- ord[i:length(ord)]
         x <- x[ord, , drop = FALSE]
-        y <- y[ord, , drop = FALSE]
+        y4f <- y4f[ord, , drop = FALSE]
     } 
 
-    fit_obj <- zeroSum::zeroSum(x = x, y = y, nFold = nFold, 
+    fit_obj <- zeroSum::zeroSum(x = x, y = y4f, nFold = nFold, 
         zeroSum.weights = zeroSum.weights, penalty.factor = penalty.factor, 
         family = family, ...)
 
-    fit_obj$val_predict_list <- lapply(fit_obj$cv_predict, function(v) {
-        rownames(v) <- rownames(y)
-        v
+    fit_obj$val_predict_list <- lapply(fit_obj$cv_predict, function(y_hat) {
+        rownames(y_hat) <- rownames(y4f)
+        if (family == "binomial") y_hat <- 1/(1+exp(-y_hat))
+        y_hat
     })
     fit_obj$cv_predict <- NULL
-    fit_obj$lambda_min_index <- fit_obj$lambdaMinIndex
+    fit_obj$val_error <- vapply(fit_obj$val_predict_list, function(y_hat) {
+        y_yhat <- intersect_by_names(y[["true"]], y_hat, rm_na = c(TRUE, FALSE))
+        val_error_fun(y_yhat[[1]], y_yhat[[2]])
+    }, numeric(1))
+    fit_obj$lambda_min_index <- which.min(fit_obj$val_error)
+    fit_obj$lambdaMinIndex <- fit_obj$lambda_min_index
     # Lambda seq is often too long because of early stopping
     fit_obj$lambda <- fit_obj$lambda[seq_along(fit_obj$val_predict_list)]
     fit_obj$lambda <- paste("lambda", fit_obj$lambda, sep = "=")
 
-    if (family == "binomial") {
-        fit_obj$val_predict_list <- lapply(fit_obj$val_predict_list,
-            function(v) 1/(1+exp(-v)))
-    }
     if (is.numeric(binarize_predictions))
         fit_obj$val_predict_list <- lapply(fit_obj$val_predict_list,
             function(v) 1 * (v > binarize_predictions))
@@ -144,8 +154,7 @@ ptk_zerosum <- function(
     if (fit_obj$standardize == 0)
         fit_obj$penaltyFactor <- penalty.factor
     fit_obj$binarizePredictions <- binarize_predictions
-    fit_obj$val_error <- fit_obj$cv_stats[, "CV error"]
-    fit_obj$min_error <- fit_obj$val_error[fit_obj$lambdaMinIndex]
+    fit_obj$min_error <- fit_obj$val_error[fit_obj$lambda_min_index]
     class(fit_obj) <- "ptk_zerosum"
     return(fit_obj)
 }

@@ -6,8 +6,8 @@
 \usage{
 ptk_zerosum(
   x,
-  y_bin,
-  y_cox,
+  y,
+  val_error_fun,
   exclude_pheno_from_lasso = TRUE,
   binarize_predictions = NULL,
   ...,
@@ -22,11 +22,21 @@ ptk_zerosum(
 regression requires data on the log scale, i.e. x should be
 log-transformed data.}
 
-\item{y_bin}{Named numeric matrix with one column. Binary response.}
+\item{y}{Named list with entries
+\itemize{
+\item \code{"bin"}, a named numeric one-column matrix, binary response to be used
+for training,
+\item \code{"cox"}, a named numeric two-column matrix to be used for training, time to
+event and event (0 = censoring, 1 = event) in first and second column, respectively.
+\item \code{"true"}, a named numeric one-column matrix, binary response to be used for
+calculating the CV error.
+}}
 
-\item{y_cox}{Named numeric matrix with two columns. The first column is the
-time to event, the second column indicates censoring (1 for event, 0 for
-censored).}
+\item{val_error_fun}{Function used to calculate the error of independently
+validated predictions. Must take two numeric vector of equal length:
+\code{y} and \code{y_hat}, the true and predicted outcomes, respectively, and
+return a numeric scalar; the lower, the better the model. See
+\code{\link[=error_rate]{error_rate()}} or \code{\link[=neg_roc_auc]{neg_roc_auc()}} for examples.}
 
 \item{exclude_pheno_from_lasso}{Logical. If \code{TRUE}, set LASSO penalty weights
 corresponding to features from the pheno data to zero.}

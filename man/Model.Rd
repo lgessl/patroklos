@@ -24,6 +24,8 @@ stores it and predicts from it.
 
 \item{\code{time_cutoffs}}{Threshold and censor the outcome accordingly.}
 
+\item{\code{val_error_fun}}{Calculate the error of independently validated predictions.}
+
 \item{\code{hyperparams}}{Optional arguments passed to \code{fitter}.}
 
 \item{\code{response_colnames}}{Use as column names for the response matrix.}
@@ -62,7 +64,6 @@ observations in a combined (categorical) feature}
 \item \href{#method-Model-new}{\code{Model$new()}}
 \item \href{#method-Model-fit}{\code{Model$fit()}}
 \item \href{#method-Model-predict}{\code{Model$predict()}}
-\item \href{#method-Model-at_time_cutoff}{\code{Model$at_time_cutoff()}}
 \item \href{#method-Model-clone}{\code{Model$clone()}}
 }
 }
@@ -78,6 +79,7 @@ Create a new Model instance.
   directory,
   split_index,
   time_cutoffs,
+  val_error_fun,
   hyperparams = NULL,
   response_colnames = c("time", "status"),
   include_from_continuous_pheno = NULL,
@@ -121,6 +123,12 @@ occured before or after this value.
 When fitting models to the data, you find every of the
 \code{length(time_cutoffs)} models in a subdirectory of \code{directory} named
 after the respective value in \code{time_cutoffs}.}
+
+\item{\code{val_error_fun}}{Function used to calculate the error of independently
+validated predictions. Must take two numeric vector of equal length:
+\code{y} and \code{y_hat}, the true and predicted outcomes, respectively, and
+return a numeric scalar; the lower, the better the model. See
+\code{\link[=error_rate]{error_rate()}} or \code{\link[=neg_roc_auc]{neg_roc_auc()}} for examples.}
 
 \item{\code{hyperparams}}{list. Optional arguments passed to \code{fitter}, e.g. alpha
 in case of an elastic net. Default is \code{list()}, i.e., no arguments other than \code{x}, \code{y}
@@ -191,8 +199,7 @@ A \code{Model} R6 object.
 \if{latex}{\out{\hypertarget{method-Model-fit}{}}}
 \subsection{Method \code{fit()}}{
 Fit the model to a data set for all splits into training
-and test cohort. However, we do not support multiple time
-cutoffs at this step; enabling them is the job of \code{\link[=training_camp]{training_camp()}}.
+and test cohort.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Model$fit(data, quiet = FALSE, msg_prefix = "")}\if{html}{\out{</div>}}
 }
@@ -208,12 +215,6 @@ cutoffs at this step; enabling them is the job of \code{\link[=training_camp]{tr
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Details}{
-This method expects the \code{Model} object to have a single time
-cutoff and the \code{directory} field be set accordingly. You may therefore
-want to apply the \code{at_time_cutoff()} method to the \code{Model} object before.
-}
-
 \subsection{Returns}{
 The \code{Model} object itself with the \code{fits} attribute set to a
 list holding the object returned by the \code{fitter} attribute for every
@@ -256,23 +257,6 @@ benchmark classifier. If \code{data$benchmark} is NULL, it is an empty list.
 }
 
 For every split, the names of all three vectors match.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Model-at_time_cutoff"></a>}}
-\if{latex}{\out{\hypertarget{method-Model-at_time_cutoff}{}}}
-\subsection{Method \code{at_time_cutoff()}}{
-Infer the model at a specific time cutoff.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Model$at_time_cutoff(time_cutoff)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{time_cutoff}}{numeric. The time cutoff to set.}
-}
-\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}

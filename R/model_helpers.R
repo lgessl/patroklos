@@ -1,15 +1,16 @@
 model_initialize <- function(self, private, name, fitter, directory, split_index, 
-    time_cutoffs, hyperparams, response_colnames, include_from_continuous_pheno, 
-    include_from_discrete_pheno, include_expr, li_var_suffix, create_directory, 
-    fit_file, continuous_output, combine_n_max_categorical_features, 
-    combined_feature_min_positive_ratio){
+    time_cutoffs, val_error_fun, hyperparams, response_colnames, 
+    include_from_continuous_pheno, include_from_discrete_pheno, include_expr, 
+    li_var_suffix, create_directory, fit_file, continuous_output, 
+    combine_n_max_categorical_features, combined_feature_min_positive_ratio){
 
     stopifnot(all(time_cutoffs >= 0))
     stopifnot(split_index >= 1)
     stopifnot(is.character(name))
     check_fitter(fitter, hyperparams)
-    stopifnot(is.numeric(time_cutoffs))
     stopifnot(is.numeric(split_index))
+    stopifnot(is.numeric(time_cutoffs))
+    stopifnot(is.function(val_error_fun))
     stopifnot(is.character(response_colnames))
     stopifnot(is.character(include_from_continuous_pheno) || is.null(include_from_continuous_pheno))
     stopifnot(is.character(include_from_discrete_pheno) || is.null(include_from_discrete_pheno))
@@ -32,6 +33,7 @@ model_initialize <- function(self, private, name, fitter, directory, split_index
     self$fitter <- fitter
     self$split_index <- split_index
     self$time_cutoffs <- time_cutoffs
+    self$val_error_fun <- val_error_fun
     self$hyperparams <- hyperparams
     self$response_colnames <- response_colnames
     self$include_from_continuous_pheno <- include_from_continuous_pheno
@@ -46,26 +48,6 @@ model_initialize <- function(self, private, name, fitter, directory, split_index
     self$combined_feature_min_positive_ratio <- combined_feature_min_positive_ratio
 
     invisible(self)
-}
-
-model_at_time_cutoff <- function(
-    self,
-    private,
-    time_cutoff
-){
-    stopifnot(is.numeric(time_cutoff))
-    if(length(time_cutoff) != 1) stop("time_cutoff must be a single number")
-    if(!time_cutoff %in% self$time_cutoffs){
-        stop("time_cutoff must be one of model$time_cutoffs")
-    }
-    model_cutoff <- self$clone()
-    model_cutoff$name <- paste0(self$name, "@", time_cutoff)
-    model_cutoff$time_cutoffs <- time_cutoff
-    model_cutoff$directory <- file.path(
-        self$directory, 
-        stringr::str_replace(as.character(time_cutoff), "\\.", "-")
-    )
-    invisible(model_cutoff)
 }
 
 #' @title To every `Model` in a list of `Model`s, prepend a fixed directory to the

@@ -4,17 +4,36 @@
 \alias{nested_pseudo_cv}
 \title{Nested cross-validation for second-stage OOB predictions}
 \usage{
-nested_pseudo_cv(x, y_bin, y_cox, fitter1, fitter2, hyperparams1, hyperparams2)
+nested_pseudo_cv(
+  x,
+  y,
+  val_error_fun,
+  fitter1,
+  fitter2,
+  hyperparams1,
+  hyperparams2
+)
 }
 \arguments{
-\item{x}{A numeric matrix holding the predictor features: rows are samples and
-columns are features.}
+\item{x}{data as a numeric matrix object (rows=samples). The zero-sum
+regression requires data on the log scale, i.e. x should be
+log-transformed data.}
 
-\item{y_bin}{Named numeric matrix with one column. Binary response.}
+\item{y}{Named list with entries
+\itemize{
+\item \code{"bin"}, a named numeric one-column matrix, binary response to be used
+for training,
+\item \code{"cox"}, a named numeric two-column matrix to be used for training, time to
+event and event (0 = censoring, 1 = event) in first and second column, respectively.
+\item \code{"true"}, a named numeric one-column matrix, binary response to be used for
+calculating the CV error.
+}}
 
-\item{y_cox}{Named numeric matrix with two columns. The first column is the
-time to event, the second column indicates censoring (1 for event, 0 for
-censored).}
+\item{val_error_fun}{Function used to calculate the error of independently
+validated predictions. Must take two numeric vector of equal length:
+\code{y} and \code{y_hat}, the true and predicted outcomes, respectively, and
+return a numeric scalar; the lower, the better the model. See
+\code{\link[=error_rate]{error_rate()}} or \code{\link[=neg_roc_auc]{neg_roc_auc()}} for examples.}
 
 \item{fitter1}{A \emph{patroklos-compliant fitter with CV tuning} (see README for
 more details).}

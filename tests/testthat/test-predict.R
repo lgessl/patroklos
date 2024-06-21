@@ -21,6 +21,7 @@ test_that("model$predict() works", {
     fitter = ptk_zerosum,
     split_index = 1:2,
     time_cutoffs = Inf,
+    val_error_fun = neg_roc_auc,
     hyperparams = list(family = "cox", alpha = 1, nFold = n_fold, 
     lambda = lambda, zeroSum = FALSE)
   )
@@ -31,6 +32,7 @@ test_that("model$predict() works", {
     fitter = ptk_zerosum,
     split_index = 1:2,
     time_cutoffs = 2,
+    val_error_fun = neg_binomial_log_likelihood,
     hyperparams = list(family = "binomial", alpha = 1, nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE)
   )

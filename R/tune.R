@@ -3,11 +3,6 @@
 #' builds a patroklos-compliant fitter with integrated cross validation from 
 #' it.
 #' @param fitter A patroklos-compliant fitter.
-#' @param error A string or a function. How to measure the prediction 
-#' error. If a character string, it must be one of "error_rate", "neg_roc_auc", or 
-#' "neg_binomial_log_likelihood". If a function, it must take two arguments: `y` 
-#' and `y_hat`, and return a numeric scalar. The returned fitter will use it to 
-#' calculate the goodness of validated predictions. 
 #' @param select logical. If `TRUE`, fitter will only return the model that 
 #' minimizes the error. If `FALSE`, fitter will return a `ptk_hypertune` object
 #' with all models and their errors.
@@ -15,26 +10,16 @@
 #' @export
 hypertune <- function(
     fitter, 
-    error = c("error_rate", "neg_roc_auc", "neg_binomial_log_likelihood"),
     select = FALSE
 ){
-    if (is.character(error)) {
-        error <- match.arg(error)
-        error_fun <- paste0("get_", error)
-    } else if (is.function(error)) {
-        error_fun <- error
-    } else {
-        stop("`error` must be a character or a function.")
-    }
     stopifnot(is.logical(select))
     force(fitter)
-    force(error_fun)
 
-    cv_fitter <- function(x, y_bin, y_cox, ...) {
+    cv_fitter <- function(x, y, val_error_fun, ...) {
         # Get all possible combinations of hyperparameters
         grid <- expand.grid(list(...), stringsAsFactors = FALSE)
         fit_obj_list <- lapply(seq(nrow(grid)), function(i) {
-            do.call(fitter, c(list(x = x, y_bin = y_bin, y_cox = y_cox), 
+            do.call(fitter, c(list(x = x, y_bin = y[["bin"]], y_cox = y[["cox"]]), 
                 as.list(grid[i, ])))
         })
         # Get rid of NAs, i.e. invalid hyperparameters
@@ -49,15 +34,14 @@ hypertune <- function(
             sep = "=", collapse = ", "))
         # Evaluate according to error
         error_v <- vapply(ptk_hypertune$val_predict_list, function(y_hat) {
-            y_yhat <- intersect_by_names(y_bin, y_hat, rm_na = c(TRUE, FALSE))
-            do.call(error_fun, y_yhat)
+            y_yhat <- intersect_by_names(y[["true"]], y_hat, rm_na = c(TRUE, FALSE))
+            val_error_fun(y_yhat[[1]], y_yhat[[2]])
         }, numeric(1))
         ptk_hypertune$lambda_min_index <- which.min(error_v)
         ptk_hypertune$lambda_min <- ptk_hypertune$lambda[ptk_hypertune$lambda_min_index]
         ptk_hypertune$val_predict <- ptk_hypertune$val_predict_list[[ptk_hypertune$lambda_min_index]]
         ptk_hypertune$val_error <- error_v
         ptk_hypertune$min_error <- error_v[ptk_hypertune$lambda_min_index]
-        ptk_hypertune$error_name <- error_fun
         class(ptk_hypertune) <- "ptk_hypertune"
         if (select) {
             fit_obj_list[-ptk_hypertune$lambda_min_index] <- NA
@@ -89,7 +73,7 @@ unitune <- function(fitter) {
     force(fitter)
 
     unifitter <- function(x, y_cox, time_cutoffs, 
-        combine_n_max_categorical_features, pivot_time_cutoff, ...) {
+        combine_n_max_categorical_features, pivot_time_cutoff, val_error_fun, ...) {
         # Get all possible combinations of time_cutoffs, combine_n_max_categorical_features
         grid <- expand.grid(list(
                 "time cutoff" = time_cutoffs, 
@@ -100,10 +84,13 @@ unitune <- function(fitter) {
             n_combo_max <- grid[i, "n combo max"]
             time_cutoff <- grid[i, "time cutoff"]
             x <- trim_combos(x, n_combo_max) 
-            y_bin <- binarize_y(y_cox = y_cox, time_cutoff = time_cutoff, 
+            y <- list()
+            y[["bin"]] <- binarize_y(y_cox = y_cox, time_cutoff = time_cutoff, 
                 pivot_time_cutoff = pivot_time_cutoff)
-            y_cox_censor <- censor_y(y_cox, time_cutoff)
-            fit_obj <- fitter(x = x, y_bin = y_bin, y_cox = y_cox_censor, ...)
+            y[["cox"]] <- censor_y(y_cox, time_cutoff)
+            y[["true"]] <- binarize_y(y_cox = y_cox, time_cutoff = 
+                pivot_time_cutoff, pivot_time_cutoff = pivot_time_cutoff)
+            fit_obj <- fitter(x = x, y = y, val_error_fun, ...)
             fit_obj$combine_n_max_categorical_features <- n_combo_max
             fit_obj$time_cutoff <- time_cutoff
             fit_obj

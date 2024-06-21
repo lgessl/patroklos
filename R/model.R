@@ -15,6 +15,8 @@ Model <- R6::R6Class("Model",
         split_index = NULL,
         #' @field time_cutoffs Threshold and censor the outcome accordingly.
         time_cutoffs = NULL,
+        #' @field val_error_fun Calculate the error of independently validated predictions.
+        val_error_fun = NULL,
         #' @field hyperparams Optional arguments passed to `fitter`.
         hyperparams = NULL,
         #' @field response_colnames Use as column names for the response matrix.
@@ -48,12 +50,14 @@ Model <- R6::R6Class("Model",
 
         #' @description Create a new Model instance.
         #' @param name string. A telling name for the model.
-        #' @param directory string. The directory to store the models in. For every value in 
-        #' `time_cutoffs`, find the corresponding model in a subdirectory named after this value. 
         #' @param fitter function. The model fitting function to be used. Must take `x` and
         #' `y` as first two positional arguments. Further arguments can be passed via
         #' `hyperparams` (below). Its return value must be an S3 object with a `plot()` 
         #' method, and (ideally, for assessment) with a `predict()` method. Default is `NULL`.
+        #' @param directory string. The directory to store the models in. For every value in 
+        #' `time_cutoffs`, find the corresponding model in a subdirectory named after this value. 
+        #' @param split_index integer vector. Split the given data into training and test samples 
+        #' `length(split_index)` times, i.e., every index in `split_index` will get its own split. 
         #' @param time_cutoffs numeric vector. This governs how the provided 
         #' response looks like. For every value of `time_cutoffs`, specify a model 
         #' on the following response data:
@@ -65,8 +69,11 @@ Model <- R6::R6Class("Model",
         #' When fitting models to the data, you find every of the 
         #' `length(time_cutoffs)` models in a subdirectory of `directory` named 
         #' after the respective value in `time_cutoffs`.
-        #' @param split_index integer vector. Split the given data into training and test samples 
-        #' `length(split_index)` times, i.e., every index in `split_index` will get its own split. 
+        #' @param val_error_fun Function used to calculate the error of independently 
+        #' validated predictions. Must take two numeric vector of equal length:
+        #' `y` and `y_hat`, the true and predicted outcomes, respectively, and 
+        #' return a numeric scalar; the lower, the better the model. See
+        #' [`error_rate()`] or [`neg_roc_auc()`] for examples. 
         #' @param hyperparams list. Optional arguments passed to `fitter`, e.g. alpha 
         #' in case of an elastic net. Default is `list()`, i.e., no arguments other than `x`, `y`
         #' passed to `fitter`.
@@ -116,6 +123,7 @@ Model <- R6::R6Class("Model",
             directory,
             split_index,
             time_cutoffs,
+            val_error_fun,
             hyperparams = NULL,
             response_colnames = c("time", "status"),
             include_from_continuous_pheno = NULL,
@@ -129,7 +137,7 @@ Model <- R6::R6Class("Model",
             combined_feature_min_positive_ratio = 0.04
         )
             model_initialize(self, private, name, fitter, directory, split_index, 
-                time_cutoffs, hyperparams, response_colnames, 
+                time_cutoffs, val_error_fun, hyperparams, response_colnames, 
                 include_from_continuous_pheno, include_from_discrete_pheno, 
                 include_expr, li_var_suffix, create_directory, 
                 fit_file, continuous_output,
@@ -137,8 +145,7 @@ Model <- R6::R6Class("Model",
                 combined_feature_min_positive_ratio),  
 
         #' @description Fit the model to a data set for all splits into training 
-        #' and test cohort. However, we do not support multiple time 
-        #' cutoffs at this step; enabling them is the job of [`training_camp()`].
+        #' and test cohort. 
         #' @param data Data object. Read it in if needed.
         #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
         #' @param msg_prefix string. Prefix for messages. Default is `""`.
@@ -146,9 +153,6 @@ Model <- R6::R6Class("Model",
         #' list holding the object returned by the `fitter` attribute for every
         #' split. 
         #' @seealso [`training_camp()`].
-        #' @details This method expects the `Model` object to have a single time
-        #' cutoff and the `directory` field be set accordingly. You may therefore 
-        #' want to apply the `at_time_cutoff()` method to the `Model` object before.
         fit = function(
             data,
             quiet = FALSE,
@@ -182,12 +186,7 @@ Model <- R6::R6Class("Model",
             data,
             quiet = FALSE
         )
-            model_predict(self, private, data, quiet),
-
-        #' @description Infer the model at a specific time cutoff.
-        #' @param time_cutoff numeric. The time cutoff to set.
-        at_time_cutoff = function(time_cutoff)
-            model_at_time_cutoff(self, private, time_cutoff)
+            model_predict(self, private, data, quiet)
     ),
 
     private = list(

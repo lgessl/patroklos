@@ -4,20 +4,10 @@
 \alias{hypertune}
 \title{Build a fitter with integrated cross-validation from a fitter}
 \usage{
-hypertune(
-  fitter,
-  error = c("error_rate", "neg_roc_auc", "neg_binomial_log_likelihood"),
-  select = FALSE
-)
+hypertune(fitter, select = FALSE)
 }
 \arguments{
 \item{fitter}{A patroklos-compliant fitter.}
-
-\item{error}{A string or a function. How to measure the prediction
-error. If a character string, it must be one of "error_rate", "neg_roc_auc", or
-"neg_binomial_log_likelihood". If a function, it must take two arguments: \code{y}
-and \code{y_hat}, and return a numeric scalar. The returned fitter will use it to
-calculate the goodness of validated predictions.}
 
 \item{select}{logical. If \code{TRUE}, fitter will only return the model that
 minimizes the error. If \code{FALSE}, fitter will return a \code{ptk_hypertune} object

@@ -7,7 +7,7 @@ test_that("nested_pseudo_cv() works", {
     n_fold <- 2
     lambda <- c(1, 2)
 
-    xyy <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
+    x3y <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
         return_type = "fitter")
     hyperparams1 <- list(family = "binomial", nFold = n_fold, lambda = lambda, 
         zeroSum = FALSE)
@@ -16,8 +16,8 @@ test_that("nested_pseudo_cv() works", {
         skip_on_invalid_input = TRUE)
 
     fit <- nested_pseudo_cv(
-        x = xyy[[1]], y_bin = xyy[[2]], y_cox = xyy[[2]], fitter1 = ptk_zerosum, 
-        fitter2 = hypertune(ptk_ranger, error = "error_rate"), hyperparams1 = 
+        x = x3y[[1]], x3y[2:4], val_error_fun = error_rate, fitter1 = ptk_zerosum, 
+        fitter2 = hypertune(ptk_ranger), hyperparams1 = 
         hyperparams1, hyperparams2 = hyperparams2
     )
     expect_s3_class(fit, "nested_fit")
@@ -29,20 +29,20 @@ test_that("nested_pseudo_cv() works", {
         fit$model1$val_predict_list[[1]] <= 1))
 
     # Logistic regression as late model
-    hyperparams1 <- list(family = "binomial", lambdaSteps = 5, zeroSum = FALSE, 
+    hyperparams1 <- list(family = "binomial", lambdaSteps = 3, zeroSum = FALSE, 
         nFold = n_fold)
-    hyperparams2 <- list(family = "binomial", lambdaSteps = 100, zeroSum = FALSE, 
+    hyperparams2 <- list(family = "binomial", lambdaSteps = 3, zeroSum = FALSE, 
         nFold = n_fold)
-    fit <- nested_pseudo_cv(x = xyy[[1]], y_bin = xyy[[2]], y_cox = xyy[[3]], 
+    fit <- nested_pseudo_cv(x = x3y[[1]], x3y[2:4], val_error_fun = neg_binomial_log_likelihood,
         fitter1 = ptk_zerosum, fitter2 = ptk_zerosum, hyperparams1 = hyperparams1, 
         hyperparams2 = hyperparams2)
 
-    # Binarized cox and cox
-    hyperparams1 <- list(family = "binomial", lambdaSteps = 2, zeroSum = FALSE,
+    # Cox and cox
+    hyperparams1 <- list(family = "cox", lambdaSteps = 2, zeroSum = FALSE,
         nFold = n_fold)
-    hyperparams2 <- list(family = "binomial", lambdaSteps = 2, zeroSum = FALSE, 
+    hyperparams2 <- list(family = "cox", lambdaSteps = 2, zeroSum = FALSE, 
         nFold = n_fold)
-    fit <- nested_pseudo_cv(x = xyy[[1]], y_bin = xyy[[2]], y_cox = xyy[[3]], 
+    fit <- nested_pseudo_cv(x = x3y[[1]], y = x3y[2:4], val_error_fun = neg_roc_auc,
         fitter1 = ptk_zerosum, fitter2 = ptk_zerosum, hyperparams1 = hyperparams1, 
         hyperparams2 = hyperparams2)
 
@@ -51,14 +51,14 @@ test_that("nested_pseudo_cv() works", {
         nFold = n_fold, binarize_predictions = 0.5)
     hyperparams2 <- list(rel_mtry = FALSE, mtry = 1, min.node.size = c(4, 5), 
         classification = TRUE, num.trees = 100, skip_on_invalid_input = TRUE)
-    fit <- nested_pseudo_cv(x = xyy[[1]], y_bin = xyy[[2]], y_cox = xyy[[3]],
-        fitter1 = ptk_zerosum, fitter2 = hypertune(ptk_ranger, error = "error_rate"), 
+    fit <- nested_pseudo_cv(x = x3y[[1]], y = x3y[2:4], val_error_fun = error_rate,
+        fitter1 = ptk_zerosum, fitter2 = hypertune(ptk_ranger), 
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2)
 
     # Errors
-    attr(xyy[[1]], "li_var_suffix") <- "--"
+    attr(x3y[[1]], "li_var_suffix") <- "--"
     expect_error(nested_pseudo_cv(
-        x = xyy[[1]], y_bin = xyy[[2]], y_cox = xyy[[2]], fitter1 = ptk_zerosum, 
+        x = x3y[[1]], y = x3y[2:4], val_error_fun = neg_roc_auc, fitter1 = ptk_zerosum, 
         fitter2 = ptk_ranger, hyperparams1 = hyperparams1, hyperparams2 = hyperparams2 
     ), regexp = "All features are for the early model")
 })
@@ -100,21 +100,21 @@ test_that("predict.nested_fit() works", {
     error_grid <- matrix(1:9, nrow = 3)
     rownames(error_grid) <- c("a", "b", "c")
     colnames(error_grid) <- c("d", "e", "f")
-    xyy <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
+    x3y <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
         return_type = "fitter")
-    x_early <- xyy[[1]][, seq(n_genes)]
-    attr(x_early, "li_var_suffix") <- attr(xyy[[1]], "li_var_suffix")
-    x_late <- xyy[[1]][, -seq(n_genes)]
+    x_early <- x3y[[1]][, seq(n_genes)]
+    attr(x_early, "li_var_suffix") <- attr(x3y[[1]], "li_var_suffix")
+    x_late <- x3y[[1]][, -seq(n_genes)]
 
-    fit1 <- ptk_zerosum(x = x_early, y_bin = xyy[[2]], y_cox = xyy[[3]], 
+    fit1 <- ptk_zerosum(x = x_early, y = x3y[2:4], val_error_fun = neg_roc_auc,
         nFold = n_fold, lambdaSteps = 5)
     xx <- intersect_by_names(fit1$val_predict_list[[1]], x_late)
     fit2 <- ptk_ranger(x = cbind(xx[[1]], xx[[2]]), 
-        rel_mtry = FALSE, y_bin = xyy[[2]], y_cox = xyy[[3]], mtry = 3, 
+        rel_mtry = FALSE, y_bin = x3y[[2]], y_cox = x3y[[3]], mtry = 3, 
         min.node.size = 4, classification = TRUE, num.trees = 100) 
     n_fit <- nested_fit(fit1, fit2, error_grid = error_grid, best_hyperparams = 
         list(model1 = "lambda=1.5", model2 = "mtry = 3"))
-    proj <- predict(n_fit, xyy[[1]])
+    proj <- predict(n_fit, x3y[[1]])
 
     expect_equal(length(proj), n_samples)
     expect_true(all(proj <= 1 & proj >= 0))
@@ -122,8 +122,8 @@ test_that("predict.nested_fit() works", {
 
     # Check if predictions are sensitive to lambda_min_index
     x_late <- cbind(xx[[1]], xx[[2]])
-    attr(x_late, "li_var_suffix") <- attr(xyy[[1]], "li_var_suffix")
-    fit2 <- ptk_zerosum(x = x_late, y_bin = xyy[[2]], y_cox = xyy[[3]], 
+    attr(x_late, "li_var_suffix") <- attr(x3y[[1]], "li_var_suffix")
+    fit2 <- ptk_zerosum(x = x_late, y = x3y[2:4], val_error_fun = neg_roc_auc,
         nFold = n_fold, lambdaSteps = 2)
     # Make sure second model actually uses prediction of model 1, and that it 
     # does so differently
@@ -132,13 +132,13 @@ test_that("predict.nested_fit() works", {
     n_fit <- nested_fit(fit1, fit2, error_grid = error_grid, best_hyperparams = 
         list(model1 = "lambda=1.5", model2 = "lambda=1.5"))
     n_fit$model1$lambda_min_index <- 1
-    proj1 <- predict(n_fit, xyy[[1]])
+    proj1 <- predict(n_fit, x3y[[1]])
     n_fit$model1$lambda_min_index <- 2
-    proj2 <- predict(n_fit, xyy[[1]])
+    proj2 <- predict(n_fit, x3y[[1]])
     expect_false(all(proj1 == proj2))
 })
 
-test_that("get_<metric> works", {
+test_that("error functions work", {
 
     set.seed(432)
 
@@ -147,16 +147,16 @@ test_that("get_<metric> works", {
     y <- sample(0:1, n_samples, replace = TRUE)
     y_hat <- sample(0:1, n_samples, replace = TRUE)
 
-    acc <- get_error_rate(y, y_hat)
+    acc <- error_rate(y, y_hat)
     expect_true(acc >= 0 & acc <= 1)
     y_hat[1] <- -1.5
-    expect_error(get_error_rate(y, y_hat))
+    expect_error(error_rate(y, y_hat))
 
     y_hat <- runif(n_samples)
-    auc <- get_neg_roc_auc(y, y_hat)
+    auc <- neg_roc_auc(y, y_hat)
     expect_true(auc >= -1 & auc <= 0)
 
-   bll <- get_neg_binomial_log_likelihood(y, y_hat) 
+   bll <- neg_binomial_log_likelihood(y, y_hat) 
    y_hat[1] <- 1.1
-   expect_error(get_neg_binomial_log_likelihood(y, y_hat))
+   expect_error(neg_binomial_log_likelihood(y, y_hat))
 })

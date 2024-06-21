@@ -9,6 +9,7 @@ test_that("prepare() works", {
     directory = "some_dir",
     split_index = 1,
     time_cutoffs = Inf,
+    val_error_fun = neg_roc_auc,
     hyperparams = list(family = "cox", zeroSum = FALSE),
     include_from_continuous_pheno = c("continuous_var"),
     include_from_discrete_pheno = c("discrete_var", "abc_gcb", "ipi_age"),
@@ -33,6 +34,7 @@ test_that("prepare_x() works", {
     fitter = ptk_zerosum,
     split_index = 1,
     time_cutoffs = 2.,
+    val_error_fun = neg_roc_auc,
     include_from_continuous_pheno = "continuous_var",
     include_from_discrete_pheno = "discrete_var",
     li_var_suffix = "APP"

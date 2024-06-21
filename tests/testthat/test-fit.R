@@ -24,6 +24,7 @@ test_that("Model$fit() works", {
     fitter = ptk_zerosum,
     split_index = 1,
     time_cutoffs = 2,
+    val_error_fun = neg_roc_auc,
     hyperparams = list(family = "cox", nFold = n_fold, lambda = lambda, 
       zeroSum = FALSE)
   )
@@ -55,6 +56,7 @@ test_that("Model$fit() works", {
     fitter = ptk_zerosum,
     split_index = 1:2,
     time_cutoffs = 2,
+    val_error_fun = neg_roc_auc,
     hyperparams = list(family = "binomial", nFold = n_fold, lambda = lambda, 
       zeroSum = FALSE),
     include_from_discrete_pheno = c("ipi_age", "abc_gcb"),
@@ -83,9 +85,10 @@ test_that("Model$fit() works", {
       directory = file.path(dir, "model5"),
       split_index = 1,
       time_cutoffs = Inf,
+      val_error_fun = error_rate,
       hyperparams = list(
         fitter1 = ptk_zerosum,
-        fitter2 = hypertune(ptk_ranger, error = "error_rate"),
+        fitter2 = hypertune(ptk_ranger),
         hyperparams1 = list(
           family = "cox",
           alpha = 1,

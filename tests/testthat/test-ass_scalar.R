@@ -35,11 +35,12 @@ test_that("AssScalar$assess() works", {
     model <- Model$new(
       name = "rf",
       directory = file.path(model_dir, "rf"),
-      fitter = hypertune(ptk_ranger, "error_rate", select = TRUE),
+      fitter = hypertune(ptk_ranger, select = TRUE),
       hyperparams = list(rel_mtry = TRUE, mtry = 0.98, num.trees = 100, 
         min.node.size = 3, classification = TRUE),
       split_index = 1:2,
       time_cutoffs = 2,
+      val_error_fun = error_rate,
       fit_file = "model.rds"
     )
     data$cohort <- "train"
@@ -69,6 +70,7 @@ test_that("AssScalar$assess() works", {
         nFold = 1),
       split_index = 1:2,
       time_cutoffs = 2,
+      val_error_fun = neg_roc_auc
     )
     model$fit(data, quiet = TRUE)
     res <- ass_scalar$assess(data, model, quiet = TRUE)
@@ -107,6 +109,7 @@ test_that("AssScalar$assess_center() works", {
       lambda = lambda, zeroSum = FALSE),
     split_index = 1,
     time_cutoffs = c(1.5, 2),
+    val_error_fun = neg_binomial_log_likelihood,
     include_from_discrete_pheno = c("discrete_var", "abc_gcb", "ipi_age"),
     fit_file = "model2.rds",
     combine_n_max_categorical_features = 3,
@@ -115,11 +118,12 @@ test_that("AssScalar$assess_center() works", {
   model2 <- Model$new(
     name = "rf",
     directory = file.path(dir, "models/rf"),
-    fitter = ptk_ranger,
+    fitter = hypertune(ptk_ranger),
     hyperparams = list(rel_mtry = FALSE, mtry = 2, num.trees = 100, min.node.size = 3,
       classification = TRUE),
     split_index = 1:2,
     time_cutoffs = c(1.5, 2),
+    val_error_fun = error_rate,
     fit_file = "model3.rds",
     include_from_discrete_pheno = "discrete_var"
   )

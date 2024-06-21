@@ -77,6 +77,7 @@ test_that("Ass2d$assess() works", {
     fitter = ptk_zerosum,
     split_index = 1:2,
     time_cutoffs = 2.,
+    val_error_fun = neg_roc_auc,
     hyperparams = list(family = "cox", alpha = 1, nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE)
   )
@@ -86,6 +87,7 @@ test_that("Ass2d$assess() works", {
     fitter = ptk_zerosum,
     split_index = 1,
     time_cutoffs = 2.,
+    val_error_fun = neg_roc_auc,
     hyperparams = list(family = "binomial", alpha = 1, 
       nFold = n_fold, lambda = lambda, zeroSum = FALSE)
   )
@@ -156,6 +158,7 @@ test_that("Ass2d$assess_center() works", {
     fitter = ptk_zerosum,
     split_index = 1:2,
     time_cutoffs = Inf,
+    val_error_fun = neg_roc_auc,
     hyperparams = list(family = "cox", alpha = 1, nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE)
   )
@@ -167,16 +170,19 @@ test_that("Ass2d$assess_center() works", {
       lambda = lambda, zeroSum = FALSE),
     split_index = 1,
     time_cutoffs = c(1.5, 2),
+    val_error_fun = neg_binomial_log_likelihood,
     include_from_continuous_pheno = "continuous_var",
     include_from_discrete_pheno = "discrete_var"
   )
   model_3 <- Model$new(
     name = "rf",
     directory = file.path(model_dir, "rf"),
-    fitter = ptk_ranger,
-    hyperparams = list(rel_mtry = FALSE, mtry = 2, num.trees = 10),
+    fitter = hypertune(ptk_ranger),
+    hyperparams = list(rel_mtry = FALSE, mtry = 2, num.trees = 20, 
+      min.node.size = 5, classification = TRUE),
     split_index = 1,
     time_cutoffs = 2,
+    val_error_fun = error_rate,
     continuous_output = FALSE,
     include_from_discrete_pheno = c("discrete_var", "abc_gcb", "ipi_age"),
     combine_n_max_categorical_features = 3,
@@ -187,7 +193,8 @@ test_that("Ass2d$assess_center() works", {
   training_camp(
     data = data,
     model_list = model_list,
-    quiet = TRUE
+    quiet = TRUE,
+    skip_on_error = FALSE
   )
 
   data$cohort <- "test"

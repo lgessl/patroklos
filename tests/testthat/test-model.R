@@ -6,6 +6,7 @@ test_that("Model$new() works", {
       directory = "models/cox",
       split_index = 1:2,
       time_cutoffs = c(1.5, 2),
+      val_error_fun = neg_roc_auc,
       continuous_output = TRUE
     )
     expect_equal(model$name, "cox")
@@ -16,24 +17,6 @@ test_that("Model$new() works", {
   
 })
 
-test_that("Model$at_time_cutoff() works", {
-
-  model <- Model$new(
-    name = "cox",
-    fitter = ptk_zerosum,
-    directory = "models/cox",
-    split_index = 1:2,
-    time_cutoffs = c(1.5, 2)
-  )
-
-  model_cutoff <- model$at_time_cutoff(1.5)
-  expect_equal(model_cutoff$name, "cox@1.5")
-  expect_equal(model_cutoff$time_cutoffs, 1.5)
-  expect_equal(model_cutoff$directory, "models/cox/1-5")
-  
-  expect_error(model$at_time_cutoff(5))
-})
-
 test_that("prepend_to_directory() works", {
 
   model1 <- Model$new(
@@ -42,6 +25,7 @@ test_that("prepend_to_directory() works", {
     fitter = ptk_zerosum, 
     split_index = 1, 
     time_cutoffs = 2,
+    val_error_fun = neg_roc_auc,
     continuous_output = TRUE
   )
   model2 <- model1$clone()

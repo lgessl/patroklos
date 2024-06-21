@@ -26,14 +26,16 @@ test_that("split_dataset works", {
     directory = dir,
     fitter = ptk_zerosum,
     split_index = 1:2,
-    time_cutoffs = 2
+    time_cutoffs = 2,
+    val_error_fun = neg_roc_auc
   )
   model_2 <- Model$new(
     name = "dummy2",
     directory = dir,
     fitter = ptk_zerosum,
     split_index = 1,
-    time_cutoffs = 2
+    time_cutoffs = 2,
+    val_error_fun = neg_roc_auc
   )
 
   for(pivot_time_cutoff in list(NULL, 2)){

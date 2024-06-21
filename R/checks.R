@@ -79,7 +79,7 @@ check_fitter <- function(
         stop("optional_args must be a list.")
     }
     parameters <- names(formals(fitter))
-    for(pos_arg in c("x", "y_bin", "y_cox")){
+    for(pos_arg in c("x", "y", "val_error_fun")){
         if(!(pos_arg %in% parameters)){
             stop("fitter must have an argument named '", pos_arg, "'.")
         }

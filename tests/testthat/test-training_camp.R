@@ -23,6 +23,7 @@ test_that("training_camp() works", {
     fitter = ptk_zerosum,
     split_index = 1,
     time_cutoffs = c(1.5, 2),
+    val_error_fun = neg_roc_auc,
     hyperparams = list(family = "cox", nFold = n_fold, lambda = lambda, 
       zeroSum = FALSE)
   )
@@ -33,9 +34,10 @@ test_that("training_camp() works", {
       directory = file.path(dir, "model2"),
       split_index = 1,
       time_cutoffs = 2.,
+      val_error_fun = error_rate,
       hyperparams = list(
           fitter1 = ptk_zerosum,
-          fitter2 = hypertune(ptk_ranger, error = "error_rate"),
+          fitter2 = hypertune(ptk_ranger),
           hyperparams1 = list(
               family = "binomial",
               alpha = 1,

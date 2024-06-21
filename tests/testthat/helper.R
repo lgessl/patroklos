@@ -72,8 +72,12 @@ generate_mock_data <- function(
     y[censored] <- runif(length(censored), 0, 1) * y[censored] 
     y_cox <- cbind(y, progression)
     rownames(y_cox) <- rownames(expr_mat)
-    if (return_type == "fitter") 
-        return(list("x" = x, "y_bin" = y_bin, "y_cox" = y_cox))
+    x3y <- list()
+    x3y[["x"]] <- x
+    x3y[["bin"]] <- binarize_y(y_cox, 1.75, 2)
+    x3y[["cox"]] <- censor_y(y_cox, 3)
+    x3y[["true"]] <- binarize_y(y_cox, 2, 2)
+    if (return_type == "fitter") return(x3y)
 
     pheno_tbl[["pfs_years"]] <- y
     pheno_tbl[["progression"]] <- progression

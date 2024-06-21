@@ -78,21 +78,21 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
             metric <- metric[!is.na(metric)]
             if (length(metric) == 0) {
                 res_tbl[1, 3:6] <- NA
-                next
+            } else {
+                res_tbl[1, 3] <- round(mean(metric), digits = self$round_digits) 
+                res_tbl[1, 4] <- round(stats::sd(metric), digits = self$round_digits)
+                res_tbl[1, 5] <- round(min(metric), digits = self$round_digits)
+                res_tbl[1, 6] <- round(max(metric), digits = self$round_digits)
             }
-            res_tbl[1, 3] <- round(mean(metric), digits = self$round_digits) 
-            res_tbl[1, 4] <- round(stats::sd(metric), digits = self$round_digits)
-            res_tbl[1, 5] <- round(min(metric), digits = self$round_digits)
-            res_tbl[1, 6] <- round(max(metric), digits = self$round_digits)
         } else {
             for(k in seq_along(self$metrics)){
                 metric <- metric_mat[, k]
                 metric <- metric[!is.na(metric)]
                 if (length(metric) == 0) {
                     res_tbl[1, 2 + k] <- NA
-                    next
+                } else {
+                    res_tbl[1, 2 + k] <- round(mean(metric), digits = self$round_digits)
                 }
-                res_tbl[1, 2 + k] <- round(mean(metric), digits = self$round_digits)
             }
         }
         res_tbl
