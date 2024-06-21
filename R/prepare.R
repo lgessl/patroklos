@@ -19,8 +19,8 @@ data_prepare <- function(
         model = model,
         quiet = quiet
     )
-    y_cox <- as.matrix(data$pheno_tbl[, c(data$time_to_event_col, data$event_col)])
-    rownames(y_cox) <- data$pheno_tbl[[data$patient_id_col]]
+    y_cox <- as.matrix(self$pheno_tbl[, c(self$time_to_event_col, self$event_col)])
+    rownames(y_cox) <- self$pheno_tbl[[self$patient_id_col]]
     colnames(y_cox) <- model$response_colnames
 
     # Subset y_cox a bit: we don't need outcomes we can't predict for

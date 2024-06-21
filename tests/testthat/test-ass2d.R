@@ -89,9 +89,7 @@ test_that("Ass2d$assess() works", {
     hyperparams = list(family = "binomial", alpha = 1, 
       nFold = n_fold, lambda = lambda, zeroSum = FALSE)
   )
-  training_camp(list(model_1, model_2), data, quiet = TRUE)
-  model_1 <- model_1$at_time_cutoff(2)
-  model_2 <- model_2$at_time_cutoff(2)
+  training_camp(list(model_1, model_2), data, quiet = TRUE, skip_on_error = FALSE)
 
   # ROCR metrics
   ass2d <- Ass2d$new(
@@ -192,7 +190,7 @@ test_that("Ass2d$assess_center() works", {
     quiet = TRUE
   )
 
-  data$cohort <- c("train", "test")
+  data$cohort <- "test"
   res_dir <- file.path(dir, "results")
   ass2d <- Ass2d$new(
     file = file.path(model_dir, "perf_plot.jpeg"),
@@ -212,9 +210,9 @@ test_that("Ass2d$assess_center() works", {
   ass2d$assess_center(data, model_list, comparison_plot = TRUE, risk_scores = TRUE, 
     quiet = TRUE)
   expect_true(file.exists(ass2d$file))
-  expect_true(file.exists(file.path(res_dir, "logistic/2/scores.jpeg")))
-  expect_true(file.exists(file.path(res_dir, "cox/Inf/rpp_vs_prec.csv")))
-  expect_true(file.exists(file.path(model_dir, "perf_plot.jpeg")))
+  expect_true(file.exists(file.path(res_dir, "logistic/scores.jpeg")))
+  expect_true(file.exists(file.path(res_dir, "cox/rpp_vs_prec.csv")))
+  expect_true(file.exists(file.path(res_dir, "perf_plot.jpeg")))
 
   data$cohort <- "test"
   model_1$split_index <- 1
@@ -233,6 +231,7 @@ test_that("Ass2d$assess_center() works", {
   ass2d$ci_level <- .95
   ass2d$file <- file.path(model_dir, "precision_ci.jpeg")
   ass2d$benchmark <- "ipi"
-  ass2d$assess_center(data, model_list, comparison_plot = FALSE, quiet = TRUE)
-  expect_true(file.exists(file.path(model_dir, "logistic/1-5/rpp_vs_precision_ci.jpeg")))
+  ass2d$assess_center(data, model_list, comparison_plot = FALSE, quiet = TRUE, 
+    model_tree_mirror = NULL)
+  expect_true(file.exists(file.path(model_dir, "logistic/rpp_vs_precision_ci.jpeg")))
 })

@@ -102,68 +102,60 @@ ass2d_assess <- function(self, private, data, model, quiet, msg_prefix){
 ass2d_assess_center <- function(self, private, data, model_list, model_tree_mirror, 
     risk_scores, comparison_plot, quiet){
     
-    cohorts <- data$cohort
-    if(is.null(cohorts)) cohorts <- "test"
-    n_assess <- sum(sapply(model_list, function(m) length(m$time_cutoffs)))
-    perf_tbls <- vector("list", length(cohorts)*n_assess)
-    data$read()
+    if (is.null(data$expr_mat) || is.null(data$pheno_tbl)) data$read()
 
-    if(!quiet) message("\nASSESSING ON ", data$name)
-    i <- 1
-    for(cohort in cohorts){
-        if(!quiet) message("# On ", cohort, " cohort")
-        data$cohort <- cohort
-        for(model in model_list){
-            if (!is.null(model$continuous_output) && !model$continuous_output)
-                next
-            if(!quiet) message("## ", model$name)
-            for(time_cutoff in model$time_cutoffs){
-                if(!quiet) message("### At time cutoff ", time_cutoff)
-                model_cutoff <- model$at_time_cutoff(time_cutoff)
-                this_as2 <- private$infer(
-                    model = model_cutoff,
-                    data = data,
-                    model_tree_mirror = model_tree_mirror
-                )
-                this_as2$assess(
-                    data = data,
-                    model = model_cutoff,
-                    quiet = quiet,
-                    msg_prefix = "#### "
-                )
-                perf_tbls[[i]] <- this_as2$data
-                if(risk_scores)
-                    this_as2$plot_risk_scores(
-                        data = data,
-                        model = model_cutoff,
-                        quiet = quiet,
-                        msg_prefix = "#### "
-                    )
-                i <- i+1
-            }
-        }
-        cohort_as2 <- self$clone()
-        cohort_as2$data <- dplyr::bind_rows(perf_tbls)
-        if(comparison_plot){
-            if(cohort == "test")
-                cohort_as2$file <- mirror_path(
-                    filepath = self$file,
-                    mirror = model_tree_mirror
-                )
-            if(is.null(cohort_as2$title))
-                cohort_as2$title <- paste0(
-                    data$name, " ", data$cohort, ", ", data$time_to_event_col,
-                    " < ", data$pivot_time_cutoff
-                )
-            plot_2d_metric(
-                ass2d = cohort_as2,
-                quiet = TRUE
+    if(!quiet) message("Assessment center on ", data$name, " open")
+    perf_tbls <- vector("list", length(model_list))
+
+    # Single plots
+    for (i in seq_along(model_list)) {
+        model <- model_list[[i]]
+        if (!is.null(model$continuous_output) && !model$continuous_output)
+            next
+        if(!quiet) message("** ", model$name)
+        this_as2 <- private$infer(
+            model = model,
+            data = data,
+            model_tree_mirror = model_tree_mirror
+        )
+        this_as2$assess(
+            data = data,
+            model = model,
+            quiet = quiet,
+            msg_prefix = "**** "
+        )
+        perf_tbls[[i]] <- this_as2$data
+        if(risk_scores)
+            this_as2$plot_risk_scores(
+                data = data,
+                model = model,
+                quiet = quiet,
+                msg_prefix = "**** "
             )
-            if(!quiet)
-                message("# Saving comparative performance plot to ", cohort_as2$file)
-        }
     }
-    data$cohort <- cohorts # No side effects
+    perf_tbls <- perf_tbls[!sapply(perf_tbls, is.null)]
+
+    # Comparison plot
+    self$data <- dplyr::bind_rows(perf_tbls)
+    if(comparison_plot){
+        if(is.null(self$title))
+            self$title <- paste0(
+                data$name, " ", data$cohort, ", ", data$time_to_event_col,
+                " < ", data$pivot_time_cutoff
+            )
+        if (!is.null(model_tree_mirror))
+            self$file <- stringr::str_replace(self$file, model_tree_mirror[1], 
+                model_tree_mirror[2])
+        plot_2d_metric(
+            ass2d = self,
+            quiet = TRUE
+        )
+        if(!quiet)
+            message("* Saving comparison plot to ", self$file)
+    }
+    perf_tbl <- self$data
+    self$data <- NULL
+    return(perf_tbl)
 }
 
 ass2d_infer <- function(self, private, model, data, model_tree_mirror){
@@ -175,11 +167,9 @@ ass2d_infer <- function(self, private, model, data, model_tree_mirror){
         model$directory,
         paste0(self$x_metric, "_vs_", self$y_metric, file_ext)
     )
-    if(data$cohort == "test")
-        this_as2$file <- mirror_path(
-            filepath = this_as2$file,
-            mirror = model_tree_mirror
-        )
+    if (!is.null(model_tree_mirror))
+        this_as2$file <- stringr::str_replace(this_as2$file, model_tree_mirror[1], 
+            model_tree_mirror[2])
     this_as2$title <- paste0(
         data$name, " ", data$cohort, ", ",
         data$time_to_event_col, " < ", data$pivot_time_cutoff

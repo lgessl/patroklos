@@ -77,9 +77,9 @@ and pheno data of a single data set. This enables reading and preparing the data
   train_prop,
   pivot_time_cutoff,
   time_to_event_col,
+  cohort,
   event_col = "progression",
   benchmark_col = NULL,
-  cohort = NULL,
   expr_file = "expr.csv",
   pheno_file = "pheno.csv",
   patient_id_col = "patient_id",
@@ -108,16 +108,16 @@ is \code{NULL}, i.e. no further constraints on splitting.}
 \item{\code{time_to_event_col}}{string. The name of the column in the pheno data that holds the
 time-to-event values.}
 
+\item{\code{cohort}}{string. At the end of preparing the data, subset it to those
+samples whose value in the split column matches \code{cohort}. Default is \code{NULL},
+in which case some methods will infer a reasonable value (like \code{"train"}
+for training, \code{"test"} for assessment), some will throw an error.}
+
 \item{\code{event_col}}{string. The name of the column in the pheno data that holds
 the event status encoded as 1 = occurrence, 0 = censoring.}
 
 \item{\code{benchmark_col}}{string or \code{NULL}. The name of the column in the pheno data that
 holds the benchmark risk score (like the IPI).}
-
-\item{\code{cohort}}{string or NULL. At the end of preparing the data, subset it to those
-samples whose value in the split column matches \code{cohort}. Default is \code{NULL},
-in which case some methods will infer a reasonable value (like \code{"train"}
-for training, \code{"test"} for assessment), some will throw an error.}
 
 \item{\code{expr_file}}{string. The name of the expression csv file inside \code{directory}.
 Default is \code{"expr.csv"}. See details for the expected format.}

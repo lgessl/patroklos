@@ -69,24 +69,6 @@ test_that("intersect_by_names() works", {
   expect_error(intersect_by_names(a, b), "no common names")
 })
 
-test_that("mirror_path() works", {
-
-  fp <- file.path("path", "to", "some_file")
-  expect_equal(
-    mirror_path(fp, c("path", "new_path")),
-    file.path("new_path", "to", "some_file")
-  )
-  expect_equal(
-    mirror_path(fp, c("to","from")),
-    file.path("path", "from", "some_file")
-  )
-  fp <- stringr::str_replace(fp, "some_file", "to")
-  expect_error(
-    mirror_path(fp, c("to","from")),
-    "exactly one element"
-  )
-})
-
 test_that("create_data_partition() works", {
 
   n <- 50

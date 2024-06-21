@@ -109,27 +109,6 @@ intersect_by_names <- function(
     }
 }
 
-
-# @title Mirror a file path
-# @param filepath string. The file path to mirror.
-# @param mirror character vector of length 2. Replace mirror\[1\] by mirror\[2\] in
-# filepath.
-# @return A string. The mirrored file path.
-# @export
-mirror_path <- function(
-    filepath,
-    mirror
-){
-    path_split <- stringr::str_split(filepath, .Platform$file.sep)[[1]]
-    replace_at <- which(path_split == mirror[1])
-    if(length(replace_at) != 1)
-        stop("mirror_path(): mirror[1] must match exactly one element of filepath",
-            "\n filepath: ", filepath, "\n mirror: ", mirror)
-    path_split[replace_at] <- mirror[2]
-    new_filepath <- do.call(file.path, as.list(path_split))
-    return(new_filepath)
-}
-
 get_early_bool <- function(x, for_li = TRUE){
     li_var_suffix <- attr(x, "li_var_suffix")
     stopifnot(!is.null(colnames(x)))
