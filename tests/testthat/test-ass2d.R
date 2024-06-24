@@ -87,7 +87,7 @@ test_that("Ass2d$assess() works", {
     fitter = ptk_zerosum,
     split_index = 1,
     time_cutoffs = 2.,
-    val_error_fun = neg_roc_auc,
+    val_error_fun = neg_prec_with_prev_greater(0.15),
     hyperparams = list(family = "binomial", alpha = 1, 
       nFold = n_fold, lambda = lambda, zeroSum = FALSE)
   )

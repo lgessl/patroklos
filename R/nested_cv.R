@@ -211,3 +211,20 @@ neg_binomial_log_likelihood <- function(y, y_hat){
     stopifnot(all(y_hat >= 0 & y_hat <= 1))
     -mean(y * log(y_hat) + (1-y) * log(1-y_hat))
 }
+
+#' @title Minimal negative precision for thresholds with a minimal prevalence
+#' @description A function factory.
+#' @param min_prev A numeric scalar, the minimal prevalence.
+#' @return A function that takes two numeric vectors `y` and `y_hat` and returns
+#' the minimal precision over those thresholds yielding a prevalence of at least
+#' `min_prev`.
+#' @export
+neg_prec_with_prev_greater <- function(min_prev) {
+    function(y, y_hat) {
+       thresholds <- unique(y_hat) 
+       prevs <- vapply(thresholds, function(t) mean(y_hat >= t), numeric(1))
+       thresholds <- thresholds[prevs >= min_prev]
+       precs <- -vapply(thresholds, function(t) mean(y[y_hat >= t]), numeric(1))
+       min(precs)
+    }
+}

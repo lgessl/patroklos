@@ -70,7 +70,7 @@ test_that("AssScalar$assess() works", {
         nFold = 1),
       split_index = 1:2,
       time_cutoffs = 2,
-      val_error_fun = neg_roc_auc
+      val_error_fun = neg_prec_with_prev_greater(0.15),
     )
     model$fit(data, quiet = TRUE)
     res <- ass_scalar$assess(data, model, quiet = TRUE)

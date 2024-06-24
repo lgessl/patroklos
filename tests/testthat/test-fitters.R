@@ -68,9 +68,10 @@ test_that("ptk_zerosum() works", {
   expect_false(is.null(fit$val_predict))
   expect_equal(fit$type, 4)
 
-  fit <- ptk_zerosum(x3y[[1]], x3y[2:4], neg_roc_auc, exclude_pheno_from_lasso = TRUE, 
-    lambdaSteps = 2, nFold = 2, zeroSum = FALSE, binarize_predictions = 0.6, 
-    penalty.factor = runif(ncol(x3y[[1]])), family = "binomial")
+  fit <- ptk_zerosum(x3y[[1]], x3y[2:4], neg_prec_with_prev_greater(0.15), 
+    exclude_pheno_from_lasso = TRUE, lambdaSteps = 2, nFold = 2, zeroSum = FALSE, 
+    binarize_predictions = 0.6, penalty.factor = runif(ncol(x3y[[1]])), 
+    family = "binomial")
   expect_true(all(fit$penaltyFactor[!get_early_bool(x3y[[1]])] == 0))
   expect_true(all(vapply(fit$val_predict_list, function(v) v %in% c(0, 1), 
     logical(sum(!is.na(x3y[[2]]))))))
