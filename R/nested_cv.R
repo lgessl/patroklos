@@ -220,7 +220,7 @@ neg_binomial_log_likelihood <- function(y, y_hat){
 #' `min_prev`.
 #' @export
 neg_prec_with_prev_greater <- function(min_prev) {
-    stopifnot(min_prev <= 0 && min_prev >= 1)
+    stopifnot(min_prev >= 0 && min_prev <= 1)
     function(y, y_hat) {
        thresholds <- unique(y_hat) 
        prevs <- vapply(thresholds, function(t) mean(y_hat >= t), numeric(1))
