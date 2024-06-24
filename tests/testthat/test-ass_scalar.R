@@ -107,7 +107,7 @@ test_that("AssScalar$assess_center() works", {
     fitter = ptk_zerosum,
     hyperparams = list(family = "binomial", alpha = 1, nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE),
-    split_index = 1,
+    split_index = 1:2,
     time_cutoffs = c(1.5, 2),
     val_error_fun = neg_binomial_log_likelihood,
     include_from_discrete_pheno = c("discrete_var", "abc_gcb", "ipi_age"),
@@ -152,7 +152,7 @@ test_that("AssScalar$assess_center() works", {
   expect_equal(dim(eval_tbl), dim(eval_tbl_read))
 
   # Case 2: multiple metrics
-  data$cohort <- "train"
+  data$cohort <- "val_predict"
   ass_scalar$metrics <- multiple_metrics
   eval_tbl <- ass_scalar$assess_center(data, model2_list, quiet = TRUE)
   expect_true(file.exists(file.path(dir, "models/eval.csv")))

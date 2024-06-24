@@ -47,8 +47,7 @@ test_that("model$predict() works", {
   expect_true(all(sapply(res, function(x) all(sapply(x, is.numeric)))))
   expect_equal(length(table(res[["actual"]][[2]])), 2)
 
-  data$cohort <- "train"
-  data$benchmark_col <- NULL
+  data$cohort <- "val_predict"
   res <- model2$predict(data, quiet = TRUE)
   expect_true(is.list(res))
   expect_equal(length(res), 3)

@@ -232,7 +232,7 @@ test_that("Ass2d$assess_center() works", {
   ass2d$assess_center(data, model_list, comparison_plot = TRUE, quiet = TRUE)
   expect_true(file.exists(file.path(res_dir, "logrank.jpeg")))
 
-  data$cohort <- "train"
+  data$cohort <- "val_predict"
   model_2$time_cutoffs <- 1.5
   ass2d$y_metric <- "precision_ci"
   ass2d$ci_level <- .95
