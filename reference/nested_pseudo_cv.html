@@ -57,24 +57,41 @@ predictions made on independent data like out-of-bag (OOB) or cross-validated
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nested_pseudo_cv</span><span class="op">(</span><span class="va">x</span>, <span class="va">y_bin</span>, <span class="va">y_cox</span>, <span class="va">fitter1</span>, <span class="va">fitter2</span>, <span class="va">hyperparams1</span>, <span class="va">hyperparams2</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nested_pseudo_cv</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">y</span>,</span>
+<span>  <span class="va">val_error_fun</span>,</span>
+<span>  <span class="va">fitter1</span>,</span>
+<span>  <span class="va">fitter2</span>,</span>
+<span>  <span class="va">hyperparams1</span>,</span>
+<span>  <span class="va">hyperparams2</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
-<dd><p>A numeric matrix holding the predictor features: rows are samples and
-columns are features.</p></dd>
+<dd><p>data as a numeric matrix object (rows=samples). The zero-sum
+regression requires data on the log scale, i.e. x should be
+log-transformed data.</p></dd>
 
 
-<dt>y_bin</dt>
-<dd><p>Named numeric matrix with one column. Binary response.</p></dd>
+<dt>y</dt>
+<dd><p>Named list with entries</p><ul><li><p><code>"bin"</code>, a named numeric one-column matrix, binary response to be used
+for training,</p></li>
+<li><p><code>"cox"</code>, a named numeric two-column matrix to be used for training, time to
+event and event (0 = censoring, 1 = event) in first and second column, respectively.</p></li>
+<li><p><code>"true"</code>, a named numeric one-column matrix, binary response to be used for
+calculating the CV error.</p></li>
+</ul></dd>
 
 
-<dt>y_cox</dt>
-<dd><p>Named numeric matrix with two columns. The first column is the
-time to event, the second column indicates censoring (1 for event, 0 for
-censored).</p></dd>
+<dt>val_error_fun</dt>
+<dd><p>Function used to calculate the error of independently
+validated predictions. Must take two numeric vector of equal length:
+<code>y</code> and <code>y_hat</code>, the true and predicted outcomes, respectively, and
+return a numeric scalar; the lower, the better the model. See
+<code><a href="error_rate.html">error_rate()</a></code> or <code><a href="neg_roc_auc.html">neg_roc_auc()</a></code> for examples.</p></dd>
 
 
 <dt>fitter1</dt>

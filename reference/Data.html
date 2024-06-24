@@ -148,9 +148,9 @@ and pheno data of a single data set. This enables reading and preparing the data
 <span>  <span class="va">train_prop</span>,</span>
 <span>  <span class="va">pivot_time_cutoff</span>,</span>
 <span>  <span class="va">time_to_event_col</span>,</span>
+<span>  <span class="va">cohort</span>,</span>
 <span>  event_col <span class="op">=</span> <span class="st">"progression"</span>,</span>
 <span>  benchmark_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cohort <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  expr_file <span class="op">=</span> <span class="st">"expr.csv"</span>,</span>
 <span>  pheno_file <span class="op">=</span> <span class="st">"pheno.csv"</span>,</span>
 <span>  patient_id_col <span class="op">=</span> <span class="st">"patient_id"</span>,</span>
@@ -188,6 +188,13 @@ is <code>NULL</code>, i.e. no further constraints on splitting.</p></dd>
 time-to-event values.</p></dd>
 
 
+<dt><code>cohort</code></dt>
+<dd><p>string. At the end of preparing the data, subset it to those
+samples whose value in the split column matches <code>cohort</code>. Default is <code>NULL</code>,
+in which case some methods will infer a reasonable value (like <code>"train"</code>
+for training, <code>"test"</code> for assessment), some will throw an error.</p></dd>
+
+
 <dt><code>event_col</code></dt>
 <dd><p>string. The name of the column in the pheno data that holds
 the event status encoded as 1 = occurrence, 0 = censoring.</p></dd>
@@ -196,13 +203,6 @@ the event status encoded as 1 = occurrence, 0 = censoring.</p></dd>
 <dt><code>benchmark_col</code></dt>
 <dd><p>string or <code>NULL</code>. The name of the column in the pheno data that
 holds the benchmark risk score (like the IPI).</p></dd>
-
-
-<dt><code>cohort</code></dt>
-<dd><p>string or NULL. At the end of preparing the data, subset it to those
-samples whose value in the split column matches <code>cohort</code>. Default is <code>NULL</code>,
-in which case some methods will infer a reasonable value (like <code>"train"</code>
-for training, <code>"test"</code> for assessment), some will throw an error.</p></dd>
 
 
 <dt><code>expr_file</code></dt>

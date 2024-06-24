@@ -34,6 +34,9 @@
     <loc>https://lgessl.github.io/patroklos/reference/ensure_patients_match.html</loc>
   </url>
   <url>
+    <loc>https://lgessl.github.io/patroklos/reference/error_rate.html</loc>
+  </url>
+  <url>
     <loc>https://lgessl.github.io/patroklos/reference/hypertune.html</loc>
   </url>
   <url>
@@ -41,6 +44,15 @@
   </url>
   <url>
     <loc>https://lgessl.github.io/patroklos/reference/mean_impute.html</loc>
+  </url>
+  <url>
+    <loc>https://lgessl.github.io/patroklos/reference/neg_binomial_log_likelihood.html</loc>
+  </url>
+  <url>
+    <loc>https://lgessl.github.io/patroklos/reference/neg_prec_with_prev_greater.html</loc>
+  </url>
+  <url>
+    <loc>https://lgessl.github.io/patroklos/reference/neg_roc_auc.html</loc>
   </url>
   <url>
     <loc>https://lgessl.github.io/patroklos/reference/nested_fit.html</loc>

@@ -71,6 +71,10 @@ stores it and predicts from it.</p>
 <dd><p>Threshold and censor the outcome accordingly.</p></dd>
 
 
+<dt><code>val_error_fun</code></dt>
+<dd><p>Calculate the error of independently validated predictions.</p></dd>
+
+
 <dt><code>hyperparams</code></dt>
 <dd><p>Optional arguments passed to <code>fitter</code>.</p></dd>
 
@@ -136,7 +140,6 @@ observations in a combined (categorical) feature</p></dd>
 <ul><li><p><a href="#method-Model-new"><code>Model$new()</code></a></p></li>
 <li><p><a href="#method-Model-fit"><code>Model$fit()</code></a></p></li>
 <li><p><a href="#method-Model-predict"><code>Model$predict()</code></a></p></li>
-<li><p><a href="#method-Model-at_time_cutoff"><code>Model$at_time_cutoff()</code></a></p></li>
 <li><p><a href="#method-Model-clone"><code>Model$clone()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-Model-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
@@ -148,6 +151,7 @@ observations in a combined (categorical) feature</p></dd>
 <span>  <span class="va">directory</span>,</span>
 <span>  <span class="va">split_index</span>,</span>
 <span>  <span class="va">time_cutoffs</span>,</span>
+<span>  <span class="va">val_error_fun</span>,</span>
 <span>  hyperparams <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  response_colnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"time"</span>, <span class="st">"status"</span><span class="op">)</span>,</span>
 <span>  include_from_continuous_pheno <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -195,6 +199,14 @@ occured before or after this value.</p></li>
 </ul><p>When fitting models to the data, you find every of the
 <code>length(time_cutoffs)</code> models in a subdirectory of <code>directory</code> named
 after the respective value in <code>time_cutoffs</code>.</p></dd>
+
+
+<dt><code>val_error_fun</code></dt>
+<dd><p>Function used to calculate the error of independently
+validated predictions. Must take two numeric vector of equal length:
+<code>y</code> and <code>y_hat</code>, the true and predicted outcomes, respectively, and
+return a numeric scalar; the lower, the better the model. See
+<code><a href="error_rate.html">error_rate()</a></code> or <code><a href="neg_roc_auc.html">neg_roc_auc()</a></code> for examples.</p></dd>
 
 
 <dt><code>hyperparams</code></dt>
@@ -286,8 +298,7 @@ assessment.</p>
 </div><p></p><hr><a id="method-Model-fit"></a><div class="section">
 <h3 id="method-fit-">Method <code>fit()</code><a class="anchor" aria-label="anchor" href="#method-fit-"></a></h3>
 <p>Fit the model to a data set for all splits into training
-and test cohort. However, we do not support multiple time
-cutoffs at this step; enabling them is the job of <code><a href="training_camp.html">training_camp()</a></code>.</p><div class="section">
+and test cohort.</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Model</span><span class="op">$</span><span class="fu">fit</span><span class="op">(</span><span class="va">data</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span>, msg_prefix <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -308,13 +319,6 @@ cutoffs at this step; enabling them is the job of <code><a href="training_camp.h
 
 </dl><p></p></div>
 </div>
-<div class="section">
-<h4 id="details-1">Details<a class="anchor" aria-label="anchor" href="#details-1"></a></h4>
-<p>This method expects the <code>Model</code> object to have a single time
-cutoff and the <code>directory</code> field be set accordingly. You may therefore
-want to apply the <code>at_time_cutoff()</code> method to the <code>Model</code> object before.</p>
-</div>
-
 <div class="section">
 <h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
 <p>The <code>Model</code> object itself with the <code>fits</code> attribute set to a
@@ -358,31 +362,15 @@ benchmark classifier. If <code>data$benchmark</code> is NULL, it is an empty lis
 </ul><p>For every split, the names of all three vectors match.</p>
 </div>
 
-</div><p></p><hr><a id="method-Model-at_time_cutoff"></a><div class="section">
-<h3 id="method-at-time-cutoff-">Method <code>at_time_cutoff()</code><a class="anchor" aria-label="anchor" href="#method-at-time-cutoff-"></a></h3>
-<p>Infer the model at a specific time cutoff.</p><div class="section">
-<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Model</span><span class="op">$</span><span class="fu">at_time_cutoff</span><span class="op">(</span><span class="va">time_cutoff</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>time_cutoff</code></dt>
-<dd><p>numeric. The time cutoff to set.</p></dd>
-
-
-</dl><p></p></div>
-</div>
-
 </div><p></p><hr><a id="method-Model-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Model</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
