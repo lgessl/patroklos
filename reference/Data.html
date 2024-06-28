@@ -84,6 +84,11 @@ cohort.</p>
 <dd><p>The cohort of the data, train or test.</p></dd>
 
 
+<dt><code>cohort_col</code></dt>
+<dd><p>Find the cohort of a sample in this column of the
+pheno data.</p></dd>
+
+
 <dt><code>patient_id_col</code></dt>
 <dd><p>The name of the column in the pheno data that holds
 the patient identifiers.</p></dd>
@@ -150,6 +155,7 @@ and pheno data of a single data set. This enables reading and preparing the data
 <span>  <span class="va">time_to_event_col</span>,</span>
 <span>  <span class="va">cohort</span>,</span>
 <span>  event_col <span class="op">=</span> <span class="st">"progression"</span>,</span>
+<span>  cohort_col <span class="op">=</span> <span class="st">"split_1"</span>,</span>
 <span>  benchmark_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  expr_file <span class="op">=</span> <span class="st">"expr.csv"</span>,</span>
 <span>  pheno_file <span class="op">=</span> <span class="st">"pheno.csv"</span>,</span>
@@ -198,6 +204,11 @@ for training, <code>"test"</code> for assessment), some will throw an error.</p>
 <dt><code>event_col</code></dt>
 <dd><p>string. The name of the column in the pheno data that holds
 the event status encoded as 1 = occurrence, 0 = censoring.</p></dd>
+
+
+<dt><code>cohort_col</code></dt>
+<dd><p>string. The name of the column in the pheno data that holds
+the cohort a sample belongs to.</p></dd>
 
 
 <dt><code>benchmark_col</code></dt>
