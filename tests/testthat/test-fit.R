@@ -81,7 +81,7 @@ test_that("Model$fit() works", {
   # nested_cv
   model <- Model$new(
       name = "RF pseudo OOB",
-      fitter = nested_pseudo_cv,
+      fitter = long_nestor,
       directory = file.path(dir, "model5"),
       split_index = 1,
       time_cutoffs = Inf,

@@ -29,7 +29,7 @@ test_that("model$predict() works", {
   model2 <- Model$new(
     name = "log-rf",
     directory = dir,
-    fitter = nested_pseudo_cv,
+    fitter = long_nestor,
     split_index = 1:2,
     time_cutoffs = 2,
     val_error_fun = neg_prec_with_prev_greater(0.15),

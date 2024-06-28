@@ -105,12 +105,49 @@ unitune <- function(fitter) {
     }
 }
 
-# Remove columns with combinations of comprising more than
-# combine_n_max_categorical_features
-trim_combos <- function(x, combine_n_max_categorical_features) {
-    keep <- sapply(stringr::str_split(colnames(x), "&"), length) <= 
-        combine_n_max_categorical_features
-    x_slim <- x[, keep]
-    attr(x_slim, "li_var_suffix") <- attr(x, "li_var_suffix")
-    x_slim
+#' @title Error rate of a binary classifier
+#' @param y A numeric vector with binary entries, the true outcomes.
+#' @param y_hat A numeric vector with binary entries, the predicted outcomes.
+#' @return Numeric scalar, the error rate.
+#' @export
+error_rate <- function(y, y_hat){
+    stopifnot(all(y_hat %in% c(0, 1)))
+    mean(y != y_hat)
+}
+
+#' @title Negative ROC AUC
+#' @inheritParams error_rate
+#' @param y_hat A numeric vector with continuous entries, the predicted outcomes.
+#' @return Numeric scalar, the negative ROC AUC.
+#' @export
+neg_roc_auc <- function(y, y_hat){
+    pred_obj <- ROCR::prediction(predictions = y_hat, labels = y)
+    -ROCR::performance(pred_obj, measure = "auc")@y.values[[1]]
+}
+
+#' @title Negative binomial log-likelihood
+#' @inheritParams neg_roc_auc
+#' @return Numeric scalar, the negative binomial log-likelihood.
+#' @export
+neg_binomial_log_likelihood <- function(y, y_hat){
+    stopifnot(all(y_hat >= 0 & y_hat <= 1))
+    -mean(y * log(y_hat) + (1-y) * log(1-y_hat))
+}
+
+#' @title Minimal negative precision for thresholds with a minimal prevalence
+#' @description A function factory.
+#' @param min_prev A numeric scalar, the minimal prevalence.
+#' @return A function that takes two numeric vectors `y` and `y_hat` and returns
+#' the minimal precision over those thresholds yielding a prevalence of at least
+#' `min_prev`.
+#' @export
+neg_prec_with_prev_greater <- function(min_prev) {
+    stopifnot(min_prev >= 0 && min_prev <= 1)
+    function(y, y_hat) {
+       thresholds <- unique(y_hat) 
+       prevs <- vapply(thresholds, function(t) mean(y_hat >= t), numeric(1))
+       thresholds <- thresholds[prevs >= min_prev]
+       precs <- -vapply(thresholds, function(t) mean(y[y_hat >= t]), numeric(1))
+       min(precs)
+    }
 }

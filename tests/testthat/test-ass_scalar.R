@@ -102,18 +102,15 @@ test_that("AssScalar$assess_center() works", {
     to_csv = file.path(dir, "data")
   )
   model1 <- Model$new(
-    name = "binomial-zerosum",
-    directory = file.path(dir, "models/logistic"),
+    name = "log",
+    directory = file.path(dir, "models/log"),
     fitter = ptk_zerosum,
-    hyperparams = list(family = "binomial", alpha = 1, nFold = n_fold, 
+    hyperparams = list(family = "binomial", nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE),
-    split_index = 1:2,
     time_cutoffs = c(1.5, 2),
+    split_index = 1,
     val_error_fun = neg_binomial_log_likelihood,
-    include_from_discrete_pheno = c("discrete_var", "abc_gcb", "ipi_age"),
-    fit_file = "model2.rds",
-    combine_n_max_categorical_features = 3,
-    combined_feature_min_positive_ratio = 0.04
+    fit_file = "model2.rds"
   )
   model2 <- Model$new(
     name = "rf",
@@ -121,15 +118,49 @@ test_that("AssScalar$assess_center() works", {
     fitter = hypertune(ptk_ranger),
     hyperparams = list(rel_mtry = FALSE, mtry = 2, num.trees = 100, min.node.size = 3,
       classification = TRUE),
-    split_index = 1:2,
-    time_cutoffs = c(1.5, 2),
+    split_index = 1,
+    time_cutoffs = 2,
     val_error_fun = error_rate,
     fit_file = "model3.rds",
-    include_from_discrete_pheno = "discrete_var"
+    include_from_discrete_pheno = c("discrete_var", "abc_gcb", "ipi_age"),
+    combine_n_max_categorical_features = 3,
+    combined_feature_min_positive_ratio = 0.04
   )
-  model1_list <- list(model1, model1)
-  model2_list <- list(model1, model2)
-  model_list <- list(model1, model2)
+  model3 <- Model$new(
+    name = "greedy nestor",
+    directory = file.path(dir, "models/nestor"),
+    fitter = greedy_nestor,
+    time_cutoffs = 2,
+    hyperparams = list(
+      model1 = model1,
+      fitter2 = ptk_zerosum,
+      hyperparams2 = list(family = "gaussian", nFold = 2, lambdaSteps = 2, zeroSum = FALSE)
+    ),
+    include_from_discrete_pheno = c("discrete_var", "abc_gcb"),
+    val_error_fun = neg_prec_with_prev_greater(0.20),
+    combine_n_max_categorical_features = 2,
+    combined_feature_min_positive_ratio = 0.05
+  )
+  model4 <- Model$new(
+    name = "greedy nestor rf",
+    directory = file.path(dir, "models/nestor_rf"),
+    fitter = greedy_nestor,
+    time_cutoffs = 2,
+    hyperparams = list(
+      model1 = model1,
+      fitter2 = hypertune(ptk_ranger),
+      hyperparams2 = list(rel_mtry = FALSE, num.trees = 100, min.node.size = c(4, 5), 
+        classification = TRUE)
+    ),
+    include_from_discrete_pheno = c("discrete_var", "abc_gcb"),
+    val_error_fun = error_rate,
+    combine_n_max_categorical_features = 2,
+    combined_feature_min_positive_ratio = 0.05
+  )
+
+  model1_list <- list(model1, model3)
+  model2_list <- list(model1, model2, model4)
+  model_list <- list(model1, model2, model3, model4)
   training_camp(model_list, data, quiet = TRUE, skip_on_error = FALSE) 
   ass_scalar <- AssScalar$new(
     metrics = "auc", # just for the moment

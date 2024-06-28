@@ -156,7 +156,7 @@ test_that("Ass2d$assess_center() works", {
     name = "cox",
     directory = file.path(model_dir, "cox"),
     fitter = ptk_zerosum,
-    split_index = 1:2,
+    split_index = 1,
     time_cutoffs = Inf,
     val_error_fun = neg_roc_auc,
     hyperparams = list(family = "cox", alpha = 1, nFold = n_fold, 

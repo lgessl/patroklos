@@ -1,4 +1,52 @@
-#' @title Nested cross-validation for second-stage OOB predictions
+#' @title Nest an existing, tuned model together with more features into another 
+#' model and tune the latter
+#' @description Use the validated predictions of an existing model that only 
+#' takes the epression part of the data as input features, and feed them 
+#' together with the remaining features into another model. Fit and tune the 
+#' second, late model.
+#' @inheritParams ptk_zerosum
+#' @param x named numeric matrix (samples x features). Features only meant for 
+#' the late model are exactly those matching `x`'s `li_var_suffix` attribute.
+#' @param model1 `Model` R6 object. The early model trained on the expression 
+#' data, with the `fits` attribute set at least in its stored version, i.e., the 
+#' early model is already there.
+#' @param fitter2 A *patroklos-compliant fitter with CV tuning* (see
+#' README for more details).
+#' @param hyperparams2 A named list with hyperparameters for the late model.
+#' @return A `nested_fit` S3 object.
+greedy_nestor <- function(
+    x,
+    y,
+    val_error_fun,
+    model1,
+    fitter2,
+    hyperparams2
+){
+    stopifnot(inherits(model1, "Model"))
+    stopifnot(inherits(val_error_fun, "function"))
+    stopifnot(inherits(hyperparams2, "list"))
+
+    if (is.null(model1$fits)) {
+        model1 <- readRDS(file.path(model1$direcory), model1$fit_file)
+        if (is.null(model1$fits))
+            stop("You need to first train the early model")
+    }
+    if (class(model1$fits) == "list") # backward compatibility
+        model1$fits <- model1$fits[[1]]
+    
+    fit_obj1 <- model1$fits
+    x_late <- get_late_x(early_predicted = fit_obj1$val_predict, x = x)
+    fit_obj2 <- do.call(fitter2, c(list(x = x_late, y = y, val_error_fun = 
+        val_error_fun), hyperparams2))
+    error_grid <- as.matrix(fit_obj2$val_error)
+    rownames(error_grid) <- fit_obj2$lambda
+
+    nested_fit(model1 = fit_obj1, model2 = fit_obj2, error_grid = error_grid,
+        best_hyperparams = list(model1 = model1$lambda_min, model2 = 
+        fit_obj2$lambda_min))
+}
+
+#' @title Nested cross-validation for second-stage validated predictions
 #' @description Perform a nested cross-validation for a late-integration scheme,
 #' i.e., perform a cross-validation for the early model and then train second-stage
 #' models on validated predictions and evaluate the entire models via 
@@ -37,7 +85,7 @@
 #' training algorithm had seen sample i. Hence the term "pseudo" in the name of 
 #' this function. This heuristic saves a factor `n_folds` computation time
 #' compared to a full nested cross-validation.  
-nested_pseudo_cv <- function(
+long_nestor <- function(
     x,
     y,
     val_error_fun,
@@ -182,51 +230,4 @@ predict.nested_fit <- function(
             length as the number of rows in `newx` or a list with the first element 
             being the former.")
     y
-}
-
-#' @title Error rate of a binary classifier
-#' @param y A numeric vector with binary entries, the true outcomes.
-#' @param y_hat A numeric vector with binary entries, the predicted outcomes.
-#' @return Numeric scalar, the error rate.
-#' @export
-error_rate <- function(y, y_hat){
-    stopifnot(all(y_hat %in% c(0, 1)))
-    mean(y != y_hat)
-}
-
-#' @title Negative ROC AUC
-#' @inheritParams error_rate
-#' @param y_hat A numeric vector with continuous entries, the predicted outcomes.
-#' @return Numeric scalar, the negative ROC AUC.
-#' @export
-neg_roc_auc <- function(y, y_hat){
-    pred_obj <- ROCR::prediction(predictions = y_hat, labels = y)
-    -ROCR::performance(pred_obj, measure = "auc")@y.values[[1]]
-}
-
-#' @title Negative binomial log-likelihood
-#' @inheritParams neg_roc_auc
-#' @return Numeric scalar, the negative binomial log-likelihood.
-#' @export
-neg_binomial_log_likelihood <- function(y, y_hat){
-    stopifnot(all(y_hat >= 0 & y_hat <= 1))
-    -mean(y * log(y_hat) + (1-y) * log(1-y_hat))
-}
-
-#' @title Minimal negative precision for thresholds with a minimal prevalence
-#' @description A function factory.
-#' @param min_prev A numeric scalar, the minimal prevalence.
-#' @return A function that takes two numeric vectors `y` and `y_hat` and returns
-#' the minimal precision over those thresholds yielding a prevalence of at least
-#' `min_prev`.
-#' @export
-neg_prec_with_prev_greater <- function(min_prev) {
-    stopifnot(min_prev >= 0 && min_prev <= 1)
-    function(y, y_hat) {
-       thresholds <- unique(y_hat) 
-       prevs <- vapply(thresholds, function(t) mean(y_hat >= t), numeric(1))
-       thresholds <- thresholds[prevs >= min_prev]
-       precs <- -vapply(thresholds, function(t) mean(y[y_hat >= t]), numeric(1))
-       min(precs)
-    }
 }

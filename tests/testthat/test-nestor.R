@@ -1,4 +1,49 @@
-test_that("nested_pseudo_cv() works", {
+test_that("greedy_nestor() works", {
+
+    set.seed(123)
+
+    n_samples <- 100
+    n_genes <- 5
+    n_fold <- 2
+    n_lambda <- 2
+    dir <- withr::local_tempdir()
+
+    x3y <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
+        return_type = "fitter")
+    data <- generate_mock_data(n_samples = n_samples, n_genes = n_genes)
+    hyperparams1 <- list(family = "binomial", nFold = n_fold, lambdaStep = n_lambda,
+        zeroSum = FALSE)
+    hyperparams2 <- list(rel_mtry = TRUE, mtry = c(1, 1.5, n_samples^2), 
+        min.node.size = c(4, 5), classification = TRUE, num.trees = 100, 
+        skip_on_invalid_input = TRUE)
+    
+    model1 <- Model$new(name = "log", fitter = ptk_zerosum, hyperparams = hyperparams1,
+        time_cutoffs = 2, val_error_fun = neg_prec_with_prev_greater(0.15), 
+        directory = dir)
+    model1$fit(data, quiet = TRUE)
+    nested_fit <- greedy_nestor(x = x3y[[1]], y = x3y[2:4], val_error_fun = 
+        neg_prec_with_prev_greater(0.15), model1 = model1, fitter2 = hypertune(ptk_ranger),
+        hyperparams2 = hyperparams2)
+    yhat <- predict(nested_fit, x3y[[1]])
+    expect_s3_class(nested_fit, "nested_fit")
+    expect_s3_class(nested_fit$model1, "ptk_zerosum")
+    expect_s3_class(nested_fit$model2, "ptk_hypertune")
+    expect_true(all(nested_fit$val_predict %in% c(0, 1)))
+    expect_true(all(yhat <= 1 & yhat >= 0))
+
+    hyperparams2 <- list(family = "binomial", nFold = n_fold, lambdaStep = n_lambda,
+        zeroSum = FALSE)
+    nested_fit <- greedy_nestor(x = x3y[[1]], y = x3y[2:4], val_error_fun = 
+        neg_prec_with_prev_greater(0.15), model1 = model1, fitter2 = ptk_zerosum,
+        hyperparams2 = hyperparams2)
+    yhat <- predict(nested_fit, x3y[[1]])
+    expect_s3_class(nested_fit, "nested_fit")
+    expect_s3_class(nested_fit$model1, "ptk_zerosum")
+    expect_s3_class(nested_fit$model2, "ptk_zerosum")
+    expect_true(all(nested_fit$val_predict <= 1 & nested_fit$val_predict >= 0))
+})
+
+test_that("long_nestor() works", {
 
     set.seed(123)
 
@@ -15,7 +60,7 @@ test_that("nested_pseudo_cv() works", {
         min.node.size = c(4, 5), classification = TRUE, num.trees = 100, 
         skip_on_invalid_input = TRUE)
 
-    fit <- nested_pseudo_cv(
+    fit <- long_nestor(
         x = x3y[[1]], x3y[2:4], val_error_fun = error_rate, fitter1 = ptk_zerosum, 
         fitter2 = hypertune(ptk_ranger), hyperparams1 = 
         hyperparams1, hyperparams2 = hyperparams2
@@ -33,7 +78,7 @@ test_that("nested_pseudo_cv() works", {
         nFold = n_fold)
     hyperparams2 <- list(family = "binomial", lambdaSteps = 3, zeroSum = FALSE, 
         nFold = n_fold)
-    fit <- nested_pseudo_cv(x = x3y[[1]], x3y[2:4], val_error_fun = neg_binomial_log_likelihood,
+    fit <- long_nestor(x = x3y[[1]], x3y[2:4], val_error_fun = neg_binomial_log_likelihood,
         fitter1 = ptk_zerosum, fitter2 = ptk_zerosum, hyperparams1 = hyperparams1, 
         hyperparams2 = hyperparams2)
 
@@ -42,7 +87,7 @@ test_that("nested_pseudo_cv() works", {
         nFold = n_fold)
     hyperparams2 <- list(family = "cox", lambdaSteps = 2, zeroSum = FALSE, 
         nFold = n_fold)
-    fit <- nested_pseudo_cv(x = x3y[[1]], y = x3y[2:4], val_error_fun = neg_roc_auc,
+    fit <- long_nestor(x = x3y[[1]], y = x3y[2:4], val_error_fun = neg_roc_auc,
         fitter1 = ptk_zerosum, fitter2 = ptk_zerosum, hyperparams1 = hyperparams1, 
         hyperparams2 = hyperparams2)
 
@@ -51,13 +96,13 @@ test_that("nested_pseudo_cv() works", {
         nFold = n_fold, binarize_predictions = 0.5)
     hyperparams2 <- list(rel_mtry = FALSE, mtry = 1, min.node.size = c(4, 5), 
         classification = TRUE, num.trees = 100, skip_on_invalid_input = TRUE)
-    fit <- nested_pseudo_cv(x = x3y[[1]], y = x3y[2:4], val_error_fun = error_rate,
+    fit <- long_nestor(x = x3y[[1]], y = x3y[2:4], val_error_fun = error_rate,
         fitter1 = ptk_zerosum, fitter2 = hypertune(ptk_ranger), 
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2)
 
     # Errors
     attr(x3y[[1]], "li_var_suffix") <- "--"
-    expect_error(nested_pseudo_cv(
+    expect_error(long_nestor(
         x = x3y[[1]], y = x3y[2:4], val_error_fun = neg_roc_auc, fitter1 = ptk_zerosum, 
         fitter2 = ptk_ranger, hyperparams1 = hyperparams1, hyperparams2 = hyperparams2 
     ), regexp = "All features are for the early model")

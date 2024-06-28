@@ -31,7 +31,7 @@ Otherwise, take \code{mtry} directly.}
 
 \item{skip_on_invalid_input}{Logical. If \code{TRUE} and invalid input is detected,
 return \code{NA} instead of an error. This is useful when calling this function
-from inside \code{\link[=nested_pseudo_cv]{nested_pseudo_cv()}}.}
+from inside \code{\link[=long_nestor]{long_nestor()}}.}
 
 \item{...}{Further arguments passed to the wrapped function.}
 }

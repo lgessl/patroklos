@@ -77,7 +77,7 @@ Create a new Model instance.
   name,
   fitter,
   directory,
-  split_index,
+  split_index = 1,
   time_cutoffs,
   val_error_fun,
   hyperparams = NULL,

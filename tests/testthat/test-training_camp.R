@@ -30,7 +30,7 @@ test_that("training_camp() works", {
 
   model_2 <- Model$new(
       name = "RF pseudo OOB",
-      fitter = nested_pseudo_cv,
+      fitter = long_nestor,
       directory = file.path(dir, "model2"),
       split_index = 1,
       time_cutoffs = 2.,

@@ -194,3 +194,13 @@ combine_features <- function(x, combine_n_max_features,
     x_wide[, colMeans(x_wide, na.rm = TRUE) >= combined_feature_positive_ratio, 
         drop = FALSE]
 }
+
+# Remove columns with combinations of comprising more than
+# combine_n_max_categorical_features
+trim_combos <- function(x, combine_n_max_categorical_features) {
+    keep <- sapply(stringr::str_split(colnames(x), "&"), length) <= 
+        combine_n_max_categorical_features
+    x_slim <- x[, keep]
+    attr(x_slim, "li_var_suffix") <- attr(x, "li_var_suffix")
+    x_slim
+}

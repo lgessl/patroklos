@@ -11,7 +11,7 @@
 #' Otherwise, take `mtry` directly. 
 #' @param skip_on_invalid_input Logical. If `TRUE` and invalid input is detected,
 #' return `NA` instead of an error. This is useful when calling this function 
-#' from inside [`nested_pseudo_cv()`].
+#' from inside [`long_nestor()`].
 #' @param ... Further arguments passed to the wrapped function.
 #' @return A `ptk_ranger` S3 object, a `ranger` S3 object with the (OOB) 
 #' `predictions` attribute renamed to `val_predict`.
