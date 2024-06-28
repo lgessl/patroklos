@@ -62,7 +62,8 @@ test_that("prec_from_scores() works", {
     "patient" = paste0("patient_", 1:n_samples),
     "IPI" = sample(0:5, n_samples, replace = TRUE),
     "time_to_event" = runif(n_samples, 0, 5),
-    "event" = sample(0:1, n_samples, replace = TRUE)
+    "event" = sample(0:1, n_samples, replace = TRUE),
+    "split_1" = sample(c("train", "test"), n_samples, replace = TRUE)
   )
   risk_scores <- runif(n_samples, 0, 1)
   names(risk_scores) <- sample(pheno_tbl[["patient"]])
@@ -74,6 +75,7 @@ test_that("prec_from_scores() works", {
     pivot_time_cutoff = 1.7,
     patient_id_col = "patient",
     time_to_event_col = "time_to_event",
+    cohort_col = "split_1",
     event_col = "event",
     benchmark_col = "IPI",
     cohort = "."
@@ -96,7 +98,8 @@ test_that("write_data_info() works", {
     "patient" = paste0("patient_", 1:n_samples),
     "IPI" = sample(0:5, n_samples, replace = TRUE),
     "time_to_event" = runif(n_samples, 0, 5),
-    "event" = sample(0:1, n_samples, replace = TRUE)
+    "event" = sample(0:1, n_samples, replace = TRUE),
+    "split_1" = sample(c("train", "test"), n_samples, replace = TRUE)
   )
   risk_scores <- runif(n_samples, 0, 1)
   names(risk_scores) <- sample(pheno_tbl[["patient"]])

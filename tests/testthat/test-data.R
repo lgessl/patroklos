@@ -11,6 +11,7 @@ test_that("Data$new() works", {
     patient_id_col = "patient_id",
     time_to_event_col = "time_to_event",
     event_col = "event",
+    cohort_col = "split_1",
     benchmark_col = "benchmark",
     gene_id_col = "gene_id",
     split_col_prefix = "split"
@@ -25,6 +26,7 @@ test_that("Data$new() works", {
   expect_equal(data$patient_id_col, "patient_id")
   expect_equal(data$time_to_event_col, "time_to_event")
   expect_equal(data$event_col, "event")
+  expect_equal(data$cohort_col, "split_1")
   expect_equal(data$benchmark_col, "benchmark")
   expect_equal(data$gene_id_col, "gene_id")
   expect_equal(data$split_col_prefix, "split")

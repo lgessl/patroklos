@@ -1,7 +1,7 @@
 data_initialize <- function(self, private, name, directory, train_prop, 
     pivot_time_cutoff, expr_file, pheno_file, cohort, patient_id_col, 
-    time_to_event_col, split_col_prefix, event_col, benchmark_col, gene_id_col, 
-    imputer){
+    time_to_event_col, split_col_prefix, event_col, cohort_col, benchmark_col, 
+    gene_id_col, imputer){
     
     stopifnot(is.character(name))
     stopifnot(is.character(directory))
@@ -13,6 +13,7 @@ data_initialize <- function(self, private, name, directory, train_prop,
     stopifnot(is.character(patient_id_col))
     stopifnot(is.character(time_to_event_col))
     stopifnot(is.character(event_col))
+    stopifnot(is.character(cohort_col))
     stopifnot(is.character(benchmark_col) || is.null(benchmark_col))
     stopifnot(is.character(gene_id_col))
     stopifnot(is.character(split_col_prefix))
@@ -30,6 +31,7 @@ data_initialize <- function(self, private, name, directory, train_prop,
     self$patient_id_col <- patient_id_col
     self$time_to_event_col <- time_to_event_col
     self$event_col <- event_col
+    self$cohort_col <- cohort_col
     self$benchmark_col <- benchmark_col
     self$gene_id_col <- gene_id_col
     self$split_col_prefix <- split_col_prefix

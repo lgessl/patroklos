@@ -28,6 +28,9 @@ cohort.
 
 \item{\code{cohort}}{The cohort of the data, train or test.}
 
+\item{\code{cohort_col}}{Find the cohort of a sample in this column of the
+pheno data.}
+
 \item{\code{patient_id_col}}{The name of the column in the pheno data that holds
 the patient identifiers.}
 
@@ -79,6 +82,7 @@ and pheno data of a single data set. This enables reading and preparing the data
   time_to_event_col,
   cohort,
   event_col = "progression",
+  cohort_col = "split_1",
   benchmark_col = NULL,
   expr_file = "expr.csv",
   pheno_file = "pheno.csv",
@@ -115,6 +119,9 @@ for training, \code{"test"} for assessment), some will throw an error.}
 
 \item{\code{event_col}}{string. The name of the column in the pheno data that holds
 the event status encoded as 1 = occurrence, 0 = censoring.}
+
+\item{\code{cohort_col}}{string. The name of the column in the pheno data that holds
+the cohort a sample belongs to.}
 
 \item{\code{benchmark_col}}{string or \code{NULL}. The name of the column in the pheno data that
 holds the benchmark risk score (like the IPI).}

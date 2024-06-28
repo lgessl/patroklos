@@ -23,6 +23,9 @@ Data <- R6::R6Class("Data",
         pheno_file = NULL,
         #' @field cohort The cohort of the data, train or test.
         cohort = NULL,
+        #' @field cohort_col Find the cohort of a sample in this column of the 
+        #' pheno data.
+        cohort_col = NULL,
         #' @field patient_id_col The name of the column in the pheno data that holds
         #' the patient identifiers.
         patient_id_col = NULL,
@@ -66,6 +69,8 @@ Data <- R6::R6Class("Data",
         #' time-to-event values.
         #' @param event_col string. The name of the column in the pheno data that holds
         #' the event status encoded as 1 = occurrence, 0 = censoring.
+        #' @param cohort_col string. The name of the column in the pheno data that holds
+        #' the cohort a sample belongs to.
         #' @param benchmark_col string or `NULL`. The name of the column in the pheno data that 
         #' holds the benchmark risk score (like the IPI).
         #' @param expr_file string. The name of the expression csv file inside `directory`.
@@ -104,6 +109,7 @@ Data <- R6::R6Class("Data",
             time_to_event_col,
             cohort,
             event_col = "progression",
+            cohort_col = "split_1",
             benchmark_col = NULL,
             expr_file = "expr.csv",
             pheno_file = "pheno.csv",
@@ -114,7 +120,7 @@ Data <- R6::R6Class("Data",
         )
             data_initialize(self, private, name, directory, train_prop,              
                 pivot_time_cutoff, expr_file, pheno_file, cohort, patient_id_col, 
-                time_to_event_col, split_col_prefix, event_col, benchmark_col, 
+                time_to_event_col, split_col_prefix, event_col, cohort_col, benchmark_col, 
                 gene_id_col, imputer),
 
         #' @description Read expression data into the matrix `expr_mat` and pheno 

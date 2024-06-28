@@ -87,13 +87,27 @@ write_data_info <- function(
         )
     }
 
-    n_included_in_survival_analysis <- (pheno_tbl[[data$time_to_event_col]] > 0) |> 
-        sum(na.rm = TRUE)
-    n_high_risk <- ((pheno_tbl[[data$time_to_event_col]] < data$pivot_time_cutoff) & 
-        pheno_tbl[[data$event_col]] == 1) |> sum(na.rm = TRUE)
-    n_low_risk <- (pheno_tbl[[data$time_to_event_col]] >= 
-        data$pivot_time_cutoff) |> sum(na.rm = TRUE)
-    prop_high_risk <- n_high_risk / (n_high_risk + n_low_risk)
+    risk_stat_list <- list()
+    for (cohort in c(".", unique(pheno_tbl[[data$cohort_col]]))) {
+        data$pheno_tbl <- pheno_tbl[stringr::str_detect(pheno_tbl[[data$cohort_col]],
+             cohort), ]
+        n_included_in_survival_analysis <- (data$pheno_tbl[[data$time_to_event_col]] > 0) |> 
+            sum(na.rm = TRUE)
+        n_high_risk <- ((data$pheno_tbl[[data$time_to_event_col]] < data$pivot_time_cutoff) & 
+            data$pheno_tbl[[data$event_col]] == 1) |> sum(na.rm = TRUE)
+        n_low_risk <- (data$pheno_tbl[[data$time_to_event_col]] >= 
+            data$pivot_time_cutoff) |> sum(na.rm = TRUE)
+        prop_high_risk <- n_high_risk / (n_high_risk + n_low_risk)
+        risk_stat_list[[cohort]] <- list(
+            "included in survival analysis" =  n_included_in_survival_analysis,
+            "pivot time cutoff" = data$pivot_time_cutoff,
+            "number high risk" = n_high_risk,
+            "number low risk" = n_low_risk,
+            "unknown" = n_included_in_survival_analysis - n_high_risk - n_low_risk,
+            "proportion high risk" = prop_high_risk
+        )
+    }
+    names(risk_stat_list)[1] <- "all"
 
     pheno_data_list <- list(
         "included in survival analysis" =  n_included_in_survival_analysis,
@@ -112,12 +126,17 @@ write_data_info <- function(
         "primary processing" = "",
         "normalization" = ""
     )
-    data$pheno_tbl <- pheno_tbl
     benchmark_list <- list(
         "name" = data$benchmark_col,
         "reference" = "",
-        "performance" = prec_from_scores(data)
+        "performance" = NULL
     )
+    for (cohort in c(".", unique(pheno_tbl[[data$cohort_col]]))) {
+        data$pheno_tbl <- pheno_tbl[stringr::str_detect(pheno_tbl[[data$cohort_col]],
+             cohort), ]
+        benchmark_list[["performance"]][[cohort]] <- prec_from_scores(data)
+    }
+    names(benchmark_list)[1] <- "all"
     info_list[["data"]][["pheno data"]] <- pheno_data_list
     if(!found_file){
         info_list[["data"]][["expression data"]] <- expr_data_list
@@ -125,7 +144,7 @@ write_data_info <- function(
     } else {
         info_list[["data"]][["expression data"]][["number of genes"]] <- 
             expr_data_list[["number of genes"]]
-        info_list[["data"]][["benchmark"]][c(1, 3)] <- benchmark_list[c(1, 3)]
+        info_list[["data"]][["benchmark"]][-2] <- benchmark_list[-2]
     }
 
     jsonlite::write_json(info_list, filename, auto_unbox = TRUE, pretty = TRUE,
