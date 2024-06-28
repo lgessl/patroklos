@@ -37,10 +37,16 @@
     <loc>https://lgessl.github.io/patroklos/reference/error_rate.html</loc>
   </url>
   <url>
+    <loc>https://lgessl.github.io/patroklos/reference/greedy_nestor.html</loc>
+  </url>
+  <url>
     <loc>https://lgessl.github.io/patroklos/reference/hypertune.html</loc>
   </url>
   <url>
     <loc>https://lgessl.github.io/patroklos/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://lgessl.github.io/patroklos/reference/long_nestor.html</loc>
   </url>
   <url>
     <loc>https://lgessl.github.io/patroklos/reference/mean_impute.html</loc>
@@ -56,9 +62,6 @@
   </url>
   <url>
     <loc>https://lgessl.github.io/patroklos/reference/nested_fit.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/nested_pseudo_cv.html</loc>
   </url>
   <url>
     <loc>https://lgessl.github.io/patroklos/reference/predict.nested_fit.html</loc>
