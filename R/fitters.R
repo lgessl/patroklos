@@ -148,7 +148,7 @@ ptk_zerosum <- function(
     if (is.numeric(binarize_predictions))
         fit_obj$val_predict_list <- lapply(fit_obj$val_predict_list,
             function(v) 1 * (v > binarize_predictions))
-    fit_obj$val_predict <- fit_obj$val_predict_list[[fit_obj$lambdaMinIndex]]
+    fit_obj$val_predict <- fit_obj$val_predict_list[[fit_obj$lambda_min_index]]
     if (fit_obj$useZeroSum)
         fit_obj$zeroSumWeights <- zeroSum.weights
     if (fit_obj$standardize == 0)

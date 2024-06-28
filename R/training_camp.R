@@ -50,7 +50,7 @@ training_camp <- function(
                 }
             )
         } else {
-            model$fit(data, quiet = quiet, msg_prefix = "*** ")
+            model$fit(data, quiet = quiet, msg_prefix = "** ")
         }
     }
     if(!quiet) message("Training camp closes at ", round.POSIXt(Sys.time(), units = "secs"))

@@ -145,6 +145,7 @@ nested_fit <- function(
         list(
             "model1" = model1,
             "model2" = model2,
+            "val_predict" = model2$val_predict,
             "error_grid" = error_grid,
             "best_hyperparams" = best_hyperparams,
             "min_error" = model2$min_error

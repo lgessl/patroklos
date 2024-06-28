@@ -116,7 +116,7 @@ prepare_x <- function(
                 original_cnames = include_from_discrete_pheno
         )
         if (!quiet)
-            message("---- Including ", ncol(bind_discrete_wide), 
+            message("** Including ", ncol(bind_discrete_wide), 
                 " combined categorical features.")
         colnames(bind_discrete_wide) <- paste0(colnames(bind_discrete_wide),
             model$li_var_suffix)

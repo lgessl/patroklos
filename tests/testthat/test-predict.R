@@ -27,14 +27,20 @@ test_that("model$predict() works", {
   )
   model1$fit(data, quiet = TRUE)
   model2 <- Model$new(
-    name = "logistic",
+    name = "log-rf",
     directory = dir,
-    fitter = ptk_zerosum,
+    fitter = nested_pseudo_cv,
     split_index = 1:2,
     time_cutoffs = 2,
-    val_error_fun = neg_binomial_log_likelihood,
-    hyperparams = list(family = "binomial", alpha = 1, nFold = n_fold, 
-      lambda = lambda, zeroSum = FALSE)
+    val_error_fun = neg_prec_with_prev_greater(0.15),
+    hyperparams = list(
+      fitter1 = ptk_zerosum,
+      fitter2 = hypertune(ptk_ranger),
+      hyperparams1 = list(family = "binomial", alpha = 1, nFold = n_fold, 
+        lambdaSteps = 1, zeroSum = FALSE),
+      hyperparams2 = list(rel_mtry = FALSE, mtry = 3, min.node.size = 5,
+        classification = TRUE, num.trees = 100, skip_on_invalid_input = TRUE)
+    )
   )
   model2$fit(data, quiet = TRUE)
 

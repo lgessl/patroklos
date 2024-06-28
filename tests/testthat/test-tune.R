@@ -22,6 +22,8 @@ test_that("hypertune() and its return value's predict method work", {
   expect_true(all(sapply(ptk_hypertune$fit_obj_list, function(x) inherits(x, "ranger"))))
   expect_true(all(sapply(ptk_hypertune$val_predict_list, function(x) nrow(x) == sum(!is.na(x3y[[2]])))))
   expect_true(all(sapply(ptk_hypertune$fit_obj_list, function(x) all(dim(x) == c(n_samples, 1)))))
+  expect_equal(ptk_hypertune$val_predict_list[[ptk_hypertune$lambda_min_index]], 
+    ptk_hypertune$val_predict)
 
   pred <- predict(ptk_hypertune, newx = x3y[[1]])
   expect_equal(length(pred), n_samples)

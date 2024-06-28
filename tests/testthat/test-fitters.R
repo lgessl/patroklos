@@ -67,6 +67,7 @@ test_that("ptk_zerosum() works", {
   expect_true(is.null(fit$binarizePredictions))
   expect_false(is.null(fit$val_predict))
   expect_equal(fit$type, 4)
+  expect_equal(fit$val_predict_list[[fit$lambda_min_index]], fit$val_predict)
 
   fit <- ptk_zerosum(x3y[[1]], x3y[2:4], neg_prec_with_prev_greater(0.15), 
     exclude_pheno_from_lasso = TRUE, lambdaSteps = 2, nFold = 2, zeroSum = FALSE, 
@@ -76,6 +77,7 @@ test_that("ptk_zerosum() works", {
   expect_true(all(vapply(fit$val_predict_list, function(v) v %in% c(0, 1), 
     logical(sum(!is.na(x3y[[2]]))))))
   expect_equal(fit$type, 2)
+  expect_equal(fit$val_predict_list[[fit$lambda_min_index]], fit$val_predict)
 
   expect_error(ptk_zerosum(x3y[[1]], x3y[2:4], neg_roc_auc, binarize_predictions = TRUE))
 })
