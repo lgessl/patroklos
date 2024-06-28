@@ -93,6 +93,7 @@ unitune <- function(fitter) {
             fit_obj <- fitter(x = x, y = y, val_error_fun, ...)
             fit_obj$combine_n_max_categorical_features <- n_combo_max
             fit_obj$time_cutoff <- time_cutoff
+            fit_obj$feature_names <- colnames(x)
             fit_obj
         }
 
