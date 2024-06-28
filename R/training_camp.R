@@ -1,7 +1,7 @@
-#' @title Set up a training camp to fit models
-#' @description Given one data set and a list of models, fit all models for all 
-#' splits and time cutoffs. Store the models. If an error occurs while fitting 
-#' a model, skip to next model.
+#' @title A wrapper around `Model$fit()`
+#' @description Given one data set and a list of `Model`s, call `Model$fit()` for 
+#' all of them. If an error occurs while fitting a model, you can skip to the next 
+#' model.
 #' @param model_list list of Model objects. The models to fit.
 #' @param data Data object. The data set to fit on.
 #' @param skip_on_error logical. Whether to skip to the next model if an error
@@ -26,11 +26,6 @@ training_camp <- function(
         data$cohort <- "train"
         if(!quiet) message("Setting data$cohort to 'train' since it was NULL")
     }
-    data$pheno_tbl <- ensure_splits(
-        pheno_tbl = data$pheno_tbl,
-        data = data,
-        model_list = model_list
-    )
 
     for(i in seq_along(model_list)){
         model <- model_list[[i]]

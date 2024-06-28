@@ -170,8 +170,7 @@ prec_from_scores <- function(
         }
     }
     model <- list(
-        "time_cutoffs" = data$pivot_time_cutoff,
-        "split_index" = 1
+        "time_cutoffs" = data$pivot_time_cutoff
     )
     y_cox <- as.matrix(data$pheno_tbl[, c(data$time_to_event_col, data$event_col)])
     rownames(y_cox) <- data$pheno_tbl[[data$patient_id_col]]

@@ -4,9 +4,6 @@ data_prepare <- function(
     model,
     quiet
 ){
-    if(length(model$split_index) != 1)
-        stop("Model must specify exactly one split index, but we have ", 
-            length(model$split_index))
     if(!is.character(self$cohort))
         stop("data$cohort must be set")
     if(is.null(self$expr_mat) || is.null(self$pheno_tbl))
@@ -21,7 +18,7 @@ data_prepare <- function(
     )
     y_cox <- as.matrix(self$pheno_tbl[, c(self$time_to_event_col, self$event_col)])
     rownames(y_cox) <- self$pheno_tbl[[self$patient_id_col]]
-    colnames(y_cox) <- model$response_colnames
+    colnames(y_cox) <- c("time_to_event", "event")
 
     # Subset y_cox a bit: we don't need outcomes we can't predict for
     y_cox <- y_cox[rownames(x), , drop = FALSE]
@@ -83,19 +80,18 @@ prepare_x <- function(
     rownames(x) <- rnames_x
 
     # Prepare subsetting to cohort
-    split_colname <- paste0(data$split_col_prefix, model$split_index)
-    if(!split_colname %in% colnames(data$pheno_tbl))
-        stop("Column ", split_colname, " not found in pheno table.")
-    in_cohort_bool <- stringr::str_detect(data$pheno_tbl[[split_colname]], data$cohort)
+    if(!data$cohort_col %in% colnames(data$pheno_tbl))
+        stop("Cohort column '", cohort_col, "' not found in pheno table.")
+    in_cohort_bool <- stringr::str_detect(data$pheno_tbl[[cohort_col]], data$cohort)
     if(all(in_cohort_bool) || all(!in_cohort_bool))
         stop("All patients are in the same cohort")
 
     # Impute
     if(!is.null(data$imputer)) {
         x_imp <- x
-        cohort_col <- data$pheno_tbl[[split_colname]]
-        for (cohort in unique(cohort_col)) {
-            take_bool <- cohort_col == cohort
+        cohort_col <- data$pheno_tbl[[data$cohort_col]]
+        for (ch in unique(cohort_col)) {
+            take_bool <- cohort_col == ch
             x_imp[take_bool, ] <- data$imputer(x[take_bool, , drop = FALSE])
         }
         if (!all(colnames(x) == colnames(x_imp)) || 

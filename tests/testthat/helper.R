@@ -3,7 +3,6 @@ generate_mock_data <- function(
     n_genes = 2,
     n_na_in_pheno = 3,
     to_csv = NULL,
-    split_index = 1:3,
     return_type = "data"
 ){
     # expression matrix
@@ -28,12 +27,8 @@ generate_mock_data <- function(
         size = n_samples, prob = c(0.18, 0.52, 0.30), replace = TRUE)
     pheno_tbl[["continuous_var"]] <- rnorm(n_samples, 10, 10)
     pheno_tbl[["ipi"]] <- sample(1:5, size = n_samples, replace = TRUE)
-    for(i in split_index){
-        pheno_tbl[[paste0("split_", i)]] <- sample(
-            c("train", "test"),
-            size = n_samples,
-            replace = TRUE
-        )
+    pheno_tbl[["split_1"]] <- sample(c("train", "test"), size = n_samples, 
+        replace = TRUE)
     }
 
     # Generate a reasonable time-to-event columm as follows:
@@ -102,7 +97,6 @@ generate_mock_data <- function(
     data <- Data$new(
         name = "mock",
         directory = to_csv,
-        train_prop = 0.7,
         pivot_time_cutoff = 2,
         expr_file = "expr.csv",
         pheno_file = "pheno.csv",
@@ -110,9 +104,9 @@ generate_mock_data <- function(
         patient_id_col = "patient_id",
         time_to_event_col = "pfs_years",
         event_col = "progression",
+        cohort_col = "split_1",
         benchmark_col = "ipi",
-        gene_id_col = "gene_id",
-        split_col_prefix = "split_"
+        gene_id_col = "gene_id"
     )
     data$expr_mat <- expr_mat
     data$pheno_tbl <- pheno_tbl
@@ -121,25 +115,20 @@ generate_mock_data <- function(
 
 apb <- function(
     n_samples,
-    split_index,
     fluctuating_availability = TRUE
 ){
-    l <- list()
+    l <- list(actual = NULL, predicted = NULL, benchmark = NULL)
     for(i in 1:3){
-        l[[i]] <- list()
-        for(j in split_index){
-            # Simulate fluctuating availability
-            if(fluctuating_availability)
-                n_samples <- n_samples + sample(c(-1, 1), size = 1)
-            if(i == 1){
-                l[[i]][[j]] <- sample(c(0, 1), n_samples, replace = TRUE)
-            } else {
-                l[[i]][[j]] <- rnorm(n_samples)
-            }
-            names(l[[i]][[j]]) <- paste0("sample_", 1:n_samples)
-            l[[i]][[j]][sample(1:n_samples, 1)] <- NA
+        # Simulate fluctuating availability
+        if(fluctuating_availability)
+            n_samples <- n_samples + sample(c(-1, 1), size = 1)
+        if(i == 1){
+            l[[i]] <- sample(c(0, 1), n_samples, replace = TRUE)
+        } else {
+            l[[i]] <- rnorm(n_samples)
         }
+        names(l[[i]]) <- paste0("sample_", 1:n_samples)
+        l[[i]][sample(1:n_samples, 1)] <- NA
     }
-    names(l) <- c("actual", "predicted", "benchmark")
     return(l)
 }

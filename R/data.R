@@ -1,7 +1,7 @@
 #' @title An R6 class for the data
 #' @description A Data object holds the phenotype and expression data belonging to 
 #' a data set. It specifies the names of important features in the columns, reads from 
-#' and writes to csv files and takes care of splitting the data into train and test 
+#' and writes to csv files and puts the spotlight on a part of the data: the 
 #' cohort.
 #' @export
 Data <- R6::R6Class("Data",
@@ -41,11 +41,8 @@ Data <- R6::R6Class("Data",
         #' @field gene_id_col The name of the column in the expression data that holds
         #' the gene identifiers.
         gene_id_col = NULL,
-        #' @field split_col_prefix Column-name prefix for those columns holding splits into
-        #' train and test cohort.
-        split_col_prefix = NULL,
-        #' @field pivot_time_cutoff Pivotal time cutoff for the analysis and, explicitly,
-        #' for splitting the data into the train and test cohort.
+        #' @field pivot_time_cutoff Pivotal time cutoff for the analysis and 
+        #' assessment.
         pivot_time_cutoff = NULL,
         #' @field imputer Function handling NAs in the predictor matrix.
         imputer = NULL,
@@ -55,16 +52,9 @@ Data <- R6::R6Class("Data",
         #' @param name string. A telling name for the data set (e.g. `"Schmitz et al. 2018"`).
         #' @param directory string. The directory where both expression and pheno csv
         #' files lie.
-        #' @param train_prop numeric in (0, 1). The proportion of samples to draw for the 
-        #' training cohort when a new split into train and test cohort is performed.
-        #' @param pivot_time_cutoff numeric. Pivotal time cutoff for the analysis and, explicitly,
-        #' for splitting the data into the train and test cohort: If a numeric in (0, 1), preserve 
-        #' the proportion of individuals below and above `time_cutoff` in both cohorts. Default 
-        #' is `NULL`, i.e. no further constraints on splitting.
+        #' @param pivot_time_cutoff numeric. Pivotal time cutoff for the analysis.
         #' @param cohort string. At the end of preparing the data, subset it to those 
-        #' samples whose value in the split column matches `cohort`. Default is `NULL`, 
-        #' in which case some methods will infer a reasonable value (like `"train"` 
-        #' for training, `"test"` for assessment), some will throw an error.
+        #' samples whose value in the `cohort_col` column matches `cohort`. 
         #' @param time_to_event_col string. The name of the column in the pheno data that holds the 
         #' time-to-event values.
         #' @param event_col string. The name of the column in the pheno data that holds
@@ -81,11 +71,6 @@ Data <- R6::R6Class("Data",
         #' the patient identifiers.
         #' @param gene_id_col string. The name of the column in the expression data that holds
         #' the gene identifiers.
-        #' @param split_col_prefix string. Column-name prefix for those columns in the pheno 
-        #' tibble holding splits into cohorts (like train and test). Some of 
-        #' these columns may be present in the pheno data already, non-present ones will be 
-        #' added during the training process if required. Default is `"split_"`, i.e., 
-        #' split columns are named `"split_1"`, `"split_2"`, etc.
         #' @param imputer function or NULL. Function handling NAs in the predictor matrix.
         #' It takes a single argument `x`, the predictor matrix, a numeric with categorical 
         #' variables dichotomized to binary dummy variables, and returns a matrix of the 
@@ -104,7 +89,6 @@ Data <- R6::R6Class("Data",
         initialize = function(
             name,
             directory,
-            train_prop,
             pivot_time_cutoff,
             time_to_event_col,
             cohort,
@@ -115,12 +99,11 @@ Data <- R6::R6Class("Data",
             pheno_file = "pheno.csv",
             patient_id_col = "patient_id",
             gene_id_col = "gene_id",
-            split_col_prefix = "split_",
             imputer = mean_impute
         )
             data_initialize(self, private, name, directory, train_prop,              
                 pivot_time_cutoff, expr_file, pheno_file, cohort, patient_id_col, 
-                time_to_event_col, split_col_prefix, event_col, cohort_col, benchmark_col, 
+                time_to_event_col, event_col, cohort_col, benchmark_col, 
                 gene_id_col, imputer),
 
         #' @description Read expression data into the matrix `expr_mat` and pheno 

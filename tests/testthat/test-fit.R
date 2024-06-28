@@ -30,8 +30,8 @@ test_that("Model$fit() works", {
   )
 
   model$fit(data, quiet = TRUE)
-  expect_equal(length(model$fits), 1)
-  expect_equal(nrow(model$fits[[1]]$coef[[1]]), n_genes+1)
+  expect_equal(length(model$fit_obj), 1)
+  expect_equal(nrow(model$fit_obj[[1]]$coef[[1]]), n_genes+1)
   expect_true(file.exists(file.path(dir, "model1", "models.rds")))
 
   model$split_index <- 1:2
@@ -42,8 +42,8 @@ test_that("Model$fit() works", {
   model$include_from_discrete_pheno <- "discrete_var" # 3 levels
   model$include_from_continuous_pheno <- "continuous_var"
   model$fit(data, quiet = TRUE)
-  expect_equal(nrow(model$fits[[1]]$coef[[1]]), n_genes+1+2+1)
-  expect_equal(length(model$fits), length(model$split_index))
+  expect_equal(nrow(model$fit_obj[[1]]$coef[[1]]), n_genes+1+2+1)
+  expect_equal(length(model$fit_obj), length(model$split_index))
 
   # Binary response
   colnames(data$pheno_tbl)[1] <- "sample"
@@ -65,8 +65,8 @@ test_that("Model$fit() works", {
   )
 
   model$fit(data, quiet = TRUE)
-  expect_true(nrow(model$fits[[1]]$coef[[1]]) %in% (1 + n_genes + c(3, 5))) 
-  expect_s3_class(model$fits[[2]], "ptk_zerosum")
+  expect_true(nrow(model$fit_obj[[1]]$coef[[1]]) %in% (1 + n_genes + c(3, 5))) 
+  expect_s3_class(model$fit_obj[[2]], "ptk_zerosum")
 
   model$directory <- file.path(dir, "model4")
   model$split_index <- 1
@@ -74,8 +74,8 @@ test_that("Model$fit() works", {
   model$include_from_continuous_pheno <- "continuous_var"
   model$include_expr <- FALSE
   model$fit(data, quiet = TRUE)
-  expect_equal(nrow(model$fits[[1]]$coef[[1]]), 1+2+1)
-  expect_equal(length(model$fits), length(model$split_index))
+  expect_equal(nrow(model$fit_obj[[1]]$coef[[1]]), 1+2+1)
+  expect_equal(length(model$fit_obj), length(model$split_index))
   expect_true(file.exists(file.path(dir, "model4", "models.rds")))
 
   # nested_cv

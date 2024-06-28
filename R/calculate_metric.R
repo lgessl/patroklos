@@ -13,54 +13,46 @@ ass2d_calculate_2d_metric <- function(self, private, data, model, quiet){
     estimate_list[[model$name]] <- predicted
     if(!is.null(self$benchmark))
         estimate_list[[self$benchmark]] <- benchmark
-    n_tbls <- length(model$split_index) * length(estimate_list)
-    tbl_list <- vector("list", n_tbls)
+    tbl_list <- vector("list", length(estimate_list))
 
-    j <- 1
-    for(i in model$split_index){
-        for(estimate_name in names(estimate_list)){
-            estimate <- estimate_list[[estimate_name]]
-            if(length(table(actual[[i]])) != 2)
-                stop("Actual values in split ", i, " are not binary. We have (", 
-                    paste(actual[[i]], collapse = ", "), ")")
-            if(self$y_metric == "logrank"){
-                tbl <- logrank_metric(
-                    estimate = estimate[[i]],
-                    pheno_tbl = data$pheno_tbl,
-                    data = data,
-                    y_metric = self$y_metric,
-                    x_metric = self$x_metric
-                )
-            } else if(self$y_metric == "precision_ci"){
-                lower_boundary <- estimate_name == model$name
-                tbl <- precision_ci(
-                    estimate = estimate[[i]],
-                    actual = actual[[i]],
-                    confidence_level = self$ci_level,
-                    y_metric = self$y_metric,
-                    x_metric = self$x_metric,
-                    lower_boundary = lower_boundary
-                )
-            } else {
-                tbl <- metric_with_rocr(
-                    estimate = estimate[[i]],
-                    actual = actual[[i]],
-                    x_metric = self$x_metric,
-                    y_metric = self$y_metric
-                )
-            }
-            names(tbl) <- c(
-                self$x_metric, 
-                self$y_metric, 
-                "cutoff"
+    for (i seq_along(estimate_list)) {
+        estimate <- estimate_list[[i]]
+        if(self$y_metric == "logrank"){
+            tbl <- logrank_metric(
+                estimate = estimate,
+                pheno_tbl = data$pheno_tbl,
+                data = data,
+                y_metric = self$y_metric,
+                x_metric = self$x_metric
             )
-            tbl[["split"]] <- i
-            tbl[["model"]] <- estimate_name       
-            tbl_list[[j]] <- tbl
-            j <- j+1
+        } else if(self$y_metric == "precision_ci"){
+            lower_boundary <- estimate_name == model$name
+            tbl <- precision_ci(
+                estimate = estimate,
+                actual = actual,
+                confidence_level = self$ci_level,
+                y_metric = self$y_metric,
+                x_metric = self$x_metric,
+                lower_boundary = lower_boundary
+            )
+        } else {
+            tbl <- metric_with_rocr(
+                estimate = estimate,
+                actual = actual,
+                x_metric = self$x_metric,
+                y_metric = self$y_metric
+            )
         }
+        names(tbl) <- c(
+            self$x_metric, 
+            self$y_metric, 
+            "cutoff"
+        )
+        tbl[["model"]] <- estimate_name       
+        tbl_list[[j]] <- tbl
+        j <- j+1
     }
-    # Combine all splits to one tibble
+    # Combine model and benchmark into one tibble
     tbl <- dplyr::bind_rows(tbl_list)
     any_na <- apply(tbl, 1, function(x) any(is.na(x)))
     tbl <- tbl[!any_na, ]

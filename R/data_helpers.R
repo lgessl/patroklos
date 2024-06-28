@@ -1,11 +1,9 @@
-data_initialize <- function(self, private, name, directory, train_prop, 
-    pivot_time_cutoff, expr_file, pheno_file, cohort, patient_id_col, 
-    time_to_event_col, split_col_prefix, event_col, cohort_col, benchmark_col, 
-    gene_id_col, imputer){
+data_initialize <- function(self, private, name, directory, pivot_time_cutoff, 
+    expr_file, pheno_file, cohort, patient_id_col, time_to_event_col, event_col, 
+    cohort_col, benchmark_col, gene_id_col, imputer){
     
     stopifnot(is.character(name))
     stopifnot(is.character(directory))
-    stopifnot(is.numeric(train_prop))
     stopifnot(is.numeric(pivot_time_cutoff))
     stopifnot(is.character(expr_file))
     stopifnot(is.character(pheno_file))
@@ -16,14 +14,12 @@ data_initialize <- function(self, private, name, directory, train_prop,
     stopifnot(is.character(cohort_col))
     stopifnot(is.character(benchmark_col) || is.null(benchmark_col))
     stopifnot(is.character(gene_id_col))
-    stopifnot(is.character(split_col_prefix))
     stopifnot(is.null(imputer) || is.function(imputer))
     if (!is.null(imputer) && !setequal(names(formals(imputer)), c("x")))
         stop("Imputer must be NULL or a function with a single argument `x`.")
 
     self$name <- name
     self$directory <- directory
-    self$train_prop <- train_prop
     self$pivot_time_cutoff <- pivot_time_cutoff
     self$expr_file <- expr_file
     self$pheno_file <- pheno_file
@@ -34,7 +30,6 @@ data_initialize <- function(self, private, name, directory, train_prop,
     self$cohort_col <- cohort_col
     self$benchmark_col <- benchmark_col
     self$gene_id_col <- gene_id_col
-    self$split_col_prefix <- split_col_prefix
     self$imputer <- imputer
 
     invisible(self)

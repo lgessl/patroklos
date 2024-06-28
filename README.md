@@ -162,7 +162,7 @@ for multiple data sets.
 To fit into the pipeline, models and their related functions must meet certain 
 requirements. Typically in R, training and assessing a model involves 
 
-- a function that fits the model to training data, optionally tunes hyperparameters
+- a function that fit_obj the model to training data, optionally tunes hyperparameters
   in a cross validation, e.g., and returns 
 - an S3 object representing the fit. Often this object holds some kind of validated 
   predictions like those from a cross validation or out-of-bag predictions in the 

@@ -127,36 +127,17 @@ as2_plot_risk_scores <- function(self, private, data, model, quiet, msg_prefix){
         data,
         quiet = quiet
     )
-    predicted <- prep[["predicted"]]
-    actual <- prep[["actual"]]
+    pa <- intersect_by_names(prep[["predicted"]], prep[["actual"]], 
+        rm_na = c(TRUE, TRUE))
+    predicted <- pa[[1]]
+    actual <- pa[[2]]
 
-    # Get rid of NAs
-    for(i in seq_along(predicted)){
-        pred_act <- intersect_by_names(
-            predicted[[i]], 
-            actual[[i]], 
-            rm_na = c(TRUE, TRUE)
-        )
-        predicted[[i]] <- pred_act[[1]]
-        actual[[i]] <- pred_act[[2]]
-    }
     tbl <- tibble::tibble(
-        patient_id = names(unlist(predicted)),
-        rank = unlist(lapply(predicted, function(x) rank(-x))),
-        split = rep(
-            which(!sapply(predicted, is.null)), 
-            sapply(predicted, length)
-        ),
-        `risk score` = unlist(predicted),
+        patient_id = names(predicted),
+        rank = rank(-predicted),
+        `risk score` = predicted,
         `true risk` = ifelse(unlist(actual) == 1, "high", "low")
     )
-    tbl[["split"]] <- paste0("Split ", tbl[["split"]])
-
-    n_col <- 2
-    n_split <- sum(!sapply(predicted, is.null))
-    n_row <- ceiling(n_split/n_col)
-    height <- n_row * self$height
-    width <- n_col * self$width
 
     plt <- ggplot2::ggplot(
         tbl,
@@ -165,11 +146,6 @@ as2_plot_risk_scores <- function(self, private, data, model, quiet, msg_prefix){
             y = .data[["risk score"]], 
             color = .data[["true risk"]]
             )
-        ) +
-        ggplot2::facet_wrap(
-            facets = ggplot2::vars(.data[["split"]]),
-            ncol = n_col,
-            scales = "free"
         ) +
         ggplot2::geom_point() +
         ggplot2::labs(
@@ -190,7 +166,7 @@ as2_plot_risk_scores <- function(self, private, data, model, quiet, msg_prefix){
         )
         if(!quiet)
             message(msg_prefix, "Saving scores plot to ", file)
-        ggplot2::ggsave(file, plt, width = width, height = height, 
+        ggplot2::ggsave(file, plt, width = self$width, height = self$height, 
             units = self$units)
 
         if(self$fellow_csv){
@@ -200,6 +176,5 @@ as2_plot_risk_scores <- function(self, private, data, model, quiet, msg_prefix){
             readr::write_csv(tbl, csv_file)
         }
     }
-
     return(tbl)
 }

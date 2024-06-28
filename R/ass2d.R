@@ -161,10 +161,10 @@ Ass2d <- R6::R6Class("Ass2d",
                 scale_x, scale_y, vline, hline, text_size, text, alpha, colors, theme, 
                 width, height, units, dpi),
 
-        #' @description Assess a *single* model (with multiple splits) on a data set.
+        #' @description Assess a *single* model on a data set.
         #' @param data Data object. Assess on this data. The `cohort` attribute 
         #' must be set.
-        #' @param model Model object. Assess this model, multiple splits are supported.
+        #' @param model Model object. Assess this model.
         #' @param quiet logical. Whether to suppress messages.
         #' @param msg_prefix string. Prefix for messages. Default is `""`.
         #' @details We add the data underlying the plots to Ass2d object as a new attribute 
@@ -193,7 +193,7 @@ Ass2d <- R6::R6Class("Ass2d",
         )
             as2_plot_risk_scores(self, private, data, model, quiet, msg_prefix),
 
-        #' @description Assess *multiple* models (with multiple splits) on a data set.
+        #' @description Assess *multiple* models on a data set.
         #' This is a wrapper around `assess()` and optionally `plot_risk_scores()` 
         #' for multiple models.
         #' @param data Data object. Assess on this data set.

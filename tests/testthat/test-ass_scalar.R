@@ -41,7 +41,7 @@ test_that("AssScalar$assess() works", {
       split_index = 1:2,
       time_cutoffs = 2,
       val_error_fun = error_rate,
-      fit_file = "model.rds"
+      file = "model.rds"
     )
     data$cohort <- "train"
     model$fit(data, quiet = TRUE)
@@ -110,7 +110,7 @@ test_that("AssScalar$assess_center() works", {
     time_cutoffs = c(1.5, 2),
     split_index = 1,
     val_error_fun = neg_binomial_log_likelihood,
-    fit_file = "model2.rds"
+    file = "model2.rds"
   )
   model2 <- Model$new(
     name = "rf",
@@ -121,7 +121,7 @@ test_that("AssScalar$assess_center() works", {
     split_index = 1,
     time_cutoffs = 2,
     val_error_fun = error_rate,
-    fit_file = "model3.rds",
+    file = "model3.rds",
     include_from_discrete_pheno = c("discrete_var", "abc_gcb", "ipi_age"),
     combine_n_max_categorical_features = 3,
     combined_feature_min_positive_ratio = 0.04
@@ -169,20 +169,6 @@ test_that("AssScalar$assess_center() works", {
   )
   dir.create(dir, "results")
   
-  # Case 1: one metric
-  data$cohort <- "test"
-  ass_scalar$metrics <- single_metric 
-  eval_tbl <- ass_scalar$assess_center(data, model1_list, quiet = TRUE)
-  expect_equal(nrow(eval_tbl), length(model1_list))  
-  expect_equal(colnames(eval_tbl), c("model", "cohort", "mean", "sd", "min", "max"))
-  csv_path <- ass_scalar$file
-  first_2 <- readr::read_lines(csv_path, n_max = 2)
-  expect_equal(first_2[1], "# mock | pfs_years < 2")
-  expect_equal(first_2[2], paste0(colnames(eval_tbl), collapse = ","))
-  eval_tbl_read <- readr::read_csv(csv_path, comment = "#", show_col_types = FALSE)
-  expect_equal(dim(eval_tbl), dim(eval_tbl_read))
-
-  # Case 2: multiple metrics
   data$cohort <- "val_predict"
   ass_scalar$metrics <- multiple_metrics
   eval_tbl <- ass_scalar$assess_center(data, model2_list, quiet = TRUE)

@@ -24,24 +24,17 @@ ass_scalar_assess <- function(self, private, data, model, quiet){
         data = data,
         quiet = quiet
     )
-    res_mat <- matrix(.0, nrow = length(model$split_index), 
-        ncol = length(self$metrics), byrow = TRUE)
-    for (i in seq_along(model$split_index)) {
-        predicted <- prep[["predicted"]][[i]]
-        actual <- prep[["actual"]][[i]]
-        stopifnot(all(names(predicted) == names(actual)))
-        res_mat[i, ] <- get_metric(
-            ass_scalar = self,
-            predicted = predicted,
-            actual = actual,
-            data = data,
-            split_index = i,
-            quiet = quiet
-        )
-    }
-    colnames(res_mat) <- self$metrics
-    rownames(res_mat) <- self$split_index
-    res_mat
+    res_mat <- matrix(numeric(length(self$metrics)), nrow = 1,  byrow = TRUE)
+    stopifnot(all(names(prep[["predicted"]]) == names(prep[["actual"]])))
+    metric_v <- get_metric(
+        ass_scalar = self,
+        predicted = prep[["predicted"]],
+        actual = prep[["actual"]],
+        data = data,
+        quiet = quiet
+    )
+    names(metric_v) <- self$metrics
+    metric_v
 }
 
 ass_scalar_assess_center <- function(self, private, data, model_list,
@@ -57,44 +50,16 @@ ass_scalar_assess_center <- function(self, private, data, model_list,
             "model" = model$name,
             "cohort" = data$cohort
         )
-        if (length(self$metrics) == 1) {
-            ncol_addon <- 4
-            colnames_addon <- c("mean", "sd", "min", "max")
-        } else {
-            ncol_addon <- length(self$metrics)
-            colnames_addon <- self$metrics
-        }
-        addon_mat <- matrix(.0, nrow = 1, ncol = ncol_addon)
-        colnames(addon_mat) <- colnames_addon
+        addon_mat <- matrix(.0, nrow = 1, ncol = length(self$metrics))
+        colnames(addon_mat) <- self$metrics
         addon_tbl <- tibble::as_tibble(addon_mat)
         res_tbl <- dplyr::bind_cols(res_tbl, addon_tbl)
-        metric_mat <- self$assess(
+        metric_v <- self$assess(
             data,
             model = model,
             quiet = quiet
         )
-        if (length(self$metrics) == 1) {
-            metric <- metric_mat[, 1]
-            metric <- metric[!is.na(metric)]
-            if (length(metric) == 0) {
-                res_tbl[1, 3:6] <- NA
-            } else {
-                res_tbl[1, 3] <- round(mean(metric), digits = self$round_digits) 
-                res_tbl[1, 4] <- round(stats::sd(metric), digits = self$round_digits)
-                res_tbl[1, 5] <- round(min(metric), digits = self$round_digits)
-                res_tbl[1, 6] <- round(max(metric), digits = self$round_digits)
-            }
-        } else {
-            for(k in seq_along(self$metrics)){
-                metric <- metric_mat[, k]
-                metric <- metric[!is.na(metric)]
-                if (length(metric) == 0) {
-                    res_tbl[1, 2 + k] <- NA
-                } else {
-                    res_tbl[1, 2 + k] <- round(mean(metric), digits = self$round_digits)
-                }
-            }
-        }
+        res_tbl[1, 3:ncol(res_tbl)] <- metric_v
         res_tbl
     }
 
@@ -120,7 +85,6 @@ get_metric <- function(
     predicted,
     actual,
     data,
-    split_index,
     quiet
 ){
     # Some metrics want binary data, i.e. in {0, 1} 
@@ -134,7 +98,7 @@ get_metric <- function(
             prevs <= ass_scalar$prev_range[2]]
         if (length(thresholds) == 0) {
             if (!quiet)
-                message("In split ", split_index, ": No prevalences in the range (", 
+                message("No prevalences in the range (", 
                     paste(ass_scalar$prev_range, collapse = ", "), "). ",
                     "Available prevalences are (", 
                     paste(round(prevs, 3), collapse = ", "), ").")

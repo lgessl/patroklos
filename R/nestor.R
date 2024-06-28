@@ -8,7 +8,7 @@
 #' @param x named numeric matrix (samples x features). Features only meant for 
 #' the late model are exactly those matching `x`'s `li_var_suffix` attribute.
 #' @param model1 `Model` R6 object. The early model trained on the expression 
-#' data, with the `fits` attribute set at least in its stored version, i.e., the 
+#' data, with the `fit_obj` attribute set at least in its stored version, i.e., the 
 #' early model is already there.
 #' @param fitter2 A *patroklos-compliant fitter with CV tuning* (see
 #' README for more details).
@@ -26,16 +26,16 @@ greedy_nestor <- function(
     stopifnot(inherits(val_error_fun, "function"))
     stopifnot(inherits(hyperparams2, "list"))
 
-    if (is.null(model1$fits)) {
-        model1 <- readRDS(file.path(model1$direcory), model1$fit_file)
-        if (is.null(model1$fits))
+    if (is.null(model1$fit_obj)) {
+        model1 <- readRDS(file.path(model1$direcory), model1$file)
+        if (is.null(model1$fit_obj))
             stop("You need to first train the early model")
     }
     # Backward compatibility
-    if (length(class(model1$fits)) == 1 && class(model1$fits)[1] == "list") 
-        model1$fits <- model1$fits[[1]]
+    if (length(class(model1$fit_obj)) == 1 && class(model1$fit_obj)[1] == "list") 
+        model1$fit_obj <- model1$fit_obj[[1]]
     
-    fit_obj1 <- model1$fits
+    fit_obj1 <- model1$fit_obj
     x_late <- get_late_x(early_predicted = fit_obj1$val_predict, x = x)
     fit_obj2 <- do.call(fitter2, c(list(x = x_late, y = y, val_error_fun = 
         val_error_fun), hyperparams2))

@@ -51,13 +51,13 @@ AssScalar <- R6::R6Class("AssScalar",
             ass_scalar_initialize(self, private, metrics, prev_range, benchmark, 
                 file, round_digits), 
 
-        #' @description Assess a *single* model (with multiple splits) on a data set.
+        #' @description Assess a *single* model on a data set.
         #' @param data Data object. Assess on this data. Data must already be read in 
         #' and `cohort` attribute set.
-        #' @param model Model object. Assess this model, multiple splits are supported.
+        #' @param model Model object. Assess this model.
         #' @param quiet logical. Whether to suppress messages.
-        #' @return numeric matrix. The rows correspond to the splits of the model,
-        #' the columns correspond to `self$metrics`.
+        #' @return numeric matrix. The rows correspond to the `model` and optionally 
+        #' the benchmark, the columns correspond to `self$metrics`.
         #' @details The AssScalar S3 class is tailored for this function.
         assess = function(
             data,
@@ -66,7 +66,7 @@ AssScalar <- R6::R6Class("AssScalar",
         )
             ass_scalar_assess(self, private, data, model, quiet),
 
-        #' @description Assess *multiple* models (with multiple splits) on a data set.
+        #' @description Assess *multiple* models on a data set.
         #' @param data Data object. Assess on this data.
         #' If `data$cohort` is `NULL`, assess on the test cohort.
         #' @param model_list list of Model objects. Assess these models.

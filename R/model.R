@@ -1,5 +1,5 @@
 #' @title An R6 class for a model
-#' @description A Model specifies how a model looks like, prepares the data, fits it, 
+#' @description A Model specifies how a model looks like, prepares the data, fit_obj it, 
 #' stores it and predicts from it.
 Model <- R6::R6Class("Model",
     public = list(
@@ -10,17 +10,12 @@ Model <- R6::R6Class("Model",
         directory = NULL,
         #' @field fitter The model fitting function to be used.
         fitter = NULL,
-        #' @field split_index Split the given data into training and test cohort
-        #' `length(split_index)` times.
-        split_index = NULL,
         #' @field time_cutoffs Threshold and censor the outcome accordingly.
         time_cutoffs = NULL,
         #' @field val_error_fun Calculate the error of independently validated predictions.
         val_error_fun = NULL,
         #' @field hyperparams Optional arguments passed to `fitter`.
         hyperparams = NULL,
-        #' @field response_colnames Use as column names for the response matrix.
-        response_colnames = NULL,
         #' @field include_from_continuous_pheno The names of the continuous variables in the
         #' pheno data (to be) included in the predictor matrix.
         include_from_continuous_pheno = NULL,
@@ -34,11 +29,11 @@ Model <- R6::R6Class("Model",
         li_var_suffix = NULL,
         #' @field create_directory Whether to create `directory` if it does not exist, yet.
         create_directory = NULL,
-        #' @field fit_file Store this Model object under this name in `directory`.
-        fit_file = NULL,
-        #' @field fits A list holding fits (something returned by a fitter like 
+        #' @field file Store this Model object under this name in `directory`.
+        file = NULL,
+        #' @field fit_obj A list holding fit_obj (something returned by a fitter like 
         #' a `ptk_zerosum` S3 object).
-        fits = NULL,
+        fit_obj = NULL,
         #' @field continuous_output Whether the output of the model is continous or binary.
         continuous_output = NULL,
         #' @field combine_n_max_categorical_features Maximum number of categorical features 
@@ -56,8 +51,6 @@ Model <- R6::R6Class("Model",
         #' method, and (ideally, for assessment) with a `predict()` method. Default is `NULL`.
         #' @param directory string. The directory to store the models in. For every value in 
         #' `time_cutoffs`, find the corresponding model in a subdirectory named after this value. 
-        #' @param split_index integer vector. Split the given data into training and test samples 
-        #' `length(split_index)` times, i.e., every index in `split_index` will get its own split. 
         #' @param time_cutoffs numeric vector. This governs how the provided 
         #' response looks like. For every value of `time_cutoffs`, specify a model 
         #' on the following response data:
@@ -97,7 +90,7 @@ Model <- R6::R6Class("Model",
         #' data when adding them to the predictor matrix. Default is `"++"`.
         #' @param create_directory logical. Whether to create `directory` if it does not exist, yet. 
         #' Default is `TRUE`.
-        #' @param fit_file string. The name of the model-fits file inside `directory`.
+        #' @param file string. The name of the model-fit_obj file inside `directory`.
         #' Default is `"fit_obj.rds"`.
         #' @param continuous_output logical or NULL. Whether the output of the model 
         #' is continous (like the conditional probabilities of a logistic regression) or
@@ -110,18 +103,10 @@ Model <- R6::R6Class("Model",
         #' with `combine_n_max_categorical_features` governs which combinatorial 
         #' features the predicitor matrix will contain.
         #' @return A `Model` R6 object.
-        #' @details Strictly speaking, one `Model` instance specifies
-        #' `length(time_cutoffs) * length(split_index)` models. In terms of storing 
-        #' and assessing models, we consider the models obtained via repeated 
-        #' splitting according to `split_index` as one model; we view models 
-        #' obtained via different values of `time_cutoffs`, in contrast, as 
-        #' different models; e.g., we can compare them against one another in an 
-        #' assessment.
         initialize = function(
             name,
             fitter,
             directory,
-            split_index = 1,
             time_cutoffs,
             val_error_fun,
             hyperparams = NULL,
@@ -131,27 +116,26 @@ Model <- R6::R6Class("Model",
             include_expr = TRUE,
             li_var_suffix = "++",
             create_directory = TRUE,
-            fit_file = "models.rds",
+            file = "models.rds",
             continuous_output = NULL,
             combine_n_max_categorical_features = 1L,
             combined_feature_min_positive_ratio = 0.04
         )
-            model_initialize(self, private, name, fitter, directory, split_index, 
-                time_cutoffs, val_error_fun, hyperparams, response_colnames, 
+            model_initialize(self, private, name, fitter, directory, time_cutoffs, 
+                val_error_fun, hyperparams, response_colnames, 
                 include_from_continuous_pheno, include_from_discrete_pheno, 
                 include_expr, li_var_suffix, create_directory, 
-                fit_file, continuous_output,
+                file, continuous_output,
                 combine_n_max_categorical_features, 
                 combined_feature_min_positive_ratio),  
 
-        #' @description Fit the model to a data set for all splits into training 
-        #' and test cohort. 
+        #' @description Fit the model to a data set.
         #' @param data Data object. Read it in if needed.
         #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
         #' @param msg_prefix string. Prefix for messages. Default is `""`.
-        #' @return The `Model` object itself with the `fits` attribute set to a 
-        #' list holding the object returned by the `fitter` attribute for every
-        #' split. 
+        #' @return The `Model` object itself with the `fit_obj` attribute set 
+        #' to the object tuned over `time_cutoffs`, `combine_n_max_categorical_features` 
+        #' and `hyperparams` with `fitter` at the core.
         #' @seealso [`training_camp()`].
         fit = function(
             data,
@@ -160,25 +144,14 @@ Model <- R6::R6Class("Model",
         )
             model_fit(self, private, data, quiet, msg_prefix),
 
-        #' @description Predict for a data set and all splits into training and 
-        #' test cohort. We don't support multiple time cutoffs here. Additonally 
-        #' return the true values of the response and, if the `benchmark_col` 
-        #' attribute of the `Data` object is not `NULL`, the values of the 
-        #' benchmark.
+        #' @description Predict for a data set. Additonally return the true values 
+        #' of the response and, if the `benchmark_col` attribute of the `Data` 
+        #' object is not `NULL`, the values of the benchmark.
         #' @param data Data object. Specifications on the data. Read it in if 
         #' needed.
         #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
-        #' @return A list holding:
-        #' 
-        #' * `"predicted"`: a list of named numeric vectors, the scores output by the model for 
-        #'  each split (split index corresponding to list index).
-        #' *  "actual": a list of named numeric vectors, for each split the actual values of 
-        #' whether time to event was above or below `model$time_cutoffs`, encoded as 1 
-        #'  ("high risk") and 0 ("low risk"), respectively. 
-        #' * "benchmark": A list of named numeric vectors, for each split the values of the
-        #'  benchmark classifier. If `data$benchmark` is NULL, it is an empty list.
-        #' 
-        #' For every split, the names of all three vectors match.
+        #' @return A list of three named numeric vectors named `"predictions"`,
+        #' `"actual"`, and `"benchmark"`.
         #' @importFrom stats predict
         #' @importFrom stats coef
         #' @export
