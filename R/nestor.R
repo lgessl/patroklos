@@ -31,7 +31,8 @@ greedy_nestor <- function(
         if (is.null(model1$fits))
             stop("You need to first train the early model")
     }
-    if (class(model1$fits) == "list") # backward compatibility
+    # Backward compatibility
+    if (length(class(model1$fits)) == 1 && class(model1$fits)[1] == "list") 
         model1$fits <- model1$fits[[1]]
     
     fit_obj1 <- model1$fits
