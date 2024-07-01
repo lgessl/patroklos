@@ -22,15 +22,13 @@ test_that("AssScalar$assess() works", {
     n_samples <- 50
     n_genes <- 5
     n_fold <- 1
-    split_index <- 1:2
     metrics <- c("auc", "accuracy", "precision", "logrank")
     
     model_dir <- withr::local_tempdir()
     data <- generate_mock_data(
         n_samples = n_samples,
         n_genes = n_genes,
-        n_na_in_pheno = 1,
-        split_index = split_index
+        n_na_in_pheno = 1
     )
     model <- Model$new(
       name = "rf",
@@ -38,7 +36,6 @@ test_that("AssScalar$assess() works", {
       fitter = hypertune(ptk_ranger, select = TRUE),
       hyperparams = list(rel_mtry = TRUE, mtry = 0.98, num.trees = 100, 
         min.node.size = 3, classification = TRUE),
-      split_index = 1:2,
       time_cutoffs = 2,
       val_error_fun = error_rate,
       file = "model.rds"
@@ -54,8 +51,8 @@ test_that("AssScalar$assess() works", {
     data$cohort <- "test"
     res <- ass_scalar$assess(data, model, quiet = TRUE)
     expect_true(is.numeric(res))
-    expect_true(is.matrix(res))
-    expect_equal(dim(res), c(length(split_index), length(metrics)))
+    expect_true(is.vector(res))
+    expect_equal(length(res), length(metrics))
 
     ass_scalar$metrics <- c("precision", "prevalence")
     ass_scalar$prev_range <- c(0.15, 0.30)
@@ -68,13 +65,12 @@ test_that("AssScalar$assess() works", {
       fitter = ptk_zerosum,
       hyperparams = list(family = "gaussian", lambda = 0, zeroSum = FALSE, 
         nFold = 1),
-      split_index = 1:2,
       time_cutoffs = 2,
       val_error_fun = neg_prec_with_prev_greater(0.15),
     )
     model$fit(data, quiet = TRUE)
     res <- ass_scalar$assess(data, model, quiet = TRUE)
-    expect_true(all(res[, 2] >= 0.15 & res[, 2] <= 0.30))
+    expect_true(res[2] >= 0.15 && res[2] <= 0.30)
 
     ass_scalar$prev_range <- c(0.1000, 0.10000)
     res <- ass_scalar$assess(data, model, quiet = TRUE)
@@ -108,7 +104,6 @@ test_that("AssScalar$assess_center() works", {
     hyperparams = list(family = "binomial", nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE),
     time_cutoffs = c(1.5, 2),
-    split_index = 1,
     val_error_fun = neg_binomial_log_likelihood,
     file = "model2.rds"
   )
@@ -118,7 +113,6 @@ test_that("AssScalar$assess_center() works", {
     fitter = hypertune(ptk_ranger),
     hyperparams = list(rel_mtry = FALSE, mtry = 2, num.trees = 100, min.node.size = 3,
       classification = TRUE),
-    split_index = 1,
     time_cutoffs = 2,
     val_error_fun = error_rate,
     file = "model3.rds",

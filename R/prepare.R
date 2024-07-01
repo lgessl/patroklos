@@ -81,8 +81,9 @@ prepare_x <- function(
 
     # Prepare subsetting to cohort
     if(!data$cohort_col %in% colnames(data$pheno_tbl))
-        stop("Cohort column '", cohort_col, "' not found in pheno table.")
-    in_cohort_bool <- stringr::str_detect(data$pheno_tbl[[cohort_col]], data$cohort)
+        stop("Cohort column '", data$cohort_col, "' not found in pheno table.")
+    in_cohort_bool <- stringr::str_detect(data$pheno_tbl[[data$cohort_col]], 
+        data$cohort)
     if(all(in_cohort_bool) || all(!in_cohort_bool))
         stop("All patients are in the same cohort")
 

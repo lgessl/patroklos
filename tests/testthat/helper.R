@@ -29,7 +29,6 @@ generate_mock_data <- function(
     pheno_tbl[["ipi"]] <- sample(1:5, size = n_samples, replace = TRUE)
     pheno_tbl[["split_1"]] <- sample(c("train", "test"), size = n_samples, 
         replace = TRUE)
-    }
 
     # Generate a reasonable time-to-event columm as follows:
     # 1. y = x %*% beta + noise (beta, noise ~ N(0, 1))

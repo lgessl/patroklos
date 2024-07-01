@@ -71,7 +71,6 @@ test_that("prec_from_scores() works", {
   data <- Data$new(
     name = "test", 
     directory = "mock", 
-    train_prop = 0.8,
     pivot_time_cutoff = 1.7,
     patient_id_col = "patient",
     time_to_event_col = "time_to_event",
@@ -108,7 +107,6 @@ test_that("write_data_info() works", {
   data <- Data$new(
     name = "test", 
     directory = "mock", 
-    train_prop = 0.8,
     pivot_time_cutoff = 2,
     cohort = "train",
     patient_id_col = "patient",

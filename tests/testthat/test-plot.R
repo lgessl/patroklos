@@ -53,39 +53,3 @@ test_that("plot_2d_metric() works", {
     )
   )
 })
-
-
-# test_that("plot_risk_scores() works", {
-  
-#   set.seed(134)
-
-#   n_samples <- 5
-#   split_index <- 1:2
-
-#   l <- apb(n_samples, split_index)
-#   actual <- l[[1]]
-#   predicted <- l[[2]]
-#   dir <- withr::local_tempdir()
-#   ass2d <- Ass2d$new(
-#     file = file.path(dir, "scores.jpeg"),
-#     x_metric = "rank",
-#     y_metric = "scores",
-#     title = "this title",
-#     fellow_csv = TRUE,
-#     show_plots = FALSE,
-#     dpi = 250
-#   )
-
-#   expect_no_error(
-#     plot_risk_scores(
-#       predicted = predicted,
-#       actual = actual,
-#       ass2d = ass2d,
-#       quiet = TRUE
-#     )
-#   )
-#   expect_true(all(
-#     file.exists(file.path(dir, "scores.jpeg")),
-#     file.exists(file.path(dir, "scores.csv"))
-#   ))
-# })

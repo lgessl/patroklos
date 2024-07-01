@@ -1,5 +1,5 @@
 model_initialize <- function(self, private, name, fitter, directory, 
-    time_cutoffs, val_error_fun, hyperparams, response_colnames, 
+    time_cutoffs, val_error_fun, hyperparams, 
     include_from_continuous_pheno, include_from_discrete_pheno, include_expr, 
     li_var_suffix, create_directory, file, continuous_output, 
     combine_n_max_categorical_features, combined_feature_min_positive_ratio){
@@ -9,7 +9,6 @@ model_initialize <- function(self, private, name, fitter, directory,
     check_fitter(fitter, hyperparams)
     stopifnot(is.numeric(time_cutoffs))
     stopifnot(is.function(val_error_fun))
-    stopifnot(is.character(response_colnames))
     stopifnot(is.character(include_from_continuous_pheno) || is.null(include_from_continuous_pheno))
     stopifnot(is.character(include_from_discrete_pheno) || is.null(include_from_discrete_pheno))
     stopifnot(is.logical(include_expr))
@@ -32,7 +31,6 @@ model_initialize <- function(self, private, name, fitter, directory,
     self$time_cutoffs <- time_cutoffs
     self$val_error_fun <- val_error_fun
     self$hyperparams <- hyperparams
-    self$response_colnames <- response_colnames
     self$include_from_continuous_pheno <- include_from_continuous_pheno
     self$include_from_discrete_pheno <- include_from_discrete_pheno
     self$include_expr <- include_expr

@@ -1,7 +1,6 @@
 data_initialize <- function(self, private, name, directory, pivot_time_cutoff, 
     expr_file, pheno_file, cohort, patient_id_col, time_to_event_col, event_col, 
     cohort_col, benchmark_col, gene_id_col, imputer){
-    
     stopifnot(is.character(name))
     stopifnot(is.character(directory))
     stopifnot(is.numeric(pivot_time_cutoff))
@@ -36,7 +35,6 @@ data_initialize <- function(self, private, name, directory, pivot_time_cutoff,
 }
 
 data_read <- function(self, private){
-
     # extract values from self
     directory <- self$directory
     expr_file <- self$expr_file
@@ -62,7 +60,6 @@ data_read <- function(self, private){
 }
 
 data_survival_quantiles <- function(self, private, round_digits) {
-
     if (is.null(self$pheno_tbl)){
         stop("You need to read in the data first.")
     }
@@ -86,4 +83,39 @@ data_survival_quantiles <- function(self, private, round_digits) {
     names(tbl) <- c("quantile", self$time_to_event_col)
     tbl <- tbl[seq(n_leading_zeros, length(quantiles)), ]
     return(tbl)
+}
+
+data_split <- function(self, private, train_prop, save, keep_risk, quiet) {
+
+    stopifnot(train_prop > 0 && train_prop < 1)
+    stopifnot(is.logical(save))
+    stopifnot(is.logical(keep_risk))
+    split_file <- file.path(self$directory, "cohort.rds")
+    if (file.exists(split_file)) {
+        if (!quiet)
+            message("Found a cohort file: ", split_file, ". Loading it and writing 
+                it into the pheno_tbl attribute.")
+        cohort <- readRDS(split_file)
+        if (length(cohort) != nrow(self$pheno_tbl) || 
+            any(names(cohort) != self$pheno_tbl[[self$patient_id_col]]))
+            stop("The patient IDs in the cohort file do not match the patient IDs 
+                in the pheno_tbl.")
+    } else {
+        risk <- rep("na", nrow(self$pheno_tbl))
+        if (!is.null(self$pivot_time_cutoff)) {
+            risk[self$pheno_tbl[[self$time_to_event_col]] < self$pivot_time_cutoff &
+                self$pheno_tbl[[self$event_col]] == 1] <- "high"
+            risk[self$pheno_tbl[[self$time_to_event_col]] >= self$pivot_time_cutoff] <- "low"
+        }
+        risk <- as.factor(risk)
+        train_index <- create_data_partition(risk, p = train_prop)
+        cohort <- rep("test", nrow(self$pheno_tbl))
+        cohort[train_index] <- "train"
+        names(cohort) <- self$pheno_tbl[[self$patient_id_col]]
+        if (save)
+            saveRDS(cohort, split_file)
+    }
+    self$pheno_tbl[[self$cohort_col]] <- cohort
+
+    invisible(self)
 }

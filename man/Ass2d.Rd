@@ -13,9 +13,6 @@ the continuous to binary model output.
 \describe{
 \item{\code{x_metric, y_metric}}{Metrics shown on both axes.}
 
-\item{\code{pivot_time_cutoff}}{Assess for predicting time to event less than
-pivot_time_cutoff}
-
 \item{\code{benchmark}}{Incorporate this benchmark (from pheno data) into
 assessment.}
 
@@ -86,7 +83,6 @@ including cutoffs.}
 \itemize{
 \item \href{#method-Ass2d-new}{\code{Ass2d$new()}}
 \item \href{#method-Ass2d-assess}{\code{Ass2d$assess()}}
-\item \href{#method-Ass2d-plot_risk_scores}{\code{Ass2d$plot_risk_scores()}}
 \item \href{#method-Ass2d-assess_center}{\code{Ass2d$assess_center()}}
 \item \href{#method-Ass2d-clone}{\code{Ass2d$clone()}}
 }
@@ -104,7 +100,6 @@ Create a new Ass2d instance.
   file = NULL,
   ci_level = 0.95,
   fellow_csv = FALSE,
-  scores_plot = FALSE,
   show_plots = FALSE,
   title = NULL,
   x_lab = NULL,
@@ -133,18 +128,18 @@ Create a new Ass2d instance.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x_metric}}{string. The name of the performance measure to be plotted on the x-axis.
-All measures that can be passed to the \code{x.measure} parameter of \code{\link[ROCR:performance]{ROCR::performance()}} are
-valid.}
-
-\item{\code{y_metric}}{string. The name of the performance measure to be plotted on the y-axis.
+\item{\code{x_metric, y_metric}}{string. Metric shown on the x and y axis.
+Regarding the choices:
 \itemize{
-\item All measures that can be passed to the \code{measure} parameter of \code{\link[ROCR:performance]{ROCR::performance()}} are
-valid.
-\item \code{"logrank"} for the p-values of a logrank test. In this case, \code{x_metric} must be
-\code{"prevalence"} or \code{"rpp"}.
-\item \code{"precision_ci"} for the lower bound of the \code{ci_level} (see below) confidence interval
-of the precision according to Clopper-Pearson.
+\item Every combination of (\code{measure}, \code{x.measure}) one can pass to
+\code{\link[ROCR:performance]{ROCR::performance()}}.
+\item If \code{y_metric} is \code{"logrank"} or \code{"precision_ci"} (the upper limit of
+the \code{ci_level} confidence interval of the precision, see below),
+\code{x_metric} must be \code{"prevalence"} or \code{"rpp"} (rate of positive
+predictions).
+\item For (\code{x_metric}, \code{y_metric}) = (\code{"rank"}, "\verb{risk score}"), plot the
+rank of every risk score agaisnt the risk score and color by true
+risk.
 }}
 
 \item{\code{benchmark}}{string. Incorporate this benchmark (from pheno data) into the
@@ -156,9 +151,6 @@ assessment if \code{benchmark} is not \code{NULL}.}
 
 \item{\code{fellow_csv}}{logical. Whether to also store the plotted data in a csv including
 cutoffs.}
-
-\item{\code{scores_plot}}{logical. Display the ordered scores output by the model in a scatter
-plot.}
 
 \item{\code{show_plots}}{logical. Whether to show the plots after creation in an interactive
 graphics device.}
@@ -211,11 +203,6 @@ The theme of the plot. Default is \code{NULL}, which means the default theme of 
 \item{\code{units}}{string. The units of \code{width} and \code{height}. Default is \code{"in"} (inches).}
 
 \item{\code{dpi}}{numeric. Plot resolution in dots per inch.}
-
-\item{\code{pivot_time_cutoff}}{numeric. Time-to-event threshold that divides samples into a
-high/low-risk (time to event below/above \code{pivot_time_cutoff}) group. Model performance
-will be measured in terms of how well it can separate these two groups as a binary
-classifier.}
 }
 \if{html}{\out{</div>}}
 }
@@ -227,7 +214,7 @@ A new Ass2d object.
 \if{html}{\out{<a id="method-Ass2d-assess"></a>}}
 \if{latex}{\out{\hypertarget{method-Ass2d-assess}{}}}
 \subsection{Method \code{assess()}}{
-Assess a \emph{single} model (with multiple splits) on a data set.
+Assess a \emph{single} model on a data set.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Ass2d$assess(data, model, quiet = FALSE, msg_prefix = "")}\if{html}{\out{</div>}}
 }
@@ -238,7 +225,7 @@ Assess a \emph{single} model (with multiple splits) on a data set.
 \item{\code{data}}{Data object. Assess on this data. The \code{cohort} attribute
 must be set.}
 
-\item{\code{model}}{Model object. Assess this model, multiple splits are supported.}
+\item{\code{model}}{Model object. Assess this model.}
 
 \item{\code{quiet}}{logical. Whether to suppress messages.}
 
@@ -253,43 +240,16 @@ named \code{data}.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Ass2d-plot_risk_scores"></a>}}
-\if{latex}{\out{\hypertarget{method-Ass2d-plot_risk_scores}{}}}
-\subsection{Method \code{plot_risk_scores()}}{
-Plot rank versus model score on a data set. You can do this
-on the fly, i.e. you actually initialize the Ass2d object for another
-purpose and this method will infer reasonable defaults for the plot.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ass2d$plot_risk_scores(data, model, quiet = FALSE, msg_prefix = "")}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{data}}{Data object. Plot the scores for this data.}
-
-\item{\code{model}}{Model object. Plot the scores for this model.}
-
-\item{\code{quiet}}{logical. Whether to suppress messages.}
-
-\item{\code{msg_prefix}}{string. Prefix for messages.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Ass2d-assess_center"></a>}}
 \if{latex}{\out{\hypertarget{method-Ass2d-assess_center}{}}}
 \subsection{Method \code{assess_center()}}{
-Assess \emph{multiple} models (with multiple splits) on a data set.
-This is a wrapper around \code{assess()} and optionally \code{plot_risk_scores()}
-for multiple models.
+Assess \emph{multiple} models on a data set. A wrapper around
+\code{assess()}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Ass2d$assess_center(
   data,
   model_list,
   model_tree_mirror = c("models", "results"),
-  risk_scores = FALSE,
   comparison_plot = FALSE,
   quiet = FALSE
 )}\if{html}{\out{</div>}}
@@ -309,9 +269,6 @@ is an overkill in this case).}
 the same directory as the corresponding model for the train cohort and the
 comparison plot at \code{file}. When doing the analogous for the test data, replace
 the first element of \code{model_tree_mirror} by the second element in every file path.}
-
-\item{\code{risk_scores}}{logical. Whether to also plot rank versus risk score
-along with the assessment "on-the-fly".}
 
 \item{\code{comparison_plot}}{logical. Whether to generate a plot holding the assessment
 of all models. Default is \code{TRUE}.}

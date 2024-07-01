@@ -87,7 +87,7 @@ A new AssScalar object.
 \if{html}{\out{<a id="method-AssScalar-assess"></a>}}
 \if{latex}{\out{\hypertarget{method-AssScalar-assess}{}}}
 \subsection{Method \code{assess()}}{
-Assess a \emph{single} model (with multiple splits) on a data set.
+Assess a \emph{single} model on a data set.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AssScalar$assess(data, model, quiet = FALSE)}\if{html}{\out{</div>}}
 }
@@ -98,7 +98,7 @@ Assess a \emph{single} model (with multiple splits) on a data set.
 \item{\code{data}}{Data object. Assess on this data. Data must already be read in
 and \code{cohort} attribute set.}
 
-\item{\code{model}}{Model object. Assess this model, multiple splits are supported.}
+\item{\code{model}}{Model object. Assess this model.}
 
 \item{\code{quiet}}{logical. Whether to suppress messages.}
 }
@@ -109,15 +109,15 @@ The AssScalar S3 class is tailored for this function.
 }
 
 \subsection{Returns}{
-numeric matrix. The rows correspond to the splits of the model,
-the columns correspond to \code{self$metrics}.
+numeric matrix. The rows correspond to the \code{model} and optionally
+the benchmark, the columns correspond to \code{self$metrics}.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AssScalar-assess_center"></a>}}
 \if{latex}{\out{\hypertarget{method-AssScalar-assess_center}{}}}
 \subsection{Method \code{assess_center()}}{
-Assess \emph{multiple} models (with multiple splits) on a data set.
+Assess \emph{multiple} models on a data set.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AssScalar$assess_center(
   data,

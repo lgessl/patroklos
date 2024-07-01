@@ -4,7 +4,6 @@ test_that("Model$new() works", {
       name = "cox",
       fitter = ptk_zerosum,
       directory = "models/cox",
-      split_index = 1:2,
       time_cutoffs = c(1.5, 2),
       val_error_fun = neg_roc_auc,
       continuous_output = TRUE
@@ -12,7 +11,6 @@ test_that("Model$new() works", {
     expect_equal(model$name, "cox")
     expect_equal(model$fitter, ptk_zerosum)
     expect_equal(model$directory, "models/cox")
-    expect_equal(model$split_index, 1:2)
     expect_equal(model$time_cutoffs, c(1.5, 2))
   
 })
@@ -23,7 +21,6 @@ test_that("prepend_to_directory() works", {
     name = "model1", 
     directory = "mock1", 
     fitter = ptk_zerosum, 
-    split_index = 1, 
     time_cutoffs = 2,
     val_error_fun = neg_roc_auc,
     continuous_output = TRUE

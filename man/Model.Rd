@@ -4,7 +4,7 @@
 \alias{Model}
 \title{An R6 class for a model}
 \description{
-A Model specifies how a model looks like, prepares the data, fits it,
+A Model specifies how a model looks like, prepares the data, fit_obj it,
 stores it and predicts from it.
 }
 \seealso{
@@ -19,16 +19,11 @@ stores it and predicts from it.
 
 \item{\code{fitter}}{The model fitting function to be used.}
 
-\item{\code{split_index}}{Split the given data into training and test cohort
-\code{length(split_index)} times.}
-
 \item{\code{time_cutoffs}}{Threshold and censor the outcome accordingly.}
 
 \item{\code{val_error_fun}}{Calculate the error of independently validated predictions.}
 
 \item{\code{hyperparams}}{Optional arguments passed to \code{fitter}.}
-
-\item{\code{response_colnames}}{Use as column names for the response matrix.}
 
 \item{\code{include_from_continuous_pheno}}{The names of the continuous variables in the
 pheno data (to be) included in the predictor matrix.}
@@ -43,9 +38,9 @@ when adding them to the predictor matrix.}
 
 \item{\code{create_directory}}{Whether to create \code{directory} if it does not exist, yet.}
 
-\item{\code{fit_file}}{Store this Model object under this name in \code{directory}.}
+\item{\code{file}}{Store this Model object under this name in \code{directory}.}
 
-\item{\code{fits}}{A list holding fits (something returned by a fitter like
+\item{\code{fit_obj}}{A list holding fit_obj (something returned by a fitter like
 a \code{ptk_zerosum} S3 object).}
 
 \item{\code{continuous_output}}{Whether the output of the model is continous or binary.}
@@ -77,17 +72,15 @@ Create a new Model instance.
   name,
   fitter,
   directory,
-  split_index = 1,
   time_cutoffs,
   val_error_fun,
   hyperparams = NULL,
-  response_colnames = c("time", "status"),
   include_from_continuous_pheno = NULL,
   include_from_discrete_pheno = NULL,
   include_expr = TRUE,
   li_var_suffix = "++",
   create_directory = TRUE,
-  fit_file = "models.rds",
+  file = "models.rds",
   continuous_output = NULL,
   combine_n_max_categorical_features = 1L,
   combined_feature_min_positive_ratio = 0.04
@@ -106,9 +99,6 @@ method, and (ideally, for assessment) with a \code{predict()} method. Default is
 
 \item{\code{directory}}{string. The directory to store the models in. For every value in
 \code{time_cutoffs}, find the corresponding model in a subdirectory named after this value.}
-
-\item{\code{split_index}}{integer vector. Split the given data into training and test samples
-\code{length(split_index)} times, i.e., every index in \code{split_index} will get its own split.}
 
 \item{\code{time_cutoffs}}{numeric vector. This governs how the provided
 response looks like. For every value of \code{time_cutoffs}, specify a model
@@ -134,15 +124,6 @@ return a numeric scalar; the lower, the better the model. See
 in case of an elastic net. Default is \code{list()}, i.e., no arguments other than \code{x}, \code{y}
 passed to \code{fitter}.}
 
-\item{\code{response_colnames}}{string vector of length 2. Column names for
-the Cox response matrix.
-\itemize{
-\item The first element is the name of the column holding the time until the event or
-censoring, and
-\item the second one is the anme of the column holding the event status (1 = event, 0 =
-censoring).
-}}
-
 \item{\code{include_from_continuous_pheno}}{vector of strings. The names of the
 \emph{continuous} variables in the pheno data (to be) included in the predictor matrix. The
 values will be coerced to numeric. Default is \code{NULL}, which means no continuous pheno
@@ -162,7 +143,7 @@ data when adding them to the predictor matrix. Default is \code{"++"}.}
 \item{\code{create_directory}}{logical. Whether to create \code{directory} if it does not exist, yet.
 Default is \code{TRUE}.}
 
-\item{\code{fit_file}}{string. The name of the model-fits file inside \code{directory}.
+\item{\code{file}}{string. The name of the model-fit_obj file inside \code{directory}.
 Default is \code{"fit_obj.rds"}.}
 
 \item{\code{continuous_output}}{logical or NULL. Whether the output of the model
@@ -180,16 +161,6 @@ features the predicitor matrix will contain.}
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Details}{
-Strictly speaking, one \code{Model} instance specifies
-\code{length(time_cutoffs) * length(split_index)} models. In terms of storing
-and assessing models, we consider the models obtained via repeated
-splitting according to \code{split_index} as one model; we view models
-obtained via different values of \code{time_cutoffs}, in contrast, as
-different models; e.g., we can compare them against one another in an
-assessment.
-}
-
 \subsection{Returns}{
 A \code{Model} R6 object.
 }
@@ -198,8 +169,7 @@ A \code{Model} R6 object.
 \if{html}{\out{<a id="method-Model-fit"></a>}}
 \if{latex}{\out{\hypertarget{method-Model-fit}{}}}
 \subsection{Method \code{fit()}}{
-Fit the model to a data set for all splits into training
-and test cohort.
+Fit the model to a data set.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Model$fit(data, quiet = FALSE, msg_prefix = "")}\if{html}{\out{</div>}}
 }
@@ -216,20 +186,18 @@ and test cohort.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The \code{Model} object itself with the \code{fits} attribute set to a
-list holding the object returned by the \code{fitter} attribute for every
-split.
+The \code{Model} object itself with the \code{fit_obj} attribute set
+to the object tuned over \code{time_cutoffs}, \code{combine_n_max_categorical_features}
+and \code{hyperparams} with \code{fitter} at the core.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Model-predict"></a>}}
 \if{latex}{\out{\hypertarget{method-Model-predict}{}}}
 \subsection{Method \code{predict()}}{
-Predict for a data set and all splits into training and
-test cohort. We don't support multiple time cutoffs here. Additonally
-return the true values of the response and, if the \code{benchmark_col}
-attribute of the \code{Data} object is not \code{NULL}, the values of the
-benchmark.
+Predict for a data set. Additonally return the true values
+of the response and, if the \code{benchmark_col} attribute of the \code{Data}
+object is not \code{NULL}, the values of the benchmark.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Model$predict(data, quiet = FALSE)}\if{html}{\out{</div>}}
 }
@@ -245,18 +213,8 @@ needed.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A list holding:
-\itemize{
-\item \code{"predicted"}: a list of named numeric vectors, the scores output by the model for
-each split (split index corresponding to list index).
-\item "actual": a list of named numeric vectors, for each split the actual values of
-whether time to event was above or below \code{model$time_cutoffs}, encoded as 1
-("high risk") and 0 ("low risk"), respectively.
-\item "benchmark": A list of named numeric vectors, for each split the values of the
-benchmark classifier. If \code{data$benchmark} is NULL, it is an empty list.
-}
-
-For every split, the names of all three vectors match.
+A list of three named numeric vectors named \code{"predictions"},
+\code{"actual"}, and \code{"benchmark"}.
 }
 }
 \if{html}{\out{<hr>}}

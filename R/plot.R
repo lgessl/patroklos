@@ -8,7 +8,7 @@ plot_2d_metric <- function(
     data <- ass2d$data |> dplyr::distinct()
     # For legend order: bechmark last
     if(!is.null(ass2d$benchmark)){
-        model_levels <- unique(data[["model"]])
+        model_levels <- as.character(unique(data[["model"]]))
         model_levels <- sort(model_levels[model_levels != ass2d$benchmark])
         model_levels <- c(ass2d$benchmark, model_levels)
         data[["model"]] <- factor(data[["model"]], levels = model_levels)
@@ -16,7 +16,6 @@ plot_2d_metric <- function(
     x_metric <- ass2d$x_metric
     y_metric <- ass2d$y_metric
     # Constraint data to range
-    full_data <- data
     data <- data[
         data[[x_metric]] >= ass2d$xlim[1] &
         data[[x_metric]] <= ass2d$xlim[2],
@@ -25,6 +24,7 @@ plot_2d_metric <- function(
         data[[y_metric]] >= ass2d$ylim[1] &
         data[[y_metric]] <= ass2d$ylim[2],
     ]
+    all_data <- data
     bm_data <- NULL
     if(!is.null(ass2d$benchmark)){
         bm_data <- data[data[["model"]] == ass2d$benchmark, ]
@@ -116,7 +116,7 @@ plot_2d_metric <- function(
         }
     }
 
-    return(plt)
+    invisible(all_data)
 }
 
 
@@ -160,21 +160,17 @@ as2_plot_risk_scores <- function(self, private, data, model, quiet, msg_prefix){
     }
 
     if(!is.null(self$file)){
-        file <- file.path(
-            dirname(self$file),
-            paste0("scores", stringr::str_extract(self$file, "\\..+$"))
-        )
         if(!quiet)
-            message(msg_prefix, "Saving scores plot to ", file)
-        ggplot2::ggsave(file, plt, width = self$width, height = self$height, 
+            message(msg_prefix, "Saving scores plot to ", self$file)
+        ggplot2::ggsave(self$file, plt, width = self$width, height = self$height, 
             units = self$units)
 
         if(self$fellow_csv){
-            csv_file <- stringr::str_replace(file, "\\..+$", ".csv")
+            csv_file <- stringr::str_replace(self$file, "\\..+$", ".csv")
             if(!quiet)
                 message(msg_prefix, "Saving scores table to ", csv_file)
             readr::write_csv(tbl, csv_file)
         }
     }
-    return(tbl)
+    invisible(tbl)
 }

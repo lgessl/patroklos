@@ -7,7 +7,6 @@ test_that("prepare() works", {
     name = "cox",
     fitter = ptk_zerosum,
     directory = "some_dir",
-    split_index = 1,
     time_cutoffs = Inf,
     val_error_fun = neg_roc_auc,
     hyperparams = list(family = "cox", zeroSum = FALSE),
@@ -32,7 +31,6 @@ test_that("prepare_x() works", {
     name = "zerosum",
     directory = "some_dir",
     fitter = ptk_zerosum,
-    split_index = 1,
     time_cutoffs = 2.,
     val_error_fun = neg_roc_auc,
     include_from_continuous_pheno = "continuous_var",
@@ -92,12 +90,11 @@ test_that("prepare_x() works", {
 
   # Include no pheno variables
   model$include_from_discrete_pheno <- NULL
-  model$split_index <- 3
   model$include_from_continuous_pheno <- NULL
   model$include_from_discrete_pheno <- NULL
   x <- prepare_x(data = data, model = model, quiet = TRUE)
   expect_identical(colnames(x), colnames(data$expr_mat))
-  rnames <- pheno_tbl[["patient_id"]][pheno_tbl[["split_3"]] == data$cohort]
+  rnames <- pheno_tbl[["patient_id"]][pheno_tbl[["split_1"]] == data$cohort]
   expect_identical(rownames(x), rnames)
   expect_type(x, "double")
 

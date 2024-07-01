@@ -28,7 +28,7 @@ return a numeric scalar; the lower, the better the model. See
 \code{\link[=error_rate]{error_rate()}} or \code{\link[=neg_roc_auc]{neg_roc_auc()}} for examples.}
 
 \item{model1}{\code{Model} R6 object. The early model trained on the expression
-data, with the \code{fits} attribute set at least in its stored version, i.e., the
+data, with the \code{fit_obj} attribute set at least in its stored version, i.e., the
 early model is already there.}
 
 \item{fitter2}{A \emph{patroklos-compliant fitter with CV tuning} (see

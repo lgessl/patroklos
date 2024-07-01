@@ -6,7 +6,7 @@
 \description{
 A Data object holds the phenotype and expression data belonging to
 a data set. It specifies the names of important features in the columns, reads from
-and writes to csv files and takes care of splitting the data into train and test
+and writes to csv files and puts the spotlight on a part of the data: the
 cohort.
 }
 \section{Public fields}{
@@ -15,8 +15,6 @@ cohort.
 \item{\code{name}}{How to refer to the data in plots and messages.}
 
 \item{\code{directory}}{Directory where the expression and pheno csv files lie.}
-
-\item{\code{train_prop}}{Proportion of samples in the training cohort.}
 
 \item{\code{expr_mat}}{The expression matrix.}
 
@@ -46,11 +44,8 @@ benchmark risk score (like the IPI).}
 \item{\code{gene_id_col}}{The name of the column in the expression data that holds
 the gene identifiers.}
 
-\item{\code{split_col_prefix}}{Column-name prefix for those columns holding splits into
-train and test cohort.}
-
-\item{\code{pivot_time_cutoff}}{Pivotal time cutoff for the analysis and, explicitly,
-for splitting the data into the train and test cohort.}
+\item{\code{pivot_time_cutoff}}{Pivotal time cutoff for the analysis and
+assessment.}
 
 \item{\code{imputer}}{Function handling NAs in the predictor matrix.}
 }
@@ -63,6 +58,7 @@ for splitting the data into the train and test cohort.}
 \item \href{#method-Data-read}{\code{Data$read()}}
 \item \href{#method-Data-prepare}{\code{Data$prepare()}}
 \item \href{#method-Data-survival_quantiles}{\code{Data$survival_quantiles()}}
+\item \href{#method-Data-split}{\code{Data$split()}}
 \item \href{#method-Data-qc_preprocess}{\code{Data$qc_preprocess()}}
 \item \href{#method-Data-clone}{\code{Data$clone()}}
 }
@@ -77,7 +73,6 @@ and pheno data of a single data set. This enables reading and preparing the data
 \if{html}{\out{<div class="r">}}\preformatted{Data$new(
   name,
   directory,
-  train_prop,
   pivot_time_cutoff,
   time_to_event_col,
   cohort,
@@ -88,7 +83,6 @@ and pheno data of a single data set. This enables reading and preparing the data
   pheno_file = "pheno.csv",
   patient_id_col = "patient_id",
   gene_id_col = "gene_id",
-  split_col_prefix = "split_",
   imputer = mean_impute
 )}\if{html}{\out{</div>}}
 }
@@ -101,21 +95,13 @@ and pheno data of a single data set. This enables reading and preparing the data
 \item{\code{directory}}{string. The directory where both expression and pheno csv
 files lie.}
 
-\item{\code{train_prop}}{numeric in (0, 1). The proportion of samples to draw for the
-training cohort when a new split into train and test cohort is performed.}
-
-\item{\code{pivot_time_cutoff}}{numeric. Pivotal time cutoff for the analysis and, explicitly,
-for splitting the data into the train and test cohort: If a numeric in (0, 1), preserve
-the proportion of individuals below and above \code{time_cutoff} in both cohorts. Default
-is \code{NULL}, i.e. no further constraints on splitting.}
+\item{\code{pivot_time_cutoff}}{numeric. Pivotal time cutoff for the analysis.}
 
 \item{\code{time_to_event_col}}{string. The name of the column in the pheno data that holds the
 time-to-event values.}
 
 \item{\code{cohort}}{string. At the end of preparing the data, subset it to those
-samples whose value in the split column matches \code{cohort}. Default is \code{NULL},
-in which case some methods will infer a reasonable value (like \code{"train"}
-for training, \code{"test"} for assessment), some will throw an error.}
+samples whose value in the \code{cohort_col} column matches \code{cohort}.}
 
 \item{\code{event_col}}{string. The name of the column in the pheno data that holds
 the event status encoded as 1 = occurrence, 0 = censoring.}
@@ -137,12 +123,6 @@ the patient identifiers.}
 
 \item{\code{gene_id_col}}{string. The name of the column in the expression data that holds
 the gene identifiers.}
-
-\item{\code{split_col_prefix}}{string. Column-name prefix for those columns in the pheno
-tibble holding splits into cohorts (like train and test). Some of
-these columns may be present in the pheno data already, non-present ones will be
-added during the training process if required. Default is \code{"split_"}, i.e.,
-split columns are named \code{"split_1"}, \code{"split_2"}, etc.}
 
 \item{\code{imputer}}{function or NULL. Function handling NAs in the predictor matrix.
 It takes a single argument \code{x}, the predictor matrix, a numeric with categorical
@@ -227,6 +207,36 @@ We take censoring into account.
 A tibble with two columns. For each quantile q in the first
 column, the time-to-event value in the second column.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Data-split"></a>}}
+\if{latex}{\out{\hypertarget{method-Data-split}{}}}
+\subsection{Method \code{split()}}{
+Split the data into a train and test cohort
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Data$split(train_prop, save = TRUE, keep_risk = TRUE, quiet = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{train_prop}}{numeric. Proportion of the data to put in the train
+cohort.}
+
+\item{\code{save}}{logical. If TRUE, save the named cohort vector to a file.}
+
+\item{\code{keep_risk}}{logical. If TRUE, keep the ratio of high-risk versus
+low-risk samples in train and test cohort the same as in the complete
+data set. High/low-risk is determinded by the \code{pivot_time_cutoff}
+attribute.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Cohort affiliation will show up as a column named
+\code{cohort_col} in \code{pheno_tbl}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Data-qc_preprocess"></a>}}

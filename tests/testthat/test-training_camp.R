@@ -21,7 +21,6 @@ test_that("training_camp() works", {
     name = "model1",
     directory = file.path(dir, "model1"),
     fitter = ptk_zerosum,
-    split_index = 1,
     time_cutoffs = c(1.5, 2),
     val_error_fun = neg_prec_with_prev_greater(0.15),
     hyperparams = list(family = "cox", nFold = n_fold, lambda = lambda, 
@@ -32,7 +31,6 @@ test_that("training_camp() works", {
       name = "RF pseudo OOB",
       fitter = long_nestor,
       directory = file.path(dir, "model2"),
-      split_index = 1,
       time_cutoffs = 2.,
       val_error_fun = error_rate,
       hyperparams = list(
@@ -55,7 +53,6 @@ test_that("training_camp() works", {
       include_from_continuous_pheno = "continuous_var",
       include_from_discrete_pheno = "discrete_var"
   )
-  model_2$split_index <- 1:2
   model_2$time_cutoffs <- 1.75 
   
   model_3 <- model_1$clone()

@@ -70,12 +70,6 @@ Model <- R6::R6Class("Model",
         #' @param hyperparams list. Optional arguments passed to `fitter`, e.g. alpha 
         #' in case of an elastic net. Default is `list()`, i.e., no arguments other than `x`, `y`
         #' passed to `fitter`.
-        #' @param response_colnames string vector of length 2. Column names for 
-        #' the Cox response matrix.
-        #' * The first element is the name of the column holding the time until the event or 
-        #' censoring, and 
-        #' * the second one is the anme of the column holding the event status (1 = event, 0 =
-        #' censoring). 
         #' @param include_from_continuous_pheno vector of strings. The names of the 
         #' *continuous* variables in the pheno data (to be) included in the predictor matrix. The
         #' values will be coerced to numeric. Default is `NULL`, which means no continuous pheno
@@ -110,7 +104,6 @@ Model <- R6::R6Class("Model",
             time_cutoffs,
             val_error_fun,
             hyperparams = NULL,
-            response_colnames = c("time", "status"),
             include_from_continuous_pheno = NULL,
             include_from_discrete_pheno = NULL,
             include_expr = TRUE,
@@ -122,10 +115,9 @@ Model <- R6::R6Class("Model",
             combined_feature_min_positive_ratio = 0.04
         )
             model_initialize(self, private, name, fitter, directory, time_cutoffs, 
-                val_error_fun, hyperparams, response_colnames, 
-                include_from_continuous_pheno, include_from_discrete_pheno, 
-                include_expr, li_var_suffix, create_directory, 
-                file, continuous_output,
+                val_error_fun, hyperparams, include_from_continuous_pheno, 
+                include_from_discrete_pheno, include_expr, li_var_suffix, 
+                create_directory, file, continuous_output,
                 combine_n_max_categorical_features, 
                 combined_feature_min_positive_ratio),  
 

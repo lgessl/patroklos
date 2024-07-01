@@ -7,7 +7,6 @@ test_that("Ass2d$new() works", {
     file = "some-file",
     ci_level = .66,
     fellow_csv = TRUE,
-    scores_plot = TRUE,
     show_plots = FALSE,
     title = "title",
     x_lab = "x_lab",
@@ -34,7 +33,6 @@ test_that("Ass2d$new() works", {
   expect_equal(ass2d$file, "some-file")
   expect_equal(ass2d$ci_level, .66)
   expect_equal(ass2d$fellow_csv, TRUE)
-  expect_equal(ass2d$scores_plot, TRUE)
   expect_equal(ass2d$show_plots, FALSE)
   expect_equal(ass2d$title, "title")
   expect_equal(ass2d$x_lab, "x_lab")
@@ -75,7 +73,6 @@ test_that("Ass2d$assess() works", {
     name = "cox",
     directory = file.path(dir, "cox"),
     fitter = ptk_zerosum,
-    split_index = 1:2,
     time_cutoffs = 2.,
     val_error_fun = neg_roc_auc,
     hyperparams = list(family = "cox", alpha = 1, nFold = n_fold, 
@@ -85,7 +82,6 @@ test_that("Ass2d$assess() works", {
     name = "logistic",
     directory = file.path(dir, "logistic"),
     fitter = ptk_zerosum,
-    split_index = 1,
     time_cutoffs = 2.,
     val_error_fun = neg_prec_with_prev_greater(0.15),
     hyperparams = list(family = "binomial", alpha = 1, 
@@ -117,7 +113,7 @@ test_that("Ass2d$assess() works", {
   ass2d$y_metric <- "logrank"
   ass2d$scale_y <- "log10"
   ass2d$assess(data, model_2, quiet = TRUE)
-  expect_equal(names(ass2d$data), c("rpp", "logrank", "cutoff", "split", "model"))
+  expect_equal(names(ass2d$data), c("rpp", "logrank", "cutoff", "model"))
 
   # Precision CI
   ass2d$y_metric <- "precision_ci"
@@ -127,7 +123,7 @@ test_that("Ass2d$assess() works", {
   ass2d$title <- "Lower precision CI boundary (upper for ipi)"
   ass2d$show_plots <- FALSE
   ass2d$assess(data, model_1, quiet = TRUE)
-  expect_equal(names(ass2d$data), c("rpp", "precision_ci", "cutoff", "split", "model"))
+  expect_equal(names(ass2d$data), c("rpp", "precision_ci", "cutoff", "model"))
 })
 
 test_that("Ass2d$assess_center() works", {
@@ -156,7 +152,6 @@ test_that("Ass2d$assess_center() works", {
     name = "cox",
     directory = file.path(model_dir, "cox"),
     fitter = ptk_zerosum,
-    split_index = 1,
     time_cutoffs = Inf,
     val_error_fun = neg_roc_auc,
     hyperparams = list(family = "cox", alpha = 1, nFold = n_fold, 
@@ -168,7 +163,6 @@ test_that("Ass2d$assess_center() works", {
     fitter = ptk_zerosum,
     hyperparams = list(family = "binomial", alpha = 1, nFold = n_fold, 
       lambda = lambda, zeroSum = FALSE),
-    split_index = 1,
     time_cutoffs = c(1.5, 2),
     val_error_fun = neg_binomial_log_likelihood,
     include_from_continuous_pheno = "continuous_var",
@@ -180,7 +174,6 @@ test_that("Ass2d$assess_center() works", {
     fitter = hypertune(ptk_ranger),
     hyperparams = list(rel_mtry = FALSE, mtry = 2, num.trees = 20, 
       min.node.size = 5, classification = TRUE),
-    split_index = 1,
     time_cutoffs = 2,
     val_error_fun = error_rate,
     continuous_output = FALSE,
@@ -207,38 +200,37 @@ test_that("Ass2d$assess_center() works", {
     smooth_method = "loess",
     benchmark = "ipi",
     fellow_csv = TRUE,
-    scores_plot = TRUE,
     # text = list(ggplot2::aes(x = .5, y = .5, label = "hello"), 
     #   color = "red", angle = 90),
     theme = ggplot2::theme_minimal() + 
       ggplot2::theme(plot.background = ggplot2::element_rect(fill = "red")),
     dpi = 250
   )
-  ass2d$assess_center(data, model_list, comparison_plot = TRUE, risk_scores = TRUE, 
-    quiet = TRUE)
+  data$cohort <- "train"
+  ass2d$assess_center(data, model_list, comparison_plot = TRUE, quiet = TRUE)
   expect_true(file.exists(ass2d$file))
-  expect_true(file.exists(file.path(res_dir, "logistic/scores.jpeg")))
-  expect_true(file.exists(file.path(res_dir, "cox/rpp_vs_prec.csv")))
-  expect_true(file.exists(file.path(res_dir, "perf_plot.jpeg")))
+  expect_true(file.exists(file.path(model_dir, "cox/rpp_vs_prec.csv")))
+  expect_true(file.exists(file.path(model_dir, "cox/rpp_vs_prec.jpeg")))
 
   data$cohort <- "test"
-  model_1$split_index <- 1
   ass2d$y_metric <- "logrank"
   ass2d$scale_y <- "log10"
   ass2d$file <- file.path(model_dir, "logrank.jpeg")
   ass2d$benchmark <- NULL
   ass2d$text <- NULL
-  ass2d$scores_plot <- FALSE
   ass2d$assess_center(data, model_list, comparison_plot = TRUE, quiet = TRUE)
   expect_true(file.exists(file.path(res_dir, "logrank.jpeg")))
+  expect_true(file.exists(file.path(res_dir, "logistic/rpp_vs_logrank.csv")))
+  expect_true(file.exists(file.path(res_dir, "logistic/rpp_vs_logrank.jpeg")))
 
   data$cohort <- "val_predict"
   model_2$time_cutoffs <- 1.5
-  ass2d$y_metric <- "precision_ci"
+  ass2d$x_metric <- "rank"
+  ass2d$y_metric <- "risk score"
   ass2d$ci_level <- .95
-  ass2d$file <- file.path(model_dir, "precision_ci.jpeg")
+  ass2d$file <- NULL
   ass2d$benchmark <- "ipi"
-  ass2d$assess_center(data, model_list, comparison_plot = FALSE, quiet = TRUE, 
-    model_tree_mirror = NULL)
-  expect_true(file.exists(file.path(model_dir, "logistic/rpp_vs_precision_ci.jpeg")))
+  ass2d$assess_center(data, model_list, comparison_plot = FALSE, quiet = TRUE)
+  expect_true(file.exists(file.path(model_dir, "logistic/rank_vs_risk_score.csv")))
+  expect_true(file.exists(file.path(model_dir, "logistic/rank_vs_risk_score.jpeg")))
 })

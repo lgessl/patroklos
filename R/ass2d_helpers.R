@@ -1,5 +1,5 @@
 ass2d_initialize <- function(self, private, x_metric, y_metric, 
-    benchmark, file, ci_level, fellow_csv, scores_plot, show_plots, title, 
+    benchmark, file, ci_level, fellow_csv, show_plots, title, 
     x_lab, y_lab, xlim, ylim, smooth_method, smooth_benchmark, smooth_se, 
     scale_x, scale_y, vline, hline, text_size, text, alpha, colors, theme, 
     width, height, units, dpi)
@@ -20,7 +20,6 @@ ass2d_initialize <- function(self, private, x_metric, y_metric,
     stopifnot(is.character(benchmark) || is.null(benchmark))
     stopifnot(is.numeric(ci_level) && ci_level >= 0 && ci_level <= 1)
     stopifnot(is.logical(fellow_csv))
-    stopifnot(is.logical(scores_plot))
     stopifnot(is.logical(show_plots))
     stopifnot(is.character(title) || is.null(title))
     stopifnot(is.character(x_lab))
@@ -50,7 +49,6 @@ ass2d_initialize <- function(self, private, x_metric, y_metric,
     self$file <- file
     self$ci_level <- ci_level
     self$fellow_csv <- fellow_csv
-    self$scores_plot <- scores_plot
     self$show_plots <- show_plots
     self$title <- title
     self$x_lab <- x_lab
@@ -85,23 +83,30 @@ ass2d_assess <- function(self, private, data, model, quiet, msg_prefix){
             dir.create(directory, recursive = TRUE)
     }
     if(is.null(data$expr_mat) || is.null(data$pheno_tbl)) data$read()
-    private$calculate_2d_metric(
-        data = data, 
-        model = model,
-        quiet = quiet
-    )
-    plot_2d_metric(
-        ass2d = self,
-        quiet = quiet,
-        msg_prefix = msg_prefix
-    )
-
-    invisible(self)
+    if (self$x_metric == "rank" && self$y_metric == "risk score")
+        private$plot_risk_scores(data, model, quiet, msg_prefix)
+    else {
+        private$calculate_2d_metric(
+            data = data, 
+            model = model,
+            quiet = quiet
+        )
+        plot_2d_metric(
+            ass2d = self,
+            quiet = quiet,
+            msg_prefix = msg_prefix
+        )
+    }
 }
 
 ass2d_assess_center <- function(self, private, data, model_list, model_tree_mirror, 
-    risk_scores, comparison_plot, quiet){
+    comparison_plot, quiet){
     
+    if (self$x_metric == "rank" && self$y_metric == "risk score") {
+        comparison_plot <- FALSE
+        if (!quiet) message("Setting comparison plot to FALSE for ", 
+            "rank versus risk score.")
+    }
     if (is.null(data$expr_mat) || is.null(data$pheno_tbl)) data$read()
 
     if(!quiet) message("Assessment center on ", data$name, " open")
@@ -118,34 +123,26 @@ ass2d_assess_center <- function(self, private, data, model_list, model_tree_mirr
             data = data,
             model_tree_mirror = model_tree_mirror
         )
-        this_as2$assess(
+        perf_tbls[[i]] <- this_as2$assess(
             data = data,
             model = model,
             quiet = quiet,
             msg_prefix = "**** "
         )
-        perf_tbls[[i]] <- this_as2$data
-        if(risk_scores)
-            this_as2$plot_risk_scores(
-                data = data,
-                model = model,
-                quiet = quiet,
-                msg_prefix = "**** "
-            )
     }
     perf_tbls <- perf_tbls[!sapply(perf_tbls, is.null)]
 
     # Comparison plot
     self$data <- dplyr::bind_rows(perf_tbls)
     if(comparison_plot){
+        if (data$cohort == "test")
+            self$file <- stringr::str_replace(self$file, model_tree_mirror[1],
+                model_tree_mirror[2])
         if(is.null(self$title))
             self$title <- paste0(
                 data$name, " ", data$cohort, ", ", data$time_to_event_col,
                 " < ", data$pivot_time_cutoff
             )
-        if (!is.null(model_tree_mirror))
-            self$file <- stringr::str_replace(self$file, model_tree_mirror[1], 
-                model_tree_mirror[2])
         plot_2d_metric(
             ass2d = self,
             quiet = TRUE
@@ -167,7 +164,8 @@ ass2d_infer <- function(self, private, model, data, model_tree_mirror){
         model$directory,
         paste0(self$x_metric, "_vs_", self$y_metric, file_ext)
     )
-    if (!is.null(model_tree_mirror))
+    this_as2$file <- stringr::str_replace_all(this_as2$file, "\\s+", "_")
+    if (!is.null(model_tree_mirror) && data$cohort == "test")
         this_as2$file <- stringr::str_replace(this_as2$file, model_tree_mirror[1], 
             model_tree_mirror[2])
     this_as2$title <- paste0(

@@ -2,7 +2,7 @@
 % Please edit documentation in R/training_camp.R
 \name{training_camp}
 \alias{training_camp}
-\title{Set up a training camp to fit models}
+\title{A wrapper around \code{Model$fit()}}
 \usage{
 training_camp(model_list, data, skip_on_error = TRUE, quiet = FALSE)
 }
@@ -17,7 +17,7 @@ occurs while fitting a model.}
 \item{quiet}{logical. Whether to suppress messages. Default is \code{FALSE}.}
 }
 \description{
-Given one data set and a list of models, fit all models for all
-splits and time cutoffs. Store the models. If an error occurs while fitting
-a model, skip to next model.
+Given one data set and a list of \code{Model}s, call \code{Model$fit()} for
+all of them. If an error occurs while fitting a model, you can skip to the next
+model.
 }

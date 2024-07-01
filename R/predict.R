@@ -35,15 +35,11 @@ model_predict <- function(self, private, data, quiet){
     }
     y <- binarize_y(y_cox = y_cox, time_cutoff = data$pivot_time_cutoff, 
         pivot_time_cutoff = data$pivot_time_cutoff)
-    y_yhat <- intersect_by_names(y, yhat, rm_na = c(TRUE, TRUE))
-    actual_list[[i]] <- y_yhat[[1]][, 1]
-    predicted_list[[i]] <- y_yhat[[2]][, 1]
-    if(!is.null(benchmark))
-        benchmark_list[[i]] <- benchmark[rownames(y)]
+    yhat_y <- intersect_by_names(yhat, y, rm_na = c(TRUE, TRUE))
 
     res <- list(
-        "predicted" = predicted, 
-        "actual" = actual,
+        "predicted" = yhat_y[[1]][, 1],
+        "actual" = yhat_y[[2]][, 1],
         "benchmark" = benchmark
     )
     return(res)

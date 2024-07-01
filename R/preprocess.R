@@ -2,14 +2,14 @@
 
 #' @title Discretize columns of a tibble and append the resulting columns
 #' @description Discretize the columns in a pheno tibble that belong to the features of
-#' the International Prognostic Index (IPI) into binary indicator columns by comparing them 
-#' to cutoff values and append them to the pheno tibble. 
+#' the International Prognostic Index (IPI) into binary indicator columns by comparing them
+#' to cutoff values and append them to the pheno tibble.
 #' @param tbl tibble.
-#' @param col_names character vector. Discretize the columns in `tbl` that have these 
+#' @param col_names character vector. Discretize the columns in `tbl` that have these
 #' names.
-#' @param cutoffs numeric vector of the same length as character vector. The cutoff values 
+#' @param cutoffs numeric vector of the same length as character vector. The cutoff values
 #' corresponding to the columns in `col_names`.
-#' @param gl character vector of the same length as `col_names` holding ">" and "<" 
+#' @param gl character vector of the same length as `col_names` holding ">" and "<"
 #' entries. Discretize via greater (`> cutoffs`) or less (`< cutoffs`). Default is `NULL`,
 #' in which case all columns are discretized via `> cutoffs`.
 #' @return `tbl` with discretized columns as numeric columns appended.
@@ -18,19 +18,19 @@ discretize_tbl_cols <- function(
     tbl,
     col_names,
     cutoffs,
-    gl = NULL
-){
-    if(is.null(gl)) gl <- rep(">", length(col_names))
+    gl = NULL) {
+    if (is.null(gl)) gl <- rep(">", length(col_names))
     stopifnot(all(gl %in% c(">", "<")))
     stopifnot(is.data.frame(tbl))
     stopifnot(is.numeric(cutoffs))
     stopifnot(is.character(gl))
-    if(any(c(length(col_names), length(cutoffs)) != length(gl)))
+    if (any(c(length(col_names), length(cutoffs)) != length(gl))) {
         stop("col_names, cutoffs, and gl must have the same length")
+    }
     check_tbl_columns_exist(tbl = tbl, tbl_name = "tbl", col_names = col_names)
 
     # Extend pheno_tbl
-    for(i in seq_along(col_names)){
+    for (i in seq_along(col_names)) {
         old_col <- tbl[[col_names[i]]]
         new_col <- ifelse(
             rep(gl[i] == ">", length(old_col)),
@@ -44,13 +44,13 @@ discretize_tbl_cols <- function(
 
 
 #' @title Write data info to a JSON file
-#' @description Automatically generate info about the data and write it to a JSON file. 
-#' If the file already exists, the automatically inferable info into the file. If the 
-#' file is not present yet, create a sceleton, write the the info one can automtically 
-#' infer from the data into the json. You can then fill the empty fields in by writing 
+#' @description Automatically generate info about the data and write it to a JSON file.
+#' If the file already exists, the automatically inferable info into the file. If the
+#' file is not present yet, create a sceleton, write the the info one can automtically
+#' infer from the data into the json. You can then fill the empty fields in by writing
 #' the json by hand. Manullay alrady filled out info will not be overwritten.
 #' @param filename string. The path to the JSON file.
-#' @param pheno_tbl tibble. The pheno data. Its format needs to comply with `data` 
+#' @param pheno_tbl tibble. The pheno data. Its format needs to comply with `data`
 #' below.
 #' @param expr_tbl tibble. The expression data. Its format needs to comply with `data`
 #' below.
@@ -61,10 +61,9 @@ write_data_info <- function(
     filename,
     pheno_tbl,
     expr_tbl,
-    data
-){
+    data) {
     found_file <- FALSE
-    if(file.exists(filename)){
+    if (file.exists(filename)) {
         info_list <- jsonlite::read_json(filename)
         found_file <- TRUE
     } else {
@@ -73,7 +72,7 @@ write_data_info <- function(
                 "title" = "",
                 "author" = "",
                 "year" = NA,
-                "doi"= "",
+                "doi" = "",
                 "pubmed id" = NA
             ),
             "data" = list(
@@ -89,17 +88,19 @@ write_data_info <- function(
 
     risk_stat_list <- list()
     for (cohort in c(".", unique(pheno_tbl[[data$cohort_col]]))) {
-        data$pheno_tbl <- pheno_tbl[stringr::str_detect(pheno_tbl[[data$cohort_col]],
-             cohort), ]
-        n_included_in_survival_analysis <- (data$pheno_tbl[[data$time_to_event_col]] > 0) |> 
+        data$pheno_tbl <- pheno_tbl[stringr::str_detect(
+            pheno_tbl[[data$cohort_col]],
+            cohort
+        ), ]
+        n_included_in_survival_analysis <- (data$pheno_tbl[[data$time_to_event_col]] > 0) |>
             sum(na.rm = TRUE)
-        n_high_risk <- ((data$pheno_tbl[[data$time_to_event_col]] < data$pivot_time_cutoff) & 
+        n_high_risk <- ((data$pheno_tbl[[data$time_to_event_col]] < data$pivot_time_cutoff) &
             data$pheno_tbl[[data$event_col]] == 1) |> sum(na.rm = TRUE)
-        n_low_risk <- (data$pheno_tbl[[data$time_to_event_col]] >= 
+        n_low_risk <- (data$pheno_tbl[[data$time_to_event_col]] >=
             data$pivot_time_cutoff) |> sum(na.rm = TRUE)
         prop_high_risk <- n_high_risk / (n_high_risk + n_low_risk)
         risk_stat_list[[cohort]] <- list(
-            "included in survival analysis" =  n_included_in_survival_analysis,
+            "included in survival analysis" = n_included_in_survival_analysis,
             "pivot time cutoff" = data$pivot_time_cutoff,
             "number high risk" = n_high_risk,
             "number low risk" = n_low_risk,
@@ -110,7 +111,7 @@ write_data_info <- function(
     names(risk_stat_list)[1] <- "all"
 
     pheno_data_list <- list(
-        "included in survival analysis" =  n_included_in_survival_analysis,
+        "included in survival analysis" = n_included_in_survival_analysis,
         "pivot time cutoff" = data$pivot_time_cutoff,
         "number high risk" = n_high_risk,
         "number low risk" = n_low_risk,
@@ -132,40 +133,46 @@ write_data_info <- function(
         "performance" = NULL
     )
     for (cohort in c(".", unique(pheno_tbl[[data$cohort_col]]))) {
-        data$pheno_tbl <- pheno_tbl[stringr::str_detect(pheno_tbl[[data$cohort_col]],
-             cohort), ]
+        data$pheno_tbl <- pheno_tbl[stringr::str_detect(
+            pheno_tbl[[data$cohort_col]],
+            cohort
+        ), ]
         benchmark_list[["performance"]][[cohort]] <- prec_from_scores(data)
     }
     names(benchmark_list)[1] <- "all"
     info_list[["data"]][["pheno data"]] <- pheno_data_list
-    if(!found_file){
+    if (!found_file) {
         info_list[["data"]][["expression data"]] <- expr_data_list
         info_list[["data"]][["benchmark"]] <- benchmark_list
     } else {
-        info_list[["data"]][["expression data"]][["number of genes"]] <- 
+        info_list[["data"]][["expression data"]][["number of genes"]] <-
             expr_data_list[["number of genes"]]
         info_list[["data"]][["benchmark"]][-2] <- benchmark_list[-2]
     }
 
-    jsonlite::write_json(info_list, filename, auto_unbox = TRUE, pretty = TRUE,
-        dataframe = "columns")
-    invisible(jsonlite::toJSON(info_list, auto_unbox = TRUE, pretty = TRUE, 
-        dataframe = "columns"))
+    jsonlite::write_json(info_list, filename,
+        auto_unbox = TRUE, pretty = TRUE,
+        dataframe = "columns"
+    )
+    invisible(jsonlite::toJSON(info_list,
+        auto_unbox = TRUE, pretty = TRUE,
+        dataframe = "columns"
+    ))
 }
 
 
 prec_from_scores <- function(
     data,
-    risk_scores = NULL
-){
-    if (is.null(data$pheno_tbl))
+    risk_scores = NULL) {
+    if (is.null(data$pheno_tbl)) {
         stop("Data must have `pheno_tbl` read in")
-    if(is.null(risk_scores)){
-        if(!is.null(data$benchmark_col)){
+    }
+    if (is.null(risk_scores)) {
+        if (!is.null(data$benchmark_col)) {
             risk_scores <- data$pheno_tbl[[data$benchmark_col]]
             names(risk_scores) <- data$pheno_tbl[[data$patient_id_col]]
         } else {
-            message("No risk scores provided and no benchmark specified. 
+            message("No risk scores provided and no benchmark specified.
                 Returning NULL.")
         }
     }
@@ -174,8 +181,10 @@ prec_from_scores <- function(
     )
     y_cox <- as.matrix(data$pheno_tbl[, c(data$time_to_event_col, data$event_col)])
     rownames(y_cox) <- data$pheno_tbl[[data$patient_id_col]]
-    true_risk <- binarize_y(y_cox, time_cutoff = data$pivot_time_cutoff, 
-        pivot_time_cutoff = data$pivot_time_cutoff)[, 1]
+    true_risk <- binarize_y(y_cox,
+        time_cutoff = data$pivot_time_cutoff,
+        pivot_time_cutoff = data$pivot_time_cutoff
+    )[, 1]
     ea <- intersect_by_names(risk_scores, true_risk, rm_na = c(TRUE, TRUE))
     tbl <- metric_with_rocr(
         estimate = ea[[1]],
@@ -183,7 +192,7 @@ prec_from_scores <- function(
         x_metric = "rpp",
         y_metric = "prec"
     )
-    if(is.null(data$benchmark_col)) data$benchmark_col <- "score"
+    if (is.null(data$benchmark_col)) data$benchmark_col <- "score"
     names(tbl) <- c("rpp", "prec", paste0(data$benchmark_col, " >="))
     tbl <- tbl[, c(3, 1, 2)]
     return(tbl)

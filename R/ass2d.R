@@ -9,9 +9,6 @@ Ass2d <- R6::R6Class("Ass2d",
         #' @field x_metric,y_metric Metrics shown on both axes.
         x_metric = NULL,
         y_metric = NULL,
-        #' @field pivot_time_cutoff Assess for predicting time to event less than 
-        #' pivot_time_cutoff
-        pivot_time_cutoff = NULL,
         #' @field benchmark Incorporate this benchmark (from pheno data) into 
         #' assessment.
         benchmark = NULL,
@@ -66,29 +63,23 @@ Ass2d <- R6::R6Class("Ass2d",
         data = NULL,
 
         #' @description Create a new Ass2d instance.
-        #' @param x_metric string. The name of the performance measure to be plotted on the x-axis.
-        #' All measures that can be passed to the `x.measure` parameter of [`ROCR::performance()`] are
-        #' valid.
-        #' @param y_metric string. The name of the performance measure to be plotted on the y-axis.
-        #' 
-        #' * All measures that can be passed to the `measure` parameter of [`ROCR::performance()`] are
-        #' valid.
-        #' * `"logrank"` for the p-values of a logrank test. In this case, `x_metric` must be
-        #' `"prevalence"` or `"rpp"`.
-        #' * `"precision_ci"` for the lower bound of the `ci_level` (see below) confidence interval
-        #' of the precision according to Clopper-Pearson.
-        #' @param pivot_time_cutoff numeric. Time-to-event threshold that divides samples into a
-        #' high/low-risk (time to event below/above `pivot_time_cutoff`) group. Model performance
-        #' will be measured in terms of how well it can separate these two groups as a binary
-        #' classifier.
+        #' @param x_metric,y_metric string. Metric shown on the x and y axis. 
+        #' Regarding the choices: 
+        #' * Every combination of (`measure`, `x.measure`) one can pass to 
+        #'  [`ROCR::performance()`].
+        #' * If `y_metric` is `"logrank"` or `"precision_ci"` (the upper limit of 
+        #'  the `ci_level` confidence interval of the precision, see below), 
+        #' `x_metric` must be `"prevalence"` or `"rpp"` (rate of positive 
+        #' predictions).
+        #' * For (`x_metric`, `y_metric`) = (`"rank"`, "`risk score`"), plot the 
+        #' rank of every risk score agaisnt the risk score and color by true 
+        #' risk.
         #' @param benchmark string. Incorporate this benchmark (from pheno data) into the 
         #' assessment if `benchmark` is not `NULL`.
         #' @param file string. If not `NULL`, store the resulting plot in this file.
         #' @param ci_level numeric in \[0, 1\]. The level used to calculate confidence intervals.
         #' @param fellow_csv logical. Whether to also store the plotted data in a csv including
         #' cutoffs.
-        #' @param scores_plot logical. Display the ordered scores output by the model in a scatter 
-        #' plot.
         #' @param show_plots logical. Whether to show the plots after creation in an interactive 
         #' graphics device.
         #' @param title string. The title of the plot. Default is `NULL`, i.e. no title.
@@ -131,7 +122,6 @@ Ass2d <- R6::R6Class("Ass2d",
             file = NULL,
             ci_level = 0.95,
             fellow_csv = FALSE,
-            scores_plot = FALSE,
             show_plots = FALSE,
             title = NULL,
             x_lab = NULL,
@@ -156,7 +146,7 @@ Ass2d <- R6::R6Class("Ass2d",
             dpi = 300
         )
             ass2d_initialize(self, private, x_metric, y_metric, benchmark, 
-                file, ci_level, fellow_csv, scores_plot, show_plots, title, 
+                file, ci_level, fellow_csv, show_plots, title, 
                 x_lab, y_lab, xlim, ylim, smooth_method, smooth_benchmark, smooth_se, 
                 scale_x, scale_y, vline, hline, text_size, text, alpha, colors, theme, 
                 width, height, units, dpi),
@@ -178,24 +168,8 @@ Ass2d <- R6::R6Class("Ass2d",
         )
             ass2d_assess(self, private, data, model, quiet, msg_prefix),
 
-        #' @description Plot rank versus model score on a data set. You can do this 
-        #' on the fly, i.e. you actually initialize the Ass2d object for another 
-        #' purpose and this method will infer reasonable defaults for the plot.
-        #' @param data Data object. Plot the scores for this data.
-        #' @param model Model object. Plot the scores for this model.
-        #' @param quiet logical. Whether to suppress messages.
-        #' @param msg_prefix string. Prefix for messages.
-        plot_risk_scores = function(
-            data,
-            model,
-            quiet = FALSE,
-            msg_prefix = ""
-        )
-            as2_plot_risk_scores(self, private, data, model, quiet, msg_prefix),
-
-        #' @description Assess *multiple* models on a data set.
-        #' This is a wrapper around `assess()` and optionally `plot_risk_scores()` 
-        #' for multiple models.
+        #' @description Assess *multiple* models on a data set. A wrapper around
+        #' `assess()`.
         #' @param data Data object. Assess on this data set.
         #' @param model_list list of Model objects. Assess these models.
         #' We infer the `AssSpec2d` for the single plots in a reasonable way from it.
@@ -205,8 +179,6 @@ Ass2d <- R6::R6Class("Ass2d",
         #' the same directory as the corresponding model for the train cohort and the 
         #' comparison plot at `file`. When doing the analogous for the test data, replace 
         #' the first element of `model_tree_mirror` by the second element in every file path.
-        #' @param risk_scores logical. Whether to also plot rank versus risk score 
-        #' along with the assessment "on-the-fly".
         #' @param comparison_plot logical. Whether to generate a plot holding the assessment 
         #' of all models. Default is `TRUE`.
         #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
@@ -215,12 +187,11 @@ Ass2d <- R6::R6Class("Ass2d",
             data,
             model_list,
             model_tree_mirror = c("models", "results"),
-            risk_scores = FALSE,
             comparison_plot = FALSE,
             quiet = FALSE
         )
             ass2d_assess_center(self, private, data, model_list, model_tree_mirror, 
-                risk_scores, comparison_plot, quiet)
+                comparison_plot, quiet)
     ),
 
     private = list(
@@ -238,6 +209,17 @@ Ass2d <- R6::R6Class("Ass2d",
             data,
             model_tree_mirror
         )
-            ass2d_infer(self, private, model, data, model_tree_mirror)
+            ass2d_infer(self, private, model, data, model_tree_mirror),
+
+        # Plot rank versus model output (risk score) and color according to true
+        # risk. Called by assess() for proper x_metric and y_metric.
+        plot_risk_scores = function(
+            data,
+            model,
+            quiet = FALSE,
+            msg_prefix = ""
+        )
+            as2_plot_risk_scores(self, private, data, model, quiet, msg_prefix)
+
     )      
 )

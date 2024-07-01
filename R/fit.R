@@ -20,15 +20,15 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
         }
     } else {
         # Prepare and fit
-        prep <- data$prepare(model, quiet = quiet)
+        prep <- data$prepare(self, quiet = quiet)
         qc_prefit(prep)
-        model$fit_obj <- do.call(
+        self$fit_obj <- do.call(
             unitune(self$fitter), 
             args = c(
                 list(
                     x = prep[["x"]], 
                     y_cox = prep[["y_cox"]], 
-                    time_cutoffs = model$time_cutoffs,
+                    time_cutoffs = self$time_cutoffs,
                     combine_n_max_categorical_features = self$combine_n_max_categorical_features,
                     pivot_time_cutoff = data$pivot_time_cutoff,
                     val_error_fun = self$val_error_fun

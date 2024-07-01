@@ -15,8 +15,9 @@ ass2d_calculate_2d_metric <- function(self, private, data, model, quiet){
         estimate_list[[self$benchmark]] <- benchmark
     tbl_list <- vector("list", length(estimate_list))
 
-    for (i seq_along(estimate_list)) {
+    for (i in seq_along(estimate_list)) {
         estimate <- estimate_list[[i]]
+        estimate_name <- names(estimate_list)[i]
         if(self$y_metric == "logrank"){
             tbl <- logrank_metric(
                 estimate = estimate,
@@ -49,8 +50,7 @@ ass2d_calculate_2d_metric <- function(self, private, data, model, quiet){
             "cutoff"
         )
         tbl[["model"]] <- estimate_name       
-        tbl_list[[j]] <- tbl
-        j <- j+1
+        tbl_list[[i]] <- tbl
     }
     # Combine model and benchmark into one tibble
     tbl <- dplyr::bind_rows(tbl_list)

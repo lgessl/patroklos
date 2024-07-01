@@ -3,7 +3,6 @@ test_that("Data$new() works", {
   data <- Data$new(
     name = "mock",
     directory = "mock",
-    train_prop = 0.7,
     pivot_time_cutoff = 0.5,
     expr_file = "expr.csv",
     pheno_file = "pheno.csv",
@@ -14,11 +13,9 @@ test_that("Data$new() works", {
     cohort_col = "split_1",
     benchmark_col = "benchmark",
     gene_id_col = "gene_id",
-    split_col_prefix = "split"
   )
   expect_equal(data$name, "mock")
   expect_equal(data$directory, "mock")
-  expect_equal(data$train_prop, 0.7)
   expect_equal(data$pivot_time_cutoff, 0.5)
   expect_equal(data$expr_file, "expr.csv")
   expect_equal(data$pheno_file, "pheno.csv")
@@ -29,7 +26,6 @@ test_that("Data$new() works", {
   expect_equal(data$cohort_col, "split_1")
   expect_equal(data$benchmark_col, "benchmark")
   expect_equal(data$gene_id_col, "gene_id")
-  expect_equal(data$split_col_prefix, "split")
   expect_equal(data$pivot_time_cutoff, 0.5)
 })
 
@@ -43,14 +39,12 @@ test_that("Data$read() works", {
     n_samples = n_samples,
     n_genes = n_genes,
     n_na_in_pheno = 3,
-    to_csv = dir,
-    split_index = 1:3
+    to_csv = dir
   ) 
   ncol_pheno <- ncol(data$pheno_tbl)
   data <- Data$new(
     name = "mock",
     directory = dir,
-    train_prop = 0.7,
     pivot_time_cutoff = 0.5,
     expr_file = "expr.csv",
     pheno_file = "pheno.csv",
@@ -59,8 +53,7 @@ test_that("Data$read() works", {
     time_to_event_col = "pfs_years",
     event_col = "progression",
     benchmark_col = "ipi",
-    gene_id_col = "gene_id",
-    split_col_prefix = "split"
+    gene_id_col = "gene_id"
   )
   data$read()
 
@@ -87,7 +80,7 @@ test_that("Data$survival_quantiles()", {
 
   n_samples <- 20
 
-  data <- generate_mock_data(n_samples = n_samples, n_genes = 1, split_index = 1)
+  data <- generate_mock_data(n_samples = n_samples, n_genes = 1)
   
   tbl <- data$survival_quantiles()
   expect_true(nrow(tbl) <= n_samples)
@@ -97,4 +90,39 @@ test_that("Data$survival_quantiles()", {
   expect_true(all(v >= 0))
   expect_equal(order(q), seq_along(q))
   expect_equal(order(v), seq_along(v))
+})
+
+test_that("Data$split() works", {
+
+  set.seed(234)
+
+  n_samples <- 100
+  n_genes <- 1
+
+  data <- generate_mock_data(
+    n_samples = n_samples,
+    n_genes = n_genes,
+    n_na_in_pheno = 0,
+  )
+  data$directory <- withr::local_tempdir()
+  data$pheno_tbl[["split_1"]] <- NULL
+
+  pt_old <- data$pheno_tbl
+  data$split(train_prop = 0.8, save = TRUE, keep_risk = TRUE)
+  expect_equal(nrow(pt_old), nrow(data$pheno_tbl))
+  expect_equal(ncol(pt_old)+1, ncol(data$pheno_tbl))
+  expect_false(is.null(data$pheno_tbl[["split_1"]]))
+  expect_true(file.exists(file.path(data$directory, "cohort.rds")))
+
+  expect_message(data$split(train_prop = 0.8, save = TRUE), 
+    "Found a cohort file")
+
+  cohort <- readRDS(file.path(data$directory, "cohort.rds"))
+  saveRDS(cohort[-1], file.path(data$directory, "cohort.rds"))
+  expect_error(data$split(train_prop = 0.7, save = TRUE, quiet = TRUE), 
+    "The patient IDs in the cohort file do not match")
+  unlink(file.path(data$directory, "cohort.rds"))
+
+  data$split(train_prop = 0.7, save = FALSE, keep_risk = FALSE)
+  expect_false(file.exists(file.path(data$directory, "cohort.rds")))
 })

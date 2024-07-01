@@ -19,7 +19,6 @@ test_that("model$predict() works", {
     name = "cox-zerosum",
     directory = dir,
     fitter = ptk_zerosum,
-    split_index = 1:2,
     time_cutoffs = Inf,
     val_error_fun = neg_roc_auc,
     hyperparams = list(family = "cox", alpha = 1, nFold = n_fold, 
@@ -30,7 +29,6 @@ test_that("model$predict() works", {
     name = "log-rf",
     directory = dir,
     fitter = long_nestor,
-    split_index = 1:2,
     time_cutoffs = 2,
     val_error_fun = neg_prec_with_prev_greater(0.15),
     hyperparams = list(
@@ -48,17 +46,17 @@ test_that("model$predict() works", {
   res <- model1$predict(data, quiet = TRUE)
   expect_true(is.list(res))
   expect_equal(length(res), 3)
-  expect_true(all(sapply(res, is.list)))
-  expect_true(all(sapply(res, length) == length(model1$split_index)))
-  expect_true(all(sapply(res, function(x) all(sapply(x, is.numeric)))))
-  expect_equal(length(table(res[["actual"]][[2]])), 2)
+  expect_true(all(sapply(res, is.numeric)))
+  expect_true(all(res[["actual"]] %in% c(0, 1, NA)))
+  expect_true(all(sapply(res, is.vector)))
+  expect_true(all(sapply(res, function(x) !is.null(names(x)))))
 
   data$cohort <- "val_predict"
   res <- model2$predict(data, quiet = TRUE)
   expect_true(is.list(res))
   expect_equal(length(res), 3)
-  expect_true(all(sapply(res[1:2], is.list))) # third list element is NULL
-  expect_true(all(sapply(res[1:2], length) == length(model2$split_index)))
-  expect_true(all(sapply(res, function(x) all(sapply(x, is.numeric)))))
-  expect_equal(length(table(res[["actual"]][[2]])), 2)
+  expect_true(all(sapply(res[1:2], is.numeric))) # third list element is NULL
+  expect_true(all(res[["actual"]] %in% c(0, 1, NA)))
+  expect_true(all(sapply(res[-3], is.vector)))
+  expect_true(all(sapply(res[-3], function(x) !is.null(names(x)))))
 })

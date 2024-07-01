@@ -72,7 +72,6 @@ test_that("logrank_metric() works", {
   data <- Data$new(
     name = "mock",
     directory = "mock",
-    train_prop = .66,
     pivot_time_cutoff = 2,
     time_to_event_col = "pfs_years",
     cohort = "train"
