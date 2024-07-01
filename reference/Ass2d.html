@@ -53,11 +53,6 @@ the continuous to binary model output.</p>
 <dd><p>Metrics shown on both axes.</p></dd>
 
 
-<dt><code>pivot_time_cutoff</code></dt>
-<dd><p>Assess for predicting time to event less than
-pivot_time_cutoff</p></dd>
-
-
 <dt><code>benchmark</code></dt>
 <dd><p>Incorporate this benchmark (from pheno data) into
 assessment.</p></dd>
@@ -186,7 +181,6 @@ including cutoffs.</p></dd>
 
 <ul><li><p><a href="#method-Ass2d-new"><code>Ass2d$new()</code></a></p></li>
 <li><p><a href="#method-Ass2d-assess"><code>Ass2d$assess()</code></a></p></li>
-<li><p><a href="#method-Ass2d-plot_risk_scores"><code>Ass2d$plot_risk_scores()</code></a></p></li>
 <li><p><a href="#method-Ass2d-assess_center"><code>Ass2d$assess_center()</code></a></p></li>
 <li><p><a href="#method-Ass2d-clone"><code>Ass2d$clone()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-Ass2d-new"></a><div class="section">
@@ -200,7 +194,6 @@ including cutoffs.</p></dd>
 <span>  file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ci_level <span class="op">=</span> <span class="fl">0.95</span>,</span>
 <span>  fellow_csv <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  scores_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  show_plots <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  x_lab <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -228,19 +221,17 @@ including cutoffs.</p></dd>
 
 <div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>x_metric</code></dt>
-<dd><p>string. The name of the performance measure to be plotted on the x-axis.
-All measures that can be passed to the <code>x.measure</code> parameter of <code><a href="http://ipa-tys.github.io/ROCR/reference/performance.html" class="external-link">ROCR::performance()</a></code> are
-valid.</p></dd>
-
-
-<dt><code>y_metric</code></dt>
-<dd><p>string. The name of the performance measure to be plotted on the y-axis.</p><ul><li><p>All measures that can be passed to the <code>measure</code> parameter of <code><a href="http://ipa-tys.github.io/ROCR/reference/performance.html" class="external-link">ROCR::performance()</a></code> are
-valid.</p></li>
-<li><p><code>"logrank"</code> for the p-values of a logrank test. In this case, <code>x_metric</code> must be
-<code>"prevalence"</code> or <code>"rpp"</code>.</p></li>
-<li><p><code>"precision_ci"</code> for the lower bound of the <code>ci_level</code> (see below) confidence interval
-of the precision according to Clopper-Pearson.</p></li>
+<p></p><div class="arguments"><dl><dt><code>x_metric, y_metric</code></dt>
+<dd><p>string. Metric shown on the x and y axis.
+Regarding the choices:</p><ul><li><p>Every combination of (<code>measure</code>, <code>x.measure</code>) one can pass to
+<code><a href="http://ipa-tys.github.io/ROCR/reference/performance.html" class="external-link">ROCR::performance()</a></code>.</p></li>
+<li><p>If <code>y_metric</code> is <code>"logrank"</code> or <code>"precision_ci"</code> (the upper limit of
+the <code>ci_level</code> confidence interval of the precision, see below),
+<code>x_metric</code> must be <code>"prevalence"</code> or <code>"rpp"</code> (rate of positive
+predictions).</p></li>
+<li><p>For (<code>x_metric</code>, <code>y_metric</code>) = (<code>"rank"</code>, "<code>risk score</code>"), plot the
+rank of every risk score agaisnt the risk score and color by true
+risk.</p></li>
 </ul></dd>
 
 
@@ -260,11 +251,6 @@ assessment if <code>benchmark</code> is not <code>NULL</code>.</p></dd>
 <dt><code>fellow_csv</code></dt>
 <dd><p>logical. Whether to also store the plotted data in a csv including
 cutoffs.</p></dd>
-
-
-<dt><code>scores_plot</code></dt>
-<dd><p>logical. Display the ordered scores output by the model in a scatter
-plot.</p></dd>
 
 
 <dt><code>show_plots</code></dt>
@@ -355,13 +341,6 @@ The theme of the plot. Default is <code>NULL</code>, which means the default the
 <dd><p>numeric. Plot resolution in dots per inch.</p></dd>
 
 
-<dt><code>pivot_time_cutoff</code></dt>
-<dd><p>numeric. Time-to-event threshold that divides samples into a
-high/low-risk (time to event below/above <code>pivot_time_cutoff</code>) group. Model performance
-will be measured in terms of how well it can separate these two groups as a binary
-classifier.</p></dd>
-
-
 </dl><p></p></div>
 </div>
 <div class="section">
@@ -371,7 +350,7 @@ classifier.</p></dd>
 
 </div><p></p><hr><a id="method-Ass2d-assess"></a><div class="section">
 <h3 id="method-assess-">Method <code>assess()</code><a class="anchor" aria-label="anchor" href="#method-assess-"></a></h3>
-<p>Assess a <em>single</em> model (with multiple splits) on a data set.</p><div class="section">
+<p>Assess a <em>single</em> model on a data set.</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Ass2d</span><span class="op">$</span><span class="fu">assess</span><span class="op">(</span><span class="va">data</span>, <span class="va">model</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span>, msg_prefix <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -384,7 +363,7 @@ must be set.</p></dd>
 
 
 <dt><code>model</code></dt>
-<dd><p>Model object. Assess this model, multiple splits are supported.</p></dd>
+<dd><p>Model object. Assess this model.</p></dd>
 
 
 <dt><code>quiet</code></dt>
@@ -404,54 +383,22 @@ named <code>data</code>.</p>
 </div>
 
 
-</div><p></p><hr><a id="method-Ass2d-plot_risk_scores"></a><div class="section">
-<h3 id="method-plot-risk-scores-">Method <code>plot_risk_scores()</code><a class="anchor" aria-label="anchor" href="#method-plot-risk-scores-"></a></h3>
-<p>Plot rank versus model score on a data set. You can do this
-on the fly, i.e. you actually initialize the Ass2d object for another
-purpose and this method will infer reasonable defaults for the plot.</p><div class="section">
-<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Ass2d</span><span class="op">$</span><span class="fu">plot_risk_scores</span><span class="op">(</span><span class="va">data</span>, <span class="va">model</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span>, msg_prefix <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
-<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>data</code></dt>
-<dd><p>Data object. Plot the scores for this data.</p></dd>
-
-
-<dt><code>model</code></dt>
-<dd><p>Model object. Plot the scores for this model.</p></dd>
-
-
-<dt><code>quiet</code></dt>
-<dd><p>logical. Whether to suppress messages.</p></dd>
-
-
-<dt><code>msg_prefix</code></dt>
-<dd><p>string. Prefix for messages.</p></dd>
-
-
-</dl><p></p></div>
-</div>
-
 </div><p></p><hr><a id="method-Ass2d-assess_center"></a><div class="section">
 <h3 id="method-assess-center-">Method <code>assess_center()</code><a class="anchor" aria-label="anchor" href="#method-assess-center-"></a></h3>
-<p>Assess <em>multiple</em> models (with multiple splits) on a data set.
-This is a wrapper around <code>assess()</code> and optionally <code>plot_risk_scores()</code>
-for multiple models.</p><div class="section">
-<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
+<p>Assess <em>multiple</em> models on a data set. A wrapper around
+<code>assess()</code>.</p><div class="section">
+<h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Ass2d</span><span class="op">$</span><span class="fu">assess_center</span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
 <span>  <span class="va">model_list</span>,</span>
 <span>  model_tree_mirror <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"models"</span>, <span class="st">"results"</span><span class="op">)</span>,</span>
-<span>  risk_scores <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  comparison_plot <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  quiet <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>data</code></dt>
 <dd><p>Data object. Assess on this data set.</p></dd>
 
@@ -470,11 +417,6 @@ comparison plot at <code>file</code>. When doing the analogous for the test data
 the first element of <code>model_tree_mirror</code> by the second element in every file path.</p></dd>
 
 
-<dt><code>risk_scores</code></dt>
-<dd><p>logical. Whether to also plot rank versus risk score
-along with the assessment "on-the-fly".</p></dd>
-
-
 <dt><code>comparison_plot</code></dt>
 <dd><p>logical. Whether to generate a plot holding the assessment
 of all models. Default is <code>TRUE</code>.</p></dd>
@@ -490,12 +432,12 @@ of all models. Default is <code>TRUE</code>.</p></dd>
 </div><p></p><hr><a id="method-Ass2d-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Ass2d</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
+<h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
