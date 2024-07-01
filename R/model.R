@@ -109,7 +109,7 @@ Model <- R6::R6Class("Model",
             include_expr = TRUE,
             li_var_suffix = "++",
             create_directory = TRUE,
-            file = "models.rds",
+            file = "model.rds",
             continuous_output = NULL,
             combine_n_max_categorical_features = 1L,
             combined_feature_min_positive_ratio = 0.04

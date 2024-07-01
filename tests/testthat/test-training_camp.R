@@ -67,8 +67,8 @@ test_that("training_camp() works", {
     skip_on_error = FALSE
   )
   
-  expect_true(file.exists(file.path(model_1$directory, "models.rds")))
-  expect_true(file.exists(file.path(model_2$directory, "models.rds")))
-  expect_true(file.exists(file.path(model_3$directory, "models.rds")))
-  # expect_false(file.exists(file.path(model_4$directory, "models.rds")))
+  expect_true(file.exists(file.path(model_1$directory, "model.rds")))
+  expect_true(file.exists(file.path(model_2$directory, "model.rds")))
+  expect_true(file.exists(file.path(model_3$directory, "model.rds")))
+  # expect_false(file.exists(file.path(model_4$directory, "model.rds")))
 })

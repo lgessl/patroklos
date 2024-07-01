@@ -30,7 +30,7 @@ test_that("Model$fit() works", {
   model$fit(data, quiet = TRUE)
   expect_s3_class(model$fit_obj, "ptk_zerosum")
   expect_equal(nrow(model$fit_obj$coef[[1]]), n_genes+1)
-  expect_true(file.exists(file.path(dir, "model1", "models.rds")))
+  expect_true(file.exists(file.path(dir, "model1", "model.rds")))
 
   model$fit(data, quiet = TRUE)
 
@@ -69,7 +69,7 @@ test_that("Model$fit() works", {
   model$include_expr <- FALSE
   model$fit(data, quiet = TRUE)
   expect_equal(nrow(model$fit_obj$coef[[1]]), 1+2+1)
-  expect_true(file.exists(file.path(dir, "model4", "models.rds")))
+  expect_true(file.exists(file.path(dir, "model4", "model.rds")))
 
   # nested_cv
   model <- Model$new(
