@@ -138,6 +138,7 @@ Data <- R6::R6Class("Data",
         #' low-risk samples in train and test cohort the same as in the complete
         #' data set. High/low-risk is determinded by the `pivot_time_cutoff` 
         #' attribute.
+        #' @param quiet logical. If TRUE, suppress messages.
         #' @details Cohort affiliation will show up as a column named 
         #' `cohort_col` in `pheno_tbl`
         split = function(train_prop, save = TRUE, keep_risk = TRUE, quiet = FALSE)

@@ -108,17 +108,18 @@ test_that("write_data_info() works", {
     name = "test", 
     directory = "mock", 
     pivot_time_cutoff = 2,
-    cohort = "train",
+    cohort = ".",
+    cohort_col = "split_1",
     patient_id_col = "patient",
     time_to_event_col = "time_to_event",
     event_col = "event",
     benchmark_col = "IPI"
   )
+  data$pheno_tbl <- pheno_tbl
 
   filename <- withr::local_tempfile()
   info_json <- write_data_info(
     filename = filename,
-    pheno_tbl = pheno_tbl,
     expr_tbl = expr_tbl,
     data = data
   )
@@ -130,7 +131,6 @@ test_that("write_data_info() works", {
     dataframe = "columns")
   info_json <- write_data_info(
     filename = filename,
-    pheno_tbl = pheno_tbl,
     expr_tbl = expr_tbl,
     data = data
   )

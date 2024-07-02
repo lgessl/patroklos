@@ -50,11 +50,9 @@ discretize_tbl_cols <- function(
 #' infer from the data into the json. You can then fill the empty fields in by writing
 #' the json by hand. Manullay alrady filled out info will not be overwritten.
 #' @param filename string. The path to the JSON file.
-#' @param pheno_tbl tibble. The pheno data. Its format needs to comply with `data`
-#' below.
+#' @param data Data S3 object. Specifications on both `pheno_tbl` and `expr_tbl`.
 #' @param expr_tbl tibble. The expression data. Its format needs to comply with `data`
 #' below.
-#' @param data Data S3 object. Specifications on both `pheno_tbl` and `expr_tbl`.
 #' @return The JSON string that was written to the file.
 #' @export
 write_data_info <- function(
@@ -78,7 +76,7 @@ write_data_info <- function(
             "data" = list(
                 "website" = "",
                 "disease type" = "",
-                "number of samples" = nrow(pheno_tbl),
+                "number of samples" = nrow(data$pheno_tbl),
                 "pheno data" = list(),
                 "expression data" = list(),
                 "benchmark" = list()

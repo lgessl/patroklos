@@ -229,6 +229,8 @@ cohort.}
 low-risk samples in train and test cohort the same as in the complete
 data set. High/low-risk is determinded by the \code{pivot_time_cutoff}
 attribute.}
+
+\item{\code{quiet}}{logical. If TRUE, suppress messages.}
 }
 \if{html}{\out{</div>}}
 }
