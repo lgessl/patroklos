@@ -54,7 +54,7 @@ the json by hand. Manullay alrady filled out info will not be overwritten.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">write_data_info</span><span class="op">(</span><span class="va">filename</span>, <span class="va">pheno_tbl</span>, <span class="va">expr_tbl</span>, <span class="va">data</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">write_data_info</span><span class="op">(</span><span class="va">filename</span>, <span class="va">data</span>, <span class="va">expr_tbl</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -63,18 +63,13 @@ the json by hand. Manullay alrady filled out info will not be overwritten.</p>
 <dd><p>string. The path to the JSON file.</p></dd>
 
 
-<dt>pheno_tbl</dt>
-<dd><p>tibble. The pheno data. Its format needs to comply with <code>data</code>
-below.</p></dd>
+<dt>data</dt>
+<dd><p>Data S3 object. Specifications on both <code>pheno_tbl</code> and <code>expr_tbl</code>.</p></dd>
 
 
 <dt>expr_tbl</dt>
 <dd><p>tibble. The expression data. Its format needs to comply with <code>data</code>
 below.</p></dd>
-
-
-<dt>data</dt>
-<dd><p>Data S3 object. Specifications on both <code>pheno_tbl</code> and <code>expr_tbl</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
