@@ -21,6 +21,7 @@ test_that("greedy_nestor() works", {
         time_cutoffs = 2, val_error_fun = neg_prec_with_prev_greater(0.15), 
         directory = dir)
     model1$fit(data, quiet = TRUE)
+    model1$fit_obj <- NULL
     nested_fit <- greedy_nestor(x = x3y[[1]], y = x3y[2:4], val_error_fun = 
         neg_prec_with_prev_greater(0.15), model1 = model1, fitter2 = hypertune(ptk_ranger),
         hyperparams2 = hyperparams2)

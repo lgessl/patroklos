@@ -28,7 +28,7 @@ greedy_nestor <- function(
     stopifnot(inherits(hyperparams2, "list"))
 
     if (is.null(model1$fit_obj)) {
-        model1 <- readRDS(file.path(model1$direcory), model1$file)
+        model1 <- readRDS(file.path(model1$directory, model1$file))
         if (is.null(model1$fit_obj))
             stop("You need to first train the early model")
     }
