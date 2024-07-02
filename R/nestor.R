@@ -14,6 +14,7 @@
 #' README for more details).
 #' @param hyperparams2 A named list with hyperparameters for the late model.
 #' @return A `nested_fit` S3 object.
+#' @export
 greedy_nestor <- function(
     x,
     y,
