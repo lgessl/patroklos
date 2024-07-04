@@ -91,6 +91,7 @@ ass2d_assess <- function(self, private, data, model, quiet, msg_prefix){
             model = model,
             quiet = quiet
         )
+        if (is.null(self$data)) return(NULL)
         plot_2d_metric(
             ass2d = self,
             quiet = quiet,

@@ -17,7 +17,7 @@ test_that("model$predict() works", {
 
   model1 <- Model$new(
     name = "cox-zerosum",
-    directory = dir,
+    directory = file.path(dir, "cox-zerosum"),
     fitter = ptk_zerosum,
     time_cutoffs = Inf,
     val_error_fun = neg_roc_auc,
@@ -27,7 +27,7 @@ test_that("model$predict() works", {
   model1$fit(data, quiet = TRUE)
   model2 <- Model$new(
     name = "log-rf",
-    directory = dir,
+    directory = file.path(dir, "log-rf"),
     fitter = long_nestor,
     time_cutoffs = 2,
     val_error_fun = neg_prec_with_prev_greater(0.15),
@@ -38,9 +38,20 @@ test_that("model$predict() works", {
         lambdaSteps = 1, zeroSum = FALSE),
       hyperparams2 = list(rel_mtry = FALSE, mtry = 3, min.node.size = 5,
         classification = TRUE, num.trees = 100, skip_on_invalid_input = TRUE)
-    )
+    ),
+    include_from_discrete_pheno = c("ipi_age", "abc_gcb"),
+    include_from_continuous_pheno = c("continuous_var")
   )
   model2$fit(data, quiet = TRUE)
+  model3 <- Model$new(
+    name = "nemo",
+    directory = file.path(dir, "nemo"),
+    fitter = ptk_zerosum,
+    time_cutoffs = 2,
+    val_error_fun = neg_prec_with_prev_greater(0.15),
+    hyperparams = list(family = "binomial", alpha = 1, nFold = n_fold, 
+      lambdaSteps = 1, zeroSum = FALSE)
+  )
 
   data$cohort <- "test"
   res <- model1$predict(data, quiet = TRUE)
@@ -59,4 +70,6 @@ test_that("model$predict() works", {
   expect_true(all(res[["actual"]] %in% c(0, 1, NA)))
   expect_true(all(sapply(res[-3], is.vector)))
   expect_true(all(sapply(res[-3], function(x) !is.null(names(x)))))
+
+  expect_true(is.null(model3$predict(data, quiet = TRUE)))
 })

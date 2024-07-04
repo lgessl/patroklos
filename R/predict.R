@@ -2,8 +2,11 @@ model_predict <- function(self, private, data, quiet){
 
     # Retrieve model
     model_path <- file.path(self$directory, self$file)
-    if(!file.exists(model_path)){
-        stop("Model object does not exist at ", model_path)
+    if (!file.exists(model_path)) {
+        if (!quiet)
+            message("Model object does not exist at ", model_path, 
+                ". Returning NA")
+        return(NULL)
     }
     fit_obj <- readRDS(model_path)$fit_obj
 

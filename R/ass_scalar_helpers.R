@@ -23,6 +23,7 @@ ass_scalar_assess <- function(self, private, data, model, quiet) {
         data = data,
         quiet = quiet
     )
+    if(is.null(prep)) return(rep(NA, length(self$metrics)))
     res_mat <- matrix(numeric(length(self$metrics)), nrow = 1, byrow = TRUE)
     stopifnot(all(names(prep[["predicted"]]) == names(prep[["actual"]])))
     metric_v <- get_metric(

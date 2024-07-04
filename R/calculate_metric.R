@@ -4,6 +4,7 @@ ass2d_calculate_2d_metric <- function(self, private, data, model, quiet){
         data = data,
         quiet = quiet
     )
+    if (is.null(prep)) return(NULL)
     actual <- prep[["actual"]]
     benchmark <- prep[["benchmark"]]
     predicted <- prep[["predicted"]]
