@@ -1,3 +1,4 @@
 *.code-workspace
 .vscode
 docs
+.DS_Store
