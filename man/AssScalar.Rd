@@ -21,10 +21,7 @@ thresholds that yield a prevalence in this range.}
 \item{\code{round_digits}}{Round the results in tables to round_digits digits
 after the point.}
 
-\item{\code{file}}{Save the resulting tibble to this csv file. This is the
-file for the \emph{train} cohort, we infer the the file name of the test
-cohort by mirroring this file name. See the \code{assess_center()} method
-for more details.}
+\item{\code{file}}{Save the resulting tibble to this csv file.}
 }
 \if{html}{\out{</div>}}
 }

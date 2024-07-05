@@ -16,10 +16,7 @@ AssScalar <- R6::R6Class("AssScalar",
         #' @field round_digits Round the results in tables to round_digits digits 
         #' after the point.
         round_digits = NULL,
-        #' @field file Save the resulting tibble to this csv file. This is the 
-        #' file for the *train* cohort, we infer the the file name of the test 
-        #' cohort by mirroring this file name. See the `assess_center()` method 
-        #' for more details.
+        #' @field file Save the resulting tibble to this csv file. 
         file = NULL,
 
         #' @description Create a new AssScalar instance.
