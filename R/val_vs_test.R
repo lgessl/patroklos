@@ -12,6 +12,7 @@
 #' @param plot_theme ggplot2 theme. Theme to apply to the plot.
 #' @param quiet logical. Whether to suppress messages.
 #' @return ggplot2 object.
+#' @export
 val_vs_test <- function(
     model_list,
     data,
