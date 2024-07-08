@@ -1,96 +1,34 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://lgessl.github.io/patroklos/404.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/index.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/Ass2d.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/AssScalar.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/Data.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/Model.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/discretize_tbl_cols.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/ensure_patients_match.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/error_rate.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/greedy_nestor.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/hypertune.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/long_nestor.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/mean_impute.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/neg_binomial_log_likelihood.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/neg_prec_with_prev_greater.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/neg_roc_auc.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/nested_fit.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/predict.nested_fit.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/predict.ptk_ranger.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/predict.ptk_zerosum.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/prepend_to_directory.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/prepend_to_filename.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/ptk_ranger.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/ptk_zerosum.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/training_camp.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/val_vs_test.html</loc>
-  </url>
-  <url>
-    <loc>https://lgessl.github.io/patroklos/reference/write_data_info.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://lgessl.github.io/patroklos/404.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/LICENSE-text.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/LICENSE.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/authors.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/index.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/Ass2d.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/AssScalar.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/Data.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/Model.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/discretize_tbl_cols.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/ensure_patients_match.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/error_rate.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/greedy_nestor.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/hypertune.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/index.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/long_nestor.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/mean_impute.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/neg_binomial_log_likelihood.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/neg_prec_with_prev_greater.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/neg_roc_auc.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/nested_fit.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/predict.nested_fit.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/predict.ptk_ranger.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/predict.ptk_zerosum.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/prepend_to_directory.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/prepend_to_filename.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/ptk_ranger.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/ptk_zerosum.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/training_camp.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/val_vs_test.html</loc></url>
+<url><loc>https://lgessl.github.io/patroklos/reference/write_data_info.html</loc></url>
 </urlset>
+
