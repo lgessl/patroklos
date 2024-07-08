@@ -21,6 +21,7 @@ test_that("val_vs_test() works", {
     model2$name <- "model2"
     model2$directory <- file.path(dir, "model2")
     model2$hyperparams[["family"]] <- "binomial"
+    model2$time_cutoffs <- 3
     model3 <- model1$clone()
     model3$name <- "model3"
     model3$directory <- file.path(dir, "model3")
@@ -32,6 +33,11 @@ test_that("val_vs_test() works", {
     expect_no_error(
         plt <- val_vs_test(models, data, error_fun = neg_roc_auc, 
             spotlight_regex = "1|2", file = file.path(dir, "val_vs_test.jpeg"),
+            spotlight_name = "leq 2", quiet = TRUE)
+    )
+    expect_no_error(
+        plt <- val_vs_test(models, data, error_fun = neg_roc_auc, 
+            spotlight_regex = ".", file = file.path(dir, "val_vs_test.jpeg"),
             spotlight_name = "leq 2", quiet = TRUE)
     )
 })

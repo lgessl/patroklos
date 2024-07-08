@@ -11,7 +11,10 @@ val_vs_test(
   spotlight_regex,
   file,
   spotlight_name = NULL,
-  plot_theme = NULL,
+  plot_theme = ggplot2::theme_minimal(),
+  colors = NULL,
+  width = 7,
+  height = 4,
   quiet = FALSE
 )
 }
@@ -31,6 +34,10 @@ highlight.}
 \code{spotlight_regex} in legend.}
 
 \item{plot_theme}{ggplot2 theme. Theme to apply to the plot.}
+
+\item{colors}{character vector. Colors used for points.}
+
+\item{width, height}{numeric. Width and height of the plot in inches.}
 
 \item{quiet}{logical. Whether to suppress messages.}
 }

@@ -9,6 +9,8 @@
 #' @param file string. File name to save the plot to.
 #' @param spotlight_name string. Name to give to the models identified by
 #' `spotlight_regex` in legend.
+#' @param colors character vector. Colors used for points.
+#' @param width,height numeric. Width and height of the plot in inches.
 #' @param plot_theme ggplot2 theme. Theme to apply to the plot.
 #' @param quiet logical. Whether to suppress messages.
 #' @return ggplot2 object.
@@ -20,14 +22,17 @@ val_vs_test <- function(
     spotlight_regex,
     file,
     spotlight_name = NULL,
-    plot_theme = NULL,
+    plot_theme = ggplot2::theme_minimal(),
+    colors = NULL,
+    width = 7,
+    height = 4,
     quiet = FALSE
 ) {
     if (is.null(spotlight_name)) spotlight_name <- spotlight_regex
     n_models <- length(model_list)
     tbl <- tibble::tibble(
-        val_error = numeric(n_models),
-        test_error = numeric(n_models),
+        "validation error" = numeric(n_models),
+        "test error" = numeric(n_models),
         spotlight = character(n_models)
     )
     for (i in seq_along(model_list)) {
@@ -47,15 +52,35 @@ val_vs_test <- function(
             "other"
         )
     }
-    tbl[["val error - test error"]] <- tbl[["val_error"]] - tbl[["test_error"]]
-    tbl[["val error rank"]] <- rank(tbl[["val_error"]])
 
-    plt <- ggplot2::ggplot(data = tbl, mapping = ggplot2::aes(
-        x = .data[["val error rank"]],
-        y = .data[["val error - test error"]],
-        color = .data[["spotlight"]]
-    )) + ggplot2::geom_point()
-    if (!is.null(plot_theme)) plt <- plt + plot_theme
-    ggplot2::ggsave(file, plt, width = 7, height = 4, dpi = 300)
+    if (length(unique(tbl[["spotlight"]])) > 1)
+        plt <- ggplot2::ggplot(data = tbl, mapping = ggplot2::aes(
+            x = .data[["validation error"]],
+            y = .data[["test error"]],
+            color = .data[["spotlight"]]
+        )) + ggplot2::geom_point()
+    else {
+        if (is.null(colors)) colors <- "black"
+        plt <- ggplot2::ggplot(data = tbl, mapping = ggplot2::aes(
+            x = .data[["validation error"]],
+            y = .data[["test error"]]
+        )) + ggplot2::geom_point(color = colors[1])
+    }
+    plt <- plt +
+    ggplot2::geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "black") +
+    ggplot2::geom_label(
+        x = max(tbl[["validation error"]]),
+        y = max(tbl[["test error"]]),
+        label = paste("rho =", round(stats::cor(tbl[["validation error"]], 
+            tbl[["test error"]]), 2)),
+        inherit.aes = FALSE,
+        hjust = 1,
+        vjust = 1,
+        alpha = 1,
+        fill = "white",
+        family = plot_theme$text$family
+    ) + plot_theme
+    if (!is.null(colors)) plt <- plt + ggplot2::scale_color_manual(values = colors)
+    ggplot2::ggsave(file, plt, width = width, height = height, dpi = 300)
     invisible(plt)
 }
