@@ -37,7 +37,8 @@ test_that("val_vs_test() works", {
     )
     expect_no_error(
         plt <- val_vs_test(models, data, error_fun = neg_roc_auc, 
-            spotlight_regex = ".", file = file.path(dir, "val_vs_test.jpeg"),
-            spotlight_name = "leq 2", quiet = TRUE)
+            spotlight_regex = c("1", "2"), file = file.path(dir, "val_vs_test.jpeg"),
+            spotlight_name = c("m1", "m2"), quiet = TRUE)
     )
+    print(plt)
 })

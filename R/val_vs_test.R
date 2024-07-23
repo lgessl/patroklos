@@ -29,6 +29,9 @@ val_vs_test <- function(
     quiet = FALSE
 ) {
     if (is.null(spotlight_name)) spotlight_name <- spotlight_regex
+    stopifnot(length(spotlight_regex) == length(spotlight_name))
+    spotlight_regex <- c(spotlight_regex, ".")
+    spotlight_name <- c(spotlight_name, "other")
     n_models <- length(model_list)
     tbl <- tibble::tibble(
         "validation error" = numeric(n_models),
@@ -46,11 +49,13 @@ val_vs_test <- function(
             yy <- intersect_by_names(yy[[1]], yy[[2]], rm_na = c(TRUE, TRUE))
             tbl[i, j] <- error_fun(y_hat = yy[[1]], y = yy[[2]])
         }
-        tbl[i, "spotlight"] <- ifelse(
-            stringr::str_detect(model$name, spotlight_regex),
-            spotlight_name,
-            "other"
-        )
+        idx <- 0
+        for(j in seq_along(spotlight_regex)) {
+            if (stringr::str_detect(model$name, spotlight_regex[j])) {
+                tbl[i, "spotlight"] <- spotlight_name[j]
+                break
+            }
+        }
     }
 
     if (length(unique(tbl[["spotlight"]])) > 1)
@@ -71,7 +76,7 @@ val_vs_test <- function(
     ggplot2::geom_label(
         x = max(tbl[["validation error"]]),
         y = max(tbl[["test error"]]),
-        label = paste("rho =", round(stats::cor(tbl[["validation error"]], 
+        label = paste0("\u03c1 = ", round(stats::cor(tbl[["validation error"]], 
             tbl[["test error"]]), 2)),
         inherit.aes = FALSE,
         hjust = 1,
