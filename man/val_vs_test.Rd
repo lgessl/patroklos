@@ -14,6 +14,7 @@ val_vs_test(
   name2 = NULL,
   legendtitle1 = "spot 1",
   legendtitle2 = "spot 2",
+  correlation_label = TRUE,
   file = NULL,
   return_type = c("ggplot", "tibble"),
   plot_theme = ggplot2::theme_minimal(),
@@ -40,6 +41,9 @@ group in \code{name2} corresponding to the first pattern its name matches and sh
 
 \item{legendtitle1, legendtitle2}{string. Legend titles for the grouping according to \code{regex1}
 and \code{regex2}.}
+
+\item{correlation_label}{logical. Whether to show the correlation coefficient between the
+validation and test error as a label in the plot.}
 
 \item{file}{string. File name to save the plot to.}
 

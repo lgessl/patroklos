@@ -11,6 +11,8 @@
 #' @param name1,name2 character vectors. The groups as explained in `regex1` and `regex2`.
 #' @param legendtitle1,legendtitle2 string. Legend titles for the grouping according to `regex1` 
 #' and `regex2`.
+#' @param correlation_label logical. Whether to show the correlation coefficient between the
+#' validation and test error as a label in the plot.
 #' @param file string. File name to save the plot to.
 #' @param return_type string. Either "ggplot" or "tibble". See return section for details.
 #' @param colors character vector. Colors used for points.
@@ -31,6 +33,7 @@ val_vs_test <- function(
     name2 = NULL,
     legendtitle1 = "spot 1",
     legendtitle2 = "spot 2",
+    correlation_label = TRUE,
     file = NULL,
     return_type = c("ggplot", "tibble"),
     plot_theme = ggplot2::theme_minimal(),
@@ -58,6 +61,7 @@ val_vs_test <- function(
         "spot 1" = character(n_models),
         "spot 2" = character(n_models)
     )
+    names(tbl)[3:4] <- c(legendtitle1, legendtitle2)
     for (i in seq_along(model_list)) {
         model <- model_list[[i]]
         model <- readRDS(file.path(model$directory, model$file))
@@ -82,6 +86,7 @@ val_vs_test <- function(
     }
     if (return_type == "tibble") return(tbl)
 
+    showtext::showtext_auto()
     plt <- ggplot2::ggplot(data = tbl, mapping = ggplot2::aes(
         x = .data[["validation error"]],
         y = .data[["test error"]]
@@ -91,19 +96,23 @@ val_vs_test <- function(
     plt <- plt +
     ggplot2::geom_point() +
     ggplot2::geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "black") +
-    ggplot2::geom_label(
-        x = max(tbl[["validation error"]]),
-        y = max(tbl[["test error"]]),
-        label = paste0("rho = ", round(stats::cor(tbl[["validation error"]], 
-            tbl[["test error"]]), 2)),
-        inherit.aes = FALSE,
-        hjust = 1,
-        vjust = 1,
-        alpha = 1,
-        fill = "white",
-        family = plot_theme$text$family
-    ) + plot_theme
+    plot_theme
+    if (correlation_label) 
+        plt <- plt +
+        ggplot2::geom_label(
+            x = max(tbl[["validation error"]]),
+            y = max(tbl[["test error"]]),
+            label = paste0("rho = ", round(stats::cor(tbl[["validation error"]], 
+                tbl[["test error"]]), 2)),
+            inherit.aes = FALSE,
+            hjust = 1,
+            vjust = 1,
+            alpha = 1,
+            fill = "white",
+            family = plot_theme$text$family
+        )
     if (!is.null(colors)) plt <- plt + ggplot2::scale_color_manual(values = colors)
     if (!is.null(file)) ggplot2::ggsave(file, plt, width = width, height = height, dpi = 300)
+    showtext::showtext_auto(FALSE)
     invisible(plt)
 }

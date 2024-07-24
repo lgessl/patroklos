@@ -52,6 +52,7 @@ test_that("val_vs_test() works", {
         file = NULL, 
         name1 = c("bavaria", "hesse"), 
         name2 = "capital", 
+        correlation_label = FALSE,
         return_type = "tibble", 
         quiet = TRUE
     )
