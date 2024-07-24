@@ -43,9 +43,14 @@ error for a list of models.</p>
 <span>  <span class="va">model_list</span>,</span>
 <span>  <span class="va">data</span>,</span>
 <span>  <span class="va">error_fun</span>,</span>
-<span>  <span class="va">spotlight_regex</span>,</span>
-<span>  <span class="va">file</span>,</span>
-<span>  spotlight_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  regex1 <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  regex2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  name1 <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  name2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  legendtitle1 <span class="op">=</span> <span class="st">"spot 1"</span>,</span>
+<span>  legendtitle2 <span class="op">=</span> <span class="st">"spot 2"</span>,</span>
+<span>  file <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  return_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ggplot"</span>, <span class="st">"tibble"</span><span class="op">)</span>,</span>
 <span>  plot_theme <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  colors <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  width <span class="op">=</span> <span class="fl">7</span>,</span>
@@ -70,22 +75,36 @@ error for a list of models.</p>
 <dd><p>function. Error function to compare validation and test error.</p></dd>
 
 
-<dt id="arg-spotlight-regex">spotlight_regex<a class="anchor" aria-label="anchor" href="#arg-spotlight-regex"></a></dt>
-<dd><p>string. Regular expression to identify models to
-highlight.</p></dd>
+<dt id="arg-regex-">regex1<a class="anchor" aria-label="anchor" href="#arg-regex-"></a></dt>
+<dd><p>character vector. Regular-expression patterns. For every model, we assign it the
+group in <code>name1</code> corresponding to the first pattern its name matches and color it accordingly.</p></dd>
+
+
+<dt id="arg-regex-">regex2<a class="anchor" aria-label="anchor" href="#arg-regex-"></a></dt>
+<dd><p>character vector. Regular-expression patterns. For every model, we assign it the
+group in <code>name2</code> corresponding to the first pattern its name matches and shape it accordingly.</p></dd>
+
+
+<dt id="arg-name-name-">name1, name2<a class="anchor" aria-label="anchor" href="#arg-name-name-"></a></dt>
+<dd><p>character vectors. The groups as explained in <code>regex1</code> and <code>regex2</code>.</p></dd>
+
+
+<dt id="arg-legendtitle-legendtitle-">legendtitle1, legendtitle2<a class="anchor" aria-label="anchor" href="#arg-legendtitle-legendtitle-"></a></dt>
+<dd><p>string. Legend titles for the grouping according to <code>regex1</code>
+and <code>regex2</code>.</p></dd>
 
 
 <dt id="arg-file">file<a class="anchor" aria-label="anchor" href="#arg-file"></a></dt>
 <dd><p>string. File name to save the plot to.</p></dd>
 
 
-<dt id="arg-spotlight-name">spotlight_name<a class="anchor" aria-label="anchor" href="#arg-spotlight-name"></a></dt>
-<dd><p>string. Name to give to the models identified by
-<code>spotlight_regex</code> in legend.</p></dd>
+<dt id="arg-return-type">return_type<a class="anchor" aria-label="anchor" href="#arg-return-type"></a></dt>
+<dd><p>string. Either "ggplot" or "tibble". See return section for details.</p></dd>
 
 
 <dt id="arg-plot-theme">plot_theme<a class="anchor" aria-label="anchor" href="#arg-plot-theme"></a></dt>
-<dd><p>ggplot2 theme. Theme to apply to the plot.</p></dd>
+<dd><p>ggplot2 theme. Theme to apply to the plot. If it's <code>NULL</code>, use the ggplot2
+default theme.</p></dd>
 
 
 <dt id="arg-colors">colors<a class="anchor" aria-label="anchor" href="#arg-colors"></a></dt>
@@ -93,7 +112,7 @@ highlight.</p></dd>
 
 
 <dt id="arg-width-height">width, height<a class="anchor" aria-label="anchor" href="#arg-width-height"></a></dt>
-<dd><p>numeric. Width and height of the plot in inches.</p></dd>
+<dd><p>numeric. Width and height of the stored plot in inches.</p></dd>
 
 
 <dt id="arg-quiet">quiet<a class="anchor" aria-label="anchor" href="#arg-quiet"></a></dt>
@@ -102,7 +121,8 @@ highlight.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>ggplot2 object.</p>
+    <p>ggplot object if <code>return_type == "ggplot"</code> or the tibble underlying the plot if
+<code>return_type == "tibble"</code>.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
