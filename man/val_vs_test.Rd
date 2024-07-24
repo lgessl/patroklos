@@ -8,9 +8,14 @@ val_vs_test(
   model_list,
   data,
   error_fun,
-  spotlight_regex,
-  file,
-  spotlight_name = NULL,
+  regex1 = NULL,
+  regex2 = NULL,
+  name1 = NULL,
+  name2 = NULL,
+  legendtitle1 = "spot 1",
+  legendtitle2 = "spot 2",
+  file = NULL,
+  return_type = c("ggplot", "tibble"),
   plot_theme = ggplot2::theme_minimal(),
   colors = NULL,
   width = 7,
@@ -25,24 +30,33 @@ val_vs_test(
 
 \item{error_fun}{function. Error function to compare validation and test error.}
 
-\item{spotlight_regex}{string. Regular expression to identify models to
-highlight.}
+\item{regex1}{character vector. Regular-expression patterns. For every model, we assign it the
+group in \code{name1} corresponding to the first pattern its name matches and color it accordingly.}
+
+\item{regex2}{character vector. Regular-expression patterns. For every model, we assign it the
+group in \code{name2} corresponding to the first pattern its name matches and shape it accordingly.}
+
+\item{name1, name2}{character vectors. The groups as explained in \code{regex1} and \code{regex2}.}
+
+\item{legendtitle1, legendtitle2}{string. Legend titles for the grouping according to \code{regex1}
+and \code{regex2}.}
 
 \item{file}{string. File name to save the plot to.}
 
-\item{spotlight_name}{string. Name to give to the models identified by
-\code{spotlight_regex} in legend.}
+\item{return_type}{string. Either "ggplot" or "tibble". See return section for details.}
 
-\item{plot_theme}{ggplot2 theme. Theme to apply to the plot.}
+\item{plot_theme}{ggplot2 theme. Theme to apply to the plot. If it's \code{NULL}, use the ggplot2
+default theme.}
 
 \item{colors}{character vector. Colors used for points.}
 
-\item{width, height}{numeric. Width and height of the plot in inches.}
+\item{width, height}{numeric. Width and height of the stored plot in inches.}
 
 \item{quiet}{logical. Whether to suppress messages.}
 }
 \value{
-ggplot2 object.
+ggplot object if \code{return_type == "ggplot"} or the tibble underlying the plot if
+\code{return_type == "tibble"}.
 }
 \description{
 Plot rank of validation error versus test error - validation

@@ -25,8 +25,7 @@ Imports:
     jsonlite(>= 1.8.8),
     R6(>= 2.5.1),
     zeroSum (>= 2.0.6),
-    ranger (>= 0.16.0),
-    latex2exp (>= 0.9.6)
+    ranger (>= 0.16.0)
 Remotes: rehbergT/zeroSum/zeroSum
 Config/testthat/edition: 3
 URL: https://lgessl.github.io/patroklos/

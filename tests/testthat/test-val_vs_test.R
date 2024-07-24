@@ -9,7 +9,7 @@ test_that("val_vs_test() works", {
     data <- generate_mock_data(n_samples = n_samples, n_genes = n_genes)
 
     model1 <- Model$new(
-        name = "model1",
+        name = "regensburg",
         fitter = ptk_zerosum,
         directory = file.path(dir, "model1"),
         time_cutoffs = 2,
@@ -18,27 +18,62 @@ test_that("val_vs_test() works", {
             zeroSum = FALSE)
     )
     model2 <- model1$clone()
-    model2$name <- "model2"
+    model2$name <- "berlin"
     model2$directory <- file.path(dir, "model2")
     model2$hyperparams[["family"]] <- "binomial"
     model2$time_cutoffs <- 3
     model3 <- model1$clone()
-    model3$name <- "model3"
+    model3$name <- "frankfurt"
     model3$directory <- file.path(dir, "model3")
     models <- list(model1, model2, model3)
     data$cohort <- "train"
     training_camp(models, data, quiet = TRUE)
 
     data$cohort <- "test"
-    expect_no_error(
-        plt <- val_vs_test(models, data, error_fun = neg_roc_auc, 
-            spotlight_regex = "1|2", file = file.path(dir, "val_vs_test.jpeg"),
-            spotlight_name = "leq 2", quiet = TRUE)
+    plt <- val_vs_test(
+        models, 
+        data, 
+        error_fun = neg_roc_auc, 
+        regex1 = c("reg", "frank", "."), 
+        regex2 = c("ber"), 
+        file = file.path(dir, "val_vs_test.pdf"), 
+        name1 = c("bavaria", "hesse", "other state"), 
+        name2 = c("capital"), 
+        quiet = TRUE
     )
-    expect_no_error(
-        plt <- val_vs_test(models, data, error_fun = neg_roc_auc, 
-            spotlight_regex = c("1", "2"), file = file.path(dir, "val_vs_test.jpeg"),
-            spotlight_name = c("m1", "m2"), quiet = TRUE)
+    expect_s3_class(plt, "gg")
+    expect_true(file.exists(file.path(dir, "val_vs_test.pdf")))
+    tbl <- val_vs_test(
+        models, 
+        data, 
+        error_fun = neg_prec_with_prev_greater(0.17),
+        regex1 = c("reg", "frank"), 
+        regex2 = "ber", 
+        file = NULL, 
+        name1 = c("bavaria", "hesse"), 
+        name2 = "capital", 
+        return_type = "tibble", 
+        quiet = TRUE
     )
-    print(plt)
+    expect_s3_class(tbl, "tbl_df")
+    plt <- val_vs_test(
+        models,
+        data,
+        neg_roc_auc,
+        regex1 = c("reg", "frank", "."),
+        regex2 = NULL,
+        name1 = c("bavaria", "hesse", "other state"),
+        name2 = NULL,
+        return_type = "ggplot",
+        quiet = TRUE
+    )
+    plt <- val_vs_test(
+        models,
+        data,
+        neg_roc_auc,
+        regex1 = NULL,
+        regex2 = NULL,
+        return_type = "ggplot",
+        quiet = TRUE
+    )
 })
