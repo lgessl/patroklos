@@ -62,8 +62,10 @@ val_vs_test <- function(
         "spot 2" = character(n_models)
     )
     names(tbl)[3:4] <- c(legendtitle1, legendtitle2)
+    if (is.null(regex2)) tbl <- tbl[, -4]
     for (i in seq_along(model_list)) {
         model <- model_list[[i]]
+        if (!quiet) message("At model ", model$name)
         model <- readRDS(file.path(model$directory, model$file))
         test_cohort <- data$cohort
         cohorts <- c("val_predict", test_cohort)
@@ -96,7 +98,11 @@ val_vs_test <- function(
     plt <- plt +
     ggplot2::geom_point() +
     ggplot2::geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "black") +
-    plot_theme
+    plot_theme +
+    ggplot2::guides(
+        color = ggplot2::guide_legend(byrow = TRUE),
+        shape = ggplot2::guide_legend(byrow = TRUE)
+    )
     if (correlation_label) 
         plt <- plt +
         ggplot2::geom_label(

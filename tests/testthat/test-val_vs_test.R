@@ -63,8 +63,11 @@ test_that("val_vs_test() works", {
         neg_roc_auc,
         regex1 = c("reg", "frank", "."),
         regex2 = NULL,
+        file = file.path(dir, "plot.png"),
         name1 = c("bavaria", "hesse", "other state"),
         name2 = NULL,
+        legendtitle1 = "federal state",
+        legendtitle2 = NULL,
         return_type = "ggplot",
         quiet = TRUE
     )
