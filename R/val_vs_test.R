@@ -94,16 +94,19 @@ val_vs_test <- function(
         y = .data[["test error"]]
     ))
     if (!is.null(regex1)) plt <- plt + ggplot2::aes(color = .data[[legendtitle1]])
-    if (!is.null(regex2)) plt <- plt + ggplot2::aes(shape = .data[[legendtitle2]])
+    if (!is.null(regex2)) 
+        plt <- plt + ggplot2::aes(shape = .data[[legendtitle2]]) + 
+            ggplot2::geom_point()
+    else 
+        plt <- plt + ggplot2::geom_point(shape = 1)
     plt <- plt +
-    ggplot2::geom_point() +
-    ggplot2::geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "black") +
-    plot_theme +
-    ggplot2::guides(
-        color = ggplot2::guide_legend(byrow = TRUE),
-        shape = ggplot2::guide_legend(byrow = TRUE)
-    ) +
-    ggplot2::scale_shape_manual(values = c(1, 2, 5, 6, 0, 3, 4))
+        ggplot2::geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "black") +
+        plot_theme +
+        ggplot2::guides(
+            color = ggplot2::guide_legend(byrow = TRUE),
+            shape = ggplot2::guide_legend(byrow = TRUE)
+        ) +
+        ggplot2::scale_shape_manual(values = c(1, 2, 5, 6, 0, 3, 4))
     if (correlation_label) 
         plt <- plt +
         ggplot2::geom_label(

@@ -41,6 +41,7 @@ test_that("val_vs_test() works", {
         name2 = c("capital"), 
         quiet = TRUE
     )
+    # print(plt)
     expect_s3_class(plt, "gg")
     expect_true(file.exists(file.path(dir, "val_vs_test.pdf")))
     tbl <- val_vs_test(
@@ -71,6 +72,7 @@ test_that("val_vs_test() works", {
         return_type = "ggplot",
         quiet = TRUE
     )
+    # print(plt)
     plt <- val_vs_test(
         models,
         data,
