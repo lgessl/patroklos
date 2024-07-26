@@ -233,3 +233,10 @@ predict.nested_fit <- function(
             being the former.")
     y
 }
+
+#' @rdname non_zero_coefs
+#' @details Refers to the late model.
+#' @export
+non_zero_coefs.nested_fit <- function(fit_obj, quiet) {
+    non_zero_coefs(fit_obj$model2, quiet = quiet)
+}

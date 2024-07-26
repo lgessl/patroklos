@@ -31,6 +31,7 @@ test_that("greedy_nestor() works", {
     expect_s3_class(nested_fit$model2, "ptk_hypertune")
     expect_true(all(nested_fit$val_predict %in% c(0, 1)))
     expect_true(all(yhat <= 1 & yhat >= 0))
+    expect_error(non_zero_coefs(nested_fit, quiet = TRUE), "no applicable method")
 
     hyperparams2 <- list(family = "binomial", nFold = n_fold, lambdaStep = n_lambda,
         zeroSum = FALSE)
@@ -91,6 +92,8 @@ test_that("long_nestor() works", {
     fit <- long_nestor(x = x3y[[1]], y = x3y[2:4], val_error_fun = neg_roc_auc,
         fitter1 = ptk_zerosum, fitter2 = ptk_zerosum, hyperparams1 = hyperparams1, 
         hyperparams2 = hyperparams2)
+    m <- non_zero_coefs(fit, quiet = TRUE)
+    expect_equal(ncol(m), 1)
 
     # Binarized logistic and rf
     hyperparams1 <- list(family = "binomial", lambdaSteps = 2, zeroSum = FALSE, 
