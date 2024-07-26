@@ -27,7 +27,7 @@ test_that("ptk_ranger() works", {
   expect_false(all(y_hat %in% c(0, 1)))
   expect_true(all(y_hat >= 0 & y_hat <= 1))
   expect_equal(nrow(y_hat), nrow(x3y[[1]]))
-  expect_error(non_zero_coefs(fit))
+  expect_error(non_zero_coefs(fit), "no applicable method")
 })
 
 test_that("ptk_zerosum() works", {
@@ -79,7 +79,7 @@ test_that("ptk_zerosum() works", {
     logical(sum(!is.na(x3y[[2]]))))))
   expect_equal(fit$type, 2)
   expect_equal(fit$val_predict_list[[fit$lambda_min_index]], fit$val_predict)
-  expect_no_error(m <- non_zero_coefs(fit, quiet = TRUE))
+  expect_no_error(m <- non_zero_coefs(fit))
   expect_equal(ncol(m), 1)
   expect_true(all(m[, 1] != 0))
   expect_true(!is.null(rownames(m)))

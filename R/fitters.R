@@ -198,22 +198,19 @@ predict.ptk_zerosum <- function(
 }
 
 #' @title Get features with non-zero coefficients
-#' @param object S3 fit object.
-#' @param quiet bool. Whether to print the return value.
+#' @param fit_obj S3 fit object.
 #' @return One-column matrix with non-zero coefficients and featue names as row names.
 #' @details Throws an error if method for a class is not implemented (e.g. for `ptk_ranger` 
 #' because "non-zero coefficients" do not make sense with random forests).
 #' @export
-non_zero_coefs <- function(object, quiet = FALSE){
+non_zero_coefs <- function(fit_obj){
     UseMethod("non_zero_coefs")
 }
 
 #' @rdname non_zero_coefs
 #' @export
-non_zero_coefs.ptk_zerosum <- function(fit_obj, quiet){
+non_zero_coefs.ptk_zerosum <- function(fit_obj){
     coefs <- fit_obj$coef[[fit_obj$lambda_min_index]]
     rownames(coefs) <- fit_obj$variables.names
     m <- coefs[coefs[, 1] != 0, , drop = FALSE]
-    if (!quiet) print(m)
-    m
 }

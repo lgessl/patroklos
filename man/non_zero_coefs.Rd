@@ -6,16 +6,14 @@
 \alias{non_zero_coefs.nested_fit}
 \title{Get features with non-zero coefficients}
 \usage{
-non_zero_coefs(object, quiet = FALSE)
+non_zero_coefs(fit_obj)
 
-\method{non_zero_coefs}{ptk_zerosum}(fit_obj, quiet)
+\method{non_zero_coefs}{ptk_zerosum}(fit_obj)
 
-\method{non_zero_coefs}{nested_fit}(fit_obj, quiet)
+\method{non_zero_coefs}{nested_fit}(fit_obj)
 }
 \arguments{
-\item{object}{S3 fit object.}
-
-\item{quiet}{bool. Whether to print the return value.}
+\item{fit_obj}{S3 fit object.}
 }
 \value{
 One-column matrix with non-zero coefficients and featue names as row names.
