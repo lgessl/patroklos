@@ -102,7 +102,8 @@ val_vs_test <- function(
     ggplot2::guides(
         color = ggplot2::guide_legend(byrow = TRUE),
         shape = ggplot2::guide_legend(byrow = TRUE)
-    )
+    ) +
+    ggplot2::scale_shape_manual(values = c(1, 2, 5, 6, 0, 3, 4))
     if (correlation_label) 
         plt <- plt +
         ggplot2::geom_label(
