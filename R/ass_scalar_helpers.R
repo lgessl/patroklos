@@ -31,6 +31,7 @@ ass_scalar_assess <- function(self, private, data, model, quiet) {
         ass_scalar = self,
         predicted = prep[["predicted"]],
         actual = prep[["actual"]],
+        cox_mat = prep[["cox_mat"]],
         data = data,
         quiet = quiet
     )
@@ -46,21 +47,16 @@ ass_scalar_assess_center <- function(
     core <- function(i) {
         model <- model_list[[i]]
         if (!quiet) message("Assessing ", model$name)
-        res_tbl <- tibble::tibble(
+        info_tbl <- tibble::tibble(
             "model" = model$name,
             "cohort" = data$cohort
         )
-        addon_mat <- matrix(.0, nrow = 1, ncol = length(self$metrics))
-        colnames(addon_mat) <- self$metrics
-        addon_tbl <- tibble::as_tibble(addon_mat)
-        res_tbl <- dplyr::bind_cols(res_tbl, addon_tbl)
         metric_v <- self$assess(
             data,
             model = model,
             quiet = quiet
         )
-        res_tbl[1, 3:ncol(res_tbl)] <- as.list(metric_v)
-        res_tbl
+        dplyr::bind_cols(info_tbl, tibble::as_tibble(as.list(metric_v)))
     }
 
     tbl_list <- lapply(seq_along(model_list), core)
@@ -87,12 +83,14 @@ get_metric <- function(
     ass_scalar,
     predicted,
     actual,
+    cox_mat,
     data,
     quiet) {
     # Some metrics want binary data, i.e. in {0, 1}
     binary_bool <- all(predicted %in% c(0, 1))
-    res <- numeric(length(ass_scalar$metrics))
+    metric_v <- numeric(length(ass_scalar$metrics))
     thresholds <- 1
+    hr_and_more <- numeric(4) 
     if (!binary_bool) {
         thresholds <- unique(predicted)
         prevs <- vapply(thresholds, function(t) mean(predicted >= t), numeric(1))
@@ -107,7 +105,7 @@ get_metric <- function(
                     paste(round(prevs, 3), collapse = ", "), ")."
                 )
             }
-            return(rep(NA, length(res)))
+            return(rep(NA, length(metric_v)))
         }
     }
     swap_sign <- FALSE
@@ -182,9 +180,32 @@ get_metric <- function(
                 check_one_threshold()
                 j_res <- stats::binom.test(
                     x = sum(actual[predicted >= thresholds]),
-                    n = sum(predicted),
+                    n = sum(predicted >= thresholds),
                     conf.level = ass_scalar$confidence_level
                 )$conf.int[1]
+            },
+            "hr" = {
+                check_one_threshold()
+                cox_tbl <- tibble::as_tibble(cox_mat)
+                coxph_obj <- survival::coxph(
+                    survival::Surv(
+                        time = time_to_event, 
+                        event = event,
+                    ) ~ hazard, data = cox_tbl
+                )
+                cox_summary <- summary(coxph_obj)
+                hr_and_more[1:2] <- cox_summary$coefficients[, c("exp(coef)", "Pr(>|z|)")]
+                hr_and_more[3:4] <- cox_summary$conf.int[, c("lower .95", "upper .95")]
+                j_res <- hr_and_more[1]
+            },
+            "hr_ci_ll" = {
+                j_res <- hr_and_more[2]
+            },
+            "hr_ci_ul" = {
+                j_res <- hr_and_more[3]
+            },
+            "hr_p" = {
+                j_res <- hr_and_more[4]
             },
             "threshold" = {
                 check_one_threshold()
@@ -192,16 +213,18 @@ get_metric <- function(
             },
             stop("Unknown metric: ", ass_scalar$metrics[j])
         )
-        max_idx <- which.max(ifelse(swap_sign, -1, 1) * j_res)
+        max_idx <- 1
+        if (is.numeric(j_res) && length(j_res) > 1)
+            max_idx <- which.max(ifelse(swap_sign, -1, 1) * j_res)
         swap_sign <- FALSE
         if (length(max_idx) == 1) {
             thresholds <- thresholds[max_idx]
-            res[j] <- j_res[max_idx]
+            metric_v[j] <- j_res[max_idx]
         } else {
-            res[j] <- NA
+            metric_v[j] <- NA
         }
     }
-    res
+    metric_v
 }
 
 #' @title Prepend a prefix to the file attribute of a list of AssScalar objects

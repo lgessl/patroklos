@@ -43,8 +43,9 @@ after the point.}
 Create a new AssScalar instance.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AssScalar$new(
-  metrics = c("auc", "accuracy", "precision", "prevalence", "precision_ci_ll", "n_true",
-    "perc_true", "n_samples", "logrank", "threshold"),
+  metrics = c("auc", "accuracy", "precision", "prevalence", "precision_ci_ll",
+    "HR | lower CI | upper CI | p", "n_true", "perc_true", "n_samples", "logrank",
+    "threshold"),
   prev_range = c(0, 1),
   confidence_level = 0.95,
   benchmark = NULL,
@@ -61,7 +62,8 @@ currently offered choices see "Usage" above. If you have a model with
 non-binary output (like a logistic regression), we choose a threshold
 by maximizing the left-most metric in \code{metrics} \emph{that is made for
 classifiers with binary output} (e.g. precision within prev_range below).
-If this cannot be done reasonably, throw an error.}
+If this cannot be done reasonably, throw an error. Make sure that \code{hr} precedes
+\code{hr_ci_ll}, \code{hr_ci_ul} and \code{hr_p} in \code{metrics}.}
 
 \item{\code{prev_range}}{numeric numeric vector of length 2. For metrics that
 need thresholding only consider thresholds that yield a prevalence in

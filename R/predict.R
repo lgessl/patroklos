@@ -39,10 +39,14 @@ model_predict <- function(self, private, data, quiet){
     y <- binarize_y(y_cox = y_cox, time_cutoff = data$pivot_time_cutoff, 
         pivot_time_cutoff = data$pivot_time_cutoff)
     yhat_y <- intersect_by_names(yhat, y, rm_na = c(TRUE, TRUE))
+    y_cox <- y_cox[rownames(yhat), , drop = FALSE]
+    cox_mat <- cbind(y_cox, yhat)
+    colnames(cox_mat) <- c("time_to_event", "event", "hazard")
 
     res <- list(
         "predicted" = yhat_y[[1]][, 1],
         "actual" = yhat_y[[2]][, 1],
+        "cox_mat" = cox_mat,
         "benchmark" = benchmark
     )
     return(res)

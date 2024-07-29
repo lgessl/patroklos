@@ -57,10 +57,10 @@ test_that("AssScalar$assess() works", {
     expect_equal(length(res), length(metrics))
 
     ass_scalar$metrics <- c("precision", "prevalence")
-    ass_scalar$prev_range <- c(0.15, 0.30)
+    ass_scalar$prev_range <- c(0.15, 1)
     res <- ass_scalar$assess(data, model, quiet = TRUE)
 
-    ass_scalar$prev_range <- c(0.15, 0.30)
+    ass_scalar$prev_range <- c(0.15, 1)
     model <- Model$new(
       name = "log",
       directory = file.path(model_dir, "log"),
@@ -89,7 +89,7 @@ test_that("AssScalar$assess_center() works", {
   n_fold <- 1
   lambda <- 1
   multiple_metrics <- c("precision", "accuracy", "n_true", "perc_true", "n_samples", 
-    "logrank", "threshold", "prevalence", "precision_ci_ll")
+    "logrank", "threshold", "prevalence", "precision_ci_ll", "hr", "hr_ci_ll", "hr_ci_ul", "hr_p")
   single_metric <- "auc"
 
   dir <- withr::local_tempdir()
@@ -171,7 +171,7 @@ test_that("AssScalar$assess_center() works", {
   ass_scalar <- AssScalar$new(
     metrics = "auc", # just for the moment
     file = file.path(dir, "models/eval.csv"),
-    prev_range = c(0.15, 0.45)
+    prev_range = c(0.15, 1)
   )
   dir.create(dir, "results")
   

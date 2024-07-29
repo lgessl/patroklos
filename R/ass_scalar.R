@@ -27,7 +27,8 @@ AssScalar <- R6::R6Class("AssScalar",
         #' non-binary output (like a logistic regression), we choose a threshold 
         #' by maximizing the left-most metric in `metrics` *that is made for 
         #' classifiers with binary output* (e.g. precision within prev_range below). 
-        #' If this cannot be done reasonably, throw an error.
+        #' If this cannot be done reasonably, throw an error. Make sure that `hr` precedes 
+        #' `hr_ci_ll`, `hr_ci_ul` and `hr_p` in `metrics`.
         #' @param prev_range numeric numeric vector of length 2. For metrics that
         #' need thresholding only consider thresholds that yield a prevalence in
         #' this range.
@@ -42,8 +43,9 @@ AssScalar <- R6::R6Class("AssScalar",
         #' @param round_digits numeric. The number of digits to round the results to. Default is `3`.
         #' @return A new AssScalar object.
         initialize = function(
-            metrics = c("auc", "accuracy", "precision", "prevalence", "precision_ci_ll", "n_true", 
-                "perc_true", "n_samples", "logrank", "threshold"),
+            metrics = c("auc", "accuracy", "precision", "prevalence", "precision_ci_ll", 
+                "HR | lower CI | upper CI | p", "n_true", "perc_true", "n_samples", "logrank", 
+                "threshold"),
             prev_range = c(0, 1),
             confidence_level = 0.95,
             benchmark = NULL,
