@@ -50,6 +50,10 @@ initializer for possible choices.</p></dd>
 thresholds that yield a prevalence in this range.</p></dd>
 
 
+<dt><code>confidence_level</code></dt>
+<dd><p>Confidence level alpha.</p></dd>
+
+
 <dt><code>benchmark</code></dt>
 <dd><p>Incorporate the benchmark into the assessment.</p></dd>
 
@@ -80,9 +84,10 @@ after the point.</p></dd>
 <p>Create a new AssScalar instance.</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/AssScalar.html">AssScalar</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
-<span>  metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auc"</span>, <span class="st">"accuracy"</span>, <span class="st">"precision"</span>, <span class="st">"prevalence"</span>, <span class="st">"n_true"</span>, <span class="st">"perc_true"</span>,</span>
-<span>    <span class="st">"n_samples"</span>, <span class="st">"logrank"</span>, <span class="st">"threshold"</span><span class="op">)</span>,</span>
+<span>  metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"auc"</span>, <span class="st">"accuracy"</span>, <span class="st">"precision"</span>, <span class="st">"prevalence"</span>, <span class="st">"precision_ci_ll"</span>, <span class="st">"n_true"</span>,</span>
+<span>    <span class="st">"perc_true"</span>, <span class="st">"n_samples"</span>, <span class="st">"logrank"</span>, <span class="st">"threshold"</span><span class="op">)</span>,</span>
 <span>  prev_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  confidence_level <span class="op">=</span> <span class="fl">0.95</span>,</span>
 <span>  benchmark <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  round_digits <span class="op">=</span> <span class="fl">3</span></span>
@@ -104,6 +109,11 @@ If this cannot be done reasonably, throw an error.</p></dd>
 <dd><p>numeric numeric vector of length 2. For metrics that
 need thresholding only consider thresholds that yield a prevalence in
 this range.</p></dd>
+
+
+<dt><code>confidence_level</code></dt>
+<dd><p>numeric. The confidence level alpha (e.g. for confidence
+intervals).</p></dd>
 
 
 <dt><code>benchmark</code></dt>
