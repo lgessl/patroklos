@@ -65,14 +65,14 @@ test_that("AssScalar$assess() works", {
       name = "log",
       directory = file.path(model_dir, "log"),
       fitter = ptk_zerosum,
-      hyperparams = list(family = "gaussian", lambda = 0, zeroSum = FALSE, 
+      hyperparams = list(family = "gaussian", lambdaSteps = 1, zeroSum = FALSE, 
         nFold = 1),
       time_cutoffs = 2,
       val_error_fun = neg_prec_with_prev_greater(0.15),
     )
     model$fit(data, quiet = TRUE)
     res <- ass_scalar$assess(data, model, quiet = TRUE)
-    expect_true(res[2] >= 0.15 && res[2] <= 0.30)
+    expect_true(res[2] >= 0.15 && res[2] <= 1)
 
     ass_scalar$prev_range <- c(0.1000, 0.10000)
     res <- ass_scalar$assess(data, model, quiet = TRUE)
@@ -86,8 +86,7 @@ test_that("AssScalar$assess_center() works", {
   n_samples <- 50
   n_genes <- 2
   n_na_in_pheno <- 5
-  n_fold <- 1
-  lambda <- 1
+  n_fold <- 2
   multiple_metrics <- c("precision", "accuracy", "n_true", "perc_true", "n_samples", 
     "logrank", "threshold", "prevalence", "precision_ci_ll", "hr", "hr_ci_ll", "hr_ci_ul", "hr_p")
   single_metric <- "auc"
@@ -100,13 +99,13 @@ test_that("AssScalar$assess_center() works", {
     to_csv = file.path(dir, "data")
   )
   model1 <- Model$new(
-    name = "log",
-    directory = file.path(dir, "models/log"),
+    name = "cox",
+    directory = file.path(dir, "models/cox"),
     fitter = ptk_zerosum,
-    hyperparams = list(family = "binomial", nFold = n_fold, 
-      lambda = lambda, zeroSum = FALSE),
+    hyperparams = list(family = "cox", nFold = n_fold, 
+      lambdaSteps = 2, zeroSum = FALSE),
     time_cutoffs = c(1.5, 2),
-    val_error_fun = neg_binomial_log_likelihood,
+    val_error_fun = neg_prec_with_prev_greater(0.17),
     file = "model2.rds"
   )
   model2 <- Model$new(

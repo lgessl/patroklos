@@ -199,13 +199,13 @@ get_metric <- function(
                 j_res <- hr_and_more[1]
             },
             "hr_ci_ll" = {
-                j_res <- hr_and_more[2]
-            },
-            "hr_ci_ul" = {
                 j_res <- hr_and_more[3]
             },
-            "hr_p" = {
+            "hr_ci_ul" = {
                 j_res <- hr_and_more[4]
+            },
+            "hr_p" = {
+                j_res <- hr_and_more[2]
             },
             "threshold" = {
                 check_one_threshold()

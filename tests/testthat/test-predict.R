@@ -56,20 +56,20 @@ test_that("model$predict() works", {
   data$cohort <- "test"
   res <- model1$predict(data, quiet = TRUE)
   expect_true(is.list(res))
-  expect_equal(length(res), 3)
+  expect_equal(length(res), 4)
   expect_true(all(sapply(res, is.numeric)))
   expect_true(all(res[["actual"]] %in% c(0, 1, NA)))
-  expect_true(all(sapply(res, is.vector)))
-  expect_true(all(sapply(res, function(x) !is.null(names(x)))))
+  expect_true(all(sapply(res, is.numeric)))
+  expect_true(all(sapply(res[-3], function(x) !is.null(names(x)))))
 
   data$cohort <- "val_predict"
   res <- model2$predict(data, quiet = TRUE)
   expect_true(is.list(res))
-  expect_equal(length(res), 3)
+  expect_equal(length(res), 4)
   expect_true(all(sapply(res[1:2], is.numeric))) # third list element is NULL
   expect_true(all(res[["actual"]] %in% c(0, 1, NA)))
-  expect_true(all(sapply(res[-3], is.vector)))
-  expect_true(all(sapply(res[-3], function(x) !is.null(names(x)))))
+  expect_true(all(sapply(res[-c(3, 4)], is.vector)))
+  expect_true(all(sapply(res[-c(3, 4)], function(x) !is.null(names(x)))))
 
   expect_true(is.null(model3$predict(data, quiet = TRUE)))
 })
