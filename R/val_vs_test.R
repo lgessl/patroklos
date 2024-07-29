@@ -98,7 +98,7 @@ val_vs_test <- function(
         plt <- plt + ggplot2::aes(shape = .data[[legendtitle2]]) + 
             ggplot2::geom_point()
     else 
-        plt <- plt + ggplot2::geom_point(shape = 1)
+        plt <- plt + ggplot2::geom_point(shape = 4)
     plt <- plt +
         ggplot2::geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "black") +
         plot_theme +
@@ -106,7 +106,7 @@ val_vs_test <- function(
             color = ggplot2::guide_legend(byrow = TRUE),
             shape = ggplot2::guide_legend(byrow = TRUE)
         ) +
-        ggplot2::scale_shape_manual(values = c(1, 2, 5, 6, 0, 3, 4))
+        ggplot2::scale_shape_manual(values = c(4, 2, 5, 6, 0, 3))
     if (correlation_label) 
         plt <- plt +
         ggplot2::geom_label(

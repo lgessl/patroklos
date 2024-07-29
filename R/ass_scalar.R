@@ -11,6 +11,8 @@ AssScalar <- R6::R6Class("AssScalar",
         #' @field prev_range For metrics that need thresholding only consider 
         #' thresholds that yield a prevalence in this range.
         prev_range = NULL,
+        #' @field confidence_level Confidence level alpha.
+        confidence_level = NULL,
         #' @field benchmark Incorporate the benchmark into the assessment.
         benchmark = NULL,
         #' @field round_digits Round the results in tables to round_digits digits 
@@ -29,6 +31,8 @@ AssScalar <- R6::R6Class("AssScalar",
         #' @param prev_range numeric numeric vector of length 2. For metrics that
         #' need thresholding only consider thresholds that yield a prevalence in
         #' this range.
+        #' @param confidence_level numeric. The confidence level alpha (e.g. for confidence 
+        #' intervals).
         #' @param benchmark character or NULL. If not NULL, include `benchmark` 
         #' (the name of column in the pheno data) in the assessment. Not 
         #' implemented yet.
@@ -38,14 +42,15 @@ AssScalar <- R6::R6Class("AssScalar",
         #' @param round_digits numeric. The number of digits to round the results to. Default is `3`.
         #' @return A new AssScalar object.
         initialize = function(
-            metrics = c("auc", "accuracy", "precision", "prevalence", "n_true", 
+            metrics = c("auc", "accuracy", "precision", "prevalence", "precision_ci_ll", "n_true", 
                 "perc_true", "n_samples", "logrank", "threshold"),
             prev_range = c(0, 1),
+            confidence_level = 0.95,
             benchmark = NULL,
             file = NULL,
             round_digits = 3
         )
-            ass_scalar_initialize(self, private, metrics, prev_range, benchmark, 
+            ass_scalar_initialize(self, private, metrics, prev_range, confidence_level, benchmark, 
                 file, round_digits), 
 
         #' @description Assess a *single* model on a data set.

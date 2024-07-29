@@ -1,14 +1,16 @@
 test_that("AssScalar$new() works", {
 
     ass_scalar <- AssScalar$new(
-        metrics = c("auc", "accuracy", "prevalence", "n_true"),
+        metrics = c("auc", "accuracy", "prevalence", "precision_ci_ll", "n_true"),
         prev_range = c(0.15, 0.30),
+        confidence_level = 0.9,
         benchmark = "ipi",
         file = "some file",
         round_digits = 4
     )
-    expect_equal(ass_scalar$metrics, c("auc", "accuracy", "prevalence", "n_true"))
+    expect_equal(ass_scalar$metrics, c("auc", "accuracy", "prevalence", "precision_ci_ll", "n_true"))
     expect_equal(ass_scalar$prev_range, c(0.15, 0.30))
+    expect_equal(ass_scalar$confidence_level, 0.9)
     expect_equal(ass_scalar$benchmark, "ipi")
     expect_equal(ass_scalar$round_digits, 4)
     expect_equal(ass_scalar$file, "some file")
@@ -87,7 +89,7 @@ test_that("AssScalar$assess_center() works", {
   n_fold <- 1
   lambda <- 1
   multiple_metrics <- c("precision", "accuracy", "n_true", "perc_true", "n_samples", 
-    "logrank", "threshold")
+    "logrank", "threshold", "prevalence", "precision_ci_ll")
   single_metric <- "auc"
 
   dir <- withr::local_tempdir()

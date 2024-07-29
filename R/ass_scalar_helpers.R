@@ -1,16 +1,17 @@
-ass_scalar_initialize <- function(
-    self, private, metrics, prev_range, benchmark,
+ass_scalar_initialize <- function(self, private, metrics, prev_range, confidence_level, benchmark, 
     file, round_digits) {
     stopifnot(is.character(metrics))
     available_metrics <- eval(formals(self$initialize)[["metrics"]])
     stopifnot(all(metrics %in% available_metrics))
     stopifnot(is.numeric(prev_range) && prev_range[1] >= 0 &&
         prev_range[2] <= 1 && prev_range[1] < prev_range[2])
+    stopifnot(is.numeric(confidence_level) && confidence_level < 1 && confidence_level > 0)
     stopifnot(is.null(benchmark) || is.character(benchmark))
     stopifnot(is.null(file) || is.character(file))
     stopifnot(is.numeric(round_digits) && round_digits >= 0)
     self$metrics <- metrics
     self$prev_range <- prev_range
+    self$confidence_level <- confidence_level
     self$benchmark <- benchmark
     self$file <- file
     self$round_digits <- round_digits
@@ -176,6 +177,14 @@ get_metric <- function(
                     numeric(1)
                 )
                 swap_sign <- TRUE
+            },
+            "precision_ci_ll" = {
+                check_one_threshold()
+                j_res <- stats::binom.test(
+                    x = sum(actual[predicted >= thresholds]),
+                    n = sum(predicted),
+                    conf.level = ass_scalar$confidence_level
+                )$conf.int[1]
             },
             "threshold" = {
                 check_one_threshold()
