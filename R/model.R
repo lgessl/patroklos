@@ -42,6 +42,8 @@ Model <- R6::R6Class("Model",
         #' @field combined_feature_min_positive_ratio Minimum ratio of positive
         #' observations in a combined (categorical) feature
         combined_feature_min_positive_ratio = NULL,
+        #' @field enable_imputation Overrides the `imputer` attribute of the `Data` object.
+        enable_imputation = NULL,
 
         #' @description Create a new Model instance.
         #' @param name string. A telling name for the model.
@@ -96,6 +98,8 @@ Model <- R6::R6Class("Model",
         #' observations in a combined (categorical) feature. This attribute together 
         #' with `combine_n_max_categorical_features` governs which combinatorial 
         #' features the predicitor matrix will contain.
+        #' @param enable_imputation logical. If `FALSE`, it overrides the `imputer` attribute of 
+        #' the `Data` objectl and we do not impute.
         #' @return A `Model` R6 object.
         initialize = function(
             name,
@@ -112,14 +116,15 @@ Model <- R6::R6Class("Model",
             file = "model.rds",
             continuous_output = NULL,
             combine_n_max_categorical_features = 1L,
-            combined_feature_min_positive_ratio = 0.04
+            combined_feature_min_positive_ratio = 0.04,
+            enable_imputation = TRUE
         )
             model_initialize(self, private, name, fitter, directory, time_cutoffs, 
                 val_error_fun, hyperparams, include_from_continuous_pheno, 
                 include_from_discrete_pheno, include_expr, li_var_suffix, 
                 create_directory, file, continuous_output,
                 combine_n_max_categorical_features, 
-                combined_feature_min_positive_ratio),  
+                combined_feature_min_positive_ratio, enable_imputation),  
 
         #' @description Fit the model to a data set.
         #' @param data Data object. Read it in if needed.

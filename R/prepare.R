@@ -88,7 +88,8 @@ prepare_x <- function(
         stop("All patients are in the same cohort")
 
     # Impute
-    if(!is.null(data$imputer)) {
+    if(!is.null(data$imputer) && model$enable_imputation) {
+        if (!quiet) message("** Imputing missing values.")
         x_imp <- x
         cohort_col <- data$pheno_tbl[[data$cohort_col]]
         for (ch in unique(cohort_col)) {

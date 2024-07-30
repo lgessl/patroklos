@@ -85,6 +85,7 @@ test_that("prepare_x() works", {
   model$combine_n_max_categorical_features <- 1:2
   model$combined_feature_min_positive_ratio <- 0
   model$include_from_discrete_pheno <- c("discrete_var", "abc_gcb")
+
   x <- prepare_x(data = data, model = model, quiet = TRUE)
   expect_equal(ncol(x), 4+4+4)
 
@@ -102,8 +103,12 @@ test_that("prepare_x() works", {
   model$include_expr <- FALSE
   model$include_from_continuous_pheno <- "continuous_var"
   model$include_from_discrete_pheno <- "discrete_var"
+  model$enable_imputation <- FALSE
+  data$pheno_tbl[1, "continuous_var"] <- NA
   x <- prepare_x(data = data, model = model, quiet = TRUE)
   expect_equal(ncol(x), 3)
+  expect_true(is.na(x[1, 1]))
+  model$enable_imputation <- TRUE
 
   # Error: include categorical pheno variable as continuous
   data$pheno_tbl[["discrete_var"]] <- as.character(data$pheno_tbl[["discrete_var"]])

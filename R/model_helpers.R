@@ -2,7 +2,7 @@ model_initialize <- function(self, private, name, fitter, directory,
     time_cutoffs, val_error_fun, hyperparams, 
     include_from_continuous_pheno, include_from_discrete_pheno, include_expr, 
     li_var_suffix, create_directory, file, continuous_output, 
-    combine_n_max_categorical_features, combined_feature_min_positive_ratio){
+    combine_n_max_categorical_features, combined_feature_min_positive_ratio, enable_imputation){
 
     stopifnot(all(time_cutoffs >= 0))
     stopifnot(is.character(name))
@@ -24,6 +24,7 @@ model_initialize <- function(self, private, name, fitter, directory,
     stopifnot(is.numeric(combined_feature_min_positive_ratio) && 
         combined_feature_min_positive_ratio >= 0 && 
         combined_feature_min_positive_ratio <= 1)
+    stopifnot(is.logical(enable_imputation))
 
     self$name <- name
     self$directory <- directory
@@ -40,6 +41,7 @@ model_initialize <- function(self, private, name, fitter, directory,
     self$continuous_output <- continuous_output
     self$combine_n_max_categorical_features <- combine_n_max_categorical_features
     self$combined_feature_min_positive_ratio <- combined_feature_min_positive_ratio
+    self$enable_imputation <- enable_imputation
 
     invisible(self)
 }

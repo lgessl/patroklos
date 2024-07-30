@@ -2,7 +2,9 @@ ass_scalar_initialize <- function(self, private, metrics, prev_range, confidence
     file, round_digits) {
     stopifnot(is.character(metrics))
     available_metrics <- eval(formals(self$initialize)[["metrics"]])
-    stopifnot(all(metrics %in% available_metrics))
+    if (!all(metrics %in% available_metrics))
+        stop("The metrics ", paste(metrics[!metrics %in% available_metrics], collapse = ", "), 
+            " are not available")
     stopifnot(is.numeric(prev_range) && prev_range[1] >= 0 &&
         prev_range[2] <= 1 && prev_range[1] < prev_range[2])
     stopifnot(is.numeric(confidence_level) && confidence_level < 1 && confidence_level > 0)
@@ -219,7 +221,7 @@ get_metric <- function(
         swap_sign <- FALSE
         if (length(max_idx) == 1) {
             thresholds <- thresholds[max_idx]
-            metric_v[j] <- j_res[max_idx]
+            metric_v[j] <- round(j_res[max_idx], digits = ass_scalar$round_digits)
         } else {
             metric_v[j] <- NA
         }

@@ -50,6 +50,8 @@ to combine}
 
 \item{\code{combined_feature_min_positive_ratio}}{Minimum ratio of positive
 observations in a combined (categorical) feature}
+
+\item{\code{enable_imputation}}{Overrides the \code{imputer} attribute of the \code{Data} object.}
 }
 \if{html}{\out{</div>}}
 }
@@ -83,7 +85,8 @@ Create a new Model instance.
   file = "model.rds",
   continuous_output = NULL,
   combine_n_max_categorical_features = 1L,
-  combined_feature_min_positive_ratio = 0.04
+  combined_feature_min_positive_ratio = 0.04,
+  enable_imputation = TRUE
 )}\if{html}{\out{</div>}}
 }
 
@@ -158,6 +161,9 @@ to combine in predicting features.}
 observations in a combined (categorical) feature. This attribute together
 with \code{combine_n_max_categorical_features} governs which combinatorial
 features the predicitor matrix will contain.}
+
+\item{\code{enable_imputation}}{logical. If \code{FALSE}, it overrides the \code{imputer} attribute of
+the \code{Data} objectl and we do not impute.}
 }
 \if{html}{\out{</div>}}
 }
