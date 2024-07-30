@@ -106,7 +106,7 @@ test_that("AssScalar$assess_center() works", {
       lambdaSteps = 2, zeroSum = FALSE),
     time_cutoffs = c(1.5, 2),
     val_error_fun = neg_prec_with_prev_greater(0.17),
-    file = "model2.rds"
+    file = "model1.rds"
   )
   model2 <- Model$new(
     name = "rf",
@@ -181,6 +181,13 @@ test_that("AssScalar$assess_center() works", {
   expect_equal(nrow(eval_tbl), length(model2_list))  
   expect_equal(colnames(eval_tbl), c("model", "cohort", multiple_metrics))
   expect_true(is.numeric(as.matrix(eval_tbl[, 4:ncol(eval_tbl)])))
+
+  model <- readRDS(file.path(model1$directory, model$file))
+  model$fit_obj$val_predict[, 1] <- NA
+  saveRDS(model, file.path(model$directory, model$file))
+  ass_scalar$metrics <- single_metric
+  eval_tbl <- ass_scalar$assess_center(data, list(model, model2), quiet = TRUE)
+  expect_equal(nrow(eval_tbl), 1)
 })
 
 test_that("prepend_to_filename works", {

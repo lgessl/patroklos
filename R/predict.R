@@ -20,6 +20,7 @@ model_predict <- function(self, private, data, quiet){
         y_cox <- as.matrix(data$pheno_tbl[, c(data$time_to_event_col, data$event_col)])
         rownames(y_cox) <- data$pheno_tbl[[data$patient_id_col]]
         yhat <- fit_obj$val_predict
+        if (all(is.na(yhat))) return(NULL)
         if (!is.numeric(yhat))
             stop("val_predict attribute of fit object must be a numeric vector")
     } else {

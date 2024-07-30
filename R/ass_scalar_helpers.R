@@ -26,7 +26,7 @@ ass_scalar_assess <- function(self, private, data, model, quiet) {
         data = data,
         quiet = quiet
     )
-    if(is.null(prep)) return(rep(NA, length(self$metrics)))
+    if (is.null(prep)) return(NULL)
     res_mat <- matrix(numeric(length(self$metrics)), nrow = 1, byrow = TRUE)
     stopifnot(all(names(prep[["predicted"]]) == names(prep[["actual"]])))
     metric_v <- get_metric(
@@ -58,13 +58,14 @@ ass_scalar_assess_center <- function(
             model = model,
             quiet = quiet
         )
+        if (is.null(metric_v)) return(NULL)
         dplyr::bind_cols(info_tbl, tibble::as_tibble(as.list(metric_v)))
     }
 
     tbl_list <- lapply(seq_along(model_list), core)
+    tbl_list <- tbl_list[!sapply(tbl_list, is.null)]
     res_tbl <- dplyr::bind_rows(tbl_list)
-    sortby <- ifelse(length(self$metrics) == 1, "mean", self$metrics[1])
-    res_tbl <- res_tbl[order(-res_tbl[[sortby]]), ]
+    res_tbl <- res_tbl[order(-res_tbl[[self$metrics[1]]]), ]
     if (!is.null(self$file)) {
         if (!dir.exists(dirname(self$file))) dir.create(dirname(self$file))
         comment <- paste0(
