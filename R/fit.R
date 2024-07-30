@@ -15,8 +15,11 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
     if(file.exists(model_path)){
         if(!quiet) {
             message(msg_prefix, "Found stored model.")
-            if (!is.null(readRDS(model_path)$fit_obj))
+            fit_obj <- readRDS(model_path)$fit_obj
+            if (!is.null(fit_obj)) {
                 message("Found a fit object in it. Skipping.")
+                self$fit_obj <- fit_obj
+            }
         }
     } else {
         # Prepare and fit
@@ -36,7 +39,7 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
                 self$hyperparams
             )
         )
-        saveRDS(self, model_path)
     }
+    saveRDS(self, model_path)
     invisible(self)
 }

@@ -182,11 +182,11 @@ test_that("AssScalar$assess_center() works", {
   expect_equal(colnames(eval_tbl), c("model", "cohort", multiple_metrics))
   expect_true(is.numeric(as.matrix(eval_tbl[, 4:ncol(eval_tbl)])))
 
-  model <- readRDS(file.path(model1$directory, model$file))
-  model$fit_obj$val_predict[, 1] <- NA
-  saveRDS(model, file.path(model$directory, model$file))
+  model1 <- readRDS(file.path(model1$directory, model1$file))
+  model1$fit_obj$val_predict[, 1] <- NA
+  saveRDS(model1, file.path(model1$directory, model1$file))
   ass_scalar$metrics <- single_metric
-  eval_tbl <- ass_scalar$assess_center(data, list(model, model2), quiet = TRUE)
+  eval_tbl <- ass_scalar$assess_center(data, list(model1, model2), quiet = TRUE)
   expect_equal(nrow(eval_tbl), 1)
 })
 
