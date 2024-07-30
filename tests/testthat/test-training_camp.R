@@ -53,15 +53,25 @@ test_that("training_camp() works", {
       include_from_continuous_pheno = "continuous_var",
       include_from_discrete_pheno = "discrete_var"
   )
-  model_2$time_cutoffs <- 1.75 
   
   model_3 <- model_1$clone()
   model_3$directory <- file.path(dir, "model3")
   model_3$time_cutoffs <- 2
   model_3$hyperparams[["family"]] <- "binomial"
+
+  model4 <- Model$new(
+    name = "cnn projection",
+    directory = file.path(dir, "cnn"),
+    fitter = projection_on_feature,
+    time_cutoffs = 2,
+    val_error_fun = neg_prec_with_prev_greater(0.17),
+    hyperparams = list(feature = "continuous_var"),
+    include_from_continuous_pheno = "continuous_var",
+    include_expr = FALSE
+  )
   
   training_camp(
-    model_list = list(model_1, model_2, model_3),
+    model_list = list(model_1, model_2, model_3, model4),
     data = data,
     quiet = TRUE,
     skip_on_error = FALSE
@@ -70,5 +80,6 @@ test_that("training_camp() works", {
   expect_true(file.exists(file.path(model_1$directory, "model.rds")))
   expect_true(file.exists(file.path(model_2$directory, "model.rds")))
   expect_true(file.exists(file.path(model_3$directory, "model.rds")))
+  expect_true(file.exists(file.path(model4$directory, "model.rds")))
   # expect_false(file.exists(file.path(model_4$directory, "model.rds")))
 })

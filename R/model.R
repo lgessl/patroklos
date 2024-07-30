@@ -144,7 +144,8 @@ Model <- R6::R6Class("Model",
             quiet = FALSE,
             msg_prefix = ""
         )
-            model_fit(self, private, data, update_model_shell, quiet, msg_prefix),
+            model_fit(self = self, private = private, data = data, 
+                update_model_shell = update_model_shell, quiet = quiet, msg_prefix = msg_prefix),
 
         #' @description Predict for a data set. Additonally return the true values 
         #' of the response and, if the `benchmark_col` attribute of the `Data` 

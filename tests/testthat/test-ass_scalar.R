@@ -161,10 +161,19 @@ test_that("AssScalar$assess_center() works", {
     hyperparams = list(family = "binomial", alpha = 1, nFold = n_fold, 
       lambdaSteps = 1, zeroSum = FALSE)
   )
+  model6 <- Model$new(
+    name = "cnn projection",
+    directory = file.path(dir, "cnn"),
+    fitter = projection_on_feature,
+    time_cutoffs = 2,
+    val_error_fun = neg_prec_with_prev_greater(0.17),
+    hyperparams = list(feature = "ipi"),
+    include_from_continuous_pheno = "ipi"
+  )
 
   model1_list <- list(model1, model3)
   model2_list <- list(model1, model2, model4)
-  model_list <- list(model1, model2, model3, model4)
+  model_list <- list(model1, model2, model3, model4, model6)
   training_camp(model_list, data, quiet = TRUE, skip_on_error = FALSE) 
   model_list <- c(model_list, list(model5))
   ass_scalar <- AssScalar$new(

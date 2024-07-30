@@ -40,12 +40,13 @@ test_that("ptk_zerosum() works", {
 
   x3y <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
     return_type = "fitter")
+  # include continuous_var, ipi; discrete_var (3), ipi (5)
 
   fit <- ptk_zerosum(x3y[[1]], x3y[2:4], neg_binomial_log_likelihood, 
     exclude_pheno_from_lasso = TRUE, binarize_predictions = 0.5, lambdaSteps = 2, 
     nFold = 2, family = "binomial")
-  expect_equal(fit$zeroSumWeights, c(rep(1, n_genes), rep(0, 2+1+4)))
-  expect_equal(fit$penaltyFactor, c(rep(1, n_genes), rep(0, 2+1+4)))
+  expect_equal(fit$zeroSumWeights, c(rep(1, n_genes), rep(0, 2 + 2+4)))
+  expect_equal(fit$penaltyFactor, c(rep(1, n_genes), rep(0, 2 + 2+4)))
   expect_equal(fit$binarizePredictions, 0.5)
   expect_false(is.null(fit$val_predict))
   expect_false(is.null(fit$val_predict_list))
@@ -130,4 +131,25 @@ test_that("predict.ptk_zerosum() works", {
   y_hat <- predict(fit, x3y[[1]])
   expect_true(all(y_hat > 0))
   expect_equal(fit$type, 4)
+})
+
+test_that("projection_on_feature() works", {
+
+  set.seed(123)
+
+  n_samples <- 10
+  n_genes <- 2
+
+  x3y <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
+    return_type = "fitter")
+  x <- x3y[[1]]
+
+  fit_obj <- projection_on_feature(x = x3y[[1]], y = x3y[2:4], 
+    val_error_fun = neg_prec_with_prev_greater(0.15), feature = "ipi")
+  expect_equal(fit_obj$coef[[1]][, 1], c(0, colnames(x) == "ipi++"))
+  expect_equal(fit_obj$val_predict[, 1], x[, "ipi++"])
+  expect_equal(rownames(fit_obj$val_predict), rownames(x))
+
+  yhat <- predict(fit_obj, x)
+  expect_equal(yhat[, 1], x[, "ipi++", drop = FALSE][, 1])
 })

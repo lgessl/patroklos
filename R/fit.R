@@ -4,6 +4,9 @@ model_fit <- function(self, private, data, update_model_shell, quiet, msg_prefix
         stop("data must be a Data object")
     if(is.null(data$cohort))
         stop("You need to specify the cohort in the Data object")
+    stopifnot(is.logical(quiet))
+    stopifnot(is.logical(update_model_shell))
+    stopifnot(is.character(msg_prefix))
 
     if(is.null(data$expr_mat) || is.null(data$pheno_tbl)) data$read()
     if(!dir.exists(self$directory)){
@@ -12,21 +15,20 @@ model_fit <- function(self, private, data, update_model_shell, quiet, msg_prefix
             message(msg_prefix, "Creating ", self$directory)
     }
     model_path <- file.path(self$directory, self$file)
+    skip <- FALSE
     if(file.exists(model_path)){
-        if(!quiet) {
-            message(msg_prefix, "Found stored model.")
-            fit_obj <- readRDS(model_path)$fit_obj
-            if (!is.null(fit_obj)) {
-                message("Found a fit object in it. Skipping.")
-            }
-            if (update_model_shell) {
-                message("Updating the model shell.")
-                self$fit_obj <- fit_obj
-                saveRDS(self, model_path)
-            }
+        fit_obj <- readRDS(model_path)$fit_obj
+        if (!is.null(fit_obj)) {
+            skip <- TRUE
+            if (!quiet) message("Found a fit object in it. Skipping.")
         }
-    } else {
-        # Prepare and fit
+        if (update_model_shell) {
+            if (!quiet) message("Updating the model shell.")
+            self$fit_obj <- fit_obj
+            saveRDS(self, model_path)
+        }
+    } 
+    if (!skip) {
         prep <- data$prepare(self, quiet = quiet)
         qc_prefit(prep)
         self$fit_obj <- do.call(

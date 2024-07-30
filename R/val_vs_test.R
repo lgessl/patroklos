@@ -56,8 +56,8 @@ val_vs_test <- function(
         }
     }
     tbl <- tibble::tibble(
-        "validation error" = numeric(n_models),
-        "test error" = numeric(n_models),
+        "validation error" = rep(NA, n_models),
+        "test error" =  rep(NA, n_models),
         "spot 1" = character(n_models),
         "spot 2" = character(n_models)
     )
@@ -69,12 +69,18 @@ val_vs_test <- function(
         model <- readRDS(file.path(model$directory, model$file))
         test_cohort <- data$cohort
         cohorts <- c("val_predict", test_cohort)
+        skip <- FALSE
         for (j in seq_along(cohorts)) {
             data$cohort <- cohorts[j]
             yy <- model$predict(data, quiet = quiet)
+            if (is.null(yy)) {
+                skip <- TRUE
+                break
+            }
             yy <- intersect_by_names(yy[[1]], yy[[2]], rm_na = c(TRUE, TRUE))
             tbl[i, j] <- error_fun(y_hat = yy[[1]], y = yy[[2]])
         }
+        if (skip) next
         idx <- 0
         for (s in seq_along(spots_regex)) {
             if (is.null(spots_regex[[s]])) next
@@ -86,6 +92,7 @@ val_vs_test <- function(
             }
         }
     }
+    tbl <- tbl[!is.na(tbl[[1]]), ] # Remove skipped rows
     if (return_type == "tibble") return(tbl)
 
     showtext::showtext_auto()

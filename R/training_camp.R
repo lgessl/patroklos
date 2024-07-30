@@ -22,6 +22,8 @@ training_camp <- function(
     if(!inherits(data, "Data")){
         stop("data must be a Data object")
     }
+    stopifnot(is.logical(skip_on_error))
+    stopifnot(is.logical(update_model_shell))
     stopifnot(is.logical(quiet))
 
     if(is.null(data$expr_mat) || is.null(data$pheno_tbl)) data$read()
@@ -40,7 +42,7 @@ training_camp <- function(
         if (skip_on_error) {
             tryCatch(
                 {
-                    model$fit(data, update_model_shell = update_model_shell, quiet = quiet, 
+                    model$fit(data = data, update_model_shell = update_model_shell, quiet = quiet, 
                         msg_prefix = "** ")
                 }, 
                 error = function(cnd){
@@ -51,7 +53,8 @@ training_camp <- function(
                 }
             )
         } else {
-            model$fit(data, quiet = quiet, msg_prefix = "** ")
+            model$fit(data, update_model_shell = update_model_shell, quiet = quiet, 
+                msg_prefix = "** ")
         }
     }
     if(!quiet) message("Training camp closes at ", round.POSIXt(Sys.time(), units = "secs"))

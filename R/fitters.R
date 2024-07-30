@@ -197,6 +197,23 @@ predict.ptk_zerosum <- function(
     return(y)
 }
 
+projection_on_feature <- function(
+    x, 
+    y, 
+    val_error_fun,
+    feature,
+    ...
+){
+    feature <- paste0(feature, attr(x, "li_var_suffix"))
+    if (!feature %in% colnames(x)) stop("Feature not found in predictor matrix")
+    y[["bin"]] <- x[, feature, drop = FALSE]
+    fit_obj <- ptk_zerosum(x = x, y = y, val_error_fun = val_error_fun, lambda = 0, nFold = 1, 
+        family = "gaussian")
+    fit_obj$coef[[1]][, 1] <- 1 * c(0, colnames(x) == feature)
+    fit_obj$val_predict <- y[["bin"]]
+    return(fit_obj)
+}
+
 #' @title Get features with non-zero coefficients
 #' @param fit_obj S3 fit object.
 #' @return One-column matrix with non-zero coefficients and featue names as row names.

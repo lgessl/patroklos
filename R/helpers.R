@@ -105,7 +105,9 @@ intersect_by_names <- function(
         b <- b[intersect_names]
         return(list(a, b))
     } else {
-        stop("intersect_by_names(): a and b must be both matrices or both vectors")
+        stop("a and b must be both matrices or both vectors. However, a and b have the classes (", 
+            paste(class(a), collapse = ", "), ") and (", paste(class(b), collpase = ", "), 
+            "), respectively.")
     }
 }
 

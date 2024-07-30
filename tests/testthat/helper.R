@@ -38,8 +38,8 @@ generate_mock_data <- function(
     # 4. Introduce 20% censored samples with censoring time uniformly reduced 
     # by 0-100% of the original survival time 
     # All in all, survival follows a linear model scaled according to the IPI
-    x_cont <- cbind(expr_mat, pheno_tbl[["continuous_var"]])
-    colnames(x_cont)[n_genes+1] <- "continuous_var++"
+    x_cont <- cbind(expr_mat, as.matrix(pheno_tbl[, c("continuous_var", "ipi")]))
+    colnames(x_cont)[n_genes + 1:2] <- c("continuous_var++", "ipi++")
     x_cat <- dichotomize_tibble(pheno_tbl[, c("discrete_var", "ipi")])
     colnames(x_cat) <- paste0(colnames(x_cat), "++")
     x <- cbind(x_cont, x_cat)
@@ -130,4 +130,25 @@ apb <- function(
         l[[i]][sample(1:n_samples, 1)] <- NA
     }
     return(l)
+}
+
+ipi_model <- function(data) {
+    ipi_model <- Model$new(
+        name = "ipi",
+        directory = file.path(data$directory, "ipi"),
+        fitter = ptk_zerosum,
+        time_cutoffs = 2,
+        val_error_fun = neg_prec_with_prev_greater(0.17),
+        hyperparams = list(family = "gaussian", alpha = 1, lambda = 0, zeroSum = FALSE, nFold = 2),
+        include_from_continuous_pheno = "ipi",
+        include_from_discrete_pheno = NULL,
+        include_expr = FALSE,
+        enable_imputation = FALSE
+    )
+    data$cohort <- "train"
+    ipi_model$fit(data, quiet = TRUE)
+    ipi_model$fit_obj$coef[[1]][, 1] <- c(0, 1)
+    ipi_model$fit_obj$val_predict[, 1] <- NA
+    saveRDS(ipi_model, file.path(dir, "ipi", "model.rds"))
+    return(ipi_model)
 }
