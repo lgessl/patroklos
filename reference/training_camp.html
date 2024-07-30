@@ -42,7 +42,13 @@ model.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">training_camp</span><span class="op">(</span><span class="va">model_list</span>, <span class="va">data</span>, skip_on_error <span class="op">=</span> <span class="cn">TRUE</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">training_camp</span><span class="op">(</span></span>
+<span>  <span class="va">model_list</span>,</span>
+<span>  <span class="va">data</span>,</span>
+<span>  skip_on_error <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  update_model_shell <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -60,6 +66,13 @@ model.</p>
 <dt id="arg-skip-on-error">skip_on_error<a class="anchor" aria-label="anchor" href="#arg-skip-on-error"></a></dt>
 <dd><p>logical. Whether to skip to the next model if an error
 occurs while fitting a model.</p></dd>
+
+
+<dt id="arg-update-model-shell">update_model_shell<a class="anchor" aria-label="anchor" href="#arg-update-model-shell"></a></dt>
+<dd><p>logical. If <code>TRUE</code> and we find a stored model with <code>fit_obj</code> not NULL,
+we set the <code>fit_obj</code> attribute of the model in <code>model_list</code> to the found <code>fit_obj</code> and save it.
+This way, we can update the model shell, which we want to do if new features were added to the
+<code>Model</code> class.</p></dd>
 
 
 <dt id="arg-quiet">quiet<a class="anchor" aria-label="anchor" href="#arg-quiet"></a></dt>

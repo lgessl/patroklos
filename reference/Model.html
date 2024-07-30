@@ -267,13 +267,20 @@ the <code>Data</code> objectl and we do not impute.</p></dd>
 <h3 id="method-fit-">Method <code>fit()</code><a class="anchor" aria-label="anchor" href="#method-fit-"></a></h3>
 <p>Fit the model to a data set.</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Model</span><span class="op">$</span><span class="fu">fit</span><span class="op">(</span><span class="va">data</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span>, msg_prefix <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Model</span><span class="op">$</span><span class="fu">fit</span><span class="op">(</span><span class="va">data</span>, update_model_shell <span class="op">=</span> <span class="cn">FALSE</span>, quiet <span class="op">=</span> <span class="cn">FALSE</span>, msg_prefix <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>data</code></dt>
 <dd><p>Data object. Read it in if needed.</p></dd>
+
+
+<dt><code>update_model_shell</code></dt>
+<dd><p>logical. If <code>TRUE</code> and we find a stored model with <code>fit_obj</code>
+not being NULL, we set the <code>fit_obj</code> attribute of the model to the found <code>fit_obj</code>
+and save it. This way, we can keep stored <code>Model</code>s up-to-date with changes in the
+<code>Model</code> class.</p></dd>
 
 
 <dt><code>quiet</code></dt>
