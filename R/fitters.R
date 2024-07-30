@@ -197,6 +197,15 @@ predict.ptk_zerosum <- function(
     return(y)
 }
 
+#' @title Project on a feature
+#' @description Trivially wraps `ptk_zerosum` to project on a feature, usually the output of a 
+#' benchmark model.
+#' @inheritParams ptk_zerosum
+#' @param feature character. Project on this feature.
+#' @return A `ptk_zerosum` S3 object with the `val_predict` attribute set to the predictions on 
+#' the "train" cohort. The benchmark usually has not been trained on this train cohort such that 
+#' `val_predict` are predictions on independent data.
+#' @export
 projection_on_feature <- function(
     x, 
     y, 
