@@ -198,7 +198,7 @@ combine_features <- function(x, combine_n_max_features,
 trim_combos <- function(x, combine_n_max_categorical_features) {
     keep <- sapply(stringr::str_split(colnames(x), "&"), length) <= 
         combine_n_max_categorical_features
-    x_slim <- x[, keep]
+    x_slim <- x[, keep, drop = FALSE]
     attr(x_slim, "li_var_suffix") <- attr(x, "li_var_suffix")
     x_slim
 }

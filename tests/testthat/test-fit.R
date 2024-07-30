@@ -101,4 +101,17 @@ test_that("Model$fit() works", {
       include_from_discrete_pheno = "discrete_var"
   )
   model$fit(data, quiet = TRUE)
+
+  model <- Model$new(
+    name = "one-column x",
+    fitter = ptk_zerosum,
+    directory = file.path(dir, "model6"),
+    time_cutoffs = 2,
+    val_error_fun = neg_prec_with_prev_greater(0.15),
+    hyperparams = list(family = "binomial", nFold = n_fold, lambda = 0,
+      zeroSum = FALSE),
+    include_from_continuous_pheno = "continuous_var",
+    include_expr = FALSE
+  )
+  model$fit(data, quiet = TRUE)
 })
