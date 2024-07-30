@@ -114,6 +114,10 @@ to combine</p></dd>
 observations in a combined (categorical) feature</p></dd>
 
 
+<dt><code>enable_imputation</code></dt>
+<dd><p>Overrides the <code>imputer</code> attribute of the <code>Data</code> object.</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div class="section level2">
@@ -145,7 +149,8 @@ observations in a combined (categorical) feature</p></dd>
 <span>  file <span class="op">=</span> <span class="st">"model.rds"</span>,</span>
 <span>  continuous_output <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  combine_n_max_categorical_features <span class="op">=</span> <span class="fl">1L</span>,</span>
-<span>  combined_feature_min_positive_ratio <span class="op">=</span> <span class="fl">0.04</span></span>
+<span>  combined_feature_min_positive_ratio <span class="op">=</span> <span class="fl">0.04</span>,</span>
+<span>  enable_imputation <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -244,6 +249,11 @@ to combine in predicting features.</p></dd>
 observations in a combined (categorical) feature. This attribute together
 with <code>combine_n_max_categorical_features</code> governs which combinatorial
 features the predicitor matrix will contain.</p></dd>
+
+
+<dt><code>enable_imputation</code></dt>
+<dd><p>logical. If <code>FALSE</code>, it overrides the <code>imputer</code> attribute of
+the <code>Data</code> objectl and we do not impute.</p></dd>
 
 
 </dl><p></p></div>
