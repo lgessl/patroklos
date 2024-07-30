@@ -25,7 +25,18 @@ test_that("val_vs_test() works", {
     model3 <- model1$clone()
     model3$name <- "frankfurt"
     model3$directory <- file.path(dir, "model3")
-    models <- list(model1, model2, model3)
+
+    model4 <- Model$new(
+        name = "cnn projection",
+        directory = file.path(dir, "cnn"),
+        fitter = projection_on_feature,
+        time_cutoffs = 2,
+        val_error_fun = neg_prec_with_prev_greater(0.17),
+        hyperparams = list(feature = "ipi"),
+        include_from_continuous_pheno = "ipi"
+    )
+
+    models <- list(model1, model2, model3, model4)
     data$cohort <- "train"
     training_camp(models, data, quiet = TRUE)
 
@@ -57,6 +68,7 @@ test_that("val_vs_test() works", {
         return_type = "tibble", 
         quiet = TRUE
     )
+    expect_equal(nrow(tbl), length(models))
     expect_s3_class(tbl, "tbl_df")
     plt <- val_vs_test(
         models,
@@ -72,7 +84,7 @@ test_that("val_vs_test() works", {
         return_type = "ggplot",
         quiet = TRUE
     )
-    # print(plt)
+    print(plt)
     plt <- val_vs_test(
         models,
         data,
