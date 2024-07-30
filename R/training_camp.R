@@ -6,12 +6,17 @@
 #' @param data Data object. The data set to fit on.
 #' @param skip_on_error logical. Whether to skip to the next model if an error
 #' occurs while fitting a model.
+#' @param update_model_shell logical. If `TRUE` and we find a stored model with `fit_obj` not NULL, 
+#' we set the `fit_obj` attribute of the model in `model_list` to the found `fit_obj` and save it. 
+#' This way, we can update the model shell, which we want to do if new features were added to the 
+#' `Model` class.
 #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
 #' @export 
 training_camp <- function(
     model_list,
     data,
     skip_on_error = TRUE,
+    update_model_shell = FALSE,
     quiet = FALSE
 ){
     if(!inherits(data, "Data")){
@@ -35,7 +40,8 @@ training_camp <- function(
         if (skip_on_error) {
             tryCatch(
                 {
-                    model$fit(data, quiet = quiet, msg_prefix = "** ")
+                    model$fit(data, update_model_shell = update_model_shell, quiet = quiet, 
+                        msg_prefix = "** ")
                 }, 
                 error = function(cnd){
                     warning("*** Error while fitting ", model$name, 

@@ -114,4 +114,9 @@ test_that("Model$fit() works", {
     include_expr = FALSE
   )
   model$fit(data, quiet = TRUE)
+
+  model$name <- "new shell name"
+  model$fit(data, quiet = TRUE, update_model_shell = TRUE)
+  model <- readRDS(file.path(model$directory, model$file))
+  expect_equal(model$name, "new shell name")
 })

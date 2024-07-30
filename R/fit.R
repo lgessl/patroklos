@@ -1,4 +1,4 @@
-model_fit <- function(self, private, data, quiet, msg_prefix){
+model_fit <- function(self, private, data, update_model_shell, quiet, msg_prefix){
 
     if(!inherits(data, "Data"))
         stop("data must be a Data object")
@@ -18,7 +18,11 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
             fit_obj <- readRDS(model_path)$fit_obj
             if (!is.null(fit_obj)) {
                 message("Found a fit object in it. Skipping.")
+            }
+            if (update_model_shell) {
+                message("Updating the model shell.")
                 self$fit_obj <- fit_obj
+                saveRDS(self, model_path)
             }
         }
     } else {
@@ -39,7 +43,7 @@ model_fit <- function(self, private, data, quiet, msg_prefix){
                 self$hyperparams
             )
         )
+        saveRDS(self, model_path)
     }
-    saveRDS(self, model_path)
     invisible(self)
 }

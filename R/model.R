@@ -128,6 +128,10 @@ Model <- R6::R6Class("Model",
 
         #' @description Fit the model to a data set.
         #' @param data Data object. Read it in if needed.
+        #' @param update_model_shell logical. If `TRUE` and we find a stored model with `fit_obj` 
+        #' not being NULL, we set the `fit_obj` attribute of the model to the found `fit_obj`
+        #' and save it. This way, we can keep stored `Model`s up-to-date with changes in the 
+        #' `Model` class.
         #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
         #' @param msg_prefix string. Prefix for messages. Default is `""`.
         #' @return The `Model` object itself with the `fit_obj` attribute set 
@@ -136,10 +140,11 @@ Model <- R6::R6Class("Model",
         #' @seealso [`training_camp()`].
         fit = function(
             data,
+            update_model_shell = FALSE,
             quiet = FALSE,
             msg_prefix = ""
         )
-            model_fit(self, private, data, quiet, msg_prefix),
+            model_fit(self, private, data, update_model_shell, quiet, msg_prefix),
 
         #' @description Predict for a data set. Additonally return the true values 
         #' of the response and, if the `benchmark_col` attribute of the `Data` 

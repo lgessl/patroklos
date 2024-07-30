@@ -177,13 +177,18 @@ A \code{Model} R6 object.
 \subsection{Method \code{fit()}}{
 Fit the model to a data set.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Model$fit(data, quiet = FALSE, msg_prefix = "")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Model$fit(data, update_model_shell = FALSE, quiet = FALSE, msg_prefix = "")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{data}}{Data object. Read it in if needed.}
+
+\item{\code{update_model_shell}}{logical. If \code{TRUE} and we find a stored model with \code{fit_obj}
+not being NULL, we set the \code{fit_obj} attribute of the model to the found \code{fit_obj}
+and save it. This way, we can keep stored \code{Model}s up-to-date with changes in the
+\code{Model} class.}
 
 \item{\code{quiet}}{logical. Whether to suppress messages. Default is \code{FALSE}.}
 

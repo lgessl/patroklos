@@ -4,7 +4,13 @@
 \alias{training_camp}
 \title{A wrapper around \code{Model$fit()}}
 \usage{
-training_camp(model_list, data, skip_on_error = TRUE, quiet = FALSE)
+training_camp(
+  model_list,
+  data,
+  skip_on_error = TRUE,
+  update_model_shell = FALSE,
+  quiet = FALSE
+)
 }
 \arguments{
 \item{model_list}{list of Model objects. The models to fit.}
@@ -13,6 +19,11 @@ training_camp(model_list, data, skip_on_error = TRUE, quiet = FALSE)
 
 \item{skip_on_error}{logical. Whether to skip to the next model if an error
 occurs while fitting a model.}
+
+\item{update_model_shell}{logical. If \code{TRUE} and we find a stored model with \code{fit_obj} not NULL,
+we set the \code{fit_obj} attribute of the model in \code{model_list} to the found \code{fit_obj} and save it.
+This way, we can update the model shell, which we want to do if new features were added to the
+\code{Model} class.}
 
 \item{quiet}{logical. Whether to suppress messages. Default is \code{FALSE}.}
 }
