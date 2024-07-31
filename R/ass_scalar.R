@@ -34,9 +34,11 @@ AssScalar <- R6::R6Class("AssScalar",
         #' this range.
         #' @param confidence_level numeric. The confidence level alpha (e.g. for confidence 
         #' intervals).
-        #' @param benchmark character or NULL. If not NULL, include `benchmark` 
-        #' (the name of column in the pheno data) in the assessment. Not 
-        #' implemented yet.
+        #' @param benchmark list or NULL. If not NULL, is is list element names in `c("name", 
+        #' prev_rage")`: name refers to the name of the benchmark model in the `model_list`, 
+        #' prev_range is a special value of the above parameter for the benchmark model. Often, 
+        #' we need a higher prevalence for our, new models to gain statistical power and be able 
+        #' to significantly outperform the benchmark.
         #' @param file string or NULL. The name of the csv file to save the 
         #' results to for the *train* cohort.
         #' the results are not saved.

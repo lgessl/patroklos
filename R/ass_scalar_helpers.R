@@ -8,7 +8,15 @@ ass_scalar_initialize <- function(self, private, metrics, prev_range, confidence
     stopifnot(is.numeric(prev_range) && prev_range[1] >= 0 &&
         prev_range[2] <= 1 && prev_range[1] < prev_range[2])
     stopifnot(is.numeric(confidence_level) && confidence_level < 1 && confidence_level > 0)
-    stopifnot(is.null(benchmark) || is.character(benchmark))
+    if (!is.null(benchmark)) {
+        if (!is.list(benchmark)) stop("benchmark must be NULL or a list")
+        if (!all(names(benchmark) %in% c("name", "prev_range"))) 
+            stop("If benchmark is a list, all elements must have names in c('name', 'prev_range')")
+        if (!is.null(benchmark[["name"]])) stopifnot(is.character(benchmark[["name"]]))
+        if (!is.null(benchmark[["prev_range"]])) stopifnot(is.numeric(benchmark[["prev_range"]]) &&
+            benchmark[["prev_range"]][1] >= 0 && benchmark[["prev_range"]][2] <= 1 &&
+            benchmark[["prev_range"]][1] < benchmark[["prev_range"]][2])
+    }
     stopifnot(is.null(file) || is.character(file))
     stopifnot(is.numeric(round_digits) && round_digits >= 0)
     self$metrics <- metrics
@@ -29,15 +37,21 @@ ass_scalar_assess <- function(self, private, data, model, quiet) {
     if (is.null(prep)) return(NULL)
     res_mat <- matrix(numeric(length(self$metrics)), nrow = 1, byrow = TRUE)
     stopifnot(all(names(prep[["predicted"]]) == names(prep[["actual"]])))
+    # Extra prev_range value for benchmark if specified
+    as_clone <- self$clone()
+    if (!is.null(self$benchmark[["name"]]) && !is.null(self$benchmark[["prev_range"]])) {
+        if (model$name == self$benchmark[["name"]]) 
+            as_clone$prev_range <- self$benchmark[["prev_range"]]
+    }
     metric_v <- get_metric(
-        ass_scalar = self,
+        ass_scalar = as_clone,
         predicted = prep[["predicted"]],
         actual = prep[["actual"]],
         cox_mat = prep[["cox_mat"]],
         data = data,
         quiet = quiet
     )
-    names(metric_v) <- self$metrics
+    names(metric_v) <- as_clone$metrics
     metric_v
 }
 

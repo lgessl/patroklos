@@ -4,14 +4,14 @@ test_that("AssScalar$new() works", {
         metrics = c("auc", "accuracy", "prevalence", "precision_ci_ll", "n_true"),
         prev_range = c(0.15, 0.30),
         confidence_level = 0.9,
-        benchmark = "ipi",
+        benchmark = list(name = "ipi", prev_range = c(0.10, 1)),
         file = "some file",
         round_digits = 4
     )
     expect_equal(ass_scalar$metrics, c("auc", "accuracy", "prevalence", "precision_ci_ll", "n_true"))
     expect_equal(ass_scalar$prev_range, c(0.15, 0.30))
     expect_equal(ass_scalar$confidence_level, 0.9)
-    expect_equal(ass_scalar$benchmark, "ipi")
+    expect_equal(ass_scalar$benchmark, list(name = "ipi", prev_range = c(0.10, 1)))
     expect_equal(ass_scalar$round_digits, 4)
     expect_equal(ass_scalar$file, "some file")
 
@@ -46,7 +46,7 @@ test_that("AssScalar$assess() works", {
     model$fit(data, quiet = TRUE)
     ass_scalar <- AssScalar$new(
       metrics = metrics,
-      benchmark = "ipi",
+      benchmark = list(name = "ipi", prev_range = c(0.10, 1)),
       round_digits = 4
     )
 
@@ -171,32 +171,33 @@ test_that("AssScalar$assess_center() works", {
     include_from_continuous_pheno = "ipi"
   )
 
-  model1_list <- list(model1, model3)
-  model2_list <- list(model1, model2, model4)
   model_list <- list(model1, model2, model3, model4, model6)
   training_camp(model_list, data, quiet = TRUE, skip_on_error = FALSE) 
   model_list <- c(model_list, list(model5))
   ass_scalar <- AssScalar$new(
     metrics = "auc", # just for the moment
     file = file.path(dir, "models/eval.csv"),
-    prev_range = c(0.15, 1)
+    prev_range = c(0.15, 1),
+    benchmark = list(name = "cnn projection", prev_range = c(0.10, 1))
   )
   dir.create(dir, "results")
   
   data$cohort <- "val_predict"
   ass_scalar$metrics <- multiple_metrics
-  eval_tbl <- ass_scalar$assess_center(data, model2_list, quiet = TRUE)
-  expect_true(file.exists(file.path(dir, "models/eval.csv")))
-  expect_equal(nrow(eval_tbl), length(model2_list))  
-  expect_equal(colnames(eval_tbl), c("model", "cohort", multiple_metrics))
-  expect_true(is.numeric(as.matrix(eval_tbl[, 4:ncol(eval_tbl)])))
+  eval_tbl <- ass_scalar$assess_center(data, model_list, quiet = TRUE)
+  expect_true(file.exists(ass_scalar$file))
+  expect_equal(nrow(eval_tbl), length(model_list)-1)
+  expect_equal(colnames(eval_tbl), c("model", "cohort", ass_scalar$metrics))
+  expect_true(is.numeric(as.matrix(eval_tbl[, 3:ncol(eval_tbl)])))
 
-  model1 <- readRDS(file.path(model1$directory, model1$file))
-  model1$fit_obj$val_predict[, 1] <- NA
-  saveRDS(model1, file.path(model1$directory, model1$file))
-  ass_scalar$metrics <- single_metric
-  eval_tbl <- ass_scalar$assess_center(data, list(model1, model2), quiet = TRUE)
-  expect_equal(nrow(eval_tbl), 1)
+  data$cohort <- "test"
+  ass_scalar$metrics <- "precision"
+  ass_scalar$file <- file.path(dir, "eval_test.csv")
+  eval_tbl <- ass_scalar$assess_center(data, model_list, quiet = TRUE)
+  expect_true(file.exists(ass_scalar$file))
+  expect_equal(nrow(eval_tbl), length(model_list)-1)  
+  expect_equal(colnames(eval_tbl), c("model", "cohort", ass_scalar$metrics))
+  expect_true(is.numeric(as.matrix(eval_tbl[, 3:ncol(eval_tbl)])))
 })
 
 test_that("prepend_to_filename works", {

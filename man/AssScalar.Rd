@@ -72,9 +72,10 @@ this range.}
 \item{\code{confidence_level}}{numeric. The confidence level alpha (e.g. for confidence
 intervals).}
 
-\item{\code{benchmark}}{character or NULL. If not NULL, include \code{benchmark}
-(the name of column in the pheno data) in the assessment. Not
-implemented yet.}
+\item{\code{benchmark}}{list or NULL. If not NULL, is is list element names in \verb{c("name",  prev_rage")}: name refers to the name of the benchmark model in the \code{model_list},
+prev_range is a special value of the above parameter for the benchmark model. Often,
+we need a higher prevalence for our, new models to gain statistical power and be able
+to significantly outperform the benchmark.}
 
 \item{\code{file}}{string or NULL. The name of the csv file to save the
 results to for the \emph{train} cohort.
