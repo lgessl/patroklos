@@ -119,9 +119,10 @@ intervals).</p></dd>
 
 
 <dt><code>benchmark</code></dt>
-<dd><p>character or NULL. If not NULL, include <code>benchmark</code>
-(the name of column in the pheno data) in the assessment. Not
-implemented yet.</p></dd>
+<dd><p>list or NULL. If not NULL, is is list element names in <code>c("name",  prev_rage")</code>: name refers to the name of the benchmark model in the <code>model_list</code>,
+prev_range is a special value of the above parameter for the benchmark model. Often,
+we need a higher prevalence for our, new models to gain statistical power and be able
+to significantly outperform the benchmark.</p></dd>
 
 
 <dt><code>file</code></dt>
