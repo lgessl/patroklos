@@ -75,7 +75,7 @@ ass2d_initialize <- function(self, private, x_metric, y_metric,
     invisible(self)
 }
 
-ass2d_assess <- function(self, private, data, model, quiet, msg_prefix){
+ass2d_assess <- function(self, private, data, model, return_type, quiet, msg_prefix){
 
     if (!is.null(self$file)) {
         directory <- dirname(self$file)
@@ -95,6 +95,7 @@ ass2d_assess <- function(self, private, data, model, quiet, msg_prefix){
         plot_2d_metric(
             ass2d = self,
             quiet = quiet,
+            return_type = return_type,
             msg_prefix = msg_prefix
         )
     }
@@ -127,6 +128,7 @@ ass2d_assess_center <- function(self, private, data, model_list, model_tree_mirr
         perf_tbls[[i]] <- this_as2$assess(
             data = data,
             model = model,
+            return_type = "tibble",
             quiet = quiet,
             msg_prefix = "**** "
         )

@@ -1,11 +1,13 @@
 #' @importFrom rlang .data
 plot_2d_metric <- function(
     ass2d,
+    return_type,
     quiet = FALSE,
     msg_prefix = ""
 ){
+    return_type <- match.arg(return_type)
     # Extract
-    data <- ass2d$data |> dplyr::distinct()
+    data <- dplyr::distinct(ass2d$data)
     # For legend order: bechmark last
     if(!is.null(ass2d$benchmark)){
         model_levels <- as.character(unique(data[["model"]]))
@@ -115,8 +117,6 @@ plot_2d_metric <- function(
             readr::write_csv(ass2d$data, csv_file)
         }
     }
-
-    invisible(all_data)
 }
 
 

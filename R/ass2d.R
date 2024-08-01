@@ -155,14 +155,18 @@ Ass2d <- R6::R6Class("Ass2d",
         #' @param data Data object. Assess on this data. The `cohort` attribute 
         #' must be set.
         #' @param model Model object. Assess this model.
+        #' @param return_type string. Either "ggplot" or "tibble". See return section for details.
         #' @param quiet logical. Whether to suppress messages.
         #' @param msg_prefix string. Prefix for messages. Default is `""`.
+        #' @return ggplot object if `return_type == "ggplot"` or the tibble underlying the plot if 
+        #' `return_type == "tibble"`.
         #' @details We add the data underlying the plots to Ass2d object as a new attribute 
         #' named `data`.
         #' @export
         assess = function(
             data,
             model,
+            return_type = c("ggplot", "tibble"),
             quiet = FALSE,
             msg_prefix = ""
         )
