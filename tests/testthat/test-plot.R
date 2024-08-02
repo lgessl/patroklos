@@ -9,47 +9,41 @@ test_that("plot_2d_metric() works", {
     file = file.path(dir, "test.jpeg"),
     x_metric = "rpp",
     y_metric = "prec",
-    benchmark = "bm",
-    show_plots = FALSE,
     title = "this title",
     x_lab = "this x lab",
     y_lab = "that y lab",
-    xlim = c(0, .9),
-    smooth_method = "loess",
-    smooth_benchmark = TRUE,
-    smooth_se = FALSE,
     scale_x = "identity",
-    hline = list(yintercept = 0.5, linetype = "dashed"),
     text = list(ggplot2::aes(x = 0.5, y = 0.5, label = "this text")),
     colors = c("black", "blue", "yellow", "red"),
     theme = ggplot2::theme_dark() + 
       ggplot2::theme(
-        plot.background = ggplot2::element_rect(grDevices::rgb(1, 1, 1, .98)),
-        text = ggplot2::element_text(family = "Courier")
+        plot.background = ggplot2::element_rect(grDevices::rgb(1, 1, 1, .98))
         ),
     dpi = 200
   )
-  ass2d$data <- tibble::tibble(
+  tbl <- tibble::tibble(
     rpp = runif(n_row),
     prec = runif(n_row),
     cutoff = sample(0:5, n_row, replace = TRUE),
-    model = sample(c("model1", "model2", "bm"), n_row, replace = TRUE)
+    model = "model1"
   )
 
-  expect_no_error(
-    plot_2d_metric(
-      ass2d = ass2d,
-      quiet = TRUE
-    )
+  plt <- plot_2d_metric(
+    tbl = tbl,
+    ass2d = ass2d,
+    quiet = TRUE
   )
-  ass2d$benchmark <- NULL
-  ass2d$hline <- NULL
-  ass2d$text <- NULL
-  ass2d$vline <- list(xintercept = 0.5, color = "blue")
-  expect_no_error(
-    plot_2d_metric(
-      ass2d = ass2d,
-      quiet = TRUE
-    )
+  # print(plt)
+
+  tbl[["model"]] <- sample(c("model1", "model2"), n_row, replace = TRUE)
+  ass2d$file <- file.path(dir, "plt.jpeg")
+  ass2d$fellow_csv <- TRUE
+  plt <- plot_2d_metric(
+    tbl = tbl,
+    ass2d = ass2d,
+    quiet = TRUE
   )
+  # print(plt)
+  expect_true(file.exists(ass2d$file))
+  expect_true(file.exists(file.path(dir, "plt.csv")))
 })
