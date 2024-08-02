@@ -18,8 +18,7 @@ ass2d_get_2d_metric <- function(self, private, data, model, quiet){
         tbl <- precision_ci(
             predicted = predicted,
             actual = actual,
-            confidence_level = self$ci_level,
-            lower_boundary = TRUE
+            confidence_level = self$ci_level
         )
     } else if (self$x_metric == "rank" && self$y_metric == "risk score") {
         tbl <- scores_rank(
@@ -116,7 +115,6 @@ metric_with_rocr <- function(
     return(tbl)
 }
 
-
 logrank_metric <- function(
     predicted,
     pheno_tbl,
@@ -166,9 +164,8 @@ logrank_metric <- function(
 
 scores_rank <- function(predicted, actual) {
     tibble::tibble(
-        patient_id = names(predicted),
-        risk_score = predicted,
-        rank = rank(-predicted),
-        true_risk = ifelse(actual == 1, "high", "low")
+        rank(-predicted),
+        predicted,
+        ifelse(actual == 1, "high", "low")
     )
 }

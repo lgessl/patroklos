@@ -2,6 +2,8 @@
 plot_2d_metric <- function(
     tbl,
     ass2d,
+    file,
+    fellow_csv,
     quiet = FALSE,
     msg_prefix = ""
 ){
@@ -15,7 +17,6 @@ plot_2d_metric <- function(
         ass2d$theme +
         ggplot2::geom_point(alpha = ass2d$alpha, shape = 4) +
         ggplot2::labs(
-            title = ass2d$title, 
             x = ass2d$x_lab, 
             y = ass2d$y_lab
         ) +
@@ -26,12 +27,12 @@ plot_2d_metric <- function(
         plt <- plt + ggplot2::scale_color_manual(values = ass2d$colors)
     }
 
-    if(!is.null(ass2d$file)){
+    if(!is.null(file)){
         if(!quiet)
-            message(msg_prefix, "Saving 2D metric plot to ", ass2d$file)
+            message(msg_prefix, "Saving 2D metric plot to ", file)
         showtext::showtext_auto()
         ggplot2::ggsave(
-            ass2d$file,
+            file,
             plt,
             width = ass2d$width, 
             height = ass2d$height, 
@@ -41,8 +42,8 @@ plot_2d_metric <- function(
         showtext::showtext_auto(FALSE)
 
         # Save to csv (if wanted)
-        if(ass2d$fellow_csv){
-            csv_file <- stringr::str_replace(ass2d$file, "\\..+", ".csv")
+        if(fellow_csv){
+            csv_file <- stringr::str_replace(file, "\\..+", ".csv")
             if(!quiet) message(msg_prefix, "Saving 2D metric table to ", csv_file)
             readr::write_csv(tbl, csv_file)
         }

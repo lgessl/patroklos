@@ -179,7 +179,7 @@ prec_from_scores <- function(
     )[, 1]
     ea <- intersect_by_names(risk_scores, true_risk, rm_na = c(TRUE, TRUE))
     tbl <- metric_with_rocr(
-        estimate = ea[[1]],
+        predicted = ea[[1]],
         actual = ea[[2]],
         x_metric = "rpp",
         y_metric = "prec"

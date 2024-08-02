@@ -2,50 +2,24 @@
 % Please edit documentation in R/ass2d.R
 \name{Ass2d}
 \alias{Ass2d}
-\title{An R6 class to assess a model with one metric versus another.}
+\title{An R6 class to assess a model with continuous output with one metric versus another.}
 \description{
 Assess how well a model can predict time to event less than a certain
-threshold with two metrics (like the ROC-AUC and the Brier score) to guide thresholding
-the continuous to binary model output.
+threshold with two metrics by thresholding the continuous output in every possible way and
+then plot one metric for a binary classifier against another metric for a binary classifier.
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{x_metric, y_metric}}{Metrics shown on both axes.}
 
-\item{\code{benchmark}}{Incorporate this benchmark (from pheno data) into
-assessment.}
-
-\item{\code{file}}{Store results in this file.}
-
 \item{\code{ci_level}}{For any confidence intervals calculated use this level.}
-
-\item{\code{fellow_csv}}{Whether to also store the plotted data in a csv
-including cutoffs.}
-
-\item{\code{scores_plot}}{Whether to additionally plot rank versus model output score.}
-
-\item{\code{show_plots}}{Whether to print all generated plots.}
-
-\item{\code{title}}{Plot title.}
 
 \item{\code{x_lab, y_lab}}{Axis labels.}
 
 \item{\code{xlim, ylim}}{Axis limits.}
 
-\item{\code{smooth_method}}{Method to smooth the plot.}
-
-\item{\code{smooth_benchmark}}{Whether to also smooth the benchmark.}
-
-\item{\code{smooth_se}}{Whether to add standard error bands to the smoothed lines.}
-
 \item{\code{scale_x, scale_y}}{The scale of the axes.}
-
-\item{\code{vline, hline}}{Vertical/horizontal lines to be added to the plot.}
-
-\item{\code{text_size}}{The size of in-plot text.}
-
-\item{\code{text}}{Text label added to the plot.}
 
 \item{\code{alpha}}{The alpha value for the points in the plot.}
 
@@ -56,8 +30,6 @@ including cutoffs.}
 \item{\code{width, height, units}}{The size of the plot in units.}
 
 \item{\code{dpi}}{Plot resolution in dots per inch.}
-
-\item{\code{data}}{The data underlying the plots.}
 }
 \if{html}{\out{</div>}}
 }
@@ -71,8 +43,6 @@ including cutoffs.}
 \item{\code{xlim, ylim}}{Axis limits.}
 
 \item{\code{scale_x, scale_y}}{The scale of the axes.}
-
-\item{\code{vline, hline}}{Vertical/horizontal lines to be added to the plot.}
 
 \item{\code{width, height, units}}{The size of the plot in units.}
 }
@@ -96,30 +66,18 @@ Create a new Ass2d instance.
 \if{html}{\out{<div class="r">}}\preformatted{Ass2d$new(
   x_metric,
   y_metric,
-  benchmark = NULL,
-  file = NULL,
   ci_level = 0.95,
-  fellow_csv = FALSE,
-  show_plots = FALSE,
-  title = NULL,
   x_lab = NULL,
   y_lab = NULL,
   xlim = c(-Inf, Inf),
   ylim = c(-Inf, Inf),
-  smooth_method = NULL,
-  smooth_benchmark = FALSE,
-  smooth_se = FALSE,
   scale_x = "identity",
   scale_y = "identity",
-  vline = NULL,
-  hline = NULL,
-  text_size = 2.5,
-  text = NULL,
-  alpha = 0.5,
+  alpha = 1,
+  colors = NULL,
+  theme = ggplot2::theme_minimal(),
   width = 7,
   height = 4,
-  colors = NULL,
-  theme = NULL,
   units = "in",
   dpi = 300
 )}\if{html}{\out{</div>}}
@@ -142,63 +100,30 @@ rank of every risk score agaisnt the risk score and color by true
 risk.
 }}
 
-\item{\code{benchmark}}{string. Incorporate this benchmark (from pheno data) into the
-assessment if \code{benchmark} is not \code{NULL}.}
-
-\item{\code{file}}{string. If not \code{NULL}, store the resulting plot in this file.}
-
 \item{\code{ci_level}}{numeric in [0, 1]. The level used to calculate confidence intervals.}
-
-\item{\code{fellow_csv}}{logical. Whether to also store the plotted data in a csv including
-cutoffs.}
-
-\item{\code{show_plots}}{logical. Whether to show the plots after creation in an interactive
-graphics device.}
-
-\item{\code{title}}{string. The title of the plot. Default is \code{NULL}, i.e. no title.}
 
 \item{\code{x_lab, y_lab}}{string. Axis labels. Default is \code{x_metric} and \code{y_metric}, respectively.}
 
 \item{\code{xlim, ylim}}{numeric vector of length 2. The limits for both axes. Default is
 no contraints.}
 
-\item{\code{smooth_method}}{string or function. Smooth method to plot an additional smoothed graph.
-If \code{NULL} (the default), no smoothing. Else we pass \code{smooth_method} as the \code{method}
-parameter to \code{\link[ggplot2:geom_smooth]{ggplot2::geom_smooth()}}.}
-
-\item{\code{smooth_benchmark}}{logical. Whether to also smooth the benchmark data.}
-
-\item{\code{smooth_se}}{logical. Whether to add standard error bands to the smoothed lines.}
-
 \item{\code{scale_x, scale_y}}{string or transformation object (see \code{\link[scales:new_transform]{scales::trans_new}} for the
 latter). The scale of the axes, we will pass them to the \code{trans} paramter of
 \code{\link[ggplot2:scale_continuous]{ggplot2::scale_x_continuous()}}, \code{\link[ggplot2:scale_continuous]{ggplot2::scale_y_continuous()}}, respectively.}
 
-\item{\code{vline, hline}}{list or NULL. Vertical/horizontal lines to be added to the plot. A list
-holding the arguments to pass to \code{\link[ggplot2:geom_abline]{ggplot2::geom_vline()}} and \code{\link[ggplot2:geom_abline]{ggplot2::geom_hline()}},
-respectively. Default is \code{NULL}, no line.}
-
-\item{\code{text_size}}{numeric. The size of text passed to the \code{size} parameter of
-\code{ggplot2::geom_text()}. The reason this attribute exists is you might want to have text
-size different the global text size of the plot. See \code{vignette("ggplot2-specs", 
-package = "ggplot2")} for more details.}
-
-\item{\code{text}}{list or NULL. Text label added to the plot. A list holding the arguments to
-pass to \code{\link[ggplot2:geom_text]{ggplot2::geom_label()}}. Default is \code{NULL}, no text at all.}
-
 \item{\code{alpha}}{numeric in [0, 1]. The alpha value for the points and lines in the
 plot.}
-
-\item{\code{width}}{numeric. The width of the plot in \code{units}.}
-
-\item{\code{height}}{numeric. The height of the plot in \code{units}.}
 
 \item{\code{colors}}{character vector. The colors to be used for the different models.
 Default is \code{NULL}, which means that the default colors of \code{ggplot2} will be used.}
 
 \item{\code{theme}}{S3 object inheriting from \code{"theme"} and \code{"gg"} (typically the return value of
 \code{\link[ggplot2:theme]{ggplot2::theme()}} or a complete ggplot2 theme like \code{\link[ggplot2:ggtheme]{ggplot2::theme_light()}}).
-The theme of the plot. Default is \code{NULL}, which means the default theme of ggplot2.}
+The theme of the plot. Default is \code{ggplot2::theme_minimal()}.}
+
+\item{\code{width}}{numeric. The width of the plot in \code{units}.}
+
+\item{\code{height}}{numeric. The height of the plot in \code{units}.}
 
 \item{\code{units}}{string. The units of \code{width} and \code{height}. Default is \code{"in"} (inches).}
 
@@ -216,7 +141,15 @@ A new Ass2d object.
 \subsection{Method \code{assess()}}{
 Assess a \emph{single} model on a data set.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Ass2d$assess(data, model, quiet = FALSE, msg_prefix = "")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Ass2d$assess(
+  data,
+  model,
+  return_type = "ggplot",
+  file = NULL,
+  fellow_csv = FALSE,
+  quiet = FALSE,
+  msg_prefix = ""
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -227,17 +160,24 @@ must be set.}
 
 \item{\code{model}}{Model object. Assess this model.}
 
+\item{\code{return_type}}{string. Either "ggplot" or "tibble". See return section for details.}
+
+\item{\code{file}}{string. If not \code{NULL} and \verb{return_type == "ggplot}, store the resulting plot
+in this file.}
+
+\item{\code{fellow_csv}}{logical. If \code{TRUE}, \code{file} is not \code{NULL} and \code{return_type == "ggplot"},
+store the plotted data in a csv named \code{file} with replaced file extension.}
+
 \item{\code{quiet}}{logical. Whether to suppress messages.}
 
 \item{\code{msg_prefix}}{string. Prefix for messages. Default is \code{""}.}
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Details}{
-We add the data underlying the plots to Ass2d object as a new attribute
-named \code{data}.
+\subsection{Returns}{
+ggplot object if \code{return_type == "ggplot"} or the tibble underlying the plot if
+\code{return_type == "tibble"}.
 }
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Ass2d-assess_center"></a>}}
@@ -249,8 +189,8 @@ Assess \emph{multiple} models on a data set. A wrapper around
 \if{html}{\out{<div class="r">}}\preformatted{Ass2d$assess_center(
   data,
   model_list,
-  model_tree_mirror = c("models", "results"),
-  comparison_plot = FALSE,
+  file = NULL,
+  fellow_csv = FALSE,
   quiet = FALSE
 )}\if{html}{\out{</div>}}
 }
@@ -258,20 +198,16 @@ Assess \emph{multiple} models on a data set. A wrapper around
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{data}}{Data object. Assess on this data set.}
+\item{\code{data}}{Data object. Assess on this data. The \code{cohort} attribute must be set.}
 
 \item{\code{model_list}}{list of Model objects. Assess these models.
 We infer the \code{AssSpec2d} for the single plots in a reasonable way from it.
 We skip models with the \code{continuous_output} attribute being FALSE (a plot
 is an overkill in this case).}
 
-\item{\code{model_tree_mirror}}{character vector of length 2. Store the single plots in
-the same directory as the corresponding model for the train cohort and the
-comparison plot at \code{file}. When doing the analogous for the test data, replace
-the first element of \code{model_tree_mirror} by the second element in every file path.}
+\item{\code{file}}{string or NULL. If not \code{NULL}, store the resulting plot in this file.}
 
-\item{\code{comparison_plot}}{logical. Whether to generate a plot holding the assessment
-of all models. Default is \code{TRUE}.}
+\item{\code{fellow_csv}}{logical. Whether to also store the plotted data in a csv.}
 
 \item{\code{quiet}}{logical. Whether to suppress messages. Default is \code{FALSE}.}
 }

@@ -6,14 +6,11 @@ test_that("plot_2d_metric() works", {
 
   dir <- withr::local_tempdir()
   ass2d <- Ass2d$new(
-    file = file.path(dir, "test.jpeg"),
     x_metric = "rpp",
     y_metric = "prec",
-    title = "this title",
     x_lab = "this x lab",
     y_lab = "that y lab",
     scale_x = "identity",
-    text = list(ggplot2::aes(x = 0.5, y = 0.5, label = "this text")),
     colors = c("black", "blue", "yellow", "red"),
     theme = ggplot2::theme_dark() + 
       ggplot2::theme(
@@ -31,19 +28,21 @@ test_that("plot_2d_metric() works", {
   plt <- plot_2d_metric(
     tbl = tbl,
     ass2d = ass2d,
+    file = NULL,
+    fellow_csv = FALSE,
     quiet = TRUE
   )
   # print(plt)
 
   tbl[["model"]] <- sample(c("model1", "model2"), n_row, replace = TRUE)
-  ass2d$file <- file.path(dir, "plt.jpeg")
-  ass2d$fellow_csv <- TRUE
   plt <- plot_2d_metric(
     tbl = tbl,
     ass2d = ass2d,
+    file = file.path(dir, "plt.jpeg"),
+    fellow_csv = TRUE,
     quiet = TRUE
   )
   # print(plt)
-  expect_true(file.exists(ass2d$file))
+  expect_true(file.exists(file.path(dir, "plt.jpeg")))
   expect_true(file.exists(file.path(dir, "plt.csv")))
 })
