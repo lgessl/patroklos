@@ -66,7 +66,6 @@ val_vs_test <- function(
     for (i in seq_along(model_list)) {
         model <- model_list[[i]]
         if (!quiet) message("At model ", model$name)
-        # model <- readRDS(file.path(model$directory, model$file))
         test_cohort <- data$cohort
         cohorts <- c("val_predict", test_cohort)
         skip <- FALSE
