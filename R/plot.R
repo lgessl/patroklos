@@ -11,21 +11,18 @@ plot_2d_metric <- function(
         data = tbl,
         mapping = ggplot2::aes(
             x = .data[[ass2d$x_metric]], 
-            y = .data[[ass2d$y_metric]]
+            y = .data[[ass2d$y_metric]],
+            color = .data[["model"]]
         )
     ) + 
         ass2d$theme +
-        ggplot2::geom_point(alpha = ass2d$alpha, shape = 4) +
         ggplot2::labs(
             x = ass2d$x_lab, 
             y = ass2d$y_lab
         ) +
         ggplot2::scale_x_continuous(trans = ass2d$scale_x) + 
-        ggplot2::scale_y_continuous(trans = ass2d$scale_y)
-    if (length(unique(tbl[["model"]])) > 1) plt <- plt + ggplot2::aes(color = .data[["model"]])
-    if(!is.null(ass2d$colors)){
-        plt <- plt + ggplot2::scale_color_manual(values = ass2d$colors)
-    }
+        ggplot2::scale_y_continuous(trans = ass2d$scale_y) +
+        ggplot2::geom_line(alpha = ass2d$alpha)
 
     if(!is.null(file)){
         if(!quiet)
