@@ -6,7 +6,7 @@
 
   <!-- badges: end -->
 
-## A pipeline to learn omics-based survival models for cancer patients
+## An R package for binary classification of survival
 
 ### What's the scenario this R package is made for?
 
