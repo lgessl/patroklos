@@ -104,7 +104,8 @@ non-binary output (like a logistic regression), we choose a threshold
 by maximizing the left-most metric in <code>metrics</code> <em>that is made for
 classifiers with binary output</em> (e.g. precision within prev_range below).
 If this cannot be done reasonably, throw an error. Make sure that <code>hr</code> precedes
-<code>hr_ci_ll</code>, <code>hr_ci_ul</code> and <code>hr_p</code> in <code>metrics</code>.</p></dd>
+<code>hr_ci_ll</code>, <code>hr_ci_ul</code> and <code>hr_p</code> in <code>metrics</code>; <code>precision_ci_ll</code> must precede
+<code>precision_ci_ul</code>.</p></dd>
 
 
 <dt><code>prev_range</code></dt>
