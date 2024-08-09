@@ -28,7 +28,8 @@ AssScalar <- R6::R6Class("AssScalar",
         #' by maximizing the left-most metric in `metrics` *that is made for 
         #' classifiers with binary output* (e.g. precision within prev_range below). 
         #' If this cannot be done reasonably, throw an error. Make sure that `hr` precedes 
-        #' `hr_ci_ll`, `hr_ci_ul` and `hr_p` in `metrics`.
+        #' `hr_ci_ll`, `hr_ci_ul` and `hr_p` in `metrics`; `precision_ci_ll` must precede 
+        #' `precision_ci_ul`.
         #' @param prev_range numeric numeric vector of length 2. For metrics that
         #' need thresholding only consider thresholds that yield a prevalence in
         #' this range.
