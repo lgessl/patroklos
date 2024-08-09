@@ -6,7 +6,7 @@
 
   <!-- badges: end -->
 
-## An R package for binary classification of survival
+## An R package pipelining binary classification of survival
 
 ### What's the scenario this R package is made for?
 

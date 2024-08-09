@@ -108,6 +108,7 @@ get_metric <- function(
     metric_v <- numeric(length(ass_scalar$metrics))
     thresholds <- 1
     hr_and_more <- numeric(4) 
+    prec_ci <- numeric(2)
     if (!binary_bool) {
         thresholds <- unique(predicted)
         prevs <- vapply(thresholds, function(t) mean(predicted >= t), numeric(1))
@@ -195,11 +196,15 @@ get_metric <- function(
             },
             "precision_ci_ll" = {
                 check_one_threshold()
-                j_res <- stats::binom.test(
+                prec_ci <- stats::binom.test(
                     x = sum(actual[predicted >= thresholds]),
                     n = sum(predicted >= thresholds),
                     conf.level = ass_scalar$confidence_level
-                )$conf.int[1]
+                )$conf.int
+                j_res <- prec_ci[1]
+            },
+            "precision_ci_ul" = {
+                j_res <- prec_ci[2]
             },
             "hr" = {
                 check_one_threshold()

@@ -88,7 +88,8 @@ test_that("AssScalar$assess_center() works", {
   n_na_in_pheno <- 5
   n_fold <- 2
   multiple_metrics <- c("precision", "accuracy", "n_true", "perc_true", "n_samples", 
-    "logrank", "threshold", "prevalence", "precision_ci_ll", "hr", "hr_ci_ll", "hr_ci_ul", "hr_p")
+    "logrank", "threshold", "prevalence", "precision_ci_ll", "precision_ci_ul", "hr", "hr_ci_ll", 
+    "hr_ci_ul", "hr_p")
   single_metric <- "auc"
 
   dir <- withr::local_tempdir()
@@ -189,6 +190,9 @@ test_that("AssScalar$assess_center() works", {
   expect_equal(nrow(eval_tbl), length(model_list)-1)
   expect_equal(colnames(eval_tbl), c("model", "cohort", ass_scalar$metrics))
   expect_true(is.numeric(as.matrix(eval_tbl[, 3:ncol(eval_tbl)])))
+  expect_true(all(eval_tbl[["precision_ci_ll"]] < eval_tbl[["precision_ci_ul"]]))
+  expect_true(all(0 < eval_tbl[["precision_ci_ll"]]))
+  expect_true(all(eval_tbl[["precision_ci_ul"]] <= 1))
 
   data$cohort <- "test"
   ass_scalar$metrics <- "precision"
