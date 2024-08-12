@@ -1,14 +1,15 @@
 test_that("AssScalar$new() works", {
 
     ass_scalar <- AssScalar$new(
-        metrics = c("auc", "accuracy", "prevalence", "precision_ci_ll", "n_true"),
+        metrics = c("auc", "accuracy", "prevalence", "precision_ci_ll", "precision_ci_ul", "n_true"),
         prev_range = c(0.15, 0.30),
         confidence_level = 0.9,
         benchmark = list(name = "ipi", prev_range = c(0.10, 1)),
         file = "some file",
         round_digits = 4
     )
-    expect_equal(ass_scalar$metrics, c("auc", "accuracy", "prevalence", "precision_ci_ll", "n_true"))
+    expect_equal(ass_scalar$metrics, c("auc", "accuracy", "prevalence", "precision_ci_ll", 
+      "precision_ci_ul", "n_true"))
     expect_equal(ass_scalar$prev_range, c(0.15, 0.30))
     expect_equal(ass_scalar$confidence_level, 0.9)
     expect_equal(ass_scalar$benchmark, list(name = "ipi", prev_range = c(0.10, 1)))
@@ -176,7 +177,7 @@ test_that("AssScalar$assess_center() works", {
   training_camp(model_list, data, quiet = TRUE, skip_on_error = FALSE) 
   model_list <- c(model_list, list(model5))
   ass_scalar <- AssScalar$new(
-    metrics = "auc", # just for the moment
+    metrics = multiple_metrics,
     file = file.path(dir, "models/eval.csv"),
     prev_range = c(0.15, 1),
     benchmark = list(name = "cnn projection", prev_range = c(0.10, 1))
