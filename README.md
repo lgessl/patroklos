@@ -10,9 +10,7 @@
 
 patroklos is pipeline that allows you to define, train, validate, test and analyze models whose 
 final goal it is to predict if an event occurs before or after a pivotal time. It does so for 
-the famous train-validate-test split of your data, where you train and test your models on a 
-training cohort and pick the best validated model and take it over to the test cohort to assess 
-its generalization error on new data.
+the famous train-validate-test split of the data.
 
 ### Installation
 
@@ -129,13 +127,12 @@ If the early model was trained on another data set, this is just an ordinary fea
 model on the same data set as the late model, things become tricky and you might want to have a 
 look at `greedy_nestor()` and `long_nestor()`.
 
-
 ### Usage
 
 See patroklos in action in the 
 [repository of my master thesis](https://github.com/lgessl/master-thesis).
 
-### Using your own models
+<!-- ### Using your own models
 
 To fit into the pipeline, models and their related functions must meet certain 
 requirements. Typically in R, training and assessing a model involves 
@@ -206,4 +203,4 @@ hyperparameter $\lambda$ (which may be a tuple, not just a scalar). The embraced
 word "scalar" is a clear constraint here and it may be worth relaxing the definition 
 from a search line to a search grid for hyperparameters in the future (which of 
 course involves modifying those functions requiring a *patroklos-compliant 
-fitter with CV tuning*).
+fitter with CV tuning*). -->
