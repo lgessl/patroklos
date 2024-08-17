@@ -56,14 +56,33 @@
 <div class="section level2">
 <h2 id="an-r-package-pipelining-binary-classification-of-survival">An R package pipelining binary classification of survival<a class="anchor" aria-label="anchor" href="#an-r-package-pipelining-binary-classification-of-survival"></a>
 </h2>
+<p>patroklos is pipeline that allows you to define, train, validate, test and analyze models whose final goal it is to predict if an event occurs before or after a pivotal time. It does so for the famous train-validate-test split of your data, where you train and test your models on a training cohort and pick the best validated model and take it over to the test cohort to assess its generalization error on new data.</p>
 <div class="section level3">
-<h3 id="whats-the-scenario-this-r-package-is-made-for">What’s the scenario this R package is made for?<a class="anchor" aria-label="anchor" href="#whats-the-scenario-this-r-package-is-made-for"></a>
+<h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h3>
-<p>Imagine you are given a data set holding information on cancer patients. This data includes a high-dimensional measurement like bulk RNA-seq data (“expression data”) and some other features (“pheno data”). Among the pheno data is survival information in the form of time to event and right censoring. You want to build a binary classifier that takes a subset of your features (excluding the two survival features) as input to predict for a given sample if it faces the event (like progression or death) before or after a certain time.</p>
-<p>Finding such a classifier involves a lot of trial and error: you will try out a whole bunch of models. Every model family again involves some hyperparameters you need to tune. The high-dimensional part of your data requires you to apply regularization to your models, in other words: tuning a regularization parameter. After you’ve trained the models, you need to assess them and finally come up with the “best” one, where you first need to decide what you mean by “best”.</p>
-<p>Even after you’ve picked a winner, this is just the winner on a specific data set. Somebody (maybe even yourself) may come up with another data set and you need to do an analogous analysis on the new data set.</p>
-<p>patroklos will do all the repetitive, administrative work and lets you focus on the mathematical and biological part of your work.</p>
-<p>All in all, patroklos is not the star of the show, but it plays a key role in it—just like Πάτροκλος in the Iliad: being Achilles’ best friend, his death brings Achilles back to the battlefield helping the Greeks score decisive victories.</p>
+<p>Make sure you have the <code>devtools</code> package installed, start an R session and then type:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"devtools"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"lgessl/patroklos"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="whats-the-scenario-this-r-package-is-tailored-for">What’s the scenario this R package is tailored for?<a class="anchor" aria-label="anchor" href="#whats-the-scenario-this-r-package-is-tailored-for"></a>
+</h3>
+<p>patroklos is a good choice for the just mentioned scenario and it is very good choice for the scenario we tailored it for.</p>
+<p>Imagine you are given a data set holding information on cancer patients. This data includes a many, many features from a high-throughput measurement like gene-expression levels for hundreds or even thousands of genes (“expression data”) and some other features (“pheno data”). Among the pheno data is survival information in the form of time to event and right censoring. You want to build a binary classifier that takes a subset of your features (excluding the two survival features) as input to predict for a given sample if it faces the event (like progression or death) before or after a certain time.</p>
+<p>This tasks involves</p>
+<ul>
+<li>preprocessing the data,</li>
+<li>deciding on an error measure for validation and testing,</li>
+<li>training a whole bunch of models and validating them, including tuning their hyperparameters,</li>
+<li>assessing the best validated model on the test cohort and</li>
+<li>unlocking the test set for all trained models to do some analysis, e.g., how reliably</li>
+<li>cross-validated errors estimate the test error.</li>
+</ul>
+<p>At any point in this sequence, you or your boss may come up with new ideas: training a new model, training the same models on a different data set, testing the models on a different test set or changing the error measure for validation. But you are the boss of this machine learning project and, as such, you need to be flexible and able to integrate new ideas quickly. You may hire a secretary. Or you resort to patroklos.</p>
+<p>patroklos will do a big part of the repetitive, administrative work and lets you focus on the statistical and biological part of your work. If there is still bureaucratic work left for you, patroklos at least tells you how to do it.</p>
+<p>All in all, patroklos is not the star of the shows. But it plays a key role in it — just like Πάτροκλος in the Iliad: being Achilles’ best friend, his death brings Achilles back to the battlefield helping the Greeks score decisive victories.</p>
 </div>
 <div class="section level3">
 <h3 id="how-does-this-r-package-make-your-life-easier">How does this R package make your life easier?<a class="anchor" aria-label="anchor" href="#how-does-this-r-package-make-your-life-easier"></a>
@@ -71,84 +90,46 @@
 <p>patroklos has three major goals: making integrating</p>
 <ul>
 <li>new data,</li>
-<li>new models and</li>
-<li>new kinds of assessments</li>
+<li>new models with new hyperparameters and</li>
+<li>your custom validation and testing</li>
 </ul>
-<p>into your workflow as easy and effortless as possible without forcing you too much to use a certain paradigm.</p>
+<p>into your workflow as effortless as possible and at the same leaving you enough freedom to adapt the pipeline to the needs of your project.</p>
 <div class="section level4">
 <h4 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
 </h4>
-<p>We give you the tools to preprocess new data and bring it into the format patroklos works with. You specify and store everything in the R6 class <code>Data</code>.</p>
+<p>The R6 class <code>Data</code> tells you how to preprocess your data. patroklos also gives you some tools you often need for preprocessing.</p>
 </div>
 <div class="section level4">
 <h4 id="models">Models<a class="anchor" aria-label="anchor" href="#models"></a>
 </h4>
-<p>You specify models in another R6 class, <code>Model</code>; “specifying” means fixing all hyperparameters except for the regularization parameter <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>. Why? To tune <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math> we split the data into a train and test cohort and determine its optimal choice in a cross validation on the train cohort. The function optimizing <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math> and all the other model parameters is an attribute of the <code>Model</code> object and you can easily provide your own ones.</p>
+<p>patroklos abstracts the data from the models, which you specify in another R6 class, <code>Model</code>. A model typically specifies more than just one combination of hyperparameters that need to be tuned. Concerning model classes and fitting functions, you have full flexibility — you can provide any fitting function as an attribute to a <code>Model</code> as long as its function interface fulfills patroklos’s expectations. If the fitting function generates hyperparameters automatically or tunes hyperparameters internally, that’s totally fine as long it returns a single fit object with validated predictions and a predict method. Again, it is left 100% to the model how it calculates the validated predictions, e.g. by cross validation or out-of-bag predictions. patroklos also provides patroklos-compliant fitting functions out of the box, namely for Gauss, logistic and Cox models by means of the <code>zeroSum</code> package and random forests by means of the <code>ranger</code> package. For every <code>Model</code>, patroklos can tune some model-agnostic hyperparameters itself.</p>
 </div>
 <div class="section level4">
-<h4 id="assessment">Assessment<a class="anchor" aria-label="anchor" href="#assessment"></a>
+<h4 id="validation-and-testing">Validation and testing<a class="anchor" aria-label="anchor" href="#validation-and-testing"></a>
 </h4>
-<p>On the test cohort (which we haven’t touched so far) we can now assess the trained models. Keep in mind that most models used as binary classifiers don’t output the final classification, but only continuous score that we need to threshold (this threshold is yet another hyperparameter of the model). To find the model best fulfilling its job and threshold it, we proceed as follows:</p>
-<ol style="list-style-type: decimal">
-<li>In a pre-selection step, we map every trained model to a single real number: a score indicating its goodness on the test cohort (like the ROC-AUC). Of course, you can define your metric here. This allows us to reduce the models of interest to an arbitrary small number if not one. The R6 class <code>AssScalar</code> does this.</li>
-<li>For the remaining models, we plot one metric against another metric (e.g. rate of positive predictions versus precision). Keep in mind: we essentially get as many points in the two-dimensional space as the model has different output values here as we can use every output value as a threshold. This plot or these plots will guide our decision for a threshold and therefore for a final binary classifier. The R6 class <code>Ass2d</code> does this.</li>
-</ol>
-</div>
-<div class="section level4">
-<h4 id="in-a-nut-shell">In a nut shell<a class="anchor" aria-label="anchor" href="#in-a-nut-shell"></a>
-</h4>
-<p><img src="reference/figures/README-/test-train.jpeg" alt="drawing" width="400"></p>
+<p>Validate your models on their training data and test them on some test data for a variety of metrics including (scalar) error measures — precision (under the constraint of a minimum rate of positive predictions a.k.a prevalence), hazard ratio, ROC-AUC, lower and upper bound of the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math>-confidence interval of the precision or hazard ratio — with the R6 classes <code>AssScalar</code>. For many models you first need to threshold their output before you have a binary classifier at hand. The R6 class <code>Ass2d</code>, which, for every possible threshold, plots one metric of binary classifier against another — e.g. prevalence against precision — guides in thresholding. In testing, you often want to compare your picked model to a benchmark model — no problem, just include its output into your data and specify a <code>Model</code> for it with the help of the <code><a href="reference/projection_on_feature.html">projection_on_feature()</a></code> fitter.</p>
+<p>#### Meta analysis</p>
+<p>After testing the picked model on a test cohort, unlock it for more models, plot validation versus test error, group models by their hyperparameters and find out which hyperparameters come with systematic flaws in validation and notoriously high test errors. Exclude problematic models from the set of <code>Model</code>s in the future. <code><a href="reference/val_vs_test.html">val_vs_test()</a></code> is your friend here.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="more-tweaks-powered-by-patroklos">More tweaks powered by patroklos<a class="anchor" aria-label="anchor" href="#more-tweaks-powered-by-patroklos"></a>
+<h3 id="more-tweaks-by-patroklos">More tweaks by patroklos<a class="anchor" aria-label="anchor" href="#more-tweaks-by-patroklos"></a>
 </h3>
-<div class="section level4">
-<h4 id="repeated-splits-into-training-and-test-cohort">Repeated splits into training and test cohort<a class="anchor" aria-label="anchor" href="#repeated-splits-into-training-and-test-cohort"></a>
-</h4>
-<p>Splitting your data into a training and test cohort is very close to the real-world scenario, in which the entity generating the data withholds the test cohort in the first place and you are only given the training cohort. Sometimes this split may be lucky for you, sometimes it may be really tough, but this randomness is not in your heads. What is in your hands though is to submit the model with the best expected (or average) performance in such a scenario. patroklos lets you easily repeat the training part for multiple splits into training and test data and averages in a reasonable manner in the assessment step.</p>
-</div>
 <div class="section level4">
 <h4 id="storing-and-reading-in-models">Storing and reading in models<a class="anchor" aria-label="anchor" href="#storing-and-reading-in-models"></a>
 </h4>
-<p>Training and assessing so many models takes a lot of time. So as your project evolves over time, you don’t want to fit your models again and again. To this end, patroklos heavily resorts to storing the models and reading them in on demand. Typically you would also “store” the <code>Model</code>, <code>AssScalar</code> and <code>Ass2d</code> objects, either as an .rds file or, more typically, their initialization in an R script. Adding a new model or assessment is then equivalent to adding some lines of code to these R scripts. Typically, you would store your models below <code>models/&lt;data-set name&gt;</code>, patroklos will then store the assessments in the analogous file tree below <code>results/&lt;data-set name&gt;</code>.</p>
+<p>Training and assessing so many models takes a lot of time. So as your project evolves over time, you don’t want to fit your models again and again. To this end, patroklos heavily resorts to storing the models and reading them in on demand. Typically you would also “store” the <code>Model</code>, <code>AssScalar</code> and <code>Ass2d</code> objects, either as an .rds file or, more typically, their initialization in an R script.</p>
 </div>
 <div class="section level4">
-<h4 id="early-integration">Early integration<a class="anchor" aria-label="anchor" href="#early-integration"></a>
+<h4 id="integrating-models-into-another-model">Integrating models into another model<a class="anchor" aria-label="anchor" href="#integrating-models-into-another-model"></a>
 </h4>
-<p>For a set of diverse features (keep in mind: high-dimensional data and pheno data), it is tempting and simple to do early integration, i.e. providing them to a well known model with a well implemented fitting algorithm. While patroklos assumes you always give the model the high-dimensional omics data, you have the freedom to add features from pheno data, continuous and categorical ones alike. When I started designing this package, I had the <a href="https://github.com/rehbergT/zeroSum" class="external-link"><code>zeroSum</code></a> package delivering the key models that deal with the high-dimensional data in my mind. The <code>zeroSum</code> package provides all the functionality of the <a href="https://github.com/cran/glmnet" class="external-link"><code>glmnet</code></a> with each (generalized linear) model optionally endowed with the zero-sum constraint that causes the model to become scale-invariant. patroklos provides a wrapper around <code><a href="https://rdrr.io/pkg/zeroSum/man/zeroSum.html" class="external-link">zeroSum::zeroSum</a></code> named <code>zeroSumLI</code> to make <code>zeroSum</code> ready for early integration.</p>
-<p>Schematically this renders as follows:</p>
-<p><img src="reference/figures/README-/early-int.jpeg" alt="drawing" width="400"></p>
-</div>
-<div class="section level4">
-<h4 id="late-integration">Late integration<a class="anchor" aria-label="anchor" href="#late-integration"></a>
-</h4>
-<p>Early integration seems easy at first glance, but sometimes the fitting algorithm might not be able to handle the data you provide: features on vastly different scales. In such a case, you may want to prefer late integration, i.e. first training an “early” model on the high-dimensional data and then using its (scalar) output together with some more pheno features as the input of another, “late” model.</p>
-<p>I’m currently working to include late integration in patroklos and provide fitting algorithms to do this.</p>
-<p>Nesting a regularized model whose regularization is tuned in a cross validation into a another model means training the resulting model involves a cross validation. We should continue the cross validation of the early model into the late model. I made <code>zeroSum</code> report enough details on the (many, many) models fit in a cross validation in a fork called <a href="https://github.com/lgessl/zeroSumLI" class="external-link"><code>zeroSumLI</code></a>.</p>
-<p>Nesting has no limits as the below picture shows.</p>
-<p><img src="reference/figures/README-/late-int.jpeg" alt="drawing" width="400"></p>
+<p>Some of the features of a <code>Model</code> may be the output of another model, e.g., from a gene-expression signature. We call the latter model, whose output becomes the new feature, an <em>early</em> and the former model, which experiences the output of the early model as a feature, the <em>late</em> model. If the early model was trained on another data set, this is just an ordinary feature (which might have issues with batch effects) — easy. If, however, you want to train the early model on the same data set as the late model, things become tricky and you might want to have a look at <code><a href="reference/greedy_nestor.html">greedy_nestor()</a></code> and <code><a href="reference/long_nestor.html">long_nestor()</a></code>.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+<h3 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h3>
-<p>Make sure you have the <code>devtools</code> package installed, start an R session and then type:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"lgessl/patroklos"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
-</h3>
-<p>There are four R6 classes a user of patroklos needs to know about: <code>Data</code>, <code>Model</code>, <code>AssScalar</code> and <code>Ass2d</code>. To understand how they work together over the course of the pipeline and how to use patroklos for your project, you should read their documentation in the same order.</p>
-<p>As for preprocessing, you might be interested in</p>
-<ul>
-<li>[<code>discretize_tbl_columns()</code>] to turn continuous features in your pheno data into binary ones by thresholding them,</li>
-<li>[<code>ensure_patients_math()</code>] to ensure expression and pheno data contain exactly the same samples,</li>
-<li>[<code>qc_preprocess()</code>] to make sure the readily preprocessed data is in the format patroklos expects, and</li>
-<li>[<code><a href="reference/write_data_info.html">write_data_info()</a></code>] to store meta information on the data set in .json file.</li>
-</ul>
-<p><code><a href="reference/prepend_to_directory.html">prepend_to_directory()</a></code> helps you use <code>Model</code>s you only initialized once to you for multiple data sets.</p>
+<p>See patroklos in action in the <a href="https://github.com/lgessl/master-thesis" class="external-link">repository of my master thesis</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="using-your-own-models">Using your own models<a class="anchor" aria-label="anchor" href="#using-your-own-models"></a>
