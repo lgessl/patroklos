@@ -99,7 +99,7 @@ you often want to compare your picked model to a benchmark model — no problem,
 output into your data and specify a `Model` for it with the help of the `projection_on_feature()` 
 fitter.
 
- #### Meta analysis
+#### Meta analysis
 
 After testing the picked model on a test cohort, unlock it for more models, plot validation versus 
 test error, group models by their hyperparameters and find out which hyperparameters come with 
@@ -130,76 +130,3 @@ look at `greedy_nestor()` and `long_nestor()`.
 
 See patroklos in action in the 
 [repository of my master thesis](https://github.com/lgessl/master-thesis).
-
-<!-- ### Using your own models
-
-To fit into the pipeline, models and their related functions must meet certain 
-requirements. Typically in R, training and assessing a model involves 
-
-- a function that fit_obj the model to training data, optionally tunes hyperparameters
-  in a cross validation, e.g., and returns 
-- an S3 object representing the fit. Often this object holds some kind of validated 
-  predictions like those from a cross validation or out-of-bag predictions in the 
-  case of a random forest. This S3 object has a 
-- `predict()` method that predicts on new data.
-
-We will refer to them as *fitter*, *fit object* and *predict method* in the 
-following. 
-
-For many packages, these three components already fulfill the expectations 
-patroklos has or you can at least use part of patroklos's functionality with them.
-To be able to access patroklos's full power for a model, you may need to wrap 
-the fitter and the predict method and to modify the fit object to make them 
-patroklos-compatible. There are multiple definitions of patroklos-compatibility 
-we will elaborate on below.
-
-#### patroklos-compliant predict method
-
-A *patroklos-compliant predict method* declares three parameters,
-
-- `object`: the fit object,
-- `newx`: prediction data as a named numeric matrix, samples correspond to named
-  rows, features to named columns, and
-- `...`: additional parameters (often passed on to the wrapped predict method).
-
-It returns a named numeric vector of predictions from `newx`.
-
-#### patroklos-compliant fitter
-
-A *patroklos-compliant fitter* declares three parameters,
-
-- `x`: training data as a named numeric matrix, samples correspond to named rows,
-  features to named columns. It has an attribute `li_var_suffix`, i.e. columns in 
-  `x` with the suffix `li_var_suffix` are designated for late integration and the 
-  fitter may use this information.
-- `y`: binary response as a named numeric vector. Its names must match 
-  the row names of `x`.
-- `...`: additional parameters (often passed on to the wrapped fitter).
-
-It returns an S3 object with a patroklos-compliant predict method.
-
-#### patroklos-compliant fitter with validated predictions
-
-A *patroklos-compliant fitter with validated predictions* is a patroklos-compliant
-fitter whose S3 return value has an attribute `val_predict`, a 
-numeric vector holding some form of validated predictions. Validated predictions 
-are predictions made on independent data like cross-validated (CV) predictions 
-or out-of-bag (OOB) predictions in the case of random forests.
-
-#### patroklos-compliant fitter with CV tuning 
-
-A *patroklos-compliant fitter with cross-validation tuning* is a
-patroklos-compliant fitter whose return value has the attributes
-
-- `val_predict_list`: list of numeric vectors holding cross-validated 
-predictions for every hyperparameter $\lambda$,
-- `lambda`: numeric or character vector of the hyperparameters $\lambda$.
-
-While a *patroklos-compliant fitter with validated predictions* only performs 
-a cross validation for one combination of hyperparameters, a *patroklos-compliant
-fitter with CV tuning* performs a cross validation for multiple values of a 
-hyperparameter $\lambda$ (which may be a tuple, not just a scalar). The embraced 
-word "scalar" is a clear constraint here and it may be worth relaxing the definition 
-from a search line to a search grid for hyperparameters in the future (which of 
-course involves modifying those functions requiring a *patroklos-compliant 
-fitter with CV tuning*). -->

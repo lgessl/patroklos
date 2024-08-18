@@ -225,7 +225,7 @@ projection_on_feature <- function(
 
 #' @title Get features with non-zero coefficients
 #' @param fit_obj S3 fit object.
-#' @return One-column matrix with non-zero coefficients and featue names as row names.
+#' @return One-column matrix with non-zero coefficients and feature names as row names.
 #' @details Throws an error if method for a class is not implemented (e.g. for `ptk_ranger` 
 #' because "non-zero coefficients" do not make sense with random forests).
 #' @export
