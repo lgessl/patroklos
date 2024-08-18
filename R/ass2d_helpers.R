@@ -1,5 +1,5 @@
 ass2d_initialize <- function(self, private, x_metric, y_metric, 
-    ci_level, x_lab, y_lab, xlim, ylim, scale_x, scale_y, 
+    confidence_level, x_lab, y_lab, xlim, ylim, scale_x, scale_y, 
     alpha, colors, theme, width, height, units, dpi)
 {
     if(is.null(x_lab)){
@@ -14,7 +14,7 @@ ass2d_initialize <- function(self, private, x_metric, y_metric,
     }
     stopifnot(is.character(x_metric))
     stopifnot(is.character(y_metric))
-    stopifnot(is.numeric(ci_level) && ci_level >= 0 && ci_level <= 1)
+    stopifnot(is.numeric(confidence_level) && confidence_level >= 0 && confidence_level <= 1)
     stopifnot(is.character(x_lab))
     stopifnot(is.character(y_lab))
     stopifnot(is.numeric(xlim) || is.null(xlim) || 
@@ -30,7 +30,7 @@ ass2d_initialize <- function(self, private, x_metric, y_metric,
 
     self$x_metric <- x_metric
     self$y_metric <- y_metric
-    self$ci_level <- ci_level
+    self$confidence_level <- confidence_level
     self$x_lab <- x_lab
     self$y_lab <- y_lab
     self$xlim <- xlim

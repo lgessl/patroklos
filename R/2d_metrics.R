@@ -18,7 +18,7 @@ ass2d_get_2d_metric <- function(self, private, data, model, quiet){
         tbl <- precision_ci(
             predicted = predicted,
             actual = actual,
-            confidence_level = self$ci_level
+            confidence_level = self$confidence_level
         )
     } else if (self$x_metric == "rank" && self$y_metric == "risk score") {
         tbl <- scores_rank(

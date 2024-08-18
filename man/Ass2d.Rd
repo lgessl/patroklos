@@ -6,14 +6,14 @@
 \description{
 Assess how well a model can predict time to event less than a certain
 threshold with two metrics by thresholding the continuous output in every possible way and
-then plot one metric for a binary classifier against another metric for a binary classifier.
+then plot one metric for a binary classifier against another one.
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{x_metric, y_metric}}{Metrics shown on both axes.}
 
-\item{\code{ci_level}}{For any confidence intervals calculated use this level.}
+\item{\code{confidence_level}}{Confidence level gamma, e.g., for confidence intervals.}
 
 \item{\code{x_lab, y_lab}}{Axis labels.}
 
@@ -61,12 +61,12 @@ then plot one metric for a binary classifier against another metric for a binary
 \if{html}{\out{<a id="method-Ass2d-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Ass2d-new}{}}}
 \subsection{Method \code{new()}}{
-Create a new Ass2d instance.
+Construct an \code{Ass2d} instance.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Ass2d$new(
   x_metric,
   y_metric,
-  ci_level = 0.95,
+  confidence_level = 0.95,
   x_lab = NULL,
   y_lab = NULL,
   xlim = c(-Inf, Inf),
@@ -91,24 +91,25 @@ Regarding the choices:
 \itemize{
 \item Every combination of (\code{measure}, \code{x.measure}) one can pass to
 \code{\link[ROCR:performance]{ROCR::performance()}}.
-\item If \code{y_metric} is \code{"logrank"} or \code{"precision_ci"} (the upper limit of
-the \code{ci_level} confidence interval of the precision, see below),
+\item If \code{y_metric} is \code{"logrank"} or \code{"precision_ci"} (the lower limit of
+the \code{confidence_level} confidence interval of the precision, see below),
 \code{x_metric} must be \code{"prevalence"} or \code{"rpp"} (rate of positive
 predictions).
 \item For (\code{x_metric}, \code{y_metric}) = (\code{"rank"}, "\verb{risk score}"), plot the
-rank of every risk score agaisnt the risk score and color by true
+rank of every risk score against the risk score and color by true
 risk.
 }}
 
-\item{\code{ci_level}}{numeric in [0, 1]. The level used to calculate confidence intervals.}
+\item{\code{confidence_level}}{numeric in [0, 1]. Confidence level gamma for confidence
+intervals.}
 
-\item{\code{x_lab, y_lab}}{string. Axis labels. Default is \code{x_metric} and \code{y_metric}, respectively.}
+\item{\code{x_lab, y_lab}}{string. Axis labels. Default is \code{x_metric} and \code{y_metric}.}
 
 \item{\code{xlim, ylim}}{numeric vector of length 2. The limits for both axes. Default is
-no contraints.}
+no limits}
 
 \item{\code{scale_x, scale_y}}{string or transformation object (see \code{\link[scales:new_transform]{scales::trans_new}} for the
-latter). The scale of the axes, we will pass them to the \code{trans} paramter of
+latter). The scale of the axes, we will pass them to the \code{trans} parameter of
 \code{\link[ggplot2:scale_continuous]{ggplot2::scale_x_continuous()}}, \code{\link[ggplot2:scale_continuous]{ggplot2::scale_y_continuous()}}, respectively.}
 
 \item{\code{alpha}}{numeric in [0, 1]. The alpha value for the points and lines in the
@@ -117,8 +118,8 @@ plot.}
 \item{\code{colors}}{character vector. The colors to be used for the different models.
 Default is \code{NULL}, which means that the default colors of \code{ggplot2} will be used.}
 
-\item{\code{theme}}{S3 object inheriting from \code{"theme"} and \code{"gg"} (typically the return value of
-\code{\link[ggplot2:theme]{ggplot2::theme()}} or a complete ggplot2 theme like \code{\link[ggplot2:ggtheme]{ggplot2::theme_light()}}).
+\item{\code{theme}}{S3 object inheriting from \code{"theme"} and \code{"gg"} (typically the return value
+of \code{\link[ggplot2:theme]{ggplot2::theme()}} or a complete ggplot2 theme like \code{\link[ggplot2:ggtheme]{ggplot2::theme_light()}}).
 The theme of the plot. Default is \code{ggplot2::theme_minimal()}.}
 
 \item{\code{width}}{numeric. The width of the plot in \code{units}.}
@@ -132,14 +133,14 @@ The theme of the plot. Default is \code{ggplot2::theme_minimal()}.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A new Ass2d object.
+A new \code{Ass2d} object.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Ass2d-assess"></a>}}
 \if{latex}{\out{\hypertarget{method-Ass2d-assess}{}}}
 \subsection{Method \code{assess()}}{
-Assess a \emph{single} model on a data set.
+Assess a \emph{single} model.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Ass2d$assess(
   data,
@@ -183,8 +184,7 @@ ggplot object if \code{return_type == "ggplot"} or the tibble underlying the plo
 \if{html}{\out{<a id="method-Ass2d-assess_center"></a>}}
 \if{latex}{\out{\hypertarget{method-Ass2d-assess_center}{}}}
 \subsection{Method \code{assess_center()}}{
-Assess \emph{multiple} models on a data set. A wrapper around
-\code{assess()}.
+Wrap \code{assess()} to assess \emph{multiple} models and store the result.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Ass2d$assess_center(
   data,
@@ -200,8 +200,7 @@ Assess \emph{multiple} models on a data set. A wrapper around
 \describe{
 \item{\code{data}}{Data object. Assess on this data. The \code{cohort} attribute must be set.}
 
-\item{\code{model_list}}{list of Model objects. Assess these models.
-We infer the \code{AssSpec2d} for the single plots in a reasonable way from it.}
+\item{\code{model_list}}{list of Model objects. Assess these models.}
 
 \item{\code{file}}{string or NULL. If not \code{NULL}, store the resulting plot in this file.}
 

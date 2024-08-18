@@ -1,14 +1,17 @@
 #' @title Compare validation and test error
-#' @description Plot rank of validation error versus test error - validation
-#' error for a list of models.
-#' @param model_list list of Model objects.
-#' @param data Data object.
-#' @param error_fun function. Error function to compare validation and test error.
+#' @description Plot validation error against test error for a list of models.
+#' @param model_list list of `Model` objects.
+#' @param data `Data` object. Its `cohort` attribute must be set. Calculate the test error on the 
+#' `cohort` of `data`.
+#' @param error_fun function. Error function to calculate the error between the true and predicted
+#' response. For its interface, see `val_error_fun_prototype()`.
 #' @param regex1 character vector. Regular-expression patterns. For every model, we assign it the 
 #' group in `name1` corresponding to the first pattern its name matches and color it accordingly.
 #' @param regex2 character vector. Regular-expression patterns. For every model, we assign it the
 #' group in `name2` corresponding to the first pattern its name matches and shape it accordingly.
-#' @param name1,name2 character vectors. The groups as explained in `regex1` and `regex2`.
+#' @param name1,name2 character vectors. Names of the groups as defined via `regex1` and `regex2`. 
+#' Therefore, `length(name1) == length(regex1)` and `length(name2) == length(regex2)`. If `name1`
+#' or `name2` is `NULL`, we use the corresponding `regex1` or `regex2` as the name. 
 #' @param legendtitle1,legendtitle2 string. Legend titles for the grouping according to `regex1` 
 #' and `regex2`.
 #' @param correlation_label logical. Whether to show the correlation coefficient between the

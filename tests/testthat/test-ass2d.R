@@ -3,7 +3,7 @@ test_that("Ass2d$new() works", {
   ass2d <- Ass2d$new(
     x_metric = "rpp",
     y_metric = "prec",
-    ci_level = .66,
+    confidence_level = .66,
     x_lab = "x_lab",
     y_lab = "y_lab",
     xlim = c(0, .5),
@@ -20,7 +20,7 @@ test_that("Ass2d$new() works", {
   expect_s3_class(ass2d, "Ass2d")
   expect_equal(ass2d$x_metric, "rpp")
   expect_equal(ass2d$y_metric, "prec")
-  expect_equal(ass2d$ci_level, .66)
+  expect_equal(ass2d$confidence_level, .66)
   expect_equal(ass2d$x_lab, "x_lab")
   expect_equal(ass2d$y_lab, "y_lab")
   expect_equal(ass2d$xlim, c(0, .5))
@@ -86,7 +86,7 @@ test_that("Ass2d$assess() works", {
 
   # Precision CI
   ass2d$y_metric <- "precision_ci"
-  ass2d$ci_level <- .95
+  ass2d$confidence_level <- .95
   ass2d$scale_y <- "identity"
   expect_no_error(
     plt <- ass2d$assess(data, model, quiet = TRUE)
@@ -179,7 +179,7 @@ test_that("Ass2d$assess_center() works", {
   data$cohort <- "val_predict"
   ass2d$x_metric <- "rank"
   ass2d$y_metric <- "risk score"
-  ass2d$ci_level <- .95
+  ass2d$confidence_level <- .95
   ass2d$scale_y <- "identity"
   expect_no_error(
     plt <- ass2d$assess_center(data, model_list, quiet = TRUE)

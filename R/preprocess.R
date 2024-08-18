@@ -13,6 +13,7 @@
 #' entries. Discretize via greater (`> cutoffs`) or less (`< cutoffs`). Default is `NULL`,
 #' in which case all columns are discretized via `> cutoffs`.
 #' @return `tbl` with discretized columns as numeric columns appended.
+#' @details You will not need this function very often.
 #' @export
 discretize_tbl_cols <- function(
     tbl,
@@ -42,17 +43,16 @@ discretize_tbl_cols <- function(
     return(tbl)
 }
 
-
 #' @title Write data info to a JSON file
 #' @description Automatically generate info about the data and write it to a JSON file.
-#' If the file already exists, the automatically inferable info into the file. If the
-#' file is not present yet, create a sceleton, write the the info one can automtically
-#' infer from the data into the json. You can then fill the empty fields in by writing
-#' the json by hand. Manullay alrady filled out info will not be overwritten.
+#' If the file already exists, write the automatically inferable info into the file. If the
+#' file is not present yet, create a skeleton, write the automatically inferable info into it. You 
+#' can then fill the empty fields in by writing the json by hand. Manually already filled out 
+#' info will not be overwritten.
 #' @param filename string. The path to the JSON file.
-#' @param data Data S3 object. Specifications on both `pheno_tbl` and `expr_tbl`.
-#' @param expr_tbl tibble. The expression data. Its format needs to comply with `data`
-#' below.
+#' @param data `Data` object. Analyzed data.
+#' @param expr_tbl tibble. The expression data. Rows are genes, columns are samples. The first 
+#' column, named `data$gene_id_col`, holds the gene identifiers.
 #' @return The JSON string that was written to the file.
 #' @export
 write_data_info <- function(

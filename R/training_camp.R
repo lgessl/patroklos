@@ -1,15 +1,16 @@
-#' @title A wrapper around `Model$fit()`
-#' @description Given one data set and a list of `Model`s, call `Model$fit()` for 
+#' @title Wrap `Model$fit()` to fit, validate and store multiple models
+#' @description Given a data set and a list of `Model`s, call `Model$fit()` for 
 #' all of them. If an error occurs while fitting a model, you can skip to the next 
 #' model.
-#' @param model_list list of Model objects. The models to fit.
-#' @param data Data object. The data set to fit on.
+#' @param model_list list of `Model` objects. The models to fit.
+#' @param data Data object. Its `cohort` attribute must be set. Fit the models to the `cohort` 
+#' of `data`.
 #' @param skip_on_error logical. Whether to skip to the next model if an error
 #' occurs while fitting a model.
-#' @param update_model_shell logical. If `TRUE` and we find a stored model with `fit_obj` not NULL, 
-#' we set the `fit_obj` attribute of the model in `model_list` to the found `fit_obj` and save it. 
-#' This way, we can update the model shell, which we want to do if new features were added to the 
-#' `Model` class.
+#' @param update_model_shell logical. If `TRUE` and, for a `Model` in `model_list`, we find a 
+#' stored version with `fit_obj` not being `NULL`, we set the `fit_obj` attribute of the `Model`
+#' to the found `fit_obj` and save it. This way, we can update the model shell, which we want to
+#' do if changes were made to the `Model` class.
 #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
 #' @export 
 training_camp <- function(
