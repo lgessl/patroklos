@@ -1,12 +1,27 @@
+#' @title Function interface of a fitter
+#' @description This function is the prototype of a fitter with the minimal requirements in its 
+#' parameters and return value to work as the `fitter` attribute of a `Model` object.
+#' @param x Named numeric matrix. Predictor matrix without `NA`s. Samples correspond to rows.
+#' Discrete features are encoded as binary dummy variables.
+#' @param y Names list with the response in thee formats:
+#' * `"bin"`, a named numeric one-column matrix, binary response,
+#' * `"cox"`, a named numeric two-column matrix, with columns `"time_to_event"` and `"event"` 
+#' (0 = censoring, 1 = event), the response in the Cox format,
+#' * `"true"`, a named numeric one-column matrix, true binary response.
+#' 
+#' The rownames of `y[["bin"]]` and `y[["true"]]` are a subset of the rownames of `x` and, in 
+#' general, do not coincide. Use `intersect_by_names()` to get equal rownames.
+#' @param val_error_fun 
+#' @export
+fitter_prototype <- function(x, y, val_error_fun, ...){
+    stop("This is a prototype function. Do not call it.")
+}
+
 #' @title Wrap [`ranger::ranger()`] into a patroklos-compliant fitter 
 #' @description This function is a patroklos-compliant fitter with validated 
 #' predictions, it has a return value with a `val_predict` attribute.
-#' @inheritParams ranger::ranger
-#' @param y_bin Named numeric matrix with one column. Binary response.
-#' @param y_cox Named numeric matrix with two columns. The first column is the
-#' time to event, the second column indicates censoring (1 for event, 0 for
-#' censored).
-#' @param rel_mtry logical. If `TRUE`, interprete `mtry` as relative to
+#' @inheritParams fitter_prototype
+#' @param rel_mtry logical. If `TRUE`, interpret `mtry` as relative to
 #' `sqrt(ncol(x))` (the recommended value), rounded to the next integer. 
 #' Otherwise, take `mtry` directly. 
 #' @param skip_on_invalid_input Logical. If `TRUE` and invalid input is detected,
@@ -16,9 +31,11 @@
 #' @return A `ptk_ranger` S3 object, a `ranger` S3 object with the (OOB) 
 #' `predictions` attribute renamed to `val_predict`.
 #' @export
-ptk_ranger <- function(x, y_bin, y_cox, rel_mtry, mtry = NULL, 
+ptk_ranger <- function(x, y, rel_mtry, mtry = NULL, 
     skip_on_invalid_input = FALSE, ...){
     stopifnot(is.logical(rel_mtry))
+    y_bin <- y[["bin"]]
+
     if (!is.null(mtry)) {
         if (rel_mtry) mtry <- round(sqrt(ncol(x)) * mtry)
         if (ncol(x) < mtry) {
