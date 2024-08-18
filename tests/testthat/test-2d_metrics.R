@@ -52,25 +52,17 @@ test_that("logrank_metric() works", {
   n_samples <- 10
   n_extra <- 5
 
-  pheno_tbl <- generate_mock_data(
+  data <- generate_mock_data(
     n_samples = n_samples + n_extra,
     n_genes = 2,
     n_na_in_pheno = 0
-  )[["pheno_tbl"]]
-  data <- Data$new(
-    name = "mock",
-    directory = "mock",
-    pivot_time_cutoff = 2,
-    time_to_event_col = "pfs_years",
-    cohort = "train"
   )
-
   predicted <- rnorm(n_samples)
-  names(predicted) <- sample(pheno_tbl[["patient_id"]], n_samples)
+  names(predicted) <- sample(data$pheno_tbl[["patient_id"]], n_samples)
 
   tbl <- logrank_metric(
     predicted = predicted,
-    pheno_tbl = pheno_tbl,
+    pheno_tbl = data$pheno_tbl,
     data = data
   )
   expect_s3_class(tbl, "tbl_df")

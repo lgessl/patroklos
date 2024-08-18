@@ -42,19 +42,8 @@ test_that("Data$read() works", {
     to_csv = dir
   ) 
   ncol_pheno <- ncol(data$pheno_tbl)
-  data <- Data$new(
-    name = "mock",
-    directory = dir,
-    pivot_time_cutoff = 0.5,
-    expr_file = "expr.csv",
-    pheno_file = "pheno.csv",
-    cohort = "train",
-    patient_id_col = "patient_id",
-    time_to_event_col = "pfs_years",
-    event_col = "progression",
-    benchmark_col = "ipi",
-    gene_id_col = "gene_id"
-  )
+  data$expr_mat <- NULL
+  data$pheno_tbl <- NULL
   data$read()
 
   expect_true(is.numeric(data$expr_mat))

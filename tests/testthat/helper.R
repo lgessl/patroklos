@@ -30,11 +30,11 @@ generate_mock_data <- function(
     pheno_tbl[["split_1"]] <- sample(c("train", "test"), size = n_samples, 
         replace = TRUE)
 
-    # Generate a reasonable time-to-event columm as follows:
+    # Generate a reasonable time-to-event column as follows:
     # 1. y = x %*% beta + noise (beta, noise ~ N(0, 1))
     # 2. Reduce survival of those samples with IPI = i randomly uniformly 
     # by (11-i)/10 to (10-i)/10 (i = 1, 2, 3, 4, 5)
-    # 3. Scale y linealy such that y >= 0 and median is 2
+    # 3. Scale y linearly such that y >= 0 and median is 2
     # 4. Introduce 20% censored samples with censoring time uniformly reduced 
     # by 0-100% of the original survival time 
     # All in all, survival follows a linear model scaled according to the IPI

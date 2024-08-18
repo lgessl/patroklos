@@ -21,7 +21,7 @@
 #' tune hyperparameters and therefore fit multiple models. The `val_predict` attribute must contain
 #' of the best validated model among them.
 #' 
-#' There must be a `predict()` method for the `fit_obj`. See [`predict_generic_prototype()`] for 
+#' There must be a `predict()` method for the `fit_obj`. See [`predict_method_prototype()`] for 
 #' its interface.
 #' @export
 fitter_prototype <- function(x, y, val_error_fun, ...){
@@ -40,7 +40,7 @@ val_error_fun_prototype <- function(y, y_hat){
     stop("This is a prototype function. Do not call it.")
 }
 
-#' @title Function interface of the S3 generic `predict()` for a `fit_obj`
+#' @title Function interface of the S3 method `predict()` for a `fit_obj`
 #' @description This function is the prototype of a `predict()` S3 method for the S3 object 
 #' `fit_obj` of a `Model` and lays out the minimal requirements for its parameters and return value.
 #' @param object The fitted S3 object.
@@ -77,5 +77,13 @@ predict_method_prototype <- function(object, newx, ...){
 #' * `fit_obj_list`: a list of `fit_obj`s of the fitted models. If `select = TRUE` in 
 #' [`multitune()`], all but the model with the lowest validation error are `NA`.
 multitune_output_prototype <- function(x, y, val_error_fun, ...){
+    stop("This is a prototype function. Do not call it.")
+}
+
+#' @title Function interface of an imputer
+#' @param x Numeric matrix. Predictor matrix. Samples correspond to rows. Discrete features are
+#' encoded as binary dummy variables. May contain `NA`s.
+#' @return Numeric matrix. Predictor matrix of same shape as `x` with non-`NA`s untouched.
+imputer_prototype <- function(x){
     stop("This is a prototype function. Do not call it.")
 }

@@ -2,6 +2,8 @@
 #' @description This function is a patroklos-compliant fitter with validated 
 #' predictions, it has a return value with a `val_predict` attribute.
 #' @inheritParams fitter_prototype
+#' @param mtry integer. Number of features to consider at each split when growing a tree of the 
+#' random forest.
 #' @param rel_mtry logical. If `TRUE`, interpret `mtry` as relative to
 #' `sqrt(ncol(x))` (the recommended value), rounded to the next integer. 
 #' Otherwise, take `mtry` directly. 

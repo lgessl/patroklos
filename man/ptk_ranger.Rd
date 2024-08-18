@@ -25,6 +25,9 @@ general, do not coincide. Use \code{intersect_by_names()} to get equal rownames.
 \code{sqrt(ncol(x))} (the recommended value), rounded to the next integer.
 Otherwise, take \code{mtry} directly.}
 
+\item{mtry}{integer. Number of features to consider at each split when growing a tree of the
+random forest.}
+
 \item{skip_on_invalid_input}{Logical. If \code{TRUE} and invalid input is detected,
 return \code{NA} instead of an error. This is useful when calling this function
 from inside \code{\link[=long_nestor]{long_nestor()}}.}

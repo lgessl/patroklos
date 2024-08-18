@@ -4,33 +4,38 @@
 \alias{Data}
 \title{An R6 class for the data}
 \description{
-A Data object holds the phenotype and expression data belonging to
-a data set. It specifies the names of important features in the columns, reads from
-and writes to csv files and puts the spotlight on a part of the data: the
-cohort.
+A \code{Data} object holds the phenotype and expression data belonging to
+a data set. It specifies the names of important features in the columns, reads in the data, puts
+the spotlight on a part of the data: the cohort, and prepares the data for a model.
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{name}}{How to refer to the data in plots and messages.}
+\item{\code{name}}{A telling name for the data set.}
 
 \item{\code{directory}}{Directory where the expression and pheno csv files lie.}
 
-\item{\code{expr_mat}}{The expression matrix.}
+\item{\code{pivot_time_cutoff}}{Time cutoff that divides the sample into low-risk (event
+before) and high-risk (event after).
+assessment.}
 
-\item{\code{pheno_tbl}}{The phenotype tibble.}
+\item{\code{cohort}}{Regular expression to subset the data to a cohort.}
+
+\item{\code{imputer}}{Function handling NAs in the predictor matrix.}
+
+\item{\code{expr_mat}}{Named numeric matrix. Samples correspond to rows.}
+
+\item{\code{pheno_tbl}}{A tibble with phenotypic features and samples as rows.}
 
 \item{\code{expr_file}}{Name of the expression csv file inside \code{directory}.}
 
 \item{\code{pheno_file}}{Name of the pheno data csv inside \code{directory}.}
 
-\item{\code{cohort}}{The cohort of the data, train or test.}
-
 \item{\code{cohort_col}}{Find the cohort of a sample in this column of the
 pheno data.}
 
-\item{\code{patient_id_col}}{The name of the column in the pheno data that holds
-the patient identifiers.}
+\item{\code{patient_id_col}}{The name of the column in the pheno data that holds unique
+patient identifiers.}
 
 \item{\code{time_to_event_col}}{The name of the column in the pheno data that holds the
 time-to-event values.}
@@ -38,16 +43,11 @@ time-to-event values.}
 \item{\code{event_col}}{The name of the column in the pheno data that holds
 the event status encoded as 1 = occurrence, 0 = censoring.}
 
-\item{\code{benchmark_col}}{The name of the column in the pheno data that holds the
-benchmark risk score (like the IPI).}
-
 \item{\code{gene_id_col}}{The name of the column in the expression data that holds
 the gene identifiers.}
 
-\item{\code{pivot_time_cutoff}}{Pivotal time cutoff for the analysis and
-assessment.}
-
-\item{\code{imputer}}{Function handling NAs in the predictor matrix.}
+\item{\code{benchmark_col}}{The name of the column in the pheno data that holds the
+benchmark risk score (like the IPI).}
 }
 \if{html}{\out{</div>}}
 }
@@ -67,41 +67,45 @@ assessment.}
 \if{html}{\out{<a id="method-Data-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Data-new}{}}}
 \subsection{Method \code{new()}}{
-A Data object specifies the location and format of the expression
-and pheno data of a single data set. This enables reading and preparing the data.
+Construct a \code{Data} R6 object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Data$new(
   name,
   directory,
   pivot_time_cutoff,
-  time_to_event_col,
   cohort,
-  event_col = "progression",
-  cohort_col = "split_1",
+  imputer = mean_impute,
+  time_to_event_col,
+  event_col,
+  cohort_col,
   benchmark_col = NULL,
   expr_file = "expr.csv",
   pheno_file = "pheno.csv",
   patient_id_col = "patient_id",
-  gene_id_col = "gene_id",
-  imputer = mean_impute
+  gene_id_col = "gene_id"
 )}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{string. A telling name for the data set (e.g. \code{"Schmitz et al. 2018"}).}
+\item{\code{name}}{string. A telling name for the data set.}
 
 \item{\code{directory}}{string. The directory where both expression and pheno csv
 files lie.}
 
-\item{\code{pivot_time_cutoff}}{numeric. Pivotal time cutoff for the analysis.}
-
-\item{\code{time_to_event_col}}{string. The name of the column in the pheno data that holds the
-time-to-event values.}
+\item{\code{pivot_time_cutoff}}{numeric. Time cutoff that divides the samples into low-risk
+(event before) and high-risk (event after).}
 
 \item{\code{cohort}}{string. At the end of preparing the data, subset it to those
 samples whose value in the \code{cohort_col} column matches \code{cohort}.}
+
+\item{\code{imputer}}{function or \code{NULL}. Function imputing \code{NA}s in the predictor matrix.
+See \code{\link[=imputer_prototype]{imputer_prototype()}} for its interface. Default is \code{\link[=mean_impute]{mean_impute()}}. \code{NULL}
+means no imputation.}
+
+\item{\code{time_to_event_col}}{string. The name of the column in the pheno data that holds the
+time-to-event values.}
 
 \item{\code{event_col}}{string. The name of the column in the pheno data that holds
 the event status encoded as 1 = occurrence, 0 = censoring.}
@@ -110,7 +114,7 @@ the event status encoded as 1 = occurrence, 0 = censoring.}
 the cohort a sample belongs to.}
 
 \item{\code{benchmark_col}}{string or \code{NULL}. The name of the column in the pheno data that
-holds the benchmark risk score (like the IPI).}
+holds the output of a benchmark model.}
 
 \item{\code{expr_file}}{string. The name of the expression csv file inside \code{directory}.
 Default is \code{"expr.csv"}. See details for the expected format.}
@@ -123,12 +127,6 @@ the patient identifiers.}
 
 \item{\code{gene_id_col}}{string. The name of the column in the expression data that holds
 the gene identifiers.}
-
-\item{\code{imputer}}{function or NULL. Function handling NAs in the predictor matrix.
-It takes a single argument \code{x}, the predictor matrix, a numeric with categorical
-variables dichotomized to binary dummy variables, and returns a matrix of the
-same shape with non-NAs left untouched. Default is \code{\link[=mean_impute]{mean_impute()}}.
-NULL means no imputation (or applying the identity function on \code{x}).}
 }
 \if{html}{\out{</div>}}
 }
@@ -138,10 +136,6 @@ first (character) column called \code{patient_id_col}), the variables as columns
 
 The expression csv file holds the genes as rows (with \emph{unique} gene ids in the first
 (character) column called \code{gene_id_col}), the samples as columns.
-
-While the computational representation of both expression and pheno data will
-change over the course of the pipeline, a Data object will hold timeless
-information on the data.
 }
 
 \subsection{Returns}{
@@ -152,8 +146,8 @@ A Data object.
 \if{html}{\out{<a id="method-Data-read"></a>}}
 \if{latex}{\out{\hypertarget{method-Data-read}{}}}
 \subsection{Method \code{read()}}{
-Read expression data into the matrix \code{expr_mat} and pheno
-data into the tibble \code{pheno_tbl}. Both will hold patients as rows.
+Read expression data into the \code{expr_mat} attribute and pheno data into the
+\code{pheno_tbl} attribute.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Data$read()}\if{html}{\out{</div>}}
 }
@@ -163,7 +157,7 @@ data into the tibble \code{pheno_tbl}. Both will hold patients as rows.
 \if{html}{\out{<a id="method-Data-prepare"></a>}}
 \if{latex}{\out{\hypertarget{method-Data-prepare}{}}}
 \subsection{Method \code{prepare()}}{
-Prepare the read-in data for a model.
+Prepare the already read-in data for a model.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Data$prepare(model, quiet = FALSE)}\if{html}{\out{</div>}}
 }
@@ -171,14 +165,14 @@ Prepare the read-in data for a model.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{model}}{A Model object.}
+\item{\code{model}}{A \code{Model} object.}
 
 \item{\code{quiet}}{logical. If TRUE, suppress messages.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-You need to set the cohort before calling this method.
+You need to set \code{cohort} before calling this method.
 }
 
 }
@@ -227,16 +221,14 @@ cohort.}
 
 \item{\code{keep_risk}}{logical. If TRUE, keep the ratio of high-risk versus
 low-risk samples in train and test cohort the same as in the complete
-data set. High/low-risk is determinded by the \code{pivot_time_cutoff}
-attribute.}
+data set.}
 
 \item{\code{quiet}}{logical. If TRUE, suppress messages.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-Cohort affiliation will show up as a column named
-\code{cohort_col} in \code{pheno_tbl}
+Cohort affiliation will show up in the column \code{cohort_col} in \code{pheno_tbl}
 }
 
 }
@@ -252,15 +244,14 @@ Quality control at the end of preprocessing
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{expr_tbl}}{A tibble with the expression data, the product of
-reading in an expression csv file as described in the details of
-the initialize() method.}
+\item{\code{expr_tbl}}{A tibble with the expression data, the first column, named \code{gene_id_col},
+holds the gene identifiers and the other columns the samples.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
 Check if the expression and pheno tibble are consistent
-with the other attributes of the Data object. You typically call this
+with the other attributes of the Data object. \emph{You} typically call this
 method at the end of preprocessing, and the read() method calls it.
 }
 

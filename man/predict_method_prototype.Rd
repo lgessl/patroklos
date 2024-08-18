@@ -2,7 +2,7 @@
 % Please edit documentation in R/prototypes.R
 \name{predict_method_prototype}
 \alias{predict_method_prototype}
-\title{Function interface of the S3 generic \code{predict()} for a \code{fit_obj}}
+\title{Function interface of the S3 method \code{predict()} for a \code{fit_obj}}
 \usage{
 predict_method_prototype(object, newx, ...)
 }

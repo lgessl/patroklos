@@ -1,6 +1,6 @@
-#' @title An R6 class to assess a model with a scalar metric
+#' @title An R6 class to assess a model with scalar metrics
 #' @description Assess how well a model can predict time to event less than a certain 
-#' threshold with a *scalar* metric (like the ROC-AUC).
+#' threshold with a *scalar* metric.
 #' @export
 AssScalar <- R6::R6Class("AssScalar",
     public = list(
@@ -11,9 +11,9 @@ AssScalar <- R6::R6Class("AssScalar",
         #' @field prev_range For metrics that need thresholding only consider 
         #' thresholds that yield a prevalence in this range.
         prev_range = NULL,
-        #' @field confidence_level Confidence level alpha.
+        #' @field confidence_level Confidence level gamma, e.g. for confidence intervals.
         confidence_level = NULL,
-        #' @field benchmark Incorporate the benchmark into the assessment.
+        #' @field benchmark Name and pivot time cutoff of the benchmark `Model`.
         benchmark = NULL,
         #' @field round_digits Round the results in tables to round_digits digits 
         #' after the point.
@@ -21,30 +21,30 @@ AssScalar <- R6::R6Class("AssScalar",
         #' @field file Save the resulting tibble to this csv file. 
         file = NULL,
 
-        #' @description Create a new AssScalar instance.
+        #' @description Construct an `AssScalar` R6 object.
         #' @param metrics character. Assess the model for these metrics. For 
-        #' currently offered choices see "Usage" above. If you have a model with 
-        #' non-binary output (like a logistic regression), we choose a threshold 
+        #' currently offered choices see "Usage". If you have a model with 
+        #' non-binary output (like the linear predictor of a Cox model), we choose a threshold 
         #' by maximizing the left-most metric in `metrics` *that is made for 
-        #' classifiers with binary output* (e.g. precision within prev_range below). 
+        #' classifiers with binary output* (e.g. precision within `prev_range` below). 
         #' If this cannot be done reasonably, throw an error. Make sure that `hr` precedes 
         #' `hr_ci_ll`, `hr_ci_ul` and `hr_p` in `metrics`; `precision_ci_ll` must precede 
         #' `precision_ci_ul`.
         #' @param prev_range numeric numeric vector of length 2. For metrics that
         #' need thresholding only consider thresholds that yield a prevalence in
         #' this range.
-        #' @param confidence_level numeric. The confidence level alpha (e.g. for confidence 
+        #' @param confidence_level numeric. The confidence level gamma (e.g. for confidence 
         #' intervals).
-        #' @param benchmark list or NULL. If not NULL, is is list element names in `c("name", 
-        #' prev_rage")`: name refers to the name of the benchmark model in the `model_list`, 
-        #' prev_range is a special value of the above parameter for the benchmark model. Often, 
-        #' we need a higher prevalence for our, new models to gain statistical power and be able 
-        #' to significantly outperform the benchmark.
-        #' @param file string or NULL. The name of the csv file to save the 
-        #' results to for the *train* cohort.
-        #' the results are not saved.
-        #' @param round_digits numeric. The number of digits to round the results to. Default is `3`.
-        #' @return A new AssScalar object.
+        #' @param benchmark list or `NULL`. If not NULL, it is a list with names 
+        #' 
+        #' * `"name"`: the `name` attribute of the benchmark `Model` in the `model_list` parameter 
+        #' of the `assess()` and `assess_center()` method,
+        #' * `"prev_range"`: An extra value for the `prev_range` attribute used for the 
+        #' benchmark `Model`. Often, we need a higher prevalence for our, new models to gain 
+        #' statistical power and be able to significantly outperform the benchmark.
+        #' @param file string or NULL. If not `NULL`, save the resulting tibble to this csv file.
+        #' @param round_digits numeric. The number of digits to round the results to. 
+        #' @return A new `AssScalar` object.
         initialize = function(
             metrics = c("auc", "accuracy", "precision", "prevalence", "precision_ci_ll", 
                 "precision_ci_ul", "hr", "hr_ci_ll", "hr_ci_ul", "hr_p", "n_true", "perc_true", 
@@ -58,14 +58,12 @@ AssScalar <- R6::R6Class("AssScalar",
             ass_scalar_initialize(self, private, metrics, prev_range, confidence_level, benchmark, 
                 file, round_digits), 
 
-        #' @description Assess a *single* model on a data set.
+        #' @description Assess a *single* model. 
         #' @param data Data object. Assess on this data. Data must already be read in 
-        #' and `cohort` attribute set.
+        #' and its `cohort` attribute set.
         #' @param model Model object. Assess this model.
         #' @param quiet logical. Whether to suppress messages.
-        #' @return numeric matrix. The rows correspond to the `model` and optionally 
-        #' the benchmark, the columns correspond to `self$metrics`.
-        #' @details The AssScalar S3 class is tailored for this function.
+        #' @return named numeric vector. The calculated metrics.
         assess = function(
             data,
             model,
@@ -73,25 +71,16 @@ AssScalar <- R6::R6Class("AssScalar",
         )
             ass_scalar_assess(self, private, data, model, quiet),
 
-        #' @description Assess *multiple* models on a data set.
-        #' @param data Data object. Assess on this data.
-        #' If `data$cohort` is `NULL`, assess on the test cohort.
+        #' @description Wrap `assess()` to assess *multiple* models and store the result.
+        #' @param data Data object. Assess on this data. The `cohort` attribute of `data` must be 
+        #' set.
         #' @param model_list list of Model objects. Assess these models.
-        #' @param mirror character vector of length 2. If you want to store the 
-        #' resulting tibbles, get the test-cohort tibble's file name by mirroring 
-        #' `ass_scalar$file` according to `model_tree_mirror`, i.e. replacing 
-        #' `model_tree_mirror[1]` by `model_tree_mirror[2]` in the `file`
-        #' attribute.
         #' @param quiet logical. Whether to suppress messages.
-        #' @return A tibble. Every row stands for one model. 
-        #' * If `length(self$metrics) == 1`, the columns hold statistics on the 
-        #' single metric (like mean, standard deviation).
-        #' * Otherwise columns correspond to `self$metrics`. 
+        #' @return A tibble of shape `(length(model_list) x length(metrics))`.
         #' @export
         assess_center = function(
             data,
             model_list,
-            mirror = c("models", "results"),
             quiet = FALSE
         )
             ass_scalar_assess_center(self, private, data, model_list, 

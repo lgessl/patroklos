@@ -2,10 +2,10 @@
 % Please edit documentation in R/ass_scalar.R
 \name{AssScalar}
 \alias{AssScalar}
-\title{An R6 class to assess a model with a scalar metric}
+\title{An R6 class to assess a model with scalar metrics}
 \description{
 Assess how well a model can predict time to event less than a certain
-threshold with a \emph{scalar} metric (like the ROC-AUC).
+threshold with a \emph{scalar} metric.
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -16,9 +16,9 @@ initializer for possible choices.}
 \item{\code{prev_range}}{For metrics that need thresholding only consider
 thresholds that yield a prevalence in this range.}
 
-\item{\code{confidence_level}}{Confidence level alpha.}
+\item{\code{confidence_level}}{Confidence level gamma, e.g. for confidence intervals.}
 
-\item{\code{benchmark}}{Incorporate the benchmark into the assessment.}
+\item{\code{benchmark}}{Name and pivot time cutoff of the benchmark \code{Model}.}
 
 \item{\code{round_digits}}{Round the results in tables to round_digits digits
 after the point.}
@@ -40,7 +40,7 @@ after the point.}
 \if{html}{\out{<a id="method-AssScalar-new"></a>}}
 \if{latex}{\out{\hypertarget{method-AssScalar-new}{}}}
 \subsection{Method \code{new()}}{
-Create a new AssScalar instance.
+Construct an \code{AssScalar} R6 object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AssScalar$new(
   metrics = c("auc", "accuracy", "precision", "prevalence", "precision_ci_ll",
@@ -58,10 +58,10 @@ Create a new AssScalar instance.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{metrics}}{character. Assess the model for these metrics. For
-currently offered choices see "Usage" above. If you have a model with
-non-binary output (like a logistic regression), we choose a threshold
+currently offered choices see "Usage". If you have a model with
+non-binary output (like the linear predictor of a Cox model), we choose a threshold
 by maximizing the left-most metric in \code{metrics} \emph{that is made for
-classifiers with binary output} (e.g. precision within prev_range below).
+classifiers with binary output} (e.g. precision within \code{prev_range} below).
 If this cannot be done reasonably, throw an error. Make sure that \code{hr} precedes
 \code{hr_ci_ll}, \code{hr_ci_ul} and \code{hr_p} in \code{metrics}; \code{precision_ci_ll} must precede
 \code{precision_ci_ul}.}
@@ -70,31 +70,33 @@ If this cannot be done reasonably, throw an error. Make sure that \code{hr} prec
 need thresholding only consider thresholds that yield a prevalence in
 this range.}
 
-\item{\code{confidence_level}}{numeric. The confidence level alpha (e.g. for confidence
+\item{\code{confidence_level}}{numeric. The confidence level gamma (e.g. for confidence
 intervals).}
 
-\item{\code{benchmark}}{list or NULL. If not NULL, is is list element names in \verb{c("name",  prev_rage")}: name refers to the name of the benchmark model in the \code{model_list},
-prev_range is a special value of the above parameter for the benchmark model. Often,
-we need a higher prevalence for our, new models to gain statistical power and be able
-to significantly outperform the benchmark.}
+\item{\code{benchmark}}{list or \code{NULL}. If not NULL, it is a list with names
+\itemize{
+\item \code{"name"}: the \code{name} attribute of the benchmark \code{Model} in the \code{model_list} parameter
+of the \code{assess()} and \code{assess_center()} method,
+\item \code{"prev_range"}: An extra value for the \code{prev_range} attribute used for the
+benchmark \code{Model}. Often, we need a higher prevalence for our, new models to gain
+statistical power and be able to significantly outperform the benchmark.
+}}
 
-\item{\code{file}}{string or NULL. The name of the csv file to save the
-results to for the \emph{train} cohort.
-the results are not saved.}
+\item{\code{file}}{string or NULL. If not \code{NULL}, save the resulting tibble to this csv file.}
 
-\item{\code{round_digits}}{numeric. The number of digits to round the results to. Default is \code{3}.}
+\item{\code{round_digits}}{numeric. The number of digits to round the results to.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A new AssScalar object.
+A new \code{AssScalar} object.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AssScalar-assess"></a>}}
 \if{latex}{\out{\hypertarget{method-AssScalar-assess}{}}}
 \subsection{Method \code{assess()}}{
-Assess a \emph{single} model on a data set.
+Assess a \emph{single} model.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AssScalar$assess(data, model, quiet = FALSE)}\if{html}{\out{</div>}}
 }
@@ -103,7 +105,7 @@ Assess a \emph{single} model on a data set.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{data}}{Data object. Assess on this data. Data must already be read in
-and \code{cohort} attribute set.}
+and its \code{cohort} attribute set.}
 
 \item{\code{model}}{Model object. Assess this model.}
 
@@ -111,54 +113,33 @@ and \code{cohort} attribute set.}
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Details}{
-The AssScalar S3 class is tailored for this function.
-}
-
 \subsection{Returns}{
-numeric matrix. The rows correspond to the \code{model} and optionally
-the benchmark, the columns correspond to \code{self$metrics}.
+named numeric vector. The calculated metrics.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AssScalar-assess_center"></a>}}
 \if{latex}{\out{\hypertarget{method-AssScalar-assess_center}{}}}
 \subsection{Method \code{assess_center()}}{
-Assess \emph{multiple} models on a data set.
+Wrap \code{assess()} to assess \emph{multiple} models and store the result.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AssScalar$assess_center(
-  data,
-  model_list,
-  mirror = c("models", "results"),
-  quiet = FALSE
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AssScalar$assess_center(data, model_list, quiet = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{data}}{Data object. Assess on this data.
-If \code{data$cohort} is \code{NULL}, assess on the test cohort.}
+\item{\code{data}}{Data object. Assess on this data. The \code{cohort} attribute of \code{data} must be
+set.}
 
 \item{\code{model_list}}{list of Model objects. Assess these models.}
-
-\item{\code{mirror}}{character vector of length 2. If you want to store the
-resulting tibbles, get the test-cohort tibble's file name by mirroring
-\code{ass_scalar$file} according to \code{model_tree_mirror}, i.e. replacing
-\code{model_tree_mirror[1]} by \code{model_tree_mirror[2]} in the \code{file}
-attribute.}
 
 \item{\code{quiet}}{logical. Whether to suppress messages.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A tibble. Every row stands for one model.
-\itemize{
-\item If \code{length(self$metrics) == 1}, the columns hold statistics on the
-single metric (like mean, standard deviation).
-\item Otherwise columns correspond to \code{self$metrics}.
-}
+A tibble of shape \verb{(length(model_list) x length(metrics))}.
 }
 }
 \if{html}{\out{<hr>}}

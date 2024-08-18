@@ -36,7 +36,7 @@ tune hyperparameters and therefore fit multiple models. The \code{val_predict} a
 of the best validated model among them.
 }
 
-There must be a \code{predict()} method for the \code{fit_obj}. See \code{\link[=predict_generic_prototype]{predict_generic_prototype()}} for
+There must be a \code{predict()} method for the \code{fit_obj}. See \code{\link[=predict_method_prototype]{predict_method_prototype()}} for
 its interface.
 }
 \description{
