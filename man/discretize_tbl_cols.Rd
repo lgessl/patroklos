@@ -27,3 +27,6 @@ Discretize the columns in a pheno tibble that belong to the features of
 the International Prognostic Index (IPI) into binary indicator columns by comparing them
 to cutoff values and append them to the pheno tibble.
 }
+\details{
+You will not need this function very often.
+}

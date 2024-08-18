@@ -2,7 +2,7 @@
 % Please edit documentation in R/training_camp.R
 \name{training_camp}
 \alias{training_camp}
-\title{A wrapper around \code{Model$fit()}}
+\title{Wrap \code{Model$fit()} to fit, validate and store multiple models}
 \usage{
 training_camp(
   model_list,
@@ -13,22 +13,23 @@ training_camp(
 )
 }
 \arguments{
-\item{model_list}{list of Model objects. The models to fit.}
+\item{model_list}{list of \code{Model} objects. The models to fit.}
 
-\item{data}{Data object. The data set to fit on.}
+\item{data}{Data object. Its \code{cohort} attribute must be set. Fit the models to the \code{cohort}
+of \code{data}.}
 
 \item{skip_on_error}{logical. Whether to skip to the next model if an error
 occurs while fitting a model.}
 
-\item{update_model_shell}{logical. If \code{TRUE} and we find a stored model with \code{fit_obj} not NULL,
-we set the \code{fit_obj} attribute of the model in \code{model_list} to the found \code{fit_obj} and save it.
-This way, we can update the model shell, which we want to do if new features were added to the
-\code{Model} class.}
+\item{update_model_shell}{logical. If \code{TRUE} and, for a \code{Model} in \code{model_list}, we find a
+stored version with \code{fit_obj} not being \code{NULL}, we set the \code{fit_obj} attribute of the \code{Model}
+to the found \code{fit_obj} and save it. This way, we can update the model shell, which we want to
+do if changes were made to the \code{Model} class.}
 
 \item{quiet}{logical. Whether to suppress messages. Default is \code{FALSE}.}
 }
 \description{
-Given one data set and a list of \code{Model}s, call \code{Model$fit()} for
+Given a data set and a list of \code{Model}s, call \code{Model$fit()} for
 all of them. If an error occurs while fitting a model, you can skip to the next
 model.
 }

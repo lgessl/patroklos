@@ -14,7 +14,7 @@ ass2d_get_2d_metric <- function(self, private, data, model, quiet){
             pheno_tbl = data$pheno_tbl,
             data = data
         )
-    } else if( self$y_metric == "precision_ci" ){
+    } else if (self$y_metric == "precision_ci"){
         tbl <- precision_ci(
             predicted = predicted,
             actual = actual,

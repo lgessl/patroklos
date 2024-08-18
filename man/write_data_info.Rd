@@ -9,18 +9,18 @@ write_data_info(filename, data, expr_tbl)
 \arguments{
 \item{filename}{string. The path to the JSON file.}
 
-\item{data}{Data S3 object. Specifications on both \code{pheno_tbl} and \code{expr_tbl}.}
+\item{data}{\code{Data} object. Analyzed data.}
 
-\item{expr_tbl}{tibble. The expression data. Its format needs to comply with \code{data}
-below.}
+\item{expr_tbl}{tibble. The expression data. Rows are genes, columns are samples. The first
+column, named \code{data$gene_id_col}, holds the gene identifiers.}
 }
 \value{
 The JSON string that was written to the file.
 }
 \description{
 Automatically generate info about the data and write it to a JSON file.
-If the file already exists, the automatically inferable info into the file. If the
-file is not present yet, create a sceleton, write the the info one can automtically
-infer from the data into the json. You can then fill the empty fields in by writing
-the json by hand. Manullay alrady filled out info will not be overwritten.
+If the file already exists, write the automatically inferable info into the file. If the
+file is not present yet, create a skeleton, write the automatically inferable info into it. You
+can then fill the empty fields in by writing the json by hand. Manually already filled out
+info will not be overwritten.
 }

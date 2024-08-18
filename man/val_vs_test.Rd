@@ -25,11 +25,13 @@ val_vs_test(
 )
 }
 \arguments{
-\item{model_list}{list of Model objects.}
+\item{model_list}{list of \code{Model} objects.}
 
-\item{data}{Data object.}
+\item{data}{\code{Data} object. Its \code{cohort} attribute must be set. Calculate the test error on the
+\code{cohort} of \code{data}.}
 
-\item{error_fun}{function. Error function to compare validation and test error.}
+\item{error_fun}{function. Error function to calculate the error between the true and predicted
+response. For its interface, see \code{val_error_fun_prototype()}.}
 
 \item{regex1}{character vector. Regular-expression patterns. For every model, we assign it the
 group in \code{name1} corresponding to the first pattern its name matches and color it accordingly.}
@@ -37,7 +39,9 @@ group in \code{name1} corresponding to the first pattern its name matches and co
 \item{regex2}{character vector. Regular-expression patterns. For every model, we assign it the
 group in \code{name2} corresponding to the first pattern its name matches and shape it accordingly.}
 
-\item{name1, name2}{character vectors. The groups as explained in \code{regex1} and \code{regex2}.}
+\item{name1, name2}{character vectors. Names of the groups as defined via \code{regex1} and \code{regex2}.
+Therefore, \code{length(name1) == length(regex1)} and \code{length(name2) == length(regex2)}. If \code{name1}
+or \code{name2} is \code{NULL}, we use the corresponding \code{regex1} or \code{regex2} as the name.}
 
 \item{legendtitle1, legendtitle2}{string. Legend titles for the grouping according to \code{regex1}
 and \code{regex2}.}
@@ -63,6 +67,5 @@ ggplot object if \code{return_type == "ggplot"} or the tibble underlying the plo
 \code{return_type == "tibble"}.
 }
 \description{
-Plot rank of validation error versus test error - validation
-error for a list of models.
+Plot validation error against test error for a list of models.
 }
