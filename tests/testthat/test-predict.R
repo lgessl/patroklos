@@ -33,7 +33,7 @@ test_that("model$predict() works", {
     val_error_fun = neg_prec_with_prev_greater(0.15),
     hyperparams = list(
       fitter1 = ptk_zerosum,
-      fitter2 = hypertune(ptk_ranger),
+      fitter2 = multitune(ptk_ranger),
       hyperparams1 = list(family = "binomial", alpha = 1, nFold = n_fold, 
         lambdaSteps = 1, zeroSum = FALSE),
       hyperparams2 = list(rel_mtry = FALSE, mtry = 3, min.node.size = 5,

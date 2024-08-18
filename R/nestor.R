@@ -131,9 +131,9 @@ long_nestor <- function(
     cv2 <- cv2_list[[cv1$lambda_min_index]]
     model1 <- cv1
     model2 <- cv2
-    if (inherits(cv1, "ptk_hypertune"))
+    if (inherits(cv1, "multitune_obj"))
         model1 <- cv1$fit_obj_list[[cv1$lambda_min_index]]
-    if (inherits(cv2, "ptk_hypertune")) {
+    if (inherits(cv2, "multitune_obj")) {
         model2 <- cv2$fit_obj_list[[cv2$lambda_min_index]]
         model2$min_error <- cv2$min_error
     }

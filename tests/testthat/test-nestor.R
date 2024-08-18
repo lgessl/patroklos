@@ -23,12 +23,12 @@ test_that("greedy_nestor() works", {
     model1$fit(data, quiet = TRUE)
     model1$fit_obj <- NULL
     nested_fit <- greedy_nestor(x = x3y[[1]], y = x3y[2:4], val_error_fun = 
-        neg_prec_with_prev_greater(0.15), model1 = model1, fitter2 = hypertune(ptk_ranger),
+        neg_prec_with_prev_greater(0.15), model1 = model1, fitter2 = multitune(ptk_ranger),
         hyperparams2 = hyperparams2)
     yhat <- predict(nested_fit, x3y[[1]])
     expect_s3_class(nested_fit, "nested_fit")
     expect_s3_class(nested_fit$model1, "ptk_zerosum")
-    expect_s3_class(nested_fit$model2, "ptk_hypertune")
+    expect_s3_class(nested_fit$model2, "multitune_obj")
     expect_true(all(nested_fit$val_predict %in% c(0, 1)))
     expect_true(all(yhat <= 1 & yhat >= 0))
     expect_error(non_zero_coefs(nested_fit), "no applicable method")
@@ -64,7 +64,7 @@ test_that("long_nestor() works", {
 
     fit <- long_nestor(
         x = x3y[[1]], x3y[2:4], val_error_fun = error_rate, fitter1 = ptk_zerosum, 
-        fitter2 = hypertune(ptk_ranger), hyperparams1 = 
+        fitter2 = multitune(ptk_ranger), hyperparams1 = 
         hyperparams1, hyperparams2 = hyperparams2
     )
     expect_s3_class(fit, "nested_fit")
@@ -101,7 +101,7 @@ test_that("long_nestor() works", {
     hyperparams2 <- list(rel_mtry = FALSE, mtry = 1, min.node.size = c(4, 5), 
         classification = TRUE, num.trees = 100, skip_on_invalid_input = TRUE)
     fit <- long_nestor(x = x3y[[1]], y = x3y[2:4], val_error_fun = error_rate,
-        fitter1 = ptk_zerosum, fitter2 = hypertune(ptk_ranger), 
+        fitter1 = ptk_zerosum, fitter2 = multitune(ptk_ranger), 
         hyperparams1 = hyperparams1, hyperparams2 = hyperparams2)
 
     # Errors
@@ -131,7 +131,7 @@ test_that("nested_fit() works", {
     expect_s3_class(fit, "nested_fit")
 
     # Errors
-    class(fit1) <- "nonesense"
+    class(fit1) <- "nonsense"
     expect_error(nested_fit(model1 = fit1, model2 = fit2,
         error_grid = error_grid, best_hyperparams = list(lambda = lambda, 
         mtry = 3, min.node.size = 4, classification = TRUE, num.trees = 100))
@@ -158,8 +158,8 @@ test_that("predict.nested_fit() works", {
     fit1 <- ptk_zerosum(x = x_early, y = x3y[2:4], val_error_fun = neg_roc_auc,
         nFold = n_fold, lambdaSteps = 5)
     xx <- intersect_by_names(fit1$val_predict_list[[1]], x_late)
-    fit2 <- ptk_ranger(x = cbind(xx[[1]], xx[[2]]), 
-        rel_mtry = FALSE, y_bin = x3y[[2]], y_cox = x3y[[3]], mtry = 3, 
+    fit2 <- ptk_ranger(x = cbind(xx[[1]], xx[[2]]), y = x3y[2:4],
+        rel_mtry = FALSE, mtry = 3, 
         min.node.size = 4, classification = TRUE, num.trees = 100) 
     n_fit <- nested_fit(fit1, fit2, error_grid = error_grid, best_hyperparams = 
         list(model1 = "lambda=1.5", model2 = "mtry = 3"))

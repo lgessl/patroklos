@@ -36,7 +36,7 @@ test_that("AssScalar$assess() works", {
     model <- Model$new(
       name = "rf",
       directory = file.path(model_dir, "rf"),
-      fitter = hypertune(ptk_ranger, select = TRUE),
+      fitter = multitune(ptk_ranger, select = TRUE),
       hyperparams = list(rel_mtry = TRUE, mtry = 0.98, num.trees = 100, 
         min.node.size = 3, classification = TRUE),
       time_cutoffs = 2,
@@ -113,7 +113,7 @@ test_that("AssScalar$assess_center() works", {
   model2 <- Model$new(
     name = "rf",
     directory = file.path(dir, "models/rf"),
-    fitter = hypertune(ptk_ranger),
+    fitter = multitune(ptk_ranger),
     hyperparams = list(rel_mtry = FALSE, mtry = 2, num.trees = 100, min.node.size = 3,
       classification = TRUE),
     time_cutoffs = 2,
@@ -145,7 +145,7 @@ test_that("AssScalar$assess_center() works", {
     time_cutoffs = 2,
     hyperparams = list(
       model1 = model1,
-      fitter2 = hypertune(ptk_ranger),
+      fitter2 = multitune(ptk_ranger),
       hyperparams2 = list(rel_mtry = FALSE, num.trees = 100, min.node.size = c(4, 5), 
         classification = TRUE)
     ),

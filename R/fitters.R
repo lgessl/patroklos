@@ -1,22 +1,3 @@
-#' @title Function interface of a fitter
-#' @description This function is the prototype of a fitter with the minimal requirements in its 
-#' parameters and return value to work as the `fitter` attribute of a `Model` object.
-#' @param x Named numeric matrix. Predictor matrix without `NA`s. Samples correspond to rows.
-#' Discrete features are encoded as binary dummy variables.
-#' @param y Names list with the response in thee formats:
-#' * `"bin"`, a named numeric one-column matrix, binary response,
-#' * `"cox"`, a named numeric two-column matrix, with columns `"time_to_event"` and `"event"` 
-#' (0 = censoring, 1 = event), the response in the Cox format,
-#' * `"true"`, a named numeric one-column matrix, true binary response.
-#' 
-#' The rownames of `y[["bin"]]` and `y[["true"]]` are a subset of the rownames of `x` and, in 
-#' general, do not coincide. Use `intersect_by_names()` to get equal rownames.
-#' @param val_error_fun 
-#' @export
-fitter_prototype <- function(x, y, val_error_fun, ...){
-    stop("This is a prototype function. Do not call it.")
-}
-
 #' @title Wrap [`ranger::ranger()`] into a patroklos-compliant fitter 
 #' @description This function is a patroklos-compliant fitter with validated 
 #' predictions, it has a return value with a `val_predict` attribute.

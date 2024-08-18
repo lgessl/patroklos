@@ -137,7 +137,7 @@ test_that("Ass2d$assess_center() works", {
   model_3 <- Model$new(
     name = "rf",
     directory = file.path(model_dir, "rf"),
-    fitter = hypertune(ptk_ranger),
+    fitter = multitune(ptk_ranger),
     hyperparams = list(rel_mtry = FALSE, mtry = 2, num.trees = 20, 
       min.node.size = 5, classification = TRUE),
     time_cutoffs = 2,

@@ -49,7 +49,7 @@ Model <- R6::R6Class("Model",
         #' function. See [`fitter_prototype()`] for its required interface. patroklos provides 
         #' two fitters out of the box: [`ptk_zerosum()`], a wrapper around [`zeroSum::zeroSum`] and 
         #' [`ptk_ranger()`], a wrapper around [`ranger::ranger()`]. To tune more than just one 
-        #' combination of hyperparameters, decorate a fitter with [`hypertune()`].
+        #' combination of hyperparameters, decorate a fitter with [`multitune()`].
         #' @param directory string. Store/find the `Model` with `fit_obj` set in this directory.
         #' @param time_cutoffs numeric vector. A model-agnostic hyperparameter that changes the 
         #' response during *training* as follows: For every value of `time_cutoffs`, specify a 
@@ -62,11 +62,8 @@ Model <- R6::R6Class("Model",
         #' We already tune this hyperparameter and only store the best model according to 
         #' validation as `fit_obj` and report the chosen time cutoff as `time_cutoff` attribute 
         #' in it.
-        #' @param val_error_fun Function used to calculate the error of independently 
-        #' validated predictions. Must take two numeric vector of equal length:
-        #' `y` and `y_hat`, the true and predicted outcomes, respectively, and 
-        #' return a numeric scalar; the lower, the better the model. See
-        #' [`error_rate()`] or [`neg_roc_auc()`] for examples. 
+        #' @param val_error_fun Function to calculate the error of validated predictions. For its 
+        #' interface, see [`val_error_fun_prototype()`].
         #' @param hyperparams list. Optional arguments passed to `fitter`, e.g. alpha 
         #' in case of an elastic net.
         #' @param include_from_continuous_pheno vector of strings. The names of the 

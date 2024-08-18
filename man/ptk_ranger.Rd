@@ -4,30 +4,26 @@
 \alias{ptk_ranger}
 \title{Wrap \code{\link[ranger:ranger]{ranger::ranger()}} into a patroklos-compliant fitter}
 \usage{
-ptk_ranger(
-  x,
-  y_bin,
-  y_cox,
-  rel_mtry,
-  mtry = NULL,
-  skip_on_invalid_input = FALSE,
-  ...
-)
+ptk_ranger(x, y, rel_mtry, mtry = NULL, skip_on_invalid_input = FALSE, ...)
 }
 \arguments{
-\item{x}{Predictor data (independent variables), alternative interface to data with formula or dependent.variable.name.}
+\item{x}{Named numeric matrix. Predictor matrix without \code{NA}s. Samples correspond to rows.
+Discrete features are encoded as binary dummy variables.}
 
-\item{y_bin}{Named numeric matrix with one column. Binary response.}
+\item{y}{Named list with the response in thee formats:
+\itemize{
+\item \code{"bin"}, a named numeric one-column matrix, binary response,
+\item \code{"cox"}, a named numeric two-column matrix, with columns \code{"time_to_event"} and \code{"event"}
+(0 = censoring, 1 = event), the response in the Cox format,
+\item \code{"true"}, a named numeric one-column matrix, true binary response.
+}
 
-\item{y_cox}{Named numeric matrix with two columns. The first column is the
-time to event, the second column indicates censoring (1 for event, 0 for
-censored).}
+The rownames of \code{y[["bin"]]} and \code{y[["true"]]} are a subset of the rownames of \code{x} and, in
+general, do not coincide. Use \code{intersect_by_names()} to get equal rownames.}
 
-\item{rel_mtry}{logical. If \code{TRUE}, interprete \code{mtry} as relative to
+\item{rel_mtry}{logical. If \code{TRUE}, interpret \code{mtry} as relative to
 \code{sqrt(ncol(x))} (the recommended value), rounded to the next integer.
 Otherwise, take \code{mtry} directly.}
-
-\item{mtry}{Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Alternatively, a single argument function returning an integer, given the number of independent variables.}
 
 \item{skip_on_invalid_input}{Logical. If \code{TRUE} and invalid input is detected,
 return \code{NA} instead of an error. This is useful when calling this function

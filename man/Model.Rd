@@ -96,7 +96,7 @@ Create a new Model instance.
 function. See \code{\link[=fitter_prototype]{fitter_prototype()}} for its required interface. patroklos provides
 two fitters out of the box: \code{\link[=ptk_zerosum]{ptk_zerosum()}}, a wrapper around \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum}} and
 \code{\link[=ptk_ranger]{ptk_ranger()}}, a wrapper around \code{\link[ranger:ranger]{ranger::ranger()}}. To tune more than just one
-combination of hyperparameters, decorate a fitter with \code{\link[=hypertune]{hypertune()}}.}
+combination of hyperparameters, decorate a fitter with \code{\link[=multitune]{multitune()}}.}
 
 \item{\code{directory}}{string. Store/find the \code{Model} with \code{fit_obj} set in this directory.}
 
@@ -114,11 +114,8 @@ We already tune this hyperparameter and only store the best model according to
 validation as \code{fit_obj} and report the chosen time cutoff as \code{time_cutoff} attribute
 in it.}
 
-\item{\code{val_error_fun}}{Function used to calculate the error of independently
-validated predictions. Must take two numeric vector of equal length:
-\code{y} and \code{y_hat}, the true and predicted outcomes, respectively, and
-return a numeric scalar; the lower, the better the model. See
-\code{\link[=error_rate]{error_rate()}} or \code{\link[=neg_roc_auc]{neg_roc_auc()}} for examples.}
+\item{\code{val_error_fun}}{Function to calculate the error of validated predictions. For its
+interface, see \code{\link[=val_error_fun_prototype]{val_error_fun_prototype()}}.}
 
 \item{\code{hyperparams}}{list. Optional arguments passed to \code{fitter}, e.g. alpha
 in case of an elastic net.}

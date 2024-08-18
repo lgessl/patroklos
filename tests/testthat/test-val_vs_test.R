@@ -84,7 +84,7 @@ test_that("val_vs_test() works", {
         return_type = "ggplot",
         quiet = TRUE
     )
-    print(plt)
+    # print(plt)
     plt <- val_vs_test(
         models,
         data,

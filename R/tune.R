@@ -1,14 +1,13 @@
-#' @title Build a fitter with integrated cross-validation from a fitter
-#' @description This function operator takes a patroklos-compliant fitter and
-#' builds a patroklos-compliant fitter with integrated cross validation from
-#' it.
-#' @param fitter A patroklos-compliant fitter.
-#' @param select logical. If `TRUE`, fitter will only return the model that
-#' minimizes the error. If `FALSE`, fitter will return a `ptk_hypertune` object
-#' with all models and their errors.
-#' @return A patroklos-compliant fitter with integrated cross-validation tuning.
+#' @title Tune multiple hyperparameters with a single call to a fitter
+#' @description Decorate a fitter that can only tune one combination of hyperparameters at a time 
+#' into a fitter that can tune multiple combinations at once.
+#' @param fitter A fitting function that fulfills the [`fitter_prototype()`] interface.
+#' @param select logical. If `TRUE`, the returned `multitune_obj` S3 object will only contain the
+#' validated predictions and the parameters of the picked model among the fitted models. 
+#' @return A fitter following the interface of [`fitter_prototype()`] documented in 
+#' [`multitune_output_prototype()`].
 #' @export
-hypertune <- function(
+multitune <- function(
     fitter,
     select = FALSE) {
     stopifnot(is.logical(select))
@@ -18,43 +17,43 @@ hypertune <- function(
         # Get all possible combinations of hyperparameters
         grid <- expand.grid(list(...), stringsAsFactors = FALSE)
         fit_obj_list <- lapply(seq(nrow(grid)), function(i) {
-            do.call(fitter, c(list(x = x, y, as.list(grid[i, ]))))
+            do.call(fitter, c(list(x = x, y = y), as.list(grid[i, ])))
         })
         # Get rid of NAs, i.e. invalid hyperparameters
         na_bool <- is.na(fit_obj_list)
         fit_obj_list <- fit_obj_list[!na_bool]
         grid <- grid[!na_bool, ]
-        # Build ptk_hypertune S3 object
-        ptk_hypertune <- list()
+        # Build multitune_obj S3 object
+        multitune_obj <- list()
         # Promote validated predictions to top level
-        ptk_hypertune$val_predict_list <- lapply(fit_obj_list, function(x) x$val_predict)
-        ptk_hypertune$lambda <- apply(grid, 1, function(r) {
+        multitune_obj$val_predict_list <- lapply(fit_obj_list, function(x) x$val_predict)
+        multitune_obj$lambda <- apply(grid, 1, function(r) {
             paste(names(grid), r,
                 sep = "=", collapse = ", "
             )
         })
         # Evaluate according to error
-        error_v <- vapply(ptk_hypertune$val_predict_list, function(y_hat) {
+        error_v <- vapply(multitune_obj$val_predict_list, function(y_hat) {
             y_yhat <- intersect_by_names(y[["true"]], y_hat, rm_na = c(TRUE, FALSE))
             val_error_fun(y_yhat[[1]], y_yhat[[2]])
         }, numeric(1))
-        ptk_hypertune$lambda_min_index <- which.min(error_v)
-        ptk_hypertune$lambda_min <- ptk_hypertune$lambda[ptk_hypertune$lambda_min_index]
-        ptk_hypertune$val_predict <- ptk_hypertune$val_predict_list[[ptk_hypertune$lambda_min_index]]
-        ptk_hypertune$val_error <- error_v
-        ptk_hypertune$min_error <- error_v[ptk_hypertune$lambda_min_index]
-        class(ptk_hypertune) <- "ptk_hypertune"
+        multitune_obj$lambda_min_index <- which.min(error_v)
+        multitune_obj$lambda_min <- multitune_obj$lambda[multitune_obj$lambda_min_index]
+        multitune_obj$val_predict <- multitune_obj$val_predict_list[[multitune_obj$lambda_min_index]]
+        multitune_obj$val_error <- error_v
+        multitune_obj$min_error <- error_v[multitune_obj$lambda_min_index]
+        class(multitune_obj) <- "multitune_obj"
         if (select) {
-            fit_obj_list[-ptk_hypertune$lambda_min_index] <- NA
-            ptk_hypertune$val_predict_list <- NA
+            fit_obj_list[-multitune_obj$lambda_min_index] <- NA
+            multitune_obj$val_predict_list <- NA
         }
-        ptk_hypertune$fit_obj_list <- fit_obj_list
-        ptk_hypertune
+        multitune_obj$fit_obj_list <- fit_obj_list
+        multitune_obj
     }
 }
 
 #' @export
-predict.ptk_hypertune <- function(
+predict.multitune_obj <- function(
     object,
     newx,
     lambda_index = object$lambda_min_index,
@@ -66,9 +65,9 @@ predict.ptk_hypertune <- function(
     predict(object = obj, newx = newx, ...)
 }
 
-# A decorator to tune those hyperparameters one can tune for any fitter (or
-# for a *uni*versal fitter). Right now, this concerns
-# combine_n_max_categorical_features and time_cutoffs.
+# A decorator to tune the model-agnostic hyperparameters one can tune for any fitter (or
+# for a *uni*versal fitter). Right now, this concerns the `Model` attributes 
+# `combine_n_max_categorical_features` and `time_cutoffs`.
 unitune <- function(fitter) {
     force(fitter)
 

@@ -8,19 +8,19 @@ test_that("ptk_ranger() works", {
   x3y <- generate_mock_data(n_samples = n_samples, n_genes = n_genes, 
     return_type = "fitter")
 
-  fit <- ptk_ranger(x3y[[1]], x3y[[2]], x3y[[3]], rel_mtry = FALSE, mtry = 1, 
+  fit <- ptk_ranger(x3y[[1]], x3y[2:4], rel_mtry = FALSE, mtry = 1, 
     num.trees = 1, min.node.size = 1, classification = TRUE)
   expect_false(is.null(fit$val_predict))
   expect_true(is.null(fit$predictions))
 
-  expect_error(ptk_ranger(x3y[[1]], x3y[[2]], x3y[[3]], rel_mtry = FALSE, 
+  expect_error(ptk_ranger(x3y[[1]], x3y[2:4], rel_mtry = FALSE, 
     mtry = ncol(x3y[[1]])+1, skip_on_invalid_input = FALSE), regexp = "mtry must be")
   
-  fit <- ptk_ranger(x3y[[1]], x3y[[2]], x3y[[3]], rel_mtry = FALSE, 
+  fit <- ptk_ranger(x3y[[1]], x3y[2:4], rel_mtry = FALSE, 
     mtry = ncol(x3y[[1]])+1, skip_on_invalid_input = TRUE)
   expect_true(is.na(fit))
 
-  fit <- ptk_ranger(x3y[[1]], x3y[[2]], x3y[[3]], rel_mtry = TRUE, mtry = 1.5, 
+  fit <- ptk_ranger(x3y[[1]], x3y[2:4], rel_mtry = TRUE, mtry = 1.5, 
     num.trees = 5, min.node.size = 1, classification = TRUE)
   expect_equal(fit$mtry, round(sqrt(ncol(x3y[[1]])) * 1.5))  
   y_hat <- predict(fit, x3y[[1]])

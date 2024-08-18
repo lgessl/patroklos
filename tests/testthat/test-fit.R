@@ -80,7 +80,7 @@ test_that("Model$fit() works", {
       val_error_fun = error_rate,
       hyperparams = list(
         fitter1 = ptk_zerosum,
-        fitter2 = hypertune(ptk_ranger),
+        fitter2 = multitune(ptk_ranger),
         hyperparams1 = list(
           family = "cox",
           alpha = 1,
