@@ -4,8 +4,8 @@
 \alias{Model}
 \title{An R6 class for a model}
 \description{
-A Model specifies how a model looks like, prepares the data, fit_obj it,
-stores it and predicts from it.
+A Model specifies how a model looks like, fits and validates it, tunes
+hyperparameters, stores it and predicts from it.
 }
 \seealso{
 \code{\link[=training_camp]{training_camp()}}.
@@ -15,13 +15,13 @@ stores it and predicts from it.
 \describe{
 \item{\code{name}}{A telling name for the model.}
 
-\item{\code{directory}}{Store/find the models in this directory.}
+\item{\code{directory}}{Store/find the \code{Model} with \code{fit_obj} set in this directory.}
 
-\item{\code{fitter}}{The model fitting function to be used.}
+\item{\code{fitter}}{Fit and validate the model with this fitting function.}
 
 \item{\code{time_cutoffs}}{Threshold and censor the outcome accordingly.}
 
-\item{\code{val_error_fun}}{Calculate the error of independently validated predictions.}
+\item{\code{val_error_fun}}{Calculates the error of the validated predictions.}
 
 \item{\code{hyperparams}}{Optional arguments passed to \code{fitter}.}
 
@@ -33,25 +33,23 @@ pheno data (to be) included in the predictor matrix.}
 
 \item{\code{include_expr}}{Whether to include the expression data in the predictor matrix.}
 
-\item{\code{li_var_suffix}}{Append this to the names of features from the pheno data
-when adding them to the predictor matrix.}
+\item{\code{combine_n_max_categorical_features}}{Maximum number of categorical features
+to combine.}
+
+\item{\code{combined_feature_min_positive_ratio}}{Minimum ratio of positive
+observations in a combined (categorical) feature.}
+
+\item{\code{enable_imputation}}{Overrides the \code{imputer} attribute of the \code{Data} object.}
+
+\item{\code{fit_obj}}{The fitted object, something returned by a fitter like a \code{ptk_zerosum} S3
+object.}
 
 \item{\code{create_directory}}{Whether to create \code{directory} if it does not exist, yet.}
 
 \item{\code{file}}{Store this Model object under this name in \code{directory}.}
 
-\item{\code{fit_obj}}{A list holding fit_obj (something returned by a fitter like
-a \code{ptk_zerosum} S3 object).}
-
-\item{\code{continuous_output}}{Whether the output of the model is continous or binary.}
-
-\item{\code{combine_n_max_categorical_features}}{Maximum number of categorical features
-to combine}
-
-\item{\code{combined_feature_min_positive_ratio}}{Minimum ratio of positive
-observations in a combined (categorical) feature}
-
-\item{\code{enable_imputation}}{Overrides the \code{imputer} attribute of the \code{Data} object.}
+\item{\code{li_var_suffix}}{Append this to the names of features from the pheno data
+when adding them to the predictor matrix.}
 }
 \if{html}{\out{</div>}}
 }
@@ -80,13 +78,12 @@ Create a new Model instance.
   include_from_continuous_pheno = NULL,
   include_from_discrete_pheno = NULL,
   include_expr = TRUE,
-  li_var_suffix = "++",
-  create_directory = TRUE,
-  file = "model.rds",
-  continuous_output = NULL,
   combine_n_max_categorical_features = 1L,
   combined_feature_min_positive_ratio = 0.04,
-  enable_imputation = TRUE
+  enable_imputation = TRUE,
+  file = "model.rds",
+  create_directory = TRUE,
+  li_var_suffix = "++"
 )}\if{html}{\out{</div>}}
 }
 
@@ -95,27 +92,27 @@ Create a new Model instance.
 \describe{
 \item{\code{name}}{string. A telling name for the model.}
 
-\item{\code{fitter}}{function. The model fitting function to be used. Must take \code{x} and
-\code{y} as first two positional arguments. Further arguments can be passed via
-\code{hyperparams} (below). Its return value must be an S3 object with a \code{plot()}
-method, and (ideally, for assessment) with a \code{predict()} method. Default is \code{NULL}.}
+\item{\code{fitter}}{function. Fit the model to the data and validate it with this fitting
+function. See \code{\link[=fitter_prototype]{fitter_prototype()}} for its required interface. patroklos provides
+two fitters out of the box: \code{\link[=ptk_zerosum]{ptk_zerosum()}}, a wrapper around \code{\link[zeroSum:zeroSum]{zeroSum::zeroSum}} and
+\code{\link[=ptk_ranger]{ptk_ranger()}}, a wrapper around \code{\link[ranger:ranger]{ranger::ranger()}}. To tune more than just one
+combination of hyperparameters, decorate a fitter with \code{\link[=hypertune]{hypertune()}}.}
 
-\item{\code{directory}}{string. The directory to store the models in. For every value in
-\code{time_cutoffs}, find the corresponding model in a subdirectory named after this value.}
+\item{\code{directory}}{string. Store/find the \code{Model} with \code{fit_obj} set in this directory.}
 
-\item{\code{time_cutoffs}}{numeric vector. This governs how the provided
-response looks like. For every value of \code{time_cutoffs}, specify a model
-on the following response data:
+\item{\code{time_cutoffs}}{numeric vector. A model-agnostic hyperparameter that changes the
+response during \emph{training} as follows: For every value of \code{time_cutoffs}, specify a
+model on the following response data:
 \itemize{
-\item For Cox response, censor all patients where the event ouccured after
+\item For Cox response, censor all patients where the event occurred after
 \code{time_cutoffs} at this value and train the specified model.
 \item For binary response, binarize the outcome depending on whether it
-occured before or after this value.
+occurred before or after this value.
 }
 
-When fitting models to the data, you find every of the
-\code{length(time_cutoffs)} models in a subdirectory of \code{directory} named
-after the respective value in \code{time_cutoffs}.}
+We already tune this hyperparameter and only store the best model according to
+validation as \code{fit_obj} and report the chosen time cutoff as \code{time_cutoff} attribute
+in it.}
 
 \item{\code{val_error_fun}}{Function used to calculate the error of independently
 validated predictions. Must take two numeric vector of equal length:
@@ -124,46 +121,43 @@ return a numeric scalar; the lower, the better the model. See
 \code{\link[=error_rate]{error_rate()}} or \code{\link[=neg_roc_auc]{neg_roc_auc()}} for examples.}
 
 \item{\code{hyperparams}}{list. Optional arguments passed to \code{fitter}, e.g. alpha
-in case of an elastic net. Default is \code{list()}, i.e., no arguments other than \code{x}, \code{y}
-passed to \code{fitter}.}
+in case of an elastic net.}
 
 \item{\code{include_from_continuous_pheno}}{vector of strings. The names of the
-\emph{continuous} variables in the pheno data (to be) included in the predictor matrix. The
-values will be coerced to numeric. Default is \code{NULL}, which means no continuous pheno
-variables are or will be included.}
+\emph{continuous} variables in the pheno data (to be) included in the predictor matrix.
+Default is \code{NULL}, which means no continuous pheno variables are or will be included.}
 
 \item{\code{include_from_discrete_pheno}}{vector of strings. The names of the \emph{discrete}
 variables in the pheno data (to be) included in the predictor matrix. A discrete
-variable with n levels will be converted to n-1 binary variables. Default is \code{NULL},
-which means no discrete pheno variables are or will be included.}
+variable with n levels will be dichotomized into n-1 binary dummy variables. Default is
+\code{NULL}, which means no discrete pheno variables are or will be included.}
 
 \item{\code{include_expr}}{logical. Whether to include the expression data in the predictor
 matrix.}
-
-\item{\code{li_var_suffix}}{string. Append this to the names of features from the pheno
-data when adding them to the predictor matrix. Default is \code{"++"}.}
-
-\item{\code{create_directory}}{logical. Whether to create \code{directory} if it does not exist, yet.
-Default is \code{TRUE}.}
-
-\item{\code{file}}{string. The name of the model-fit_obj file inside \code{directory}.
-Default is \code{"fit_obj.rds"}.}
-
-\item{\code{continuous_output}}{logical or NULL. Whether the output of the model
-is continous (like the conditional probabilities of a logistic regression) or
-binary (like with a random forest). This piece of information is helpful
-when it comes to assessing a model (Ass2d$assess_center() uses it, e.g.).}
 
 \item{\code{combine_n_max_categorical_features}}{integer. Maximum number of categorical features
 to combine in predicting features.}
 
 \item{\code{combined_feature_min_positive_ratio}}{numeric. Minimum ratio of positive
 observations in a combined (categorical) feature. This attribute together
-with \code{combine_n_max_categorical_features} governs which combinatorial
-features the predicitor matrix will contain.}
+with \code{combine_n_max_categorical_features} governs which combined categorical
+features the predictor matrix will contain: add a combination of the levels of distinct
+categorical features to the predictor matrix after imputation if at most
+\code{combine_n_max_categorical_features} are involved in the combination and if the
+combination is (expected to be) there in at least \code{combined_feature_min_positive_ratio}
+of the samples.}
 
 \item{\code{enable_imputation}}{logical. If \code{FALSE}, it overrides the \code{imputer} attribute of
-the \code{Data} objectl and we do not impute.}
+the \code{Data} object and we do not impute.}
+
+\item{\code{file}}{string. The name of the model-fit_obj file inside \code{directory}.
+Default is \code{"fit_obj.rds"}.}
+
+\item{\code{create_directory}}{logical. Whether to create \code{directory} if it does not exist, yet.
+Default is \code{TRUE}.}
+
+\item{\code{li_var_suffix}}{string. Append this to the names of features from the pheno
+data when adding them to the predictor matrix. Default is \code{"++"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -175,7 +169,7 @@ A \code{Model} R6 object.
 \if{html}{\out{<a id="method-Model-fit"></a>}}
 \if{latex}{\out{\hypertarget{method-Model-fit}{}}}
 \subsection{Method \code{fit()}}{
-Fit the model to a data set.
+Fit the model to a data set, validate it and tune hyperparameters.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Model$fit(data, update_model_shell = FALSE, quiet = FALSE, msg_prefix = "")}\if{html}{\out{</div>}}
 }
@@ -199,16 +193,14 @@ and save it. This way, we can keep stored \code{Model}s up-to-date with changes 
 \subsection{Returns}{
 The \code{Model} object itself with the \code{fit_obj} attribute set
 to the object tuned over \code{time_cutoffs}, \code{combine_n_max_categorical_features}
-and \code{hyperparams} with \code{fitter} at the core.
+and \code{hyperparams}.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Model-predict"></a>}}
 \if{latex}{\out{\hypertarget{method-Model-predict}{}}}
 \subsection{Method \code{predict()}}{
-Predict for a data set. Additonally return the true values
-of the response and, if the \code{benchmark_col} attribute of the \code{Data}
-object is not \code{NULL}, the values of the benchmark.
+Predict for a data set.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Model$predict(data, quiet = FALSE)}\if{html}{\out{</div>}}
 }
@@ -224,8 +216,14 @@ needed.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A list of three named numeric vectors named \code{"predictions"},
-\code{"actual"}, and \code{"benchmark"}.
+A named list of length 3:
+\itemize{
+\item \code{"predicted"}: named numeric vector with predicted response,
+\item \code{"actual"}: named numeric vector with actual response,
+\item \code{"cox_mat"}: named matrix with columns \code{"time_to_event"}, \code{"event"}, \code{"hazard"},
+where hazard again is the predicted response. This matrix is helpful to calculate
+hazard ratios or logrank p-values.
+}
 }
 }
 \if{html}{\out{<hr>}}

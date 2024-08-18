@@ -142,7 +142,6 @@ test_that("Ass2d$assess_center() works", {
       min.node.size = 5, classification = TRUE),
     time_cutoffs = 2,
     val_error_fun = error_rate,
-    continuous_output = FALSE,
     include_from_discrete_pheno = c("discrete_var", "abc_gcb", "ipi_age"),
     combine_n_max_categorical_features = 3,
     combined_feature_min_positive_ratio = 0.1

@@ -96,8 +96,6 @@ ass2d_assess_center <- function(self, private, data, model_list, file, fellow_cs
     # Assess each model
     for (i in seq_along(model_list)) {
         model <- model_list[[i]]
-        if (!is.null(model$continuous_output) && !model$continuous_output)
-            next
         if(!quiet) message("** ", model$name)
         tbls[[i]] <- self$assess(
             data = data,

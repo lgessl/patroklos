@@ -43,9 +43,9 @@ after the point.}
 Create a new AssScalar instance.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AssScalar$new(
-  metrics = c("auc", "accuracy", "precision", "prevalence", "precision_ci_ll", "hr",
-    "hr_ci_ll", "hr_ci_ul", "hr_p", "n_true", "perc_true", "n_samples", "logrank",
-    "threshold"),
+  metrics = c("auc", "accuracy", "precision", "prevalence", "precision_ci_ll",
+    "precision_ci_ul", "hr", "hr_ci_ll", "hr_ci_ul", "hr_p", "n_true", "perc_true",
+    "n_samples", "logrank", "threshold"),
   prev_range = c(0, 1),
   confidence_level = 0.95,
   benchmark = NULL,

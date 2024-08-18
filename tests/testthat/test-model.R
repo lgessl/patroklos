@@ -6,7 +6,6 @@ test_that("Model$new() works", {
       directory = "models/cox",
       time_cutoffs = c(1.5, 2),
       val_error_fun = neg_roc_auc,
-      continuous_output = TRUE,
       combine_n_max_categorical_features = 2,
       combined_feature_min_positive_ratio = 0.04,
       enable_imputation = FALSE
@@ -25,8 +24,7 @@ test_that("prepend_to_directory() works", {
     directory = "mock1", 
     fitter = ptk_zerosum, 
     time_cutoffs = 2,
-    val_error_fun = neg_roc_auc,
-    continuous_output = TRUE
+    val_error_fun = neg_roc_auc
   )
   model2 <- model1$clone()
   model2$name <- "model2"

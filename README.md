@@ -16,8 +16,6 @@ the famous train-validate-test split of the data.
 
 Make sure you have the `devtools` package installed, start an R session and then type:
 ```R
-if (!requireNamespace("devtools", quietly = TRUE))
-  install.packages("devtools")
 devtools::install_github("lgessl/patroklos")
 ```
 
@@ -79,7 +77,8 @@ patroklos abstracts the data from the models, which you specify in another R6 cl
 A model typically specifies more than just one combination of hyperparameters that need to be tuned.
 Concerning model classes and fitting functions, you have full flexibility — you can provide any 
 fitting function as an attribute to a `Model` as long as its function interface fulfills patroklos's 
-expectations. If the fitting function generates hyperparameters automatically or tunes 
+expectations: see the documentation for `Model`s `fitter` attribute. If the fitting function 
+generates hyperparameters automatically or tunes 
 hyperparameters internally, that's totally fine as long it returns a single fit object with 
 validated predictions and a predict method. Again, it is left 100% to the model how it calculates 
 the validated predictions, e.g. by cross validation or out-of-bag predictions. patroklos also 

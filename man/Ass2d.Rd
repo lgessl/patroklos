@@ -201,9 +201,7 @@ Assess \emph{multiple} models on a data set. A wrapper around
 \item{\code{data}}{Data object. Assess on this data. The \code{cohort} attribute must be set.}
 
 \item{\code{model_list}}{list of Model objects. Assess these models.
-We infer the \code{AssSpec2d} for the single plots in a reasonable way from it.
-We skip models with the \code{continuous_output} attribute being FALSE (a plot
-is an overkill in this case).}
+We infer the \code{AssSpec2d} for the single plots in a reasonable way from it.}
 
 \item{\code{file}}{string or NULL. If not \code{NULL}, store the resulting plot in this file.}
 

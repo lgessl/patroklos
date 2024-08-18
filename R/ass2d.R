@@ -117,8 +117,6 @@ Ass2d <- R6::R6Class("Ass2d",
         #' @param data Data object. Assess on this data. The `cohort` attribute must be set.
         #' @param model_list list of Model objects. Assess these models.
         #' We infer the `AssSpec2d` for the single plots in a reasonable way from it.
-        #' We skip models with the `continuous_output` attribute being FALSE (a plot 
-        #' is an overkill in this case).
         #' @param file string or NULL. If not `NULL`, store the resulting plot in this file.
         #' @param fellow_csv logical. Whether to also store the plotted data in a csv.
         #' @param quiet logical. Whether to suppress messages. Default is `FALSE`.
