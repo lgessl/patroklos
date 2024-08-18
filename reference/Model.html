@@ -157,10 +157,10 @@ when adding them to the predictor matrix.</p></dd>
 
 <dt><code>fitter</code></dt>
 <dd><p>function. Fit the model to the data and validate it with this fitting
-function. See <code>fitter_prototype()</code> for its required interface. patroklos provides
+function. See <code><a href="fitter_prototype.html">fitter_prototype()</a></code> for its required interface. patroklos provides
 two fitters out of the box: <code><a href="ptk_zerosum.html">ptk_zerosum()</a></code>, a wrapper around <code><a href="https://rdrr.io/pkg/zeroSum/man/zeroSum.html" class="external-link">zeroSum::zeroSum</a></code> and
 <code><a href="ptk_ranger.html">ptk_ranger()</a></code>, a wrapper around <code><a href="http://imbs-hl.github.io/ranger/reference/ranger.html" class="external-link">ranger::ranger()</a></code>. To tune more than just one
-combination of hyperparameters, decorate a fitter with <code><a href="hypertune.html">hypertune()</a></code>.</p></dd>
+combination of hyperparameters, decorate a fitter with <code><a href="multitune.html">multitune()</a></code>.</p></dd>
 
 
 <dt><code>directory</code></dt>
@@ -180,11 +180,8 @@ in it.</p></dd>
 
 
 <dt><code>val_error_fun</code></dt>
-<dd><p>Function used to calculate the error of independently
-validated predictions. Must take two numeric vector of equal length:
-<code>y</code> and <code>y_hat</code>, the true and predicted outcomes, respectively, and
-return a numeric scalar; the lower, the better the model. See
-<code><a href="error_rate.html">error_rate()</a></code> or <code><a href="neg_roc_auc.html">neg_roc_auc()</a></code> for examples.</p></dd>
+<dd><p>Function to calculate the error of validated predictions. For its
+interface, see <code><a href="val_error_fun_prototype.html">val_error_fun_prototype()</a></code>.</p></dd>
 
 
 <dt><code>hyperparams</code></dt>

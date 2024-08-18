@@ -39,15 +39,7 @@ predictions, it has a return value with a <code>val_predict</code> attribute.</p
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ptk_ranger</span><span class="op">(</span></span>
-<span>  <span class="va">x</span>,</span>
-<span>  <span class="va">y_bin</span>,</span>
-<span>  <span class="va">y_cox</span>,</span>
-<span>  <span class="va">rel_mtry</span>,</span>
-<span>  mtry <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  skip_on_invalid_input <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ptk_ranger</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">rel_mtry</span>, mtry <span class="op">=</span> <span class="cn">NULL</span>, skip_on_invalid_input <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -55,27 +47,23 @@ predictions, it has a return value with a <code>val_predict</code> attribute.</p
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>Predictor data (independent variables), alternative interface to data with formula or dependent.variable.name.</p></dd>
+<dd><p>Named numeric matrix. Predictor matrix without <code>NA</code>s. Samples correspond to rows.
+Discrete features are encoded as binary dummy variables.</p></dd>
 
 
-<dt id="arg-y-bin">y_bin<a class="anchor" aria-label="anchor" href="#arg-y-bin"></a></dt>
-<dd><p>Named numeric matrix with one column. Binary response.</p></dd>
-
-
-<dt id="arg-y-cox">y_cox<a class="anchor" aria-label="anchor" href="#arg-y-cox"></a></dt>
-<dd><p>Named numeric matrix with two columns. The first column is the
-time to event, the second column indicates censoring (1 for event, 0 for
-censored).</p></dd>
+<dt id="arg-y">y<a class="anchor" aria-label="anchor" href="#arg-y"></a></dt>
+<dd><p>Named list with the response in thee formats:</p><ul><li><p><code>"bin"</code>, a named numeric one-column matrix, binary response,</p></li>
+<li><p><code>"cox"</code>, a named numeric two-column matrix, with columns <code>"time_to_event"</code> and <code>"event"</code>
+(0 = censoring, 1 = event), the response in the Cox format,</p></li>
+<li><p><code>"true"</code>, a named numeric one-column matrix, true binary response.</p></li>
+</ul><p>The rownames of <code>y[["bin"]]</code> and <code>y[["true"]]</code> are a subset of the rownames of <code>x</code> and, in
+general, do not coincide. Use <code>intersect_by_names()</code> to get equal rownames.</p></dd>
 
 
 <dt id="arg-rel-mtry">rel_mtry<a class="anchor" aria-label="anchor" href="#arg-rel-mtry"></a></dt>
-<dd><p>logical. If <code>TRUE</code>, interprete <code>mtry</code> as relative to
+<dd><p>logical. If <code>TRUE</code>, interpret <code>mtry</code> as relative to
 <code>sqrt(ncol(x))</code> (the recommended value), rounded to the next integer.
 Otherwise, take <code>mtry</code> directly.</p></dd>
-
-
-<dt id="arg-mtry">mtry<a class="anchor" aria-label="anchor" href="#arg-mtry"></a></dt>
-<dd><p>Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Alternatively, a single argument function returning an integer, given the number of independent variables.</p></dd>
 
 
 <dt id="arg-skip-on-invalid-input">skip_on_invalid_input<a class="anchor" aria-label="anchor" href="#arg-skip-on-invalid-input"></a></dt>
