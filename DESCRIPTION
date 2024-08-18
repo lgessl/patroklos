@@ -1,6 +1,6 @@
 Package: patroklos
 Title: An R package pipelining binary classification of survival
-Version: 0.5.1
+Version: 1.0.0
 Authors@R: 
     person("Lukas", "Gessl", , "lukas.gessl@icloud.com", role = c("aut", "cre"))
 Description: See README.md.
