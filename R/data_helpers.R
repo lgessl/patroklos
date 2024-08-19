@@ -93,8 +93,8 @@ data_split <- function(self, private, train_prop, save, keep_risk, quiet) {
     split_file <- file.path(self$directory, "cohort.rds")
     if (file.exists(split_file)) {
         if (!quiet)
-            message("Found a cohort file: ", split_file, ". Loading it and writing 
-                it into the pheno_tbl attribute.")
+            message("Found a cohort file: ", split_file, ". Loading it and writing ",
+                "it into the pheno_tbl attribute.")
         cohort <- readRDS(split_file)
         if (length(cohort) != nrow(self$pheno_tbl) || 
             any(names(cohort) != self$pheno_tbl[[self$patient_id_col]]))
