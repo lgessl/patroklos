@@ -27,7 +27,7 @@ test_that("multitune() and its return value's predict method work", {
 
   pred <- predict(multitune_obj, newx = x3y[[1]])
   expect_equal(length(pred), n_samples)
-  class(multitune_obj) <- "hypertune"
+  class(multitune_obj) <- "ptk_hypertune"
   pred <- predict(multitune_obj, newx = x3y[[1]])
   expect_equal(length(pred), n_samples)
 

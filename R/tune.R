@@ -65,9 +65,10 @@ predict.multitune_obj <- function(
     predict(object = obj, newx = newx, ...)
 }
 
-# Just there for backward compatibility (hypertune -> multitune_obj)
+# Just there for backward compatibility: renamed ptk_hypertune S3 class into multitune_obj in 
+# version 1.0.0
 #' @export
-predict.hypertune <- function(
+predict.ptk_hypertune <- function(
     object,
     newx, 
     lambda_index = object$lambda_min_index,
