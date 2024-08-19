@@ -16,7 +16,7 @@ non_zero_coefs(fit_obj)
 \item{fit_obj}{S3 fit object.}
 }
 \value{
-One-column matrix with non-zero coefficients and featue names as row names.
+One-column matrix with non-zero coefficients and feature names as row names.
 }
 \description{
 Get features with non-zero coefficients

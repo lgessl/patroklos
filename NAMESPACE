@@ -2,6 +2,7 @@
 
 S3method(non_zero_coefs,nested_fit)
 S3method(non_zero_coefs,ptk_zerosum)
+S3method(predict,hypertune)
 S3method(predict,multitune_obj)
 S3method(predict,nested_fit)
 S3method(predict,ptk_ranger)

@@ -27,24 +27,9 @@ test_that("multitune() and its return value's predict method work", {
 
   pred <- predict(multitune_obj, newx = x3y[[1]])
   expect_equal(length(pred), n_samples)
-
-  # tune_fitter <- multitune(ptk_zerosum)
-  # multitune_obj <- tune_fitter(x3y[[1]], x3y[2:4], val_error_fun = neg_binomial_log_likelihood, 
-  #   lambda = c(0.5, 1), nFold = 2, family = "binomial")
-  # expect_s3_class(multitune_obj, "multitune_obj")
-  # expect_true(is.character(multitune_obj$lambda) && length(multitune_obj$lambda) == 2)
-  # expect_true(is.numeric(multitune_obj$val_error) && length(multitune_obj$val_error) == 2)
-  # expect_true(is.numeric(multitune_obj$lambda_min_index) && length(multitune_obj$lambda_min_index) == 1)
-  # expect_true(is.character(multitune_obj$lambda_min) && length(multitune_obj$lambda_min) == 1)
-  # expect_true(is.numeric(multitune_obj$min_error) && length(multitune_obj$min_error) == 1)
-  # expect_true(is.character(multitune_obj$error_name) && length(multitune_obj$error_name) == 1)
-  # expect_true(is.list(multitune_obj$fit_obj_list) && length(multitune_obj$fit_obj_list) == 2)
-  # expect_true(all(sapply(multitune_obj$val_predict_list, function(x) nrow(x) == sum(!is.na(x3y[[2]])))))
-  # expect_true(all(sapply(multitune_obj$fit_obj_list, function(x) all(dim(x) == c(n_samples, 1)))))
-  # expect_true(all(sapply(multitune_obj$fit_obj_list, function(x) inherits(x, "ptk_zerosum"))))
-
-  # pred <- predict(multitune_obj, newx = x3y[[1]])
-  # expect_equal(length(pred), n_samples)
+  class(multitune_obj) <- "hypertune"
+  pred <- predict(multitune_obj, newx = x3y[[1]])
+  expect_equal(length(pred), n_samples)
 
   # Handling of NA returned by fitter
   tune_fitter <- multitune(ptk_ranger)

@@ -65,6 +65,18 @@ predict.multitune_obj <- function(
     predict(object = obj, newx = newx, ...)
 }
 
+# Just there for backward compatibility (hypertune -> multitune_obj)
+#' @export
+predict.hypertune <- function(
+    object,
+    newx, 
+    lambda_index = object$lambda_min_index,
+    ...
+){
+    class(object) <- "multitune_obj"
+    predict(object = object, newx = newx, lambda_index = lambda_index, ...)
+}
+
 # A decorator to tune the model-agnostic hyperparameters one can tune for any fitter (or
 # for a *uni*versal fitter). Right now, this concerns the `Model` attributes 
 # `combine_n_max_categorical_features` and `time_cutoffs`.
