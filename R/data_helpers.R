@@ -35,25 +35,19 @@ data_initialize <- function(self, private, name, directory, pivot_time_cutoff,
 }
 
 data_read <- function(self, private){
-    # extract values from self
-    directory <- self$directory
-    expr_file <- self$expr_file
-    pheno_file <- self$pheno_file
-    patient_id_col <- self$patient_id_col
-    gene_id_col <- self$gene_id_col
-
     # read
-    self$pheno_tbl <- readr::read_csv(file.path(directory, pheno_file), show_col_types = FALSE)
-    expr_tbl <- readr::read_csv(file.path(directory, expr_file), show_col_types = FALSE)
+    self$pheno_tbl <- readr::read_csv(file.path(self$directory, self$pheno_file), 
+        show_col_types = FALSE)
+    expr_tbl <- readr::read_csv(file.path(self$directory, self$expr_file), show_col_types = FALSE)
 
     self$qc_preprocess(expr_tbl = expr_tbl)
 
     # expression to matrix
     expr_mat <- expr_tbl |>
-        dplyr::select(!dplyr::all_of(gene_id_col)) |>
+        dplyr::select(!dplyr::all_of(self$gene_id_col)) |>
         as.matrix() |> 
         t()
-    colnames(expr_mat) <- expr_tbl[[gene_id_col]]
+    colnames(expr_mat) <- expr_tbl[[self$gene_id_col]]
     self$expr_mat <- expr_mat
 
     invisible(self)
